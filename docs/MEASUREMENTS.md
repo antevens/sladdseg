@@ -75,7 +75,7 @@ the IKEA UK product page (height 20 mm).
 | MAGNET (supplied) | ~47.4 × 17.5, full round ends (R8.75), t 1.5–2.5 | 1.0 | label drawing back-view rings, FCC external photo 2 | yes: cut to an 18.5 mm piece (D-43) |
 | B_SEAM_Z, BC_WALL | cover depth rim to back 9.8, shell 1.6 | measured | human, 2026-10-09 | DONE |
 | BC_PRY | screwdriver notch in the rim at the bottom end | — | human, 2026-10-09: present; size MEASURE (6.0 × 1.2) | TODO |
-| BC_SIDE_TAB, BC_SIDE_TAB_GAP, BC_SIDE_TAB_RIM_GAP | side ribs at mid-length, free-standing on the shell's curved floor (stiffening, no hook) | 36.2 inside spacing, 1.0 thick, top 3.6 below the rim (measured); length 6.0 (ESTIMATE, photos) | human, 2026-10-09 | DONE |
+| BC_SIDE_TAB, BC_SIDE_TAB_GAP, BC_SIDE_TAB_RIM_GAP | side ribs at mid-length, free-standing on the shell's curved floor (stiffening, no hook) | 36.2 inside spacing, top 3.6 below the rim (measured); 0.8 thick (human); length 6.0 (ESTIMATE, photos) | human, 2026-10-09 | DONE |
 | — | supplied wall part: magnet or steel? The remote's plate is a magnet, so a second magnet must face it with opposite poles (mark the cut piece's orientation) | magnet / compass | | TODO |
 | BC_LATCH_* (cover snap clips, top and bottom) | one clip per end at x 0, ~3.5 wide × 1.2 (the bottom one at the pry notch); bottom: top 4.7 above the inside floor (measured), hook tip 4.1 in from the outside rim (photos); top: top 1.0 below the rim, hook tip 2.8 in from the outside rim (measured), its back merges into the end wall; hook size MEASURE (0.5) | 0.5 | human photos IMG_5088-5090, measurements 2026-10-09 | partly |
 | E2489 outline / depth | 69.5 × 40.0 / ~20 | 0.3 / 2 | label drawing; photo comparison | backlog (E2489 version) |

@@ -225,7 +225,7 @@ BC_LATCH_TOPS = (4.7, B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
 # 2026-10-09). Where reach - hook - thickness < BC_WALL the clip's back merges into the end wall.
 BC_LATCH_REACH = (4.1, 2.8)
 # side ribs at mid-length (y 0), free-standing on the shell's curved floor, against flex (human, 2026-10-09)
-BC_SIDE_TAB = (6.0, 1.0)                  # length along y (ESTIMATE, photos), thickness (MEASURED)
+BC_SIDE_TAB = (6.0, 0.8)                  # length along y (ESTIMATE, photos), thickness (human, 2026-10-09)
 BC_SIDE_TAB_GAP = 36.2                    # MEASURED inside spacing between the ribs
 BC_SIDE_TAB_RIM_GAP = 3.6                 # MEASURED rib's top below the rim
 BC_STEEL = (12.0, 20.0, 2.0)              # MEASURED the remote's plate (a magnet), x, y, t (human, 2026-10-09); moved
