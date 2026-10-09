@@ -10,7 +10,7 @@ ORCA_URL = https://github.com/OrcaSlicer/OrcaSlicer/releases/download/v$(ORCA_VE
 ORCA_APPIMAGE = .tools/OrcaSlicer_$(ORCA_VERSION).AppImage
 SLICER ?= $(abspath $(ORCA_APPIMAGE))
 
-.PHONY: setup system-deps slicer cad check print pcb renders eu all clean
+.PHONY: setup system-deps slicer cad check print pcb renders eu order all clean
 system-deps:    ## apt packages: KiCad 9, python venv, headless libs for OrcaSlicer (Ubuntu 24.04, sudo)
 	tools/install-system-deps.sh
 
@@ -63,6 +63,11 @@ renders:        ## docs/renders/*.png: section sheet, shaded 3D views, wiring bo
 	$(RENDER_PCB) --side top -o docs/renders/eu_5v_board_front.png $(EU_LV)
 	$(RENDER_PCB) --side bottom -o docs/renders/eu_5v_board_back.png $(EU_LV)
 	python3 pcb/tools/render_bare.py $(EU_LV) eu_5v_board --copper-only
+
+NA_PLATES ?= 3
+EU_PLATES ?= 2
+order:          ## DigiKey / Mouser order lists for hand-soldered test plates (pcb/order/), NA_PLATES / EU_PLATES
+	python3 pcb/tools/order_bom.py $(NA_PLATES) $(EU_PLATES)
 
 eu:             ## EU variant (D-30, cad/build123d/eu/): STEP/STL to build/eu, checks, renders (docs/renders/eu_*.png)
 	cd $(CAD)/eu && $(PY) cap_eu.py && $(PY) trim_eu.py && $(PY) checks_eu.py

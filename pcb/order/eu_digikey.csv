@@ -1,0 +1,16 @@
+Digi-Key Part Number,Manufacturer Part Number,Manufacturer,Quantity,Customer Reference,Description
+,2604-3102,WAGO,5,WP EU J1,"PCB terminal block, push-in, 2-pole, 4 mm2, entry 90 deg to the PCB, 400 V III/2 (2/plate EU; EU mains board J1; EU mains board J2)"
+486-3951-1-ND,3404.2416.22,Schurter,4,WP EU F1,"SMD fuse UMT 250, time-lag 1 A 250 VAC (1/plate EU; EU mains board F1)"
+495-1467-1-ND,B72660M0271K093,TDK,4,WP EU RV1,"SMD varistor SIOV-CU4032K275G2K1, 275 VAC (1/plate EU; EU mains board RV1)"
+,TMPS 03-105,Traco Power,3,WP EU PS1,"AC-DC module 85-264 VAC in, 5 V 600 mA, 25.4x25.4x16.3 mm, IEC/UL 62368-1, IEC 60335-1 (1/plate EU; EU mains board PS1)"
+SAM8979-ND,TSM-102-01-L-SV,Samtec,4,WP EU J3,"SMT pin header 1x2, 2.54 mm, 5.84 mm post, gold on post (1/plate EU; EU mains board J3)"
+612-SSW-102-01-G-S-ND,SSW-102-01-G-S,Samtec,3,WP EU J1,5 V from the mains board's header (1/plate EU; EU 5 V board J1)
+1276-1287-1-ND,CL31A226KPHNNNE,Samsung Electro-Mechanics,4,WP EU C1,"Ceramic 22 uF 10 V X5R 1206, 1.8 mm max (1/plate EU; EU 5 V board C1)"
+952-3124-ND,P70-2200045,Harwin,6,WP EU P1,"Spring pin, 2 A, 7.1 mm working height (2/plate EU; EU 5 V board P1; EU 5 V board P2)"
+1649-SHT45-AD1B-R2CT-ND,SHT45-AD1B-R2,Sensirion,4,WP EU U1,"Humidity and temperature sensor, I2C 0x44 (1/plate EU; EU sensor flex U1)"
+490-3261-1-ND,GRM155R71C104KA88D,Murata,10,WP EU C1,Ceramic 100 nF 16 V X7R 0402 (2/plate EU; EU sensor flex C1; EU sensor flex C2)
+668-DMM-4026-B-I2S-RCT-ND,DMM-4026-B-I2S-R,PUI Audio,4,WP EU MK1,"I2S MEMS microphone, bottom port, 1.62-3.63 V; LR low = left channel (1/plate EU; EU sensor flex MK1)"
+311-100KLRCT-ND,RC0402FR-07100KL,Yageo,10,WP EU R1,Resistor 100 kOhm 1 % 0402 (1/plate EU; EU sensor flex R1)
+952-1734-1-ND,S7081-42R,Harwin,12,WP EU J1,"SMT spring finger, gold, 4 A, working height 2.0 mm (4/plate EU; EU cover flex J1; EU cover flex J2; EU cover flex J3; EU cover flex J4)"
+296-50411-1-ND,TLV75533PDBVR,Texas Instruments,4,WP EU U1,"LDO 3.3 V 500 mA, 1.45-5.5 V in, SOT-23-5 (1/plate EU; EU cover flex U1)"
+1276-1076-1-ND,CL05A105KP5NNNC,Samsung Electro-Mechanics,10,WP EU C3,"LDO input capacitor, 1 uF 10 V X5R 0402 (2/plate EU; EU cover flex C3; EU cover flex C4)"

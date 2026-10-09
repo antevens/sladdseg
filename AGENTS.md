@@ -67,6 +67,7 @@ pcb/                 wiring board (README: parts, nets, rules, open items)
   sensor/            sensor flex, 5 V jumper, back cover flex, EU sensor flex (D-27, D-31, D-35,
                      D-41, D-42): kicad/, tools/ (edit sensor_parts.py, eu_flex_parts.py), fab/
   eu/                EU mains board + 5 V board (D-30, D-36): kicad/, tools/ (edit eu_parts.py)
+  order/             DigiKey / Mouser order lists for test plates (`make order`, tools/order_bom.py)
 print/               OrcaSlicer projects (*.3mf) for the CC2, slice.py, profiles/
 reference/v0.1-openscad/  FROZEN first pass (OpenSCAD). Do not edit.
 build/               generated outputs (git-ignored)
@@ -82,6 +83,7 @@ make cad         # STEP/STL into build/, print STLs into build/print/
 make check       # geometry, barrier, board fit, printability - must pass
 make print       # OrcaSlicer projects + G-code (SLICER=... overrides the pin)
 make renders     # docs/renders/*.png: sections, 3D views, board renders
+make order       # DigiKey / Mouser CSVs for test plates (NA_PLATES, EU_PLATES)
 ```
 
 KiCad 9.x (`kicad-cli` on PATH). `pcb/tools/build.sh` runs the generators with
