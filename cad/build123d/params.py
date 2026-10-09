@@ -217,16 +217,24 @@ BC_PRY = (6.0, 1.2)                       # MEASURE screwdriver notch in the rim
 # down into the cover and the clip's hook catches its wall
 BC_LATCH_W = 3.5                          # ESTIMATE ear width (human photos IMG_5088-5090)
 BC_LATCH_T = 1.2                          # ESTIMATE ear thickness (radial; photos)
-BC_LATCH_IN = 3.0                         # ESTIMATE slot centre in from the outline at the ends
-BC_LATCH_TOPS = (4.7, 6.5)                # MEASURED clip tops above the inside floor: bottom end (-y), top end (+y)
 BC_LATCH_HOOK = 0.5                       # MEASURE hook at the clip's tip, inwards (catches the housing's wall)
-BC_SIDE_TAB = (6.0, 1.5, 3.8)             # side ribs at mid-length (y 0), free-standing on the shell's curved floor,
-                                          # against flex: length along y, thickness (ESTIMATE, photos), top above the
-                                          # inside floor (MEASURED, human 2026-10-09)
-BC_SIDE_TAB_GAP = 36.1                    # MEASURED inside spacing between the side ribs (human, 2026-10-09)
+BC_LATCH_RIM_GAP = 1.0                    # MEASURED top clip's top below the rim (human, 2026-10-09)
+# clip tops above the inside floor: bottom end (-y) MEASURED; top end (+y) from BC_LATCH_RIM_GAP
+BC_LATCH_TOPS = (4.7, B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
+# innermost point (hook tip) in from the outside rim: bottom end ESTIMATE (photos); top end MEASURED (human,
+# 2026-10-09). Where reach - hook - thickness < BC_WALL the clip's back merges into the end wall.
+BC_LATCH_REACH = (4.1, 2.8)
+# side ribs at mid-length (y 0), free-standing on the shell's curved floor, against flex (human, 2026-10-09)
+BC_SIDE_TAB = (6.0, 1.0)                  # length along y (ESTIMATE, photos), thickness (MEASURED)
+BC_SIDE_TAB_GAP = 36.2                    # MEASURED inside spacing between the ribs
+BC_SIDE_TAB_RIM_GAP = 3.6                 # MEASURED rib's top below the rim
 BC_STEEL = (12.0, 20.0, 2.0)              # MEASURED the remote's plate (a magnet), x, y, t (human, 2026-10-09); moved
                                           # from its own cover
-BC_STEEL_FLOOR = 0.4                      # cover wall left under the steel plate
+BC_STEEL_FLOOR = BC_WALL                  # plate on the full shell thickness (as the original cover)
+BC_STEEL_CLR = 0.15                       # plate to the ridge and to the clips' tabs
+BC_STEEL_RIDGE = (0.8, 1.2)               # ESTIMATE ridge round the plate (photos): thickness, height above the floor
+BC_STEEL_RIDGE_GAP = 0.4                  # ridge to each side of a clip (the clip flexes free)
+BC_REG_FLOOR = 0.4                        # cover wall left under the regulator recess
 # cover flex retention (D-45): FR4 stiffener on the pad / regulator section, printed pegs heat-staked through it;
 # the end section drops into a slot (a lip in front of each contact block) and snaps under a hook on the block's top
 BC_PAD_STIFF_T = 0.3                      # FR4 stiffener on the pad section (non-copper side, up)
@@ -235,8 +243,8 @@ BC_PEGS = ((14.4, -0.5), (14.4, 8.6))     # peg centres: between the fingers (ri
 BC_PEG_D, BC_PEG_HOLE, BC_PEG_STAKE = 1.2, 1.4, 1.0   # peg, hole in flex + stiffener, length above it to melt over
 BC_END_LIP = (0.8, 1.0, 0.1)              # lip in front of each block's foot: thickness, height above the ledge, gap
 BC_END_HOOK = 0.5                         # hook on each block's top over the end section's top edge
-BC_STEEL_CLIP = (4.0, 0.8, 0.5, 0.4)      # clips at both ends of the steel pocket: width, tab thickness, hook over the
-                                          # plate's edge, gap behind the tab (to flex)
+BC_STEEL_CLIP = (4.0, 0.8, 0.5)           # clips at both ends of the plate's pocket: width, tab thickness, hook over the
+                                          # plate's edge
 BC_STEEL_Y = -5.5                         # steel plate centre in the cover (the EU magnet sits under it, clear of the switch cup)
 BC_FLEX_Z = FINGER_WH                     # flex underside above the back face: fingers at working height on flush pads
 BC_FINGERS = ((14.4, 4.0), (14.4, -5.0))  # +5V, GND spring fingers (S7081-42R) on the cover's back (x, y), long axis y
@@ -249,7 +257,7 @@ BC_JOG = 6.0                              # y length of the regulator section be
 BC_REG = {"U1": (13.1, -11.8), "C3": (14.6, -9.2), "C4": (12.5, -14.6)}   # part centres (remote x, y)
 BC_REG_BODY = (3.0, 3.0, 1.45)            # DATASHEET TLV755P DBV (SOT-23-5): body + leads <= 3.0 x 3.0, 1.45 max high
 BC_CAP0402 = (1.0, 0.5, 0.55)             # DATASHEET 0402 capacitor (GRM155R61A105KE15): 1.0 x 0.5, 0.55 max high
-BC_REG_RECESS = (11.4, 16.4, -15.0, -8.8) # recess under the regulator section (x0, x1, y0, y1), down to BC_STEEL_FLOOR
+BC_REG_RECESS = (11.4, 16.4, -15.0, -8.8) # recess under the regulator section (x0, x1, y0, y1), down to BC_REG_FLOOR
 BC_END_T = 0.4                            # FR4 stiffener behind the flex's end section
 BC_END_H = 8.8                            # flex end section height above the flex plane: the contact pads plus 0.5, its
                                           # top hook (D-45) under the cell top (BC_CELL_Z + AAA radius)

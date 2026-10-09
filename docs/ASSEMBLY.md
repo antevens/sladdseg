@@ -39,7 +39,7 @@ sizes below. Nothing here is a compliance statement; mains work is a human decis
 | Part | Held by | Notes |
 | --- | --- | --- |
 | Cover on the remote | two snap clips (top, bottom) on the housing's wall; side ribs keep it from flexing | pry it off at the notch |
-| Plate (magnet, 12 × 20 × 2) | a clip at each end of its pocket | snap in from above |
+| Plate (magnet, 12 × 20 × 2) | a ridge round it on the full-thickness shell, a clip at each end | snap in from above |
 | Cover flex, pad and regulator sections | 0.3 mm FR4 stiffener on top; two printed pegs through it, heat-staked | melt each peg head over with a soldering iron (about 250 °C, a flat tip), 1 mm of peg above the stiffener |
 | Cover flex, run | the slot under the GND contact block | |
 | Cover flex, end section | its foot drops into the slot behind a lip on each contact block; the top snaps under a hook on each block | the battery contacts press it into the blocks |

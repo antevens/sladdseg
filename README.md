@@ -190,7 +190,7 @@ with the header; installer labels on the back.
 ### Replacement back cover (D-35, D-40, D-41, D-44, D-45)
 
 Runs the remote without cells. The printed cover snaps onto the remote like the original (clips at
-the top and bottom, side ribs, a pry notch) and carries the remote's magnet plate in a clipped pocket
+the top and bottom, side ribs, a pry notch) and carries the remote's magnet plate inside a ridge, clipped at both ends,
 and a flex: two spring fingers poke through windows in its back onto flush gold pads (+5 V, GND) in a
 thin pocket-floor insert, a 3.3 V regulator on the flex feeds the remote, and at the terminal end two
 more fingers press on the remote's VBAT plate and GND spring. The flex is held by a stiffener and two

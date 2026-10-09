@@ -467,7 +467,15 @@ def cover_checks():
     for x, y in BC_FINGERS:
         check(BC_STRIP[0] + 0.2 <= x - FINGER[0] / 2 - BC_WIN_CLR + 1e-6 and x + FINGER[0] / 2 + BC_WIN_CLR <= BC_STRIP[1] - 0.2 + 1e-6,
               f"finger window at ({x}, {y}) inside the flex strip")
-    check(BC_STEEL_FLOOR >= 0.4 - 1e-6, f"{BC_STEEL_FLOOR} mm of cover wall under the steel plate and the regulator")
+    check(BC_STEEL_FLOOR >= BC_WALL - 1e-6 and BC_REG_FLOOR >= 0.4 - 1e-6,
+          f"{BC_STEEL_FLOOR} mm of cover wall under the plate (full shell), {BC_REG_FLOOR} under the regulator")
+    rb = bc.steel_ridge().bounding_box()
+    seat = (rb.size.X - 2 * BC_STEEL_RIDGE[0], rb.size.Y - 2 * BC_STEEL_RIDGE[0])
+    check(abs(seat[0] - BC_STEEL[0] - 2 * BC_STEEL_CLR) < 0.01 and abs(seat[1] - BC_STEEL[1] - 2 * BC_STEEL_CLR) < 0.01,
+          f"ridge round the plate: seat {seat[0]:.1f} x {seat[1]:.1f} mm ({BC_STEEL_CLR} clearance), "
+          f"{BC_STEEL_RIDGE[1]} high, open {BC_STEEL_RIDGE_GAP} mm each side of the clips")
+    r = bc.steel_ridge() & ps["steel"]
+    check(r is None or r.volume < 0.001, "ridge clears the plate")
     for k in ("pad_stiffener",):
         r = ps[k] & c
         check(r is None or r.volume < 0.01, f"{k} clears the cover body (pegs through its holes)")
@@ -482,20 +490,22 @@ def cover_checks():
     clips = bc.steel_clips()
     r = clips & ps["steel"]
     check(r is None or r.volume < 0.001, "steel plate clips clear the plate")
-    over = BC_STEEL_CLIP[2] - 0.15                         # hook reach minus the gap to the plate's end
+    over = BC_STEEL_CLIP[2] - BC_STEEL_CLR                 # hook reach minus the gap to the plate's end
     check(over >= 0.3, f"steel plate clips hook {over:.2f} mm over the plate's ends")
     ear = bc.latches().bounding_box()
-    yc = B_H / 2 - BC_LATCH_IN
-    check(ear.max.Y <= B_H / 2 - BC_WALL + 0.11 and yc + BC_LATCH_T / 2 + BC_LATCH_HOOK < B_H / 2 - 0.5,
-          f"snap clips inside the outline at y +-{yc:.1f}, hook {BC_LATCH_HOOK} mm inwards (positions ESTIMATE)")
+    reach = sorted(round(B_H / 2 - abs(e.bounding_box().min.Y if e.bounding_box().center().Y > 0
+                                       else e.bounding_box().max.Y), 2) for e in bc.latches().solids())
+    check(ear.max.Y < B_H / 2 and reach == sorted(round(r, 2) for r in BC_LATCH_REACH),
+          f"snap clip hook tips {reach} mm in from the outside rim, hook {BC_LATCH_HOOK} mm inwards")
     tops = sorted(round(e.bounding_box().max.Z - BC_WALL, 2) for e in bc.latches().solids())
-    check(tops == sorted(BC_LATCH_TOPS) and ear.max.Z <= B_SEAM_Z, f"snap clips {tops} mm above the inside floor "
-                                                                  f"(measured), below the rim")
+    check(tops == sorted(round(t, 2) for t in BC_LATCH_TOPS) and ear.max.Z <= B_SEAM_Z, f"snap clips {tops} mm above the inside floor, "
+                                                                  f"{B_SEAM_Z - BC_WALL - max(tops):.2f} below the rim")
     tab = bc.side_tabs().bounding_box()
     gap = 2 * min(abs(s.bounding_box().min.X) if s.bounding_box().min.X > 0 else abs(s.bounding_box().max.X)
                   for s in bc.side_tabs().solids())
-    check(abs(gap - BC_SIDE_TAB_GAP) < 0.01 and abs(tab.max.Z - BC_WALL - BC_SIDE_TAB[2]) < 0.01,
-          f"side ribs {gap:.1f} mm apart inside, {BC_SIDE_TAB[2]} mm above the inside floor (both measured)")
+    check(abs(gap - BC_SIDE_TAB_GAP) < 0.01 and abs(B_SEAM_Z - tab.max.Z - BC_SIDE_TAB_RIM_GAP) < 0.01,
+          f"side ribs {gap:.1f} mm apart inside ({(B_W - gap) / 2:.1f} in from the outside), {BC_SIDE_TAB[1]} thick, "
+          f"top {B_SEAM_Z - tab.max.Z:.1f} mm below the rim (measured)")
     for k in ("flex", "stiffener", "contacts", "regulator"):
         r = bc.latches() & ps[k]
         check(r is None or r.volume < 0.001, f"snap clips clear the {k}")
@@ -503,8 +513,8 @@ def cover_checks():
     for ref, (x, y) in BC_REG.items():
         w, h, t = BC_REG_BODY if ref == "U1" else BC_CAP0402
         inside = x0 + 0.1 <= x - w / 2 and x + w / 2 <= x1 - 0.1 and y0 + 0.1 <= y - h / 2 and y + h / 2 <= y1 - 0.1
-        check(inside and BC_FLEX_Z - t >= BC_STEEL_FLOOR + 0.1, f"regulator part {ref} inside its recess "
-                                                                 f"({BC_FLEX_Z - t - BC_STEEL_FLOOR:.2f} mm above the floor)")
+        check(inside and BC_FLEX_Z - t >= BC_REG_FLOOR + 0.1, f"regulator part {ref} inside its recess "
+                                                                 f"({BC_FLEX_Z - t - BC_REG_FLOOR:.2f} mm above the floor)")
     pad, jog = bc.strip_boxes()[:2]                           # the pad section continues above the regulator section
     check(x0 >= max(pad[0], jog[0]) and x1 <= min(pad[1], jog[1]) and y0 >= jog[2] and y1 <= pad[3],
           "regulator recess under the flex (regulator and pad sections)")

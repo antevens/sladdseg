@@ -104,15 +104,15 @@ def corner_cuts():
 
 
 def latches():
-    """Snap clips at both ends (x = 0): columns standing on the shell's curved inner surface (fused into it at the
-    base, a gap to the end wall above it), tops BC_LATCH_TOPS above the inside floor, a hook at the tip pointing
-    inwards over the housing's wall (45 deg top, so the cover prints back down without supports)."""
+    """Snap clips at both ends (x = 0): columns standing on the shell's curved inner surface, tops BC_LATCH_TOPS
+    above the inside floor, a hook at the tip pointing inwards over the housing's wall (45 deg top, so the cover
+    prints back down without supports), hook tip BC_LATCH_REACH in from the outside rim."""
     from build123d import Polyline, Plane, extrude, make_face
     out = None
-    yc = B_H / 2 - BC_LATCH_IN                          # clip centre line (outwards distance from the remote centre)
     t, h = BC_LATCH_T, BC_LATCH_HOOK
-    yi, yo = yc - t / 2, yc + t / 2                     # clip faces (inner, outer)
-    for s, top_in in ((-1, BC_LATCH_TOPS[0]), (1, BC_LATCH_TOPS[1])):
+    for s, top_in, reach in ((-1, BC_LATCH_TOPS[0], BC_LATCH_REACH[0]), (1, BC_LATCH_TOPS[1], BC_LATCH_REACH[1])):
+        yi = B_H / 2 - reach + h                        # clip's inner face (the hook stands h further in)
+        yo = yi + t                                     # outer face
         top = BC_WALL + top_in
         pts = [(yi, 0.3), (yo, 0.3), (yo, top), (yi - h, top - h), (yi - h, top - 2 * h), (yi, top - 3 * h), (yi, 0.3)]
         prof = extrude(Plane.YZ * make_face(Polyline(*pts)), BC_LATCH_W / 2, both=True)   # profile y / z, along x
@@ -123,11 +123,11 @@ def latches():
 
 
 def side_tabs():
-    """Free-standing ribs at mid-length, BC_SIDE_TAB_GAP apart on their inner faces, from the shell's curved floor up
-    to just below the rim (no hook): they keep the sides from flexing."""
-    w, t, rise = BC_SIDE_TAB
+    """Free-standing ribs at mid-length, BC_SIDE_TAB_GAP apart on their inner faces, from the shell's
+    curved floor up to BC_SIDE_TAB_RIM_GAP below the rim (no hook): they keep the sides from flexing."""
+    w, t = BC_SIDE_TAB
     x0 = BC_SIDE_TAB_GAP / 2                            # rib's inner face
-    z0, z1 = 0.5, BC_WALL + rise                        # from inside the shell (fuses with it), top above the floor
+    z0, z1 = 0.5, B_SEAM_Z - BC_SIDE_TAB_RIM_GAP        # from inside the shell (fuses with it) to the top
     out = None
     for s in (1, -1):
         tab = Pos(s * (x0 + t / 2), 0, (z0 + z1) / 2) * Box(t, w, z1 - z0)
@@ -161,13 +161,12 @@ def cover():
     body -= Pos(0, -B_H / 2, B_SEAM_Z - d / 2 + 0.01) * Box(w, 2 * (BC_WALL + 1.0), d + 0.02)
     for x, y in BC_FINGERS:
         body -= Pos(x, y, BC_FLEX_Z / 2) * Box(FINGER[0] + 2 * BC_WIN_CLR, FINGER[1] + 2 * BC_WIN_CLR, BC_FLEX_Z + 1.0)
-    cw, ct, ch, cg = BC_STEEL_CLIP
-    ext = 0.15 + ct + cg                                 # pocket longer at both ends for the clips
-    body -= Pos(0, BC_STEEL_Y, BC_STEEL_FLOOR + 5.0) * Box(BC_STEEL[0] + 0.3, BC_STEEL[1] + 0.3 + 2 * ext, 10.0)
-    body += steel_clips() + pegs()
+    c = 2 * BC_STEEL_CLR                                # plate's seat: flat floor, the plate plus clearance
+    body -= Pos(0, BC_STEEL_Y, BC_STEEL_FLOOR + 5.0) * Box(BC_STEEL[0] + c, BC_STEEL[1] + c, 10.0)
+    body += steel_ridge() + steel_clips() + pegs()
     x0, x1, y0, y1 = BC_REG_RECESS
-    body -= Pos((x0 + x1) / 2, (y0 + y1) / 2, (BC_STEEL_FLOOR + BC_FLEX_Z) / 2) * Box(x1 - x0, y1 - y0,
-                                                                                      BC_FLEX_Z - BC_STEEL_FLOOR)
+    body -= Pos((x0 + x1) / 2, (y0 + y1) / 2, (BC_REG_FLOOR + BC_FLEX_Z) / 2) * Box(x1 - x0, y1 - y0,
+                                                                                    BC_FLEX_Z - BC_REG_FLOOR)
     return body
 
 
@@ -300,15 +299,27 @@ def regulator():
     return out
 
 
+def steel_ridge():
+    """Ridge round the plate on the cover's floor, inner face BC_STEEL_CLR from the plate, open at the clips."""
+    t, h = BC_STEEL_RIDGE
+    cw = BC_STEEL_CLIP[0]
+    ix, iy = BC_STEEL[0] / 2 + BC_STEEL_CLR, BC_STEEL[1] / 2 + BC_STEEL_CLR
+    z0, z1 = BC_STEEL_FLOOR - 0.3, BC_STEEL_FLOOR + h   # down into the shell (fuses with it)
+    ring = Box(2 * (ix + t), 2 * (iy + t), z1 - z0) - Box(2 * ix, 2 * iy, z1 - z0 + 1)
+    ring -= Box(cw + 2 * BC_STEEL_RIDGE_GAP, 2 * (iy + t) + 1, z1 - z0 + 1)
+    ring = Pos(0, BC_STEEL_Y, (z0 + z1) / 2) * ring
+    return ring & back_shape(0.0, 0.0)
+
+
 def steel_clips():
-    """A clip at each end of the steel plate: a tab from the pocket floor beside the plate's end (a gap behind it to
-    flex), a hook over the plate's edge with a 45 deg lead-in on top, so the plate snaps in from above."""
+    """A clip at each end of the plate: a tab from the pocket floor at the pocket's end, flexing above the cover's
+    floor, a hook over the plate's edge with a 45 deg lead-in on top, so the plate snaps in from above."""
     from build123d import Polyline, Plane, extrude, make_face
-    cw, ct, ch, cg = BC_STEEL_CLIP
+    cw, ct, ch = BC_STEEL_CLIP
     z0, zh = BC_STEEL_FLOOR, BC_STEEL_FLOOR + BC_STEEL[2] + 0.1           # pocket floor, hook underside
     out = None
     for s in (1, -1):
-        ye = BC_STEEL[1] / 2 + 0.15                     # tab inner face, outwards distance from the plate centre
+        ye = BC_STEEL[1] / 2 + BC_STEEL_CLR             # tab inner face, outwards distance from the plate centre
         pts = [(ye, z0 - 0.01), (ye + ct, z0 - 0.01), (ye + ct, zh + 2 * ch), (ye - ch, zh + ch), (ye - ch, zh),
                (ye, zh), (ye, z0 - 0.01)]
         prof = extrude(Plane.YZ * make_face(Polyline(*pts)), cw / 2, both=True)
