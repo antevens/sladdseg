@@ -895,7 +895,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "SSW-102-01-L-S"
+		(property "MPN" "SSW-102-01-G-S"
 			(at 35.56 91.44 0)
 			(effects
 				(font
@@ -1089,7 +1089,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://www.murata.com"
+		(property "Datasheet" "https://www.samsungsem.com"
 			(at 76.2 91.44 0)
 			(effects
 				(font
@@ -1098,7 +1098,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Ceramic 22 uF 10 V X5R 1206 (or equivalent)"
+		(property "Description" "Ceramic 22 uF 10 V X5R 1206, 1.8 mm max (or equivalent)"
 			(at 76.2 91.44 0)
 			(effects
 				(font
@@ -1107,7 +1107,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Murata"
+		(property "Manufacturer" "Samsung Electro-Mechanics"
 			(at 76.2 91.44 0)
 			(effects
 				(font
@@ -1116,7 +1116,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "GRM31CR61A226KE19L"
+		(property "MPN" "CL31A226KPHNNNE"
 			(at 76.2 91.44 0)
 			(effects
 				(font

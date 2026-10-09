@@ -31,7 +31,7 @@ depth is still to be tried in a real box (D-36).
 - D-shaped, 57.9 × 27.9 mm, notched round the domes and the mains board's boss; 2 layers, FR-4, 1.6 mm,
   1 oz.
 - Front (F): C1, P1 (GND) and P2 (+5V) Harwin P70-2200045 SMT spring pins. Back (B): J1, Samtec
-  SSW-102-01-L-S socket (THT) onto the mains board's TSM header.
+  SSW-102-01-G-S socket (THT, gold contacts) onto the mains board's TSM header.
 
 ## Review checklist (before ordering)
 

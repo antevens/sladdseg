@@ -41,7 +41,7 @@ the board centre. F faces the plate, B faces the box.
 | PS1 | Mean Well AC-DC module, 5 V 600 mA | IRM-03-5 | B, under the slot | <https://www.meanwell.com/Upload/PDF/IRM-03/IRM-03-SPEC.PDF> |
 | F1 | Schurter UMT 250 SMD fuse, T1A 250 VAC | 3404.2416.22 | F, (-14.6, -23) | <https://us.schurter.com/bundles/snceschurter/epim/_ProdPool_/newDS/en/typ_UMT_250.pdf> |
 | RV1 | TDK SMD varistor 275 VAC | B72660M0271K093 (CU4032K275G2) | F, (-5.5, -22) | <https://www.farnell.com/datasheets/2921094.pdf> |
-| C1 | Murata MLCC 22 uF 10 V X5R 1206 | GRM31CR61A226KE19L | F, (13, -26) | <https://www.murata.com> |
+| C1 | Samsung MLCC 22 uF 10 V X5R 1206 | CL31A226KPHNNNE | F, (13, -26) | <https://www.samsungsem.com> |
 | J2 | Hirose FH12 FPC connector, 6 contacts, 0.5 mm, slide lock, 5 V out to the flex jumper | FH12-6S-0.5SH(55) | F, (13, -19.5) | <https://www.hirose.com/product/en/products/FH12/FH12-6S-0.5SH(55)/> |
 
 S1 data from the drawing:

@@ -63,8 +63,8 @@ PARTS = {
                 pcb=(-5.5, -22.0, 90, "F"), mfr="TDK", mpn="B72660M0271K093",
                 desc="SMD varistor SIOV-CU4032K275G2K1, 275 VAC", ds=CU_DS),
     "C1": dict(label="22uF 10V X5R 1206", sym="C", fp=FP_C1, value="22uF 10V X5R", nets={"1": "+5V", "2": "GND"},
-               pcb=(13.0, -26.0, 0, "F"), mfr="Murata", mpn="GRM31CR61A226KE19L",
-               desc="Ceramic 22 uF 10 V X5R 1206 (or equivalent)", ds="https://www.murata.com"),
+               pcb=(13.0, -26.0, 0, "F"), mfr="Samsung Electro-Mechanics", mpn="CL31A226KPHNNNE",
+               desc="Ceramic 22 uF 10 V X5R 1206, 1.8 mm max (or equivalent)", ds="https://www.samsungsem.com"),
     # turned 180: the flex jumper enters from the top (towards the pass-through); pads 1-3 GND, 4-6 +5V
     "J2": dict(label="Hirose FH12-6S", sym="Conn_01x06", fp=FP_J2, value="5V out (flex jumper)",
                nets={"1": "GND", "2": "GND", "3": "GND", "4": "+5V", "5": "+5V", "6": "+5V"},
