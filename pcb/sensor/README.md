@@ -122,6 +122,8 @@ without cells (`cad/build123d/backcover.py`, DESIGN D-35). Drawn flat, seen from
   (copper outside).
 - J1 takes +5 V from the floor (D-41); U1 TI TLV75533PDBVR (3.3 V, SOT-23-5) with C3 / C4 1 µF on
   the section below the fingers, copper down in a recess in the cover (0.4 mm wall left), feeds VBAT.
+- A 0.8 mm FR4 stiffener (back side) on the pad and regulator sections, flush with their long
+  edges: six snap hooks in the cover hold it down against the fingers' push (D-45). No holes.
 - J3, J4: Harwin S7081-42R spring fingers (VBAT, GND) on the end section, on the cell axes, long
   axis vertical with the bend end up (the battery contacts ride down the arm's ramp as the cover
   goes on), on a 0.4 mm FR4 stiffener (back side). The end section stands 2.0 mm (the fingers'

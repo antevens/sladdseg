@@ -22,6 +22,7 @@ from math import sqrt, hypot
 
 # ---- trim plate ----
 PW, PH, PT, PR = 82.0, 150.0, 13.0, 6.0   # width, height, proud of wall, corner radius
+PLATE_Y = 0.0                             # plate centre above the box centre
 SKIN = 2.0                                # face/side wall of the hollow trim
 FACE_CHAMFER = 1.2
 
@@ -29,7 +30,9 @@ FACE_CHAMFER = 1.2
 BOX_W, BOX_H = 50.8, 76.2                 # 2" x 3" opening
 BOX_D = 63.5                              # MEASURE (2.5" assumed), per room
 SCREW_PITCH = 83.3                        # #6-32 device ears, 3-9/32"
-SCREW_D, SCREW_HEAD_D = 3.8, 8.0
+# #6-32 oval / flat head (ASME B18.6.3): shank 3.5, head 6.05-6.65 across, 82 deg countersink
+SCREW_D, SCREW_HEAD_D = 3.6, 6.8         # clearance hole; countersink diameter at the face (head max + 0.15)
+SCREW_CSK = 82.0                          # countersink included angle
 
 # ---- IKEA BILRESA scroll wheel remote (kept intact, batteries in) ----
 # B_W/B_H: IKEA UK product size 45 x 70 mm, matched by a third-party mount pocket
@@ -197,7 +200,7 @@ MIC_PORT_IN = 1.00                        # DATASHEET port centre from the body'
 MIC_Y = 40.75                             # body centre along the channel (room y), port end down
 MIC_FLEX_Y = 2.0                          # body centre from the flex centre line, towards the flange
 MIC_SEC_W = 4.4                           # widened flex section: edge from the centre line, towards the flange
-MIC_SEC_Y = (38.0, 46.0)                  # widened section's extent along the channel (room y)
+MIC_SEC_Y = (38.0, 45.5)                  # widened section's extent along the channel (room y)
 MIC_FLEX_HOLE_D = 0.5                     # port hole through flex + stiffener
 MIC_GASKET_D = 2.6                        # adhesive gasket ring OD (ID = MIC_SKIN_HOLE_D), FLEX_SKIN_GAP thick
 MIC_SKIN_HOLE_D = 1.0                     # sound hole through the face skin
@@ -215,15 +218,16 @@ BC_WALL = 1.6                             # MEASURED cover shell thickness (huma
 BC_PRY = (6.0, 1.2)                       # MEASURE screwdriver notch in the rim at the bottom end (-y): width, depth
 # snap clips: one at each end (x = 0), free-standing inside the end wall, below the rim; the housing's edge comes
 # down into the cover and the clip's hook catches its wall
-BC_LATCH_W = 3.5                          # ESTIMATE ear width (human photos IMG_5088-5090)
+BC_LATCH_W = 3.1                          # MEASURED clip width, both ends (human, 2026-10-09)
 BC_LATCH_T = 1.2                          # ESTIMATE ear thickness (radial; photos)
-BC_LATCH_HOOK = 0.5                       # MEASURE hook at the clip's tip, inwards (catches the housing's wall)
+BC_LATCH_HOOK = (0.7, 0.7)                # hook at the clip's tip, inwards (catches the housing's wall): both 0.2 deeper
+                                          # than the original's 0.5 (did not catch on the print, human 2026-10-09)
 BC_LATCH_RIM_GAP = 1.0                    # MEASURED top clip's top below the rim (human, 2026-10-09)
 # clip tops above the inside floor: bottom end (-y) MEASURED; top end (+y) from BC_LATCH_RIM_GAP
 BC_LATCH_TOPS = (4.7, B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
 # innermost point (hook tip) in from the outside rim: bottom end ESTIMATE (photos); top end MEASURED (human,
 # 2026-10-09). Where reach - hook - thickness < BC_WALL the clip's back merges into the end wall.
-BC_LATCH_REACH = (4.1, 2.8)
+BC_LATCH_REACH = (4.1 + 0.2, 2.8 + 0.2)    # photo / measured tips plus the deeper hooks
 # side ribs at mid-length (y 0), free-standing on the shell's curved floor, against flex (human, 2026-10-09)
 BC_SIDE_TAB = (6.0, 0.8)                  # length along y (ESTIMATE, photos), thickness (human, 2026-10-09)
 BC_SIDE_TAB_GAP = 36.2                    # MEASURED inside spacing between the ribs
@@ -231,20 +235,26 @@ BC_SIDE_TAB_RIM_GAP = 3.6                 # MEASURED rib's top below the rim
 BC_STEEL = (12.0, 20.0, 2.0)              # MEASURED the remote's plate (a magnet), x, y, t (human, 2026-10-09); moved
                                           # from its own cover
 BC_STEEL_FLOOR = BC_WALL                  # plate on the full shell thickness (as the original cover)
-BC_STEEL_CLR = 0.15                       # plate to the ridge and to the clips' tabs
+BC_STEEL_CLR = 0.05                       # plate to the ridge (0.15 rattled on the first print, human 2026-10-09)
+BC_STEEL_CLIP_CLR = 0.15                  # plate's ends to the clips' tabs (fit confirmed on the first print)
 BC_STEEL_RIDGE = (0.8, 1.2)               # ESTIMATE ridge round the plate (photos): thickness, height above the floor
 BC_STEEL_RIDGE_GAP = 0.4                  # ridge to each side of a clip (the clip flexes free)
 BC_REG_FLOOR = 0.4                        # cover wall left under the regulator recess
-# cover flex retention (D-45): FR4 stiffener on the pad / regulator section, printed pegs heat-staked through it;
-# the end section drops into a slot (a lip in front of each contact block) and snaps under a hook on the block's top
-BC_PAD_STIFF_T = 0.3                      # FR4 stiffener on the pad section (non-copper side, up)
-BC_PEG_END = 2.5                          # flex beyond the upper finger's body, room for the top peg
-BC_PEGS = ((14.4, -0.5), (14.4, 8.6))     # peg centres: between the fingers (rib between the windows), above the +5V one
-BC_PEG_D, BC_PEG_HOLE, BC_PEG_STAKE = 1.2, 1.4, 1.0   # peg, hole in flex + stiffener, length above it to melt over
-BC_END_LIP = (0.8, 1.0, 0.1)              # lip in front of each block's foot: thickness, height above the ledge, gap
-BC_END_HOOK = 0.5                         # hook on each block's top over the end section's top edge
-BC_STEEL_CLIP = (4.0, 0.8, 0.5)           # clips at both ends of the plate's pocket: width, tab thickness, hook over the
-                                          # plate's edge
+# cover flex retention (D-45): FR4 stiffener on the pad / regulator section, pressed down past snap hooks on both long
+# edges (beside each finger and the regulator); the end section drops into a slot (a lip in front of each contact
+# block) and snaps under a hook on the block's top
+BC_PAD_STIFF_T = 0.8                      # FR4 stiffener on the pad and regulator sections (non-copper side, up)
+BC_PAD_END = 1.0                          # flex beyond the upper finger's body
+BC_FLEX_SNAP = (3.0, 0.7, 0.3, 0.1)       # snap hooks: width along y, post thickness, lip over the stiffener, post to
+                                          # the stiffener's edge
+BC_FLEX_SNAP_GAP = 0.05                   # lip underside above the stiffener's top
+BC_FLEX_SNAP_ROOT = 0.4                   # post root: shell left under the relief round each post (the post flexes)
+BC_FLEX_SNAP_RELIEF = 0.3                 # relief round each post (sides and behind)
+BC_END_LIP = (1.2, 1.0, 0.1)              # lip in front of each block's foot: thickness, height above the ledge, gap
+BC_STEEL_CLIP = (6.0, 0.8, 0.45)          # clips at both ends of the plate's pocket: width, tab thickness, hook over the
+                                          # plate's edge (4.0 x 0.8 x 0.5 broke in PLA, human 2026-10-09)
+BC_STEEL_CLIP_ROOT = 0.4                  # tab root: shell left under the relief round each tab (the tab flexes)
+BC_STEEL_CLIP_RELIEF = 0.3                # relief round each tab (sides, behind, and towards the plate)
 BC_STEEL_Y = -5.5                         # steel plate centre in the cover (the EU magnet sits under it, clear of the switch cup)
 BC_FLEX_Z = FINGER_WH                     # flex underside above the back face: fingers at working height on flush pads
 BC_FINGERS = ((14.4, 4.0), (14.4, -5.0))  # +5V, GND spring fingers (S7081-42R) on the cover's back (x, y), long axis y
@@ -256,11 +266,12 @@ BC_JOG = 6.0                              # y length of the regulator section be
 # 3.3 V regulator on the cover flex (D-41), copper down in a recess in the cover: TI TLV75533PDBVR + 1 uF in / out
 BC_REG = {"U1": (13.1, -11.8), "C3": (14.6, -9.2), "C4": (12.5, -14.6)}   # part centres (remote x, y)
 BC_REG_BODY = (3.0, 3.0, 1.45)            # DATASHEET TLV755P DBV (SOT-23-5): body + leads <= 3.0 x 3.0, 1.45 max high
-BC_CAP0402 = (1.0, 0.5, 0.55)             # DATASHEET 0402 capacitor (GRM155R61A105KE15): 1.0 x 0.5, 0.55 max high
+BC_CAP0402 = (1.0, 0.5, 0.55)             # DATASHEET 0402 capacitor (CL05A105KP5NNNC): 1.0 x 0.5, 0.55 max high
 BC_REG_RECESS = (11.4, 16.4, -15.0, -8.8) # recess under the regulator section (x0, x1, y0, y1), down to BC_REG_FLOOR
 BC_END_T = 0.4                            # FR4 stiffener behind the flex's end section
-BC_END_H = 8.8                            # flex end section height above the flex plane: the contact pads plus 0.5, its
-                                          # top hook (D-45) under the cell top (BC_CELL_Z + AAA radius)
+BC_END_H = 8.8                            # flex end section height above the flex plane: the contact pads plus 0.5
+BC_END_R = AAA_D / 2 - 0.25               # above the rim, blocks and end section stay inside this circle round each cell
+                                          # axis (the cell's room in the housing; square corners hit it, human 2026-10-09)
 BC_CONTACT_W = FINGER_PAD[1] + 1.0        # end section width round each contact finger (long axis across x)
 BC_TERM_SETBACK = 0.0                     # MEASURE fixed (+) contact plate's face behind the cell's end plane (0 = on it)
 BC_END_CORNER = 1.5                       # 45 deg cut at the end section's lower outer corners (cover's curved back)
@@ -338,6 +349,19 @@ def pocket_wall_x(y):
     a = POCKET_IN[0] / 2
     over = abs(y) - (POCKET_IN[1] / 2 - a)
     return a if over <= 0 else sqrt(a * a - over * over)
+
+
+def end_top(a, b, n=48):
+    """Top edge (x, z) of a contact block / flex end section from x = a to x = b: flat at BC_END_H above the flex,
+    above the rim no further out than BC_END_R from the cell axis on that side."""
+    cx = BC_CELL_X if a + b > 0 else -BC_CELL_X
+    pts = []
+    for i in range(n + 1):
+        x = a + (b - a) * i / n
+        dx = abs(x - cx)
+        zc = BC_CELL_Z + sqrt(BC_END_R ** 2 - dx ** 2) if dx < BC_END_R else B_SEAM_Z
+        pts.append((x, min(BC_FLEX_Z + BC_END_H, max(B_SEAM_Z, zc))))
+    return pts
 
 
 def tongue_walls():

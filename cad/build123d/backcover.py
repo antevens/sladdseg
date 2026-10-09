@@ -46,7 +46,7 @@ def end_blocks():
 
 
 def strip_top():
-    return max(y for _, y in BC_FINGERS) + FINGER[1] / 2 + BC_PEG_END
+    return max(y for _, y in BC_FINGERS) + FINGER[1] / 2 + BC_PAD_END
 
 
 def strip_bottom():
@@ -109,8 +109,9 @@ def latches():
     prints back down without supports), hook tip BC_LATCH_REACH in from the outside rim."""
     from build123d import Polyline, Plane, extrude, make_face
     out = None
-    t, h = BC_LATCH_T, BC_LATCH_HOOK
-    for s, top_in, reach in ((-1, BC_LATCH_TOPS[0], BC_LATCH_REACH[0]), (1, BC_LATCH_TOPS[1], BC_LATCH_REACH[1])):
+    t = BC_LATCH_T
+    for s, i in ((-1, 0), (1, 1)):
+        top_in, reach, h = BC_LATCH_TOPS[i], BC_LATCH_REACH[i], BC_LATCH_HOOK[i]
         yi = B_H / 2 - reach + h                        # clip's inner face (the hook stands h further in)
         yo = yi + t                                     # outer face
         top = BC_WALL + top_in
@@ -145,7 +146,7 @@ def cover():
                                                                                        BC_FLEX_Z - BC_WALL + 0.5)
     for a, b, z0, z1 in end_blocks()[:2]:
         yb = ys - BC_TERM_Y * BC_BLOCK_T / 2
-        body += Pos((a + b) / 2, yb, (BC_WALL + z1) / 2 - 0.25) * Box(b - a, BC_BLOCK_T, z1 - BC_WALL + 0.5)
+        body += Pos((a + b) / 2, yb, (BC_WALL + z1) / 2 - 0.25) * Box(b - a, BC_BLOCK_T, z1 - BC_WALL + 0.5) & end_round()
     body += end_retainers()
     # slot under the GND contact block for the run (the flex slides in from the cell side)
     xr0, xr1 = BC_RUN
@@ -163,65 +164,90 @@ def cover():
         body -= Pos(x, y, BC_FLEX_Z / 2) * Box(FINGER[0] + 2 * BC_WIN_CLR, FINGER[1] + 2 * BC_WIN_CLR, BC_FLEX_Z + 1.0)
     c = 2 * BC_STEEL_CLR                                # plate's seat: flat floor, the plate plus clearance
     body -= Pos(0, BC_STEEL_Y, BC_STEEL_FLOOR + 5.0) * Box(BC_STEEL[0] + c, BC_STEEL[1] + c, 10.0)
-    body += steel_ridge() + steel_clips() + pegs()
+    body += steel_ridge()
+    body -= steel_clip_reliefs()
+    body += steel_clips()
+    z0 = BC_FLEX_Z + FLEX_T                              # room for the pad stiffener up to the snap lips
+    z1 = z0 + BC_PAD_STIFF_T + BC_FLEX_SNAP_GAP
+    for x0, x1, y0, y1 in strip_boxes(0.1)[:2]:
+        body -= Pos((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2) * Box(x1 - x0, y1 - y0, z1 - z0)
+    body -= flex_snap_reliefs()
+    body += flex_snaps()
     x0, x1, y0, y1 = BC_REG_RECESS
     body -= Pos((x0 + x1) / 2, (y0 + y1) / 2, (BC_REG_FLOOR + BC_FLEX_Z) / 2) * Box(x1 - x0, y1 - y0,
                                                                                     BC_FLEX_Z - BC_REG_FLOOR)
     return body
 
 
-def pegs():
-    """Heat-stake pegs on the ledge through the flex and its pad-section stiffener (melted over at assembly)."""
-    from build123d import Cylinder
-    z0, z1 = BC_FLEX_Z - 0.3, BC_FLEX_Z + FLEX_T + BC_PAD_STIFF_T + BC_PEG_STAKE
-    out = None
-    for x, y in BC_PEGS:
-        p = Pos(x, y, (z0 + z1) / 2) * Cylinder(BC_PEG_D / 2, z1 - z0)
-        out = p if out is None else out + p
-    return out
+def flex_snap_spots():
+    """Snap hook sites (x of the section's two long edges, y): beside each finger and the regulator."""
+    xs0, xs1 = BC_STRIP
+    yb, yj = strip_bottom(), strip_bottom() - BC_JOG
+    return [(xs0, xs1, y) for _, y in BC_FINGERS] + [(min(xs0, BC_RUN[0]), max(xs1, BC_RUN[1]), (yb + yj) / 2)]
 
 
-def peg_holes(z0, z1):
-    from build123d import Cylinder
+def flex_snaps():
+    """Snap hooks on both long edges of the pad and regulator sections: a post beside the edge rising from the
+    bottom of its relief, a lip over the stiffener, a 45 deg lead-in on top (the section presses in from above)."""
+    from build123d import Polyline, Plane, extrude, make_face
+    w, t, lip, clr = BC_FLEX_SNAP
+    zl = BC_FLEX_Z + FLEX_T + BC_PAD_STIFF_T + BC_FLEX_SNAP_GAP          # lip underside
     out = None
-    for x, y in BC_PEGS:
-        h = Pos(x, y, (z0 + z1) / 2) * Cylinder(BC_PEG_HOLE / 2, z1 - z0)
-        out = h if out is None else out + h
-    return out
+    for xl, xr, y in flex_snap_spots():
+        for xe, s in ((xr, 1), (xl, -1)):
+            xi, xo = xe + s * clr, xe + s * (clr + t)                     # post faces (inner, outer)
+            pts = [(xi, 0.0), (xo, 0.0), (xo, zl + 2 * lip), (xi - s * lip, zl + lip), (xi - s * lip, zl), (xi, zl),
+                   (xi, 0.0)]
+            prof = Pos(0, y, 0) * extrude(Plane.XZ * make_face(Polyline(*pts)), w / 2, both=True)
+            out = prof if out is None else out + prof
+    return out & back_shape(0.0, 0.0)
+
+
+def flex_snap_reliefs():
+    """Pockets round each post, down to BC_FLEX_SNAP_ROOT of shell, so the post bends from there."""
+    w, t, lip, clr = BC_FLEX_SNAP
+    r = BC_FLEX_SNAP_RELIEF
+    out = None
+    for xl, xr, y in flex_snap_spots():
+        for xe, s in ((xr, 1), (xl, -1)):
+            x0, x1 = xe + s * 0.05, xe + s * (clr + t + r)
+            p = Pos((x0 + x1) / 2, y, 5.0) * Box(abs(x1 - x0), w + 2 * r, 10.0)
+            out = p if out is None else out + p
+    return out & back_shape(BC_FLEX_SNAP_ROOT, BC_FLEX_SNAP_ROOT)
 
 
 def pad_stiffener():
-    """FR4 on the flex's pad and regulator sections (non-copper side), with the peg holes."""
+    """FR4 on the flex's pad and regulator sections (non-copper side)."""
     z0 = BC_FLEX_Z + FLEX_T
     out = None
     for x0, x1, y0, y1 in strip_boxes()[:2]:
         s = Pos((x0 + x1) / 2, (y0 + y1) / 2, z0 + BC_PAD_STIFF_T / 2) * Box(x1 - x0, y1 - y0, BC_PAD_STIFF_T)
         out = s if out is None else out + s
-    return out - peg_holes(z0 - 0.1, z0 + BC_PAD_STIFF_T + 0.1)
+    return out
+
+
+def end_round():
+    """Room for the blocks and the end section: everything below the rim, above it the circle BC_END_R round each
+    cell axis (the cell's room in the housing)."""
+    out = Pos(0, 0, B_SEAM_Z - 50) * Box(200, 200, 100)
+    for sx in (-1, 1):
+        out += Pos(sx * BC_CELL_X, 0, BC_CELL_Z) * Rot(90, 0, 0) * Cylinder(BC_END_R, 200)
+    return out
 
 
 def end_retainers():
     """End section retention on each contact block: a lip in front of its foot (the section's lower edge drops into
-    the slot between lip and stiffener) and a hook on its top over the section's top edge (snaps in, 45 deg lead-in;
-    printed back down: the hook's underside is the only overhang, BC_END_HOOK wide)."""
-    from build123d import Polyline, Plane, extrude, make_face
+    the slot between lip and stiffener). In use the battery contacts press the section into the blocks."""
     t, h, gap = BC_END_LIP
     yc = copper_y()
     sy = -BC_TERM_Y                                      # +1: cells side (blocks) is +y
-    ys = stiffener_y()                                   # stiffener's far face (the blocks start here)
     out = None
     for a, b, z0, z1 in end_blocks()[:2]:
         a2, b2 = a + 0.5, b - 1.6                        # clear of the 45 deg corner cut and the notch side
         y_l0, y_l1 = yc - sy * gap, yc - sy * (gap + t)  # lip faces
         lip = Pos((a2 + b2) / 2, (y_l0 + y_l1) / 2, (BC_WALL + BC_FLEX_Z + h) / 2) * Box(
             b2 - a2, t, BC_FLEX_Z + h - BC_WALL)
-        # hook: from the block's top over the stiffener and flex to the copper face, lead-in on top
-        y_b, y_f = ys, yc - sy * BC_END_HOOK
-        hk = BC_END_HOOK
-        pts = [(y_b + sy * 0.5, z1), (y_b + sy * 0.5, z1 + 1.2), (y_f, z1 + 0.2 + hk), (y_f, z1), (y_b + sy * 0.5, z1)]
-        prof = extrude(Plane.YZ * make_face(Polyline(*pts)), (b2 - a2) / 2, both=True)
-        part = lip + Pos((a2 + b2) / 2, 0, 0) * prof
-        out = part if out is None else out + part
+        out = lip if out is None else out + lip
     return out
 
 
@@ -235,7 +261,7 @@ def flex():
         out = b if out is None else out + b
     for a, b, z0, z1 in end_blocks():
         out += Pos((a + b) / 2, yf, (z0 + z1) / 2) * Box(b - a, FLEX_T, z1 - z0)
-    return out - corner_cuts() - peg_holes(BC_FLEX_Z - 0.1, BC_FLEX_Z + FLEX_T + 0.1)
+    return (out - corner_cuts()) & end_round()
 
 
 def stiffener():
@@ -244,7 +270,7 @@ def stiffener():
     for a, b, z0, z1 in end_blocks():
         s = Pos((a + b) / 2, ys, (z0 + z1) / 2) * Box(b - a, BC_END_T, z1 - z0)
         out = s if out is None else out + s
-    return out - corner_cuts()
+    return (out - corner_cuts()) & end_round()
 
 
 def pads():
@@ -312,20 +338,33 @@ def steel_ridge():
 
 
 def steel_clips():
-    """A clip at each end of the plate: a tab from the pocket floor at the pocket's end, flexing above the cover's
-    floor, a hook over the plate's edge with a 45 deg lead-in on top, so the plate snaps in from above."""
+    """A clip at each end of the plate: a tab rising from the bottom of its relief at the pocket's end, a hook over
+    the plate's edge with a 45 deg lead-in on top, so the plate snaps in from above."""
     from build123d import Polyline, Plane, extrude, make_face
     cw, ct, ch = BC_STEEL_CLIP
-    z0, zh = BC_STEEL_FLOOR, BC_STEEL_FLOOR + BC_STEEL[2] + 0.1           # pocket floor, hook underside
+    z0, zh = BC_STEEL_CLIP_ROOT, BC_STEEL_FLOOR + BC_STEEL[2] + 0.1      # tab root, hook underside
     out = None
     for s in (1, -1):
-        ye = BC_STEEL[1] / 2 + BC_STEEL_CLR             # tab inner face, outwards distance from the plate centre
+        ye = BC_STEEL[1] / 2 + BC_STEEL_CLIP_CLR        # tab inner face, outwards distance from the plate centre
         pts = [(ye, z0 - 0.01), (ye + ct, z0 - 0.01), (ye + ct, zh + 2 * ch), (ye - ch, zh + ch), (ye - ch, zh),
                (ye, zh), (ye, z0 - 0.01)]
         prof = extrude(Plane.YZ * make_face(Polyline(*pts)), cw / 2, both=True)
         c = Pos(0, BC_STEEL_Y, 0) * (prof if s > 0 else prof.mirror(Plane.XZ))
         out = c if out is None else out + c
     return out
+
+
+def steel_clip_reliefs():
+    """Pockets round each plate clip's tab down to BC_STEEL_CLIP_ROOT of shell, so the tab bends from there."""
+    cw, ct, ch = BC_STEEL_CLIP
+    r = BC_STEEL_CLIP_RELIEF
+    ye = BC_STEEL[1] / 2 + BC_STEEL_CLIP_CLR
+    out = None
+    for s in (1, -1):
+        y0, y1 = ye - r, ye + ct + r
+        p = Pos(0, BC_STEEL_Y + s * (y0 + y1) / 2, BC_STEEL_CLIP_ROOT + 5.0) * Box(cw + 2 * r, y1 - y0, 10.0)
+        out = p if out is None else out + p
+    return out & back_shape(BC_STEEL_CLIP_ROOT, BC_STEEL_CLIP_ROOT)
 
 
 def steel():

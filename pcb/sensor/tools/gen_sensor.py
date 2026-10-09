@@ -493,10 +493,8 @@ def build_cover():
     for (a0, b0), (a1, b1) in sp.COVER_PAD_STIFF:
         for a, b in (((a0, b0), (a1, b0)), ((a1, b0), (a1, b1)), ((a1, b1), (a0, b1)), ((a0, b1), (a0, b0))):
             bd.shape(P.SHAPE_T_SEGMENT, P.User_1, 0.1, a, b)
-    bd.text(f"STIFFENER FR4 {sp.BC_PAD_STIFF_T} mm, back side, with the peg holes", sp._xs0 - 4.0, sp._yt - 2.0,
-            P.User_1, 0.6, 90)
-    for x, y in sp.COVER_PEG_HOLES:                       # heat-stake peg holes through flex and stiffener (D-45)
-        bd.shape(P.SHAPE_T_CIRCLE, P.Edge_Cuts, 0.05, (x, y), (x + sp.BC_PEG_HOLE / 2, y))
+    bd.text(f"STIFFENER FR4 {sp.BC_PAD_STIFF_T} mm, back side, flush with the long edges (snap hooks)",
+            sp._xs0 - 4.0, sp._yt - 2.0, P.User_1, 0.6, 90)
     if not sp.COVER_CONFIRMED:
         bd.text("POSITIONS REF / MEASURE - DO NOT FABRICATE", 0.0, 2.0, P.Cmts_User, 0.9)
     bd.save()

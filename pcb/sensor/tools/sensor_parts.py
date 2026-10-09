@@ -27,7 +27,7 @@ from params import (MSR_CN2_X, MSR_Y, FLEX_X, FLEX_W, FLEX_RISE_DY, STIFF_T, FLE
                     BC_FINGERS, BC_STRIP, BC_RUN, BC_JOG, BC_CONTACT_W, BC_COPPER_Y, BC_REG, BC_PCB_W, BC_PCB_CLR, BC_BRIDGE_H, BC_LANE_H,
                     BC_END_CORNER, BC_NA_TONGUE_Y, BC_NA_NECK_W, BC_NA_GROOVE_D, BC_NA_GROOVE_BOT, BC_NA_DOWN,
                     BC_FLOOR_PAD, BC_TONGUE_W, BC_FLOOR_T, BC_RECESS_CLR, SEAT_Z, TARGET_TOP_Z, tongue_walls,
-                    BC_PEG_END, BC_PEGS, BC_PEG_HOLE, BC_PAD_STIFF_T,
+                    BC_PAD_END, BC_PAD_STIFF_T, end_top,
                     MIC, MIC_Y, MIC_FLEX_Y, MIC_SEC_W, MIC_SEC_Y, MIC_FLEX_HOLE_D, FLEX_PLUG, FLEX_NECK_L)
 
 LIB = "sensor"
@@ -226,7 +226,7 @@ JUMPER_PARTS.update({
 COVER_CONFIRMED = False                                     # positions are REF / MEASURE (FCC photos)
 COVER_TRACK = 0.3
 _y_c = BC_COPPER_Y                                          # end section copper face (room y) = bend line
-_yt = max(y for _, y in BC_FINGERS) + FINGER[1] / 2 + BC_PEG_END
+_yt = max(y for _, y in BC_FINGERS) + FINGER[1] / 2 + BC_PAD_END
 _yb = min(y for _, y in BC_FINGERS) - FINGER[1] / 2 - 1.0
 _yj = _yb - BC_JOG
 _xs0, _xs1 = -BC_STRIP[1], -BC_STRIP[0]                     # pad section in flat X
@@ -238,14 +238,13 @@ COVER_Y_BAND = _y_c - BC_BRIDGE_H                           # band under the PCB
 COVER_Y_END = _y_c - BC_END_H
 COVER_Y_PAD = _y_c - (BC_CELL_Z - BC_FLEX_Z)                # contact fingers on the cell axes
 COVER_BEND_Y = _y_c
-COVER_OUTLINE = [(_xs0, _yt), (_xs1, _yt), (_xs1, _yb), (_xr1, _yb), (_xr1, _y_c), (_xo - _c, _y_c), (_xo, _y_c - _c),
-                 (_xo, COVER_Y_END), (_xi, COVER_Y_END), (_xi, COVER_Y_BAND), (-_xi, COVER_Y_BAND),
-                 (-_xi, COVER_Y_END), (-_xo, COVER_Y_END), (-_xo, _y_c - _c), (-_xo + _c, _y_c), (_xr0, _y_c),
-                 (_xr0, _yj), (_xs0, _yj)]
+_top = [(x, _y_c - (z - BC_FLEX_Z)) for x, z in end_top(_xo, _xi)]  # rounded to the cell above the rim
+COVER_OUTLINE = ([(_xs0, _yt), (_xs1, _yt), (_xs1, _yb), (_xr1, _yb), (_xr1, _y_c), (_xo - _c, _y_c), (_xo, _y_c - _c)]
+                 + _top + [(_xi, COVER_Y_BAND), (-_xi, COVER_Y_BAND)] + [(-x, y) for x, y in reversed(_top)]
+                 + [(-_xo, _y_c - _c), (-_xo + _c, _y_c), (_xr0, _y_c), (_xr0, _yj), (_xs0, _yj)])
 COVER_STIFF = [((-_xo, COVER_Y_END), (_xo, _y_c))]          # FR4 BC_END_T behind the end section (non-copper side)
 COVER_PAD_STIFF = [((_xs0, _yb), (_xs1, _yt)),                # FR4 BC_PAD_STIFF_T on the pad and regulator sections
                    ((min(_xs0, _xr0), _yj), (max(_xs1, _xr1), _yb))]
-COVER_PEG_HOLES = [(-x, y) for x, y in BC_PEGS]              # heat-stake pegs of the cover through flex + stiffener
 COVER_LANES = (_xr1 - 0.75, _xr0 + 0.75)                    # +3V3 (inner), GND (outer) down the run
 COVER_PARTS = {
     "J1": dict(sym="Conn_01x01", fp=FP_FINGER, value="S7081-42R +5V", nets={"1": "+5V"}, label="S7081-42R",
@@ -268,10 +267,10 @@ COVER_PARTS = {
                mfr="Texas Instruments", mpn="TLV75533PDBVR",
                desc="LDO 3.3 V 500 mA, 1.45-5.5 V in, SOT-23-5: the remote's supply from +5 V", ds=TLV_DS),
     "C3": dict(label="1uF", sym="C", fp=FP_C, value="1uF", nets={"1": "GND", "2": "+5V"},
-               pos=(-BC_REG["C3"][0], BC_REG["C3"][1], 0), mfr="Murata", mpn="GRM155R61A105KE15D",
+               pos=(-BC_REG["C3"][0], BC_REG["C3"][1], 0), mfr="Samsung Electro-Mechanics", mpn="CL05A105KP5NNNC",
                desc="LDO input capacitor, 1 uF 10 V X5R 0402 (TLV755P: >= 1 uF)", ds=""),
     "C4": dict(label="1uF", sym="C", fp=FP_C, value="1uF", nets={"1": "GND", "2": "+3V3"},
-               pos=(-BC_REG["C4"][0], BC_REG["C4"][1], 0), mfr="Murata", mpn="GRM155R61A105KE15D",
+               pos=(-BC_REG["C4"][0], BC_REG["C4"][1], 0), mfr="Samsung Electro-Mechanics", mpn="CL05A105KP5NNNC",
                desc="LDO output capacitor, 1 uF 10 V X5R 0402 (TLV755P: >= 1 uF)", ds=""),
 }
 

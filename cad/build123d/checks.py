@@ -23,6 +23,11 @@ def check(cond, msg):
 
 def dims():
     print("dimensions")
+    from math import radians, tan
+    d = (SCREW_HEAD_D - SCREW_D) / 2 / tan(radians(SCREW_CSK / 2))
+    check(SCREW_CSK == 82.0 and 3.5 < SCREW_D <= 3.7 and 6.65 <= SCREW_HEAD_D <= 7.0 and d <= SKIN,
+          f"#6 screws: {SCREW_D} hole, {SCREW_CSK:.0f} deg countersink {SCREW_HEAD_D} across, {d:.2f} deep in the "
+          f"{SKIN} skin (heads 6.05-6.65, ASME B18.6.3)")
     check(POCKET_OUT[0] <= PLUG[0] and POCKET_OUT[1] <= PLUG[1], f"pocket {POCKET_OUT[0]:.1f}x{POCKET_OUT[1]:.1f} inside plug {PLUG[0]:.1f}x{PLUG[1]:.1f}")
     check(WB[0] / 2 <= PLUG[0] / 2 and WB[1] / 2 + abs(WB_Y) <= PLUG[1] / 2,
           f"wiring board {WB[0]} x {WB[1]} fits the box opening less clearance")
@@ -56,8 +61,8 @@ def dims():
           f"magnet piece {MAGNET[1]} mm cut from the {MAGNET_FULL[1]} mm magnet keeps one round end")
     check(min(POCKET_WALL, BARRIER_MIN) >= V0_RATED_T, f"barrier walls >= V-0 rated thickness {V0_RATED_T} (fill V0_RATED_T from the datasheet)")
     msr_top = MSR_Y + MSR[1] / 2 + CLR
-    check(msr_top <= PH / 2 - SKIN, f"MSR-2 bay top {msr_top:.2f} inside trim (<= {PH/2-SKIN})")
-    check(SHT_Y - SHT[1] / 2 - 0.4 >= -PH / 2 + SKIN, "SHT45 bay inside trim")
+    check(msr_top <= PLATE_Y + PH / 2 - SKIN, f"MSR-2 bay top {msr_top:.2f} inside trim (<= {PLATE_Y + PH/2-SKIN})")
+    check(SHT_Y - SHT[1] / 2 - 0.4 >= PLATE_Y - PH / 2 + SKIN, "SHT45 bay inside trim")
     deepest = min(WB_BACK_Z - WAGO6[2], WB_BACK_Z - IRM[2])
     left = BOX_D + deepest
     print(f"       board {WB_FRONT_Z:.1f}..{WB_BACK_Z:.1f} mm, deepest part {deepest:.1f} mm; "
@@ -428,6 +433,7 @@ def cover_checks():
     """Replacement back cover (D-35): fingers at working height inside their range, windows, flex
     clear of the body, contact pads on the cell axes clear of the remote's PCB strip, steel plate."""
     print("replacement back cover (D-35)")
+    from build123d import Cylinder, Rot
     import backcover as bc
     ps = bc.cover_parts()
     c = ps["cover"]
@@ -476,27 +482,58 @@ def cover_checks():
           f"{BC_STEEL_RIDGE[1]} high, open {BC_STEEL_RIDGE_GAP} mm each side of the clips")
     r = bc.steel_ridge() & ps["steel"]
     check(r is None or r.volume < 0.001, "ridge clears the plate")
-    for k in ("pad_stiffener",):
-        r = ps[k] & c
-        check(r is None or r.volume < 0.01, f"{k} clears the cover body (pegs through its holes)")
-    stake = BC_PEG_STAKE
-    check(stake >= 0.8 and BC_PEG_HOLE - BC_PEG_D >= 0.15, f"heat-stake pegs {stake} mm above the stiffener, "
-                                                          f"{BC_PEG_HOLE - BC_PEG_D:.1f} mm play in their holes")
-    top = bc.end_retainers().bounding_box().max.Z
-    check(top <= BC_CELL_Z + AAA_D / 2 + 1e-6, f"end section hooks top at z {top:.2f}, under the cell top "
-                                               f"({BC_CELL_Z + AAA_D / 2:.2f}, ESTIMATE): clear of the housing's floor")
-    check(BC_END_HOOK >= 0.4 and BC_END_LIP[1] >= 0.8, f"end section held: {BC_END_LIP[1]} mm lip at its foot, "
-                                                       f"{BC_END_HOOK} mm hook over its top edge")
+    r = ps["pad_stiffener"] & c
+    check(r is None or r.volume < 0.01, "pad stiffener clears the cover body (under the snap lips)")
+    w, t, lip, clr = BC_FLEX_SNAP
+    snaps = bc.flex_snaps()
+    n = len(snaps.solids())
+    check(n == 2 * len(bc.flex_snap_spots()), f"{n} snap hooks on the flex section's long edges (beside each finger "
+                                              f"and the regulator)")
+    check(lip - clr >= 0.15 and BC_FLEX_SNAP_GAP <= 0.1, f"snap lips {lip - clr:.2f} mm over the stiffener's edges, "
+                                                         f"{BC_FLEX_SNAP_GAP} mm above it (finger travel "
+                                                         f"{FINGER_FREE - FINGER_WH:.1f})")
+    for k in ("flex", "pad_stiffener", "fingers", "regulator", "steel"):
+        r = snaps & ps[k]
+        check(r is None or r.volume < 0.001, f"snap hooks clear the {k}")
+    zl = BC_FLEX_Z + FLEX_T + BC_PAD_STIFF_T + BC_FLEX_SNAP_GAP
+    root = max(e.bounding_box().min.Z for e in bc.flex_snap_reliefs().solids())
+    arm = zl + lip / 2 - root                                 # post bends from the relief floor to the lip
+    strain = 1.5 * t * (lip - clr) / arm ** 2                 # cantilever outer-fibre strain: the lip clears the edge
+    check(strain <= 0.04, f"snap posts {arm:.1f} mm free, {t} thick, deflect {lip - clr:.1f}: strain "
+                          f"{strain * 100:.1f} % (design target <= 4 % for PETG)")
+    ledge = [Pos((x0 + x1) / 2, (y0 + y1) / 2, BC_FLEX_Z - 0.2) * Box(x1 - x0, y1 - y0, 0.4)
+             for x0, x1, y0, y1 in bc.strip_boxes()[:2]]
+    r = bc.flex_snap_reliefs() & (ledge[0] + ledge[1])
+    check(r is None or r.volume < 0.001, "snap reliefs outside the ledge under the flex")
+    above = Pos(0, 0, B_SEAM_Z + 50) * Box(200, 200, 100)
+    room = None
+    for sx in (-1, 1):
+        cyl = Pos(sx * BC_CELL_X, 0, BC_CELL_Z) * Rot(90, 0, 0) * Cylinder(BC_END_R, 200)
+        room = cyl if room is None else room + cyl
+    for k in ("cover", "flex", "stiffener", "contacts"):
+        r = (ps[k] & above) - room
+        v = r.volume if r is not None else 0.0
+        check(v < 0.01, f"{k} above the rim inside the cells' outline (r {BC_END_R}, rounded tops; {v:.3f} mm3 out)")
+    t, h, gap = BC_END_LIP
+    check(t >= 1.2 and h >= 0.8, f"end section held by a {t} x {h} mm lip at its foot; in use the battery contacts "
+                                 f"press it into the blocks (no hook on top)")
     clips = bc.steel_clips()
     r = clips & ps["steel"]
     check(r is None or r.volume < 0.001, "steel plate clips clear the plate")
-    over = BC_STEEL_CLIP[2] - BC_STEEL_CLR                 # hook reach minus the gap to the plate's end
+    over = BC_STEEL_CLIP[2] - BC_STEEL_CLIP_CLR            # hook reach minus the gap to the plate's end
+    cw, ct, ch = BC_STEEL_CLIP
+    arm = BC_STEEL_FLOOR + BC_STEEL[2] + 0.1 + ch / 2 - BC_STEEL_CLIP_ROOT
+    strain = 1.5 * ct * over / arm ** 2                    # cantilever outer-fibre strain as the plate passes the hook
+    check(strain <= 0.03, f"plate clips {cw} wide, {ct} thick, {arm:.1f} mm free from their relief: strain "
+                          f"{strain * 100:.1f} % snapping in (design target <= 3 % for PLA)")
     check(over >= 0.3, f"steel plate clips hook {over:.2f} mm over the plate's ends")
     ear = bc.latches().bounding_box()
     reach = sorted(round(B_H / 2 - abs(e.bounding_box().min.Y if e.bounding_box().center().Y > 0
                                        else e.bounding_box().max.Y), 2) for e in bc.latches().solids())
     check(ear.max.Y < B_H / 2 and reach == sorted(round(r, 2) for r in BC_LATCH_REACH),
-          f"snap clip hook tips {reach} mm in from the outside rim, hook {BC_LATCH_HOOK} mm inwards")
+          f"snap clip hook tips {reach} mm in from the outside rim, hooks {BC_LATCH_HOOK} mm inwards (bottom, top)")
+    widths = [round(e.bounding_box().size.X, 2) for e in bc.latches().solids()]
+    check(all(abs(w - BC_LATCH_W) < 0.01 for w in widths), f"snap clips {widths} mm wide")
     tops = sorted(round(e.bounding_box().max.Z - BC_WALL, 2) for e in bc.latches().solids())
     check(tops == sorted(round(t, 2) for t in BC_LATCH_TOPS) and ear.max.Z <= B_SEAM_Z, f"snap clips {tops} mm above the inside floor, "
                                                                   f"{B_SEAM_Z - BC_WALL - max(tops):.2f} below the rim")
