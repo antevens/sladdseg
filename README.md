@@ -193,8 +193,8 @@ Runs the remote without cells. The printed cover snaps onto the remote like the 
 the top and bottom, side ribs, a pry notch) and carries the remote's magnet plate inside a ridge, clipped at both ends,
 and a flex: two spring fingers poke through windows in its back onto flush gold pads (+5 V, GND) in a
 thin pocket-floor insert, a 3.3 V regulator on the flex feeds the remote, and at the terminal end two
-more fingers press on the remote's VBAT plate and GND spring. The flex is held by a stiffener and two
-heat-staked pegs and, at the end, by lips and hooks on the contact blocks. On NA the floor pads come
+more fingers press on the remote's VBAT plate and GND spring. The flex is held by a 0.8 mm stiffener under six
+snap hooks on its long edges and, at the end, by a lip at the foot of each contact block and tape. On NA the floor pads come
 from a tongue of the 5 V jumper through the insert above the wall plane; on EU from a tongue of the
 sensor flex. No new openings in the mains barrier. Several remote dimensions are still estimates
 (`docs/MEASUREMENTS.md`).

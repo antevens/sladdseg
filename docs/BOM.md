@@ -11,7 +11,7 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | PS1 | **AC-DC 5 V 600 mA** | **Mean Well IRM-03-5** (DigiKey 1866-3020-ND) | 85–305 VAC, 37×24×15 mm, on the board's back. |
 | F1 | **Fuse T1A 250 VAC, SMD** | **Schurter UMT 250 3404.2416.22** | Rating is the designer's choice (Mean Well gives none); 200 A breaking capacity: human review. |
 | RV1 | **Varistor 275 VAC, SMD** | **TDK B72660M0271K093** (CU4032K275G2) | Covers 120 V and 230 V. |
-| C1 | 22 µF 10 V X5R 1206 | Murata GRM31CR61A226KE19L or equiv. | 5 V output. |
+| C1 | 22 µF 10 V X5R 1206 | Samsung CL31A226KPHNNNE or equiv. (the Murata GRM31CR61A226KE19L first chosen is obsolete) | 5 V output. |
 | J2 | FPC connector, 6 contacts, 0.5 mm, SMD, slide lock | Hirose FH12-6S-0.5SH(55) | 5 V out to the flex jumper (1–3 = GND, 4–6 = +5 V). |
 | PCB | Wiring board 47 × 72 mm, 2-layer 1.6 mm | PCBWay; order pack in `pcb/fab/` | Routed isolation slot in the outline. S1 is soldered by hand after it is snapped into the insert. Copper weight: thermal review. |
 | — | Apollo MSR-2 mmWave multisensor | apolloautomation.com / The Pi Hut | ESP32-C3, LD2410B, DPS310, LTR-390; optional SCD-40. Used out of case. |
@@ -26,10 +26,10 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | — | Replacement back cover (BILRESA E2490): printed cover + single-layer flex with 0.4 mm FR4 stiffener, ENIG; the remote's own steel plate | printed; PCBWay flex, `pcb/sensor/` cover_flex (no fab files yet) | D-35: replaces the remote's back cover; no cells. |
 | — | SMT spring fingers ×4 (back cover) | **Harwin S7081-42R** | D-35, D-40: on the cover flex, +5V and GND onto the floor pads; VBAT and GND onto the remote's battery contacts. |
 | U1 (cover flex) | LDO 3.3 V 500 mA, SOT-23-5 | **TI TLV75533PDBVR** | D-41: the remote's 3.3 V from the floor's +5 V, on the cover flex. Datasheet: https://www.ti.com/lit/ds/symlink/tlv755p.pdf |
-| C3, C4 (cover flex) | 1 µF 10 V X5R 0402 | Murata GRM155R61A105KE15D | LDO input / output (TLV755P: ≥ 1 µF). |
+| C3, C4 (cover flex) | 1 µF 10 V X5R 0402 | Samsung CL05A105KP5NNNC (the Murata GRM155R61A105KE15D first chosen is obsolete) | LDO input / output (TLV755P: ≥ 1 µF). |
 | — | Pocket-floor insert (EU): printed 0.6 mm floor, bonded to the trim | printed | D-35: carries the sensor-flex tongue with two flush gold pads. |
 | — | Double-sided tape, 0.06 mm | 3M 467MP | D-45: tape points in docs/ASSEMBLY.md (jumper pad end, tongues, NA floor insert, sensor-flex stiffeners, SHT45 tail). |
-| — | Cover flex stiffener, FR4 0.3 mm, with two Ø1.4 holes | PCBWay (with the cover flex) | D-45: on the pad and regulator sections; the cover's pegs are heat-staked through it. |
+| — | Cover flex stiffener, FR4 0.8 mm, flush with the flex's long edges | PCBWay (with the cover flex) | D-45: on the pad and regulator sections; the cover's snap hooks hold it by its long edges. |
 | — | Supplied BILRESA magnet, cut | (ships with the remote) | D-43: cut once across to an 18.5 mm piece from one round end (~47.4 × 17.5 magnet, ESTIMATE); round end down in the recess (NA) / under the cap (EU). |
 | — | Pocket-floor insert (NA): printed 0.6 mm floor on the insert's pocket floor | printed | D-41: carries the jumper's tongue with two flush gold pads (battery-free remote). |
 | — | EU sensor flex | PCBWay flex, single layer, 0.12 mm, FR4 stiffeners 0.15 mm; `pcb/sensor/` eu_sensor_flex | D-42: MSR-2 CN2 → spring-pin pads → tongue to the floor pads, SHT45 on the tail, microphone. Not orderable until CN2 is confirmed. |
@@ -41,6 +41,7 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 
 ## Links
 - PCB order pack + human-review checklist: `pcb/fab/README.md`
+- DigiKey / Mouser order lists for test plates (`make order`): `pcb/order/README.md`
 - IRM-03 datasheet (2025-08-08): https://www.meanwell.com/Upload/PDF/IRM-03/IRM-03-SPEC.PDF
 - Harwin S7081-42R drawing: https://content.harwin.com/asset/8cd5d0a8-d578-46b3-8278-7289045a1613/DRG-02322-Technical-Drawing-Datasheet-S7081R-pdf.pdf
 - Elegoo PC-FR listing (UL 94 V-0 claim): https://www.3djake.com/elegoo (search PC-FR); get Elegoo's TDS

@@ -64,7 +64,7 @@ the IKEA UK product page (height 20 mm).
 | B_WHEEL_D / B_WHEEL_Y / B_WHEEL_GAP | 41.5 / +12.5 / 0.3 | 1.0 / 1.0 / 0.2 | FCC photos; wheel concentric with the end arc, at the radio-module (strap) end | yes |
 | B_LED_Y / B_LED_PITCH | −12.0 / 3.9 | 1.0 / 0.3 | FCC photos; LEDs at the terminal (P1 / P2) end | yes |
 | BC_STEEL (x × y × t) | 12.0 × 20.0 × 2.0 | measured | human, 2026-10-09: the plate in the cover is a magnet, not steel | DONE |
-| BC_STEEL_RIDGE | ridge round the plate on the full 1.6 shell, 0.8 thick × 1.2 high, 0.15 clearance | 0.8 × 1.2 | ESTIMATE (human: "like the original") | partly |
+| BC_STEEL_RIDGE | ridge round the plate on the full 1.6 shell, 0.8 thick × 1.2 high, 0.05 clearance (0.15 rattled on the first print) | 0.8 × 1.2 | ESTIMATE (human: "like the original") | partly |
 | MAGNET_Y (remote's plate centre) | 0.0 | 1.0 | FCC internal photo 1: centred in its cover | yes |
 | BC_CELL_X | 11.2 | 0.5 | label drawing bays ±10.95; PCB contacts ±11.4 | yes |
 | BC_CELL_Z | 6.8 | 0.8 | inferred: cover wall + clearance + cell radius | yes |
@@ -77,7 +77,7 @@ the IKEA UK product page (height 20 mm).
 | BC_PRY | screwdriver notch in the rim at the bottom end | — | human, 2026-10-09: present; size MEASURE (6.0 × 1.2) | TODO |
 | BC_SIDE_TAB, BC_SIDE_TAB_GAP, BC_SIDE_TAB_RIM_GAP | side ribs at mid-length, free-standing on the shell's curved floor (stiffening, no hook) | 36.2 inside spacing, top 3.6 below the rim (measured); 0.8 thick (human); length 6.0 (ESTIMATE, photos) | human, 2026-10-09 | DONE |
 | — | supplied wall part: magnet or steel? The remote's plate is a magnet, so a second magnet must face it with opposite poles (mark the cut piece's orientation) | magnet / compass | | TODO |
-| BC_LATCH_* (cover snap clips, top and bottom) | one clip per end at x 0, ~3.5 wide × 1.2 (the bottom one at the pry notch); bottom: top 4.7 above the inside floor (measured), hook tip 4.1 in from the outside rim (photos); top: top 1.0 below the rim, hook tip 2.8 in from the outside rim (measured), its back merges into the end wall; hook size MEASURE (0.5) | 0.5 | human photos IMG_5088-5090, measurements 2026-10-09 | partly |
+| BC_LATCH_* (cover snap clips, top and bottom) | one clip per end at x 0, 3.1 wide (measured) × 1.2, the bottom one at the pry notch; bottom: top 4.7 above the inside floor (measured), hook tip 4.1 in from the outside rim (photos; model 4.3 with a 0.7 hook, the print's clip did not catch); top: top 1.0 below the rim, hook tip 2.8 in from the outside rim (measured; model 3.0 with a 0.7 hook, the print's top clip did not catch), its back merges into the end wall; hook size MEASURE (0.5) | 0.5 | human photos IMG_5088-5090, measurements 2026-10-09 | partly |
 | E2489 outline / depth | 69.5 × 40.0 / ~20 | 0.3 / 2 | label drawing; photo comparison | backlog (E2489 version) |
 | E2489 cell axes | ±9.6 across, ends ±22 | 0.4 | label drawing | backlog |
 

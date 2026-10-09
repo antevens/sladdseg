@@ -1,7 +1,7 @@
 # Assembly: what holds each part
 
-Every board, flex and electronic part is held by a screw, a solder joint, a printed snap or hook, a
-heat-staked peg, or a named tape point. Tape is **3M 467MP** (0.06 mm, double-sided), cut to the pad
+Every board, flex and electronic part is held by a screw, a solder joint, a printed snap or hook, or a
+named tape point. Tape is **3M 467MP** (0.06 mm, double-sided), cut to the pad
 sizes below. Nothing here is a compliance statement; mains work is a human decision (SAFETY).
 
 ## NA plate
@@ -40,15 +40,17 @@ sizes below. Nothing here is a compliance statement; mains work is a human decis
 | --- | --- | --- |
 | Cover on the remote | two snap clips (top, bottom) on the housing's wall; side ribs keep it from flexing | pry it off at the notch |
 | Plate (magnet, 12 × 20 × 2) | a ridge round it on the full-thickness shell, a clip at each end | snap in from above |
-| Cover flex, pad and regulator sections | 0.3 mm FR4 stiffener on top; two printed pegs through it, heat-staked | melt each peg head over with a soldering iron (about 250 °C, a flat tip), 1 mm of peg above the stiffener |
+| Cover flex, pad and regulator sections | 0.8 mm FR4 stiffener on top, pressed down past six snap hooks on its long edges (each side of each finger and of the regulator) | press straight down until all six click; to remove, spread the hooks on one edge with a pick |
 | Cover flex, run | the slot under the GND contact block | |
-| Cover flex, end section | its foot drops into the slot behind a lip on each contact block; the top snaps under a hook on each block | the battery contacts press it into the blocks |
+| Cover flex, end section | its foot drops into the slot behind a lip on each contact block; tape (3M 467MP) between its stiffener and each block | the battery contacts press it into the blocks |
 
 ## Order of work for the back cover
 
 1. Snap the plate into its pocket.
-2. Thread the flex's run through the slot under the GND block from the cell side; lay the pad and
-   regulator sections on the ledge over the pegs, the regulator into its recess.
-3. Heat-stake both pegs.
-4. Fold the end section up: foot into the lip slots, top under the hooks.
+2. Thread the flex's run through the slot under the GND block from the cell side; press the pad and
+   regulator sections straight down onto the ledge, the fingers into their windows and the regulator
+   into its recess, until the six snap hooks click over the stiffener.
+3. Check that no hook is left standing on the stiffener's top.
+4. Put tape on the blocks' faces, fold the end section up (foot into the lip slots) and press its
+   stiffener onto the tape.
 5. Snap the cover onto the remote (both clips), notch at the bottom end.
