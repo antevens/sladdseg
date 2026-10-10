@@ -15,7 +15,7 @@ every part is single-material.
 | `print/insert_PC-FR.3mf` | NA box insert, **final** | Elegoo PC-FR (UL94 V-0) | 1 h 56 m / 45 g |
 | `print/posts_PC-FR.3mf` | NA board posts ×5 (4 + 1 spare), lying on their flat | Elegoo PC-FR (UL94 V-0) | 7 m / 2 g |
 | `print/backcover_PETG.3mf` | replacement back cover for the battery-free BILRESA (D-35), back down | PETG | 19 m / 7 g |
-| `print/floor_inserts_PETG.3mf` | pocket-floor inserts, NA and EU (0.6 mm, 0.08 mm layers for the flex recess) | PETG | 11 m / 3 g |
+| `print/floor_inserts_PETG.3mf` | pocket-floor inserts, NA and EU (0.6 mm, 0.08 mm layers for the flex recess and the underside channels; NA with the tab its strip hook snaps into) | PETG | 12 m / 3 g |
 | `print/eu_cap_PETG_testfit.3mf` | EU cap (fit check only, **not for mains**), face down | PETG | 40 m / 11 g |
 | `print/eu_cap_PC-FR.3mf` | EU cap, **final** (the EU barrier), face down | Elegoo PC-FR (UL94 V-0) | 35 m / 10 g |
 | `print/eu_trim_PETG.3mf` | EU trim plate, face down | PETG | 1 h 23 m / 48 g |
@@ -40,7 +40,8 @@ time/material lands in `build/print/gcode/`.
    connected). Check the corner taper against the box ears.
 4. `insert_PC-FR` for the installed part. Keep the filament datasheet with the build record.
 5. Battery-free remote: `backcover_PETG` on a BILRESA (latches, steel plate, contact positions,
-   the end fingers' ramp), `floor_inserts_PETG` in the pocket. Cut the supplied magnet first (D-43:
+   the end fingers' ramp; the plate clips and flex snap hooks snapped in PLA: snap the plate in and
+   out a few times and check the clips survive in PETG, D-44), `floor_inserts_PETG` in the pocket. Cut the supplied magnet first (D-43:
    one straight cut, an 18.5 mm piece with one round end; check its real size).
 6. EU: `eu_cap_PETG_testfit` + `eu_trim_PETG` in a 60 mm round box (domes, depth of the board
    stack), then `eu_cap_PC-FR`.

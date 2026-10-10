@@ -80,21 +80,22 @@ the KiCad model).
 
 ![v0.3 exploded assembly](docs/renders/v0.3_exploded.png)
 
-Sensor flex (D-27, trim and remote hidden): from the MSR-2's rear connector across
-the top, down the right channel past the insert, to the SHT45 on its tail.
+Sensor flex (D-27, D-47; trim and remote hidden): from the MSR-2's rear connector into the
+top-right corner (spring fingers), down the flange's right band in a groove of the trim, past the
+microphone below the flange, to the SHT45 on its tail.
 
 ![v0.3 sensor flex route](docs/renders/v0.3_flex.png)
 
 Power contact: two spring fingers on the flex press on the gold pads of the 5 V jumper's
-stiffened end, which sits on a shelf off the insert flange.
+stiffened end, which sits on a shelf at the insert flange's top-right corner.
 
 ![v0.3 spring-finger power contact](docs/renders/v0.3_contact.png)
 
-5 V power path (insert cut at the pass-through, seen from the right): a single-layer flex
+5 V power path (insert cut at the pass-through, seen from the right): a two-layer flex
 jumper plugs into J2 on the wiring board (Hirose FH12-6S, slide lock), folds once between the
 board and the insert (a 40 mm service loop: plug it in with the board held beside the insert,
-where the latch can be seen), goes up through the pass-through and out of the flange, and ends
-on the shelf under the spring fingers. No wires, no solder joints at assembly.
+where the latch can be seen), goes up through the pass-through and out of the flange's corner,
+and ends on the corner shelf under the spring fingers. No wires, no solder joints at assembly.
 
 ![v0.3 5 V power path](docs/renders/v0.3_power.png)
 
@@ -105,8 +106,8 @@ the insert side. The fingers on the jumper's pads are the only electrical interf
 ![v0.3 face plate and insert separated](docs/renders/v0.3_separation.png)
 
 Microphone (D-29, push-to-talk voice to Home Assistant): an I²S MEMS microphone under the
-flex in the right channel, its port sealed by a gasket ring to a Ø1.0 sound hole in the face
-skin. Sections through the sound hole, across and along the channel:
+flex below the flange's right band, its port sealed by a gasket ring to a Ø1.0 sound hole in
+the face skin at the bottom right. Sections through the sound hole, across and along the flex:
 
 ![v0.3 microphone sections](docs/renders/v0.3_mic_section.png)
 
@@ -194,14 +195,20 @@ the top and bottom, side ribs, a pry notch) and carries the remote's magnet plat
 and a flex: two spring fingers poke through windows in its back onto flush gold pads (+5 V, GND) in a
 thin pocket-floor insert, a 3.3 V regulator on the flex feeds the remote, and at the terminal end two
 more fingers press on the remote's VBAT plate and GND spring. The flex is held by a 0.8 mm stiffener under six
-snap hooks on its long edges and, at the end, by a lip at the foot of each contact block and tape. On NA the floor pads come
-from a tongue of the 5 V jumper through the insert above the wall plane; on EU from a tongue of the
-sensor flex. No new openings in the mains barrier. Several remote dimensions are still estimates
+snap hooks on its long edges and, at the end, by a lip at the foot of each contact block and a snap hook beside
+each block. The floor pads come from a tongue of the sensor flex on both variants: on NA it runs under the
+trim, behind a strip of the trim down the pocket wall and under the floor insert, which hangs from that strip,
+so all of it comes off with the face plate and no flex shows on the insert or in the empty pocket (D-49). No new
+openings in the mains barrier. Several remote dimensions are still estimates
 (`docs/MEASUREMENTS.md`).
 
 | NA, exploded: floor insert, tongue, cover, remote | NA, section on the tongue |
 | --- | --- |
 | ![Battery-free, exploded](docs/renders/v0.3_battery_free.png) | ![Battery-free, tongue section](docs/renders/v0.3_tongue.png) |
+
+| NA, remote lifted out: floor insert, the trim's strip, the floor pads | NA, face plate lifted off: tongue and floor insert go with it |
+| --- | --- |
+| ![Battery-free, empty pocket](docs/renders/v0.3_pocket_empty.png) | ![Battery-free, face plate off](docs/renders/v0.3_face_off.png) |
 
 | Cover, inside | Cover, back (fingers free) |
 | --- | --- |
@@ -222,19 +229,25 @@ the finger on the end section, its dome on the remote's battery plate.
 
 ### Sensor flex and 5 V jumper
 
-KiCad projects in `pcb/sensor/` (D-27). The flex is drawn flat: one strip, folded twice at 45°
-in the trim. Left to right: CN2 plug (placeholder, not for fabrication yet), the microphone on
-its widened section (D-29), the two spring fingers over the jumper's pads, the SHT45 at the tail.
+KiCad projects in `pcb/sensor/` (D-27, D-47). The flex is drawn flat (two layers): one strip, folded
+twice at 45° in the trim. Left to right: CN2 plug (placeholder, not for fabrication yet), the two
+spring fingers side by side on the corner section, the band run, the microphone on its widened
+section (D-29), the SHT45 at the tail, and the battery-free tongue from the finger section to its two
+floor pads (D-49). GND_SENS and +3V3 run on the back layer, and GND along the tongue.
 
-![Sensor flex, copper](docs/renders/sensor_flex_copper_front.png)
+| Front copper | Back copper |
+| --- | --- |
+| ![Sensor flex, front copper](docs/renders/sensor_flex_copper_front.png) | ![Sensor flex, back copper](docs/renders/sensor_flex_copper_back.png) |
 
-5 V jumper, drawn flat (two layers): FH12 contacts at the left, gold pads for the spring fingers at
-the right (+5 V first, GND passing it to the far pad), and the battery-free tongue down to its two
-floor pads.
+5 V jumper, drawn flat (two layers): FH12 contacts at the left, the pad end at the right (GND pad
+straight ahead, +5 V on the left).
 
-![5 V jumper, copper](docs/renders/power_jumper_copper_front.png)
+| Front copper | Back copper |
+| --- | --- |
+| ![5 V jumper, front copper](docs/renders/power_jumper_copper_front.png) | ![5 V jumper, back copper](docs/renders/power_jumper_copper_back.png) |
 
 EU sensor flex, drawn flat: CN2 plug, the microphone on its outer side, the two pads under the
-spring pins, the battery-free tongue between them (folded 45° on the floor), the SHT45 at the tail.
+spring pins, the battery-free tongue between them (folded 45° under the floor insert, slit beside
+its neck), the SHT45 at the tail.
 
 ![EU sensor flex, copper](docs/renders/eu_sensor_flex_copper_front.png)

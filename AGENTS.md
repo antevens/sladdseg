@@ -26,9 +26,9 @@ bulb. Bulbs stay powered; control is wireless. Each plate holds:
   beside the insert flange (D-27);
 - an **SHT45** temp/humidity sensor on the flex tail in its own vented bay below
   the remote (I²C from the MSR-2);
-- an **I²S MEMS microphone** (PUI DMM-4026-B-I2S-R) on the flex in the right
-  channel, port to a sound hole in the face skin, push-to-talk voice to Home
-  Assistant started from HA (D-29).
+- an **I²S MEMS microphone** (PUI DMM-4026-B-I2S-R) on the flex below the
+  flange's right band, port to a sound hole in the face skin, push-to-talk voice
+  to Home Assistant started from HA (D-29, D-47).
 
 Home Assistant runs on an Nvidia Orin NX. No Shelly / smart relay: deliberately
 removed.
@@ -44,8 +44,8 @@ cad/build123d/       ACTIVE parametric CAD (Python, build123d)
   insert.py          box insert (ALL barrier geometry, rocker panel, UL94 V-0)
   trim.py            trim plate (face, MSR-2 / SHT45 bays)
   post.py            board post: screws into the insert, snaps through the board (D-28)
-  sensor_flex.py     sensor flex route in the trim: MSR-2 CN2 -> SHT45 (D-27), microphone (D-29)
-  jumper.py          5 V flex jumper: wiring board J2 (FH12) -> pass-through -> shelf (D-31), battery-free tongue (D-41)
+  sensor_flex.py     sensor flex route in the trim: MSR-2 CN2 -> SHT45 (D-27), microphone (D-29), battery-free tongue (D-49)
+  jumper.py          5 V flex jumper: wiring board J2 (FH12) -> pass-through -> shelf (D-31)
   backcover.py       replacement back cover + pocket-floor insert geometry (D-35); render_backcover.py
   floor_na.py        NA pocket-floor insert for the battery-free remote (D-41)
   bilresa.py         BILRESA remote model (rounded back, wheel; MEASURE sizes)
@@ -231,7 +231,7 @@ Do not violate these; ask the human if a task seems to require it.
    mains volume (box) from the low-voltage volume (plate hollow, remote pocket).
    No openings may be added to them except the single 5 V lead pass-through.
    A slot through the insert entirely above the wall plane, between two
-   low-voltage spaces (the battery-free tongue's tunnel and groove, D-41), is
+   low-voltage spaces (the island notch and the arc groove for the trim's tongue strip, D-41, D-49), is
    not an opening in the barrier; `make check` keeps it above z 0 and the
    mains-air check must still pass. Anything forming the barrier is printed in
    a UL94 V-0 filament (see PRINTING).
@@ -263,7 +263,7 @@ on four screw-in snap posts (D-28), microphone on the sensor flex (D-29).
 Also done (2026-10-08/09): EU variant (D-30, D-36: cap, trim, mains board + 5 V
 board with PCBWay packs in `pcb/eu/fab/`, EU sensor flex in KiCad, D-42); battery-free
 BILRESA on both variants (replacement back cover with regulator and spring contacts,
-floor inserts, NA tongue from the 5 V jumper, D-35..D-41); vendor 3D models (WAGO,
+floor inserts, tongue from the sensor flex on both, D-35..D-41, D-49); vendor 3D models (WAGO,
 Traco, combined Marquardt rocker); print projects for every printed part (`print/`);
 every part held mechanically or at a named tape point (D-45, `docs/ASSEMBLY.md`).
 
