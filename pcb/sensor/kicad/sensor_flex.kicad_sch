@@ -2201,6 +2201,113 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "sensor:TestPoint"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.762)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "TP"
+				(at 0 6.858 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "TestPoint"
+				(at 0 5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 5.08 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 5.08 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "test point"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "test point tp"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Pin* Test*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "TestPoint_0_1"
+				(circle
+					(center 0 3.302)
+					(radius 0.762)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "TestPoint_1_1"
+				(pin passive line
+					(at 0 0 90)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(symbol
 		(lib_id "sensor:Conn_02x15_Odd_Even")
@@ -2409,64 +2516,9 @@
 		(at 30.48 93.98)
 		(uuid "bc524843-c35a-5149-a46e-a2ab16214cf6")
 	)
-	(label "I2S_WS"
-		(at 30.48 96.52 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "17aaadf5-e57a-5c16-88df-5d1c4762a322")
-	)
-	(label "I2S_SCK"
-		(at 30.48 99.06 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "c2a5c015-1fa2-526f-8dd7-069c6255e8c3")
-	)
-	(label "I2S_SD"
-		(at 30.48 101.6 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "24947ade-a699-5116-b9d6-09c0f995cea2")
-	)
-	(label "MIC_GND"
-		(at 30.48 104.14 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "3b705049-0ba3-5760-9635-c4b5b6421aef")
-	)
-	(label "MIC_3V3"
-		(at 30.48 106.68 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "d86f525a-511d-5a2f-a7d0-bb58310a07cc")
-	)
 	(symbol
 		(lib_id "sensor:+5V")
-		(at 30.48 109.22 0)
+		(at 30.48 96.52 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -2474,7 +2526,7 @@
 		(dnp no)
 		(uuid "2d4b156b-d3c3-5bea-89d9-bbed913baec5")
 		(property "Reference" "#PWR001"
-			(at 33.48 101.22 0)
+			(at 33.48 88.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2484,7 +2536,7 @@
 			)
 		)
 		(property "Value" "+5V"
-			(at 33.48 117.72 0)
+			(at 33.48 105.02 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2493,7 +2545,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 30.48 109.22 0)
+			(at 30.48 96.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2502,7 +2554,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 30.48 109.22 0)
+			(at 30.48 96.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2511,7 +2563,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 30.48 109.22 0)
+			(at 30.48 96.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2530,6 +2582,110 @@
 				)
 			)
 		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 30.48 99.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "a09bd021-ce8b-55fd-88c5-9198ca95a9db")
+		(property "Reference" "#PWR002"
+			(at 33.48 91.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 33.48 107.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 30.48 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 30.48 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 30.48 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a86d0ab6-b0b6-5e94-b84a-df4a2879a3d0")
+		)
+		(instances
+			(project "sensor_flex"
+				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
+					(reference "#PWR002")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "I2S_WS"
+		(at 30.48 101.6 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "83be28bb-e23b-5f50-b3a2-96f6877349b3")
+	)
+	(label "I2S_SCK"
+		(at 30.48 104.14 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "5892ab93-9377-5f54-93cd-b7c78846e946")
+	)
+	(label "I2S_SD"
+		(at 30.48 106.68 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "e20d0eb1-47d7-574c-8403-12033471372d")
+	)
+	(no_connect
+		(at 30.48 109.22)
+		(uuid "ae2483d1-0411-5c6d-bc39-fc54040079f1")
 	)
 	(no_connect
 		(at 43.18 73.66)
@@ -2575,17 +2731,39 @@
 		(at 43.18 99.06)
 		(uuid "5f3b6ff4-000a-52cb-ba7f-a0534faf1da6")
 	)
+	(label "SCL"
+		(at 43.18 101.6 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8cf5fc05-e456-532e-b5c5-46d33c983bdf")
+	)
+	(label "SDA"
+		(at 43.18 104.14 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "58c2eb00-fc74-53d5-a380-cc8756458934")
+	)
 	(symbol
 		(lib_id "sensor:+3V3")
-		(at 43.18 101.6 0)
+		(at 43.18 106.68 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "a09bd021-ce8b-55fd-88c5-9198ca95a9db")
-		(property "Reference" "#PWR002"
-			(at 46.18 93.6 0)
+		(uuid "8087fc1f-ded5-5465-a5f1-1ceb52d09a27")
+		(property "Reference" "#PWR003"
+			(at 46.18 98.68 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2595,7 +2773,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 46.18 110.1 0)
+			(at 46.18 115.18 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2604,7 +2782,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 43.18 101.6 0)
+			(at 43.18 106.68 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2613,7 +2791,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 43.18 101.6 0)
+			(at 43.18 106.68 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2622,96 +2800,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 43.18 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "a86d0ab6-b0b6-5e94-b84a-df4a2879a3d0")
-		)
-		(instances
-			(project "sensor_flex"
-				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
-					(reference "#PWR002")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(label "SCL"
-		(at 43.18 104.14 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "50b4e4f0-b029-5b32-bb44-95b90fd872f8")
-	)
-	(label "SDA"
-		(at 43.18 106.68 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "b955441e-6fb7-53b4-980b-1678122d373f")
-	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 43.18 109.22 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "8087fc1f-ded5-5465-a5f1-1ceb52d09a27")
-		(property "Reference" "#PWR003"
-			(at 46.18 101.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 46.18 117.72 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 43.18 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 43.18 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 43.18 109.22 0)
+			(at 43.18 106.68 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2730,6 +2819,17 @@
 				)
 			)
 		)
+	)
+	(label "GND_SENS"
+		(at 43.18 109.22 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "5dfcc330-efbd-542d-a6fc-e960944344f9")
 	)
 	(symbol
 		(lib_id "sensor:Conn_01x01")
@@ -3034,15 +3134,15 @@
 		)
 	)
 	(symbol
-		(lib_id "sensor:SHT4x")
+		(lib_id "sensor:TestPoint")
 		(at 157.48 91.44 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "5dfa9246-39cd-51a4-8323-ebdee5a8f781")
-		(property "Reference" "U1"
+		(uuid "333b312d-aefc-5ec3-b23e-3b28eb6c681b")
+		(property "Reference" "TP3"
 			(at 160.48 83.44 0)
 			(effects
 				(font
@@ -3051,7 +3151,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "SHT45"
+		(property "Value" "+5V floor pad"
 			(at 160.48 99.94 0)
 			(effects
 				(font
@@ -3060,8 +3160,310 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:Sensirion_DFN-4_1.5x1.5mm_P0.8mm_SHT4x_NoCentralPad"
+		(property "Footprint" "sensor:Contact_Pad_7x4mm"
 			(at 157.48 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 157.48 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Floor pad under the back cover's +5V finger (D-41, D-49)"
+			(at 157.48 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" ""
+			(at 157.48 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" ""
+			(at 157.48 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "c37d1cf3-3d8b-55dc-a245-a5e60a2990af")
+		)
+		(instances
+			(project "sensor_flex"
+				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
+					(reference "TP3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:+5V")
+		(at 157.48 91.44 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "3f1e6a2f-af17-5036-84d5-b4b3ad3a7d85")
+		(property "Reference" "#PWR006"
+			(at 160.48 83.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 160.48 99.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 157.48 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 157.48 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 157.48 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "60728385-cc2f-5db7-8ae4-5b907dd4ab71")
+		)
+		(instances
+			(project "sensor_flex"
+				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
+					(reference "#PWR006")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:TestPoint")
+		(at 198.12 91.44 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(dnp no)
+		(uuid "9a3e543c-2fce-50f3-a823-58254762d3fd")
+		(property "Reference" "TP4"
+			(at 201.12 83.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "GND floor pad"
+			(at 201.12 99.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "sensor:Contact_Pad_7x4mm"
+			(at 198.12 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 198.12 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Floor pad under the back cover's GND finger (D-41, D-49)"
+			(at 198.12 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" ""
+			(at 198.12 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" ""
+			(at 198.12 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "84bf612f-34fe-52d3-8622-7c3e3470be59")
+		)
+		(instances
+			(project "sensor_flex"
+				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
+					(reference "TP4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 198.12 91.44 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "36a591af-7a71-515e-8a50-519886df7c07")
+		(property "Reference" "#PWR007"
+			(at 201.12 83.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 201.12 99.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 198.12 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 198.12 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 198.12 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "fdf7d0f2-a16d-51df-8d3b-71cbacd159ab")
+		)
+		(instances
+			(project "sensor_flex"
+				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
+					(reference "#PWR007")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:SHT4x")
+		(at 238.76 91.44 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5dfa9246-39cd-51a4-8323-ebdee5a8f781")
+		(property "Reference" "U1"
+			(at 241.76 83.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "SHT45"
+			(at 241.76 99.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "sensor:Sensirion_DFN-4_1.5x1.5mm_P0.8mm_SHT4x_NoCentralPad"
+			(at 238.76 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3070,7 +3472,7 @@
 			)
 		)
 		(property "Datasheet" "https://sensirion.com/media/documents/33FD6951/624C4357/Datasheet_SHT4x.pdf"
-			(at 157.48 91.44 0)
+			(at 238.76 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3079,7 +3481,7 @@
 			)
 		)
 		(property "Description" "Humidity and temperature sensor, I2C 0x44"
-			(at 157.48 91.44 0)
+			(at 238.76 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3088,7 +3490,7 @@
 			)
 		)
 		(property "Manufacturer" "Sensirion"
-			(at 157.48 91.44 0)
+			(at 238.76 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3097,7 +3499,7 @@
 			)
 		)
 		(property "MPN" "SHT45-AD1B-R2"
-			(at 157.48 91.44 0)
+			(at 238.76 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3127,7 +3529,7 @@
 		)
 	)
 	(label "SCL"
-		(at 149.86 88.9 180)
+		(at 231.14 88.9 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3135,10 +3537,10 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "ae8a4c53-ecdd-5f73-8b96-0fbeb3a6abad")
+		(uuid "4798e139-85f0-57c4-9ce5-1d700b3367eb")
 	)
 	(label "SDA"
-		(at 149.86 93.98 180)
+		(at 231.14 93.98 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3146,19 +3548,19 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "eb0ede45-7f4d-56a9-9387-626d9d4eeec4")
+		(uuid "d834099b-4664-521b-a74c-23f9f51f5b01")
 	)
 	(symbol
 		(lib_id "sensor:+3V3")
-		(at 160.02 83.82 0)
+		(at 241.3 83.82 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "3f1e6a2f-af17-5036-84d5-b4b3ad3a7d85")
-		(property "Reference" "#PWR006"
-			(at 163.02 75.82 0)
+		(uuid "e909be65-4fb2-58b9-99e4-4b3649e84361")
+		(property "Reference" "#PWR008"
+			(at 244.3 75.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3168,7 +3570,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 163.02 92.32 0)
+			(at 244.3 92.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3177,7 +3579,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 160.02 83.82 0)
+			(at 241.3 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3186,7 +3588,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 160.02 83.82 0)
+			(at 241.3 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3195,7 +3597,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 160.02 83.82 0)
+			(at 241.3 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3204,87 +3606,31 @@
 			)
 		)
 		(pin "1"
-			(uuid "60728385-cc2f-5db7-8ae4-5b907dd4ab71")
+			(uuid "7cacfbc8-bc26-564f-8be6-87569a3b237c")
 		)
 		(instances
 			(project "sensor_flex"
 				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
-					(reference "#PWR006")
+					(reference "#PWR008")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 160.02 99.06 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "36a591af-7a71-515e-8a50-519886df7c07")
-		(property "Reference" "#PWR007"
-			(at 163.02 91.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
+	(label "GND_SENS"
+		(at 241.3 99.06 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
 			)
+			(justify left bottom)
 		)
-		(property "Value" "GND"
-			(at 163.02 107.56 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 160.02 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 160.02 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 160.02 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "fdf7d0f2-a16d-51df-8d3b-71cbacd159ab")
-		)
-		(instances
-			(project "sensor_flex"
-				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
-					(reference "#PWR007")
-					(unit 1)
-				)
-			)
-		)
+		(uuid "89cd31b8-a131-5416-8684-fa2a339ea182")
 	)
 	(symbol
 		(lib_id "sensor:C")
-		(at 198.12 91.44 0)
+		(at 35.56 157.48 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3292,7 +3638,7 @@
 		(dnp no)
 		(uuid "181e755e-bff5-5250-b9f3-0f791e41a321")
 		(property "Reference" "C1"
-			(at 201.12 83.44 0)
+			(at 38.56 149.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3301,7 +3647,7 @@
 			)
 		)
 		(property "Value" "100nF"
-			(at 201.12 99.94 0)
+			(at 38.56 165.98 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3310,7 +3656,7 @@
 			)
 		)
 		(property "Footprint" "sensor:C_0402_1005Metric"
-			(at 198.12 91.44 0)
+			(at 35.56 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3319,7 +3665,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 198.12 91.44 0)
+			(at 35.56 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3328,7 +3674,7 @@
 			)
 		)
 		(property "Description" "SHT45 decoupling"
-			(at 198.12 91.44 0)
+			(at 35.56 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3337,7 +3683,7 @@
 			)
 		)
 		(property "Manufacturer" "any"
-			(at 198.12 91.44 0)
+			(at 35.56 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3346,7 +3692,7 @@
 			)
 		)
 		(property "MPN" "0402 X7R 100 nF 16 V"
-			(at 198.12 91.44 0)
+			(at 35.56 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3371,15 +3717,15 @@
 	)
 	(symbol
 		(lib_id "sensor:+3V3")
-		(at 198.12 87.63 0)
+		(at 35.56 153.67 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "e909be65-4fb2-58b9-99e4-4b3649e84361")
-		(property "Reference" "#PWR008"
-			(at 201.12 79.63 0)
+		(uuid "d3ea9c05-d541-5509-bfd9-840bcf7ca5cb")
+		(property "Reference" "#PWR009"
+			(at 38.56 145.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3389,7 +3735,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 201.12 96.13 0)
+			(at 38.56 162.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3398,7 +3744,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 198.12 87.63 0)
+			(at 35.56 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3407,7 +3753,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 198.12 87.63 0)
+			(at 35.56 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3416,74 +3762,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 198.12 87.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "7cacfbc8-bc26-564f-8be6-87569a3b237c")
-		)
-		(instances
-			(project "sensor_flex"
-				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
-					(reference "#PWR008")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 198.12 95.25 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "d3ea9c05-d541-5509-bfd9-840bcf7ca5cb")
-		(property "Reference" "#PWR009"
-			(at 201.12 87.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 201.12 103.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 198.12 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 198.12 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 198.12 95.25 0)
+			(at 35.56 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3503,9 +3782,20 @@
 			)
 		)
 	)
+	(label "GND_SENS"
+		(at 35.56 161.29 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "53f15040-9db4-5843-9ff5-e6a1fbd6a263")
+	)
 	(symbol
 		(lib_id "sensor:DMM-4026-B-I2S")
-		(at 238.76 91.44 0)
+		(at 76.2 157.48 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3513,7 +3803,7 @@
 		(dnp no)
 		(uuid "c4e0330a-53c6-55f8-b1e7-9d304396b918")
 		(property "Reference" "MK1"
-			(at 241.76 83.44 0)
+			(at 79.2 149.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3522,7 +3812,7 @@
 			)
 		)
 		(property "Value" "DMM-4026-B-I2S-R"
-			(at 241.76 99.94 0)
+			(at 79.2 165.98 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3531,7 +3821,7 @@
 			)
 		)
 		(property "Footprint" "sensor:PUI_DMM-4026-B-I2S_4x3mm"
-			(at 238.76 91.44 0)
+			(at 76.2 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3540,7 +3830,7 @@
 			)
 		)
 		(property "Datasheet" "https://api.puiaudio.com/filename/DMM-4026-B-I2S-R.pdf"
-			(at 238.76 91.44 0)
+			(at 76.2 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3549,7 +3839,7 @@
 			)
 		)
 		(property "Description" "I2S MEMS microphone, bottom port, 1.62-3.63 V; LR low = left channel"
-			(at 238.76 91.44 0)
+			(at 76.2 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3558,7 +3848,7 @@
 			)
 		)
 		(property "Manufacturer" "PUI Audio"
-			(at 238.76 91.44 0)
+			(at 76.2 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3567,7 +3857,7 @@
 			)
 		)
 		(property "MPN" "DMM-4026-B-I2S-R"
-			(at 238.76 91.44 0)
+			(at 76.2 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3605,8 +3895,8 @@
 			)
 		)
 	)
-	(label "MIC_GND"
-		(at 228.6 88.9 180)
+	(label "GND_SENS"
+		(at 66.04 154.94 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3614,85 +3904,29 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "0b254600-2a9c-5d0b-8f5b-bc2e0405fcb9")
-	)
-	(label "MIC_3V3"
-		(at 238.76 83.82 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "451937b2-e203-5b9d-a4a8-f58fbee79da2")
-	)
-	(label "MIC_GND"
-		(at 238.76 99.06 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "6deecbe0-028c-5d60-afc8-ecc437e9a504")
-	)
-	(label "I2S_WS"
-		(at 248.92 88.9 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "118a0f43-177a-5602-95c2-d5e01fd0c934")
-	)
-	(label "I2S_SCK"
-		(at 248.92 91.44 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "d8ed22d2-880d-57d6-b90b-445016a9c59a")
-	)
-	(label "I2S_SD"
-		(at 248.92 93.98 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "611bab80-9c62-55ef-8a0f-fab1b4806dee")
-	)
-	(label "MIC_GND"
-		(at 228.6 93.98 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "b1bb8cdc-30af-58db-957f-431e3ac583d8")
+		(uuid "f4f64959-02fd-507e-9ae6-2676a531b50b")
 	)
 	(symbol
-		(lib_id "sensor:C")
-		(at 35.56 157.48 0)
+		(lib_id "sensor:+3V3")
+		(at 76.2 149.86 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
+		(in_bom no)
+		(on_board no)
 		(dnp no)
-		(uuid "d067a96b-6742-5638-bdba-3b6130f0ec6e")
-		(property "Reference" "C2"
-			(at 38.56 149.48 0)
+		(uuid "bf88de87-6bc6-55c6-9a46-72c2ad28f7d1")
+		(property "Reference" "#PWR010"
+			(at 79.2 141.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 79.2 158.36 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3700,17 +3934,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100nF"
-			(at 38.56 165.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "sensor:C_0402_1005Metric"
-			(at 35.56 157.48 0)
+		(property "Footprint" ""
+			(at 76.2 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3719,7 +3944,128 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 35.56 157.48 0)
+			(at 76.2 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 76.2 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6a93da5c-fc36-59c0-98b6-265748542b4c")
+		)
+		(instances
+			(project "sensor_flex"
+				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
+					(reference "#PWR010")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "GND_SENS"
+		(at 76.2 165.1 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0127f3ae-1b47-56dd-9404-0cb150df7439")
+	)
+	(label "I2S_WS"
+		(at 86.36 154.94 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f4929a06-5f24-5d89-9cb5-013df12720e6")
+	)
+	(label "I2S_SCK"
+		(at 86.36 157.48 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ca05d45e-3ff5-53c9-a372-daea757bc41e")
+	)
+	(label "I2S_SD"
+		(at 86.36 160.02 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "41896bfd-981f-5af0-9b1d-48d4355398e4")
+	)
+	(label "GND_SENS"
+		(at 66.04 160.02 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "a69aba6d-a502-5291-9c11-3b65c30ba86b")
+	)
+	(symbol
+		(lib_id "sensor:C")
+		(at 116.84 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d067a96b-6742-5638-bdba-3b6130f0ec6e")
+		(property "Reference" "C2"
+			(at 119.84 149.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 119.84 165.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "sensor:C_0402_1005Metric"
+			(at 116.84 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 116.84 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3728,7 +4074,7 @@
 			)
 		)
 		(property "Description" "Microphone decoupling"
-			(at 35.56 157.48 0)
+			(at 116.84 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3737,7 +4083,7 @@
 			)
 		)
 		(property "Manufacturer" "any"
-			(at 35.56 157.48 0)
+			(at 116.84 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3746,7 +4092,7 @@
 			)
 		)
 		(property "MPN" "0402 X7R 100 nF 16 V"
-			(at 35.56 157.48 0)
+			(at 116.84 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3769,8 +4115,8 @@
 			)
 		)
 	)
-	(label "MIC_3V3"
-		(at 35.56 153.67 0)
+	(label "GND_SENS"
+		(at 116.84 153.67 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3778,30 +4124,29 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "fcc67b1c-84b8-5cb6-b42d-1309f34d8e66")
-	)
-	(label "MIC_GND"
-		(at 35.56 161.29 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "6e5bc71e-5f8d-5ab0-8b97-eb30a9aa38c9")
+		(uuid "c8d39d17-f480-53cf-928c-f4561268aabe")
 	)
 	(symbol
-		(lib_id "sensor:R")
-		(at 76.2 157.48 0)
+		(lib_id "sensor:+3V3")
+		(at 116.84 161.29 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
+		(in_bom no)
+		(on_board no)
 		(dnp no)
-		(uuid "eef83962-6528-58dd-82af-63503058160f")
-		(property "Reference" "R1"
-			(at 79.2 149.48 0)
+		(uuid "d3e8c54c-1f18-5bbc-85f3-2278a0d00873")
+		(property "Reference" "#PWR011"
+			(at 119.84 153.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 119.84 169.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3809,17 +4154,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100k"
-			(at 79.2 165.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "sensor:R_0402_1005Metric"
-			(at 76.2 157.48 0)
+		(property "Footprint" ""
+			(at 116.84 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3828,7 +4164,73 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 76.2 157.48 0)
+			(at 116.84 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 116.84 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "c633b3de-5c04-5836-9d1f-2bb6f8cfe4d4")
+		)
+		(instances
+			(project "sensor_flex"
+				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
+					(reference "#PWR011")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:R")
+		(at 157.48 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "eef83962-6528-58dd-82af-63503058160f")
+		(property "Reference" "R1"
+			(at 160.48 149.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100k"
+			(at 160.48 165.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "sensor:R_0402_1005Metric"
+			(at 157.48 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 157.48 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3837,7 +4239,7 @@
 			)
 		)
 		(property "Description" "I2S SD pull-down (microphone datasheet)"
-			(at 76.2 157.48 0)
+			(at 157.48 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3846,7 +4248,7 @@
 			)
 		)
 		(property "Manufacturer" "any"
-			(at 76.2 157.48 0)
+			(at 157.48 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3855,7 +4257,7 @@
 			)
 		)
 		(property "MPN" "0402 1% 100 kOhm"
-			(at 76.2 157.48 0)
+			(at 157.48 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3879,7 +4281,7 @@
 		)
 	)
 	(label "I2S_SD"
-		(at 76.2 153.67 0)
+		(at 157.48 153.67 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3887,10 +4289,10 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "d111474e-bbcd-5c1e-9c84-2701a978bec5")
+		(uuid "f80f7002-3cfe-5233-8a7f-0e8eefc368da")
 	)
-	(label "MIC_GND"
-		(at 76.2 161.29 0)
+	(label "GND_SENS"
+		(at 157.48 161.29 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3898,7 +4300,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "89f47c0f-dc6b-540a-a42c-2846fa8974d9")
+		(uuid "cdfedc53-6a76-55b0-9716-ea57b838997e")
 	)
 	(symbol
 		(lib_id "sensor:PWR_FLAG")
@@ -3975,8 +4377,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "bf88de87-6bc6-55c6-9a46-72c2ad28f7d1")
-		(property "Reference" "#PWR010"
+		(uuid "29cecf36-4928-5154-a779-da69b27aaf25")
+		(property "Reference" "#PWR012"
 			(at 38.56 42.8 0)
 			(effects
 				(font
@@ -4023,12 +4425,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "6a93da5c-fc36-59c0-98b6-265748542b4c")
+			(uuid "c37bd349-8983-51e6-a125-f34f144f446c")
 		)
 		(instances
 			(project "sensor_flex"
 				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
-					(reference "#PWR010")
+					(reference "#PWR012")
 					(unit 1)
 				)
 			)
@@ -4109,8 +4511,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "d3e8c54c-1f18-5bbc-85f3-2278a0d00873")
-		(property "Reference" "#PWR011"
+		(uuid "8bdacf20-ff56-58c8-a288-50aab8c8ab15")
+		(property "Reference" "#PWR013"
 			(at 69.04 42.8 0)
 			(effects
 				(font
@@ -4157,12 +4559,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "c633b3de-5c04-5836-9d1f-2bb6f8cfe4d4")
+			(uuid "cee55465-6362-531d-89ec-d34cd7eda754")
 		)
 		(instances
 			(project "sensor_flex"
 				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
-					(reference "#PWR011")
+					(reference "#PWR013")
 					(unit 1)
 				)
 			)
@@ -4243,8 +4645,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "29cecf36-4928-5154-a779-da69b27aaf25")
-		(property "Reference" "#PWR012"
+		(uuid "6264eb0d-02b2-5b9b-809d-5fa16a38cfac")
+		(property "Reference" "#PWR014"
 			(at 99.52 42.8 0)
 			(effects
 				(font
@@ -4291,12 +4693,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "c37bd349-8983-51e6-a125-f34f144f446c")
+			(uuid "881121c1-7ff4-5538-8988-05fa8402ebc6")
 		)
 		(instances
 			(project "sensor_flex"
 				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
-					(reference "#PWR012")
+					(reference "#PWR014")
 					(unit 1)
 				)
 			)
@@ -4369,7 +4771,7 @@
 			)
 		)
 	)
-	(label "MIC_3V3"
+	(label "GND_SENS"
 		(at 127 50.8 0)
 		(fields_autoplaced yes)
 		(effects
@@ -4378,87 +4780,9 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "c5e3dc75-3eb5-510b-94b1-a41756eb3d8a")
+		(uuid "c7c3d504-4e32-581e-9c7e-7453bb84d30a")
 	)
-	(symbol
-		(lib_id "sensor:PWR_FLAG")
-		(at 157.48 50.8 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "448c3879-b6a3-5e86-b445-1204051641ae")
-		(property "Reference" "#FLG05"
-			(at 160.48 42.8 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "PWR_FLAG"
-			(at 160.48 59.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 157.48 50.8 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 157.48 50.8 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 157.48 50.8 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "942a3dd4-a51b-5c68-b7b5-cdb469458b2e")
-		)
-		(instances
-			(project "sensor_flex"
-				(path "/52bd1c0d-f079-52cc-b26f-98850263cd81"
-					(reference "#FLG05")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(label "MIC_GND"
-		(at 157.48 50.8 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "1616571c-a503-5ed3-b1c8-05378f37d1ec")
-	)
-	(text "Sensor flex (docs/DESIGN.md D-27): single layer, two 45 deg folds.\nJ1 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin).\nJ2, J3: Harwin S7081-42R spring fingers on the target board (+5 V, GND from the wiring board).\nU1: SHT45 on the flex tail, I2C on the MSR-2 bus (SDA = IO1, SCL = IO0).\nMK1: I2S microphone (D-29), left channel; SCK = IO4, WS = IO6, SD = IO7 (CN2 contacts placeholder).\nMIC_3V3 / MIC_GND: the microphone's own CN2 contacts, joined to +3V3 / GND on the MSR-2."
+	(text "Sensor flex (docs/DESIGN.md D-27, D-47): two layers, two 45 deg folds.\nJ1 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin).\nJ2, J3: Harwin S7081-42R spring fingers on the 5 V jumper's pad end (+5 V, GND from the wiring board).\nU1: SHT45 on the flex tail, I2C on the MSR-2 bus (SDA = IO1, SCL = IO0).\nMK1: I2S microphone (D-29), left channel; SCK = IO4, WS = IO6, SD = IO7 (CN2 contacts placeholder).\nGND_SENS: the microphone's and the SHT45's own CN2 ground contact, joined to GND on the MSR-2."
 		(exclude_from_sim no)
 		(at 25 180 0)
 		(effects
@@ -4467,7 +4791,7 @@
 			)
 			(justify left top)
 		)
-		(uuid "9ca59515-ba61-5136-8160-3448d95b098b")
+		(uuid "ad10d985-9427-5ab4-83c5-6abfe9de83a5")
 	)
 	(sheet_instances
 		(path "/"

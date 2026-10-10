@@ -1522,308 +1522,6 @@
 		)
 	)
 	(symbol
-		(lib_id "sensor:TestPoint")
-		(at 157.48 91.44 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "bbb7fdf5-026d-5131-b8d1-898748717d1f")
-		(property "Reference" "TP3"
-			(at 160.48 83.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "+5V floor pad"
-			(at 160.48 99.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "sensor:Contact_Pad_7x4mm"
-			(at 157.48 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 157.48 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Floor pad under the back cover's +5V finger (D-41)"
-			(at 157.48 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Manufacturer" ""
-			(at 157.48 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" ""
-			(at 157.48 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "4890a40f-7ad8-5468-8c79-a5c96b8c7ff4")
-		)
-		(instances
-			(project "power_jumper"
-				(path "/058b56c0-6b23-5c9a-bd4d-cee73a7f3268"
-					(reference "TP3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:+5V")
-		(at 157.48 91.44 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "535f13ad-99e2-50f5-ad69-78627c514439")
-		(property "Reference" "#PWR009"
-			(at 160.48 83.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "+5V"
-			(at 160.48 99.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 157.48 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 157.48 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 157.48 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "374e3719-ffe6-5df4-b97e-1b8fb661ba93")
-		)
-		(instances
-			(project "power_jumper"
-				(path "/058b56c0-6b23-5c9a-bd4d-cee73a7f3268"
-					(reference "#PWR009")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:TestPoint")
-		(at 198.12 91.44 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "fba3a83b-5020-539b-b17c-17bd698b44f4")
-		(property "Reference" "TP4"
-			(at 201.12 83.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "GND floor pad"
-			(at 201.12 99.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "sensor:Contact_Pad_7x4mm"
-			(at 198.12 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 198.12 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Floor pad under the back cover's GND finger (D-41)"
-			(at 198.12 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Manufacturer" ""
-			(at 198.12 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" ""
-			(at 198.12 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "fd4b58e8-79fe-5e23-8beb-28aa23237e13")
-		)
-		(instances
-			(project "power_jumper"
-				(path "/058b56c0-6b23-5c9a-bd4d-cee73a7f3268"
-					(reference "TP4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 198.12 91.44 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "08ff2f69-8fba-5435-85cf-e58df643fc60")
-		(property "Reference" "#PWR010"
-			(at 201.12 83.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 201.12 99.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 198.12 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 198.12 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 198.12 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "9678b145-4da1-54a8-ad33-b96b3b779083")
-		)
-		(instances
-			(project "power_jumper"
-				(path "/058b56c0-6b23-5c9a-bd4d-cee73a7f3268"
-					(reference "#PWR010")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "sensor:PWR_FLAG")
 		(at 35.56 50.8 0)
 		(unit 1)
@@ -1898,8 +1596,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "1ce96622-ee9c-509b-9dd8-cbf917f708ed")
-		(property "Reference" "#PWR011"
+		(uuid "535f13ad-99e2-50f5-ad69-78627c514439")
+		(property "Reference" "#PWR009"
 			(at 38.56 42.8 0)
 			(effects
 				(font
@@ -1946,12 +1644,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "8c4236ba-3bd3-564e-92d1-51da4ad30c75")
+			(uuid "374e3719-ffe6-5df4-b97e-1b8fb661ba93")
 		)
 		(instances
 			(project "power_jumper"
 				(path "/058b56c0-6b23-5c9a-bd4d-cee73a7f3268"
-					(reference "#PWR011")
+					(reference "#PWR009")
 					(unit 1)
 				)
 			)
@@ -2032,8 +1730,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "576563ac-02a8-5cc5-abb9-b23f93fe57a5")
-		(property "Reference" "#PWR012"
+		(uuid "08ff2f69-8fba-5435-85cf-e58df643fc60")
+		(property "Reference" "#PWR010"
 			(at 69.04 42.8 0)
 			(effects
 				(font
@@ -2080,18 +1778,18 @@
 			)
 		)
 		(pin "1"
-			(uuid "622226a4-4036-5504-93c8-cce4524a3b40")
+			(uuid "9678b145-4da1-54a8-ad33-b96b3b779083")
 		)
 		(instances
 			(project "power_jumper"
 				(path "/058b56c0-6b23-5c9a-bd4d-cee73a7f3268"
-					(reference "#PWR012")
+					(reference "#PWR010")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(text "5 V flex jumper (docs/DESIGN.md D-27, R9): J1 plugs into the wiring board's J2\n(Hirose FH12-6S, slide lock); TP1 / TP2: gold pads on the insert shelf under the\nsensor flex's spring fingers. No wires, no solder joints between parts."
+	(text "5 V flex jumper (docs/DESIGN.md D-27, R9): J1 plugs into the wiring board's J2\n(Hirose FH12-6S, slide lock); TP1 / TP2: gold pads on the corner shelf under the\nsensor flex's spring fingers. No wires, no solder joints between parts."
 		(exclude_from_sim no)
 		(at 25 180 0)
 		(effects

@@ -46,6 +46,21 @@ def notch_block(sx):
     return Pos(sx * NOTCH_X, 0, 0) * slab(Rectangle(w, h), PT - NOTCH[2] - NOTCH_BLOCK, PT)
 
 
+def flex_ramps():
+    """Ramps over the sensor flex's three slopes (the rise from CN2, down to the spring-pin pads and back up),
+    down from the skin."""
+    from common import ramp_over
+    import sensor_eu as se
+    r = se.ROUTE
+    fold = FLEX_W / 2 + 0.3
+    rise = ((r[1][0], r[1][1] - fold, r[1][2] + (r[2][2] - r[1][2]) * fold / (r[1][1] - r[2][1])), r[2])
+    out = None
+    for a, b in (rise, (r[3], r[4]), (r[5], r[6])):
+        q = ramp_over(a, b, FLEX_W + 1.0, FLEX_T, SKIN_Z + 0.01)
+        out = q if out is None else out + q
+    return out
+
+
 def build():
     pc = Pos(PC[0], PC[1], 0)
     shell = pc * slab(rr(PW, PH, PR), 0, PT)
@@ -56,6 +71,7 @@ def build():
     body += notch_block(-1)                                                          # left only: the right channel carries the flex
     body += Pos(0, MSR_Y, 0) * frame(MSR[0] + 2 * CLR, MSR[1] + 2 * CLR, 1.6, 1, 0, PT)
     body += Pos(0, SHT_Y, 0) * frame(SHT[0] + 0.8, SHT[1] + 0.8, 1.6, 0.5, 0, PT)
+    body += flex_ramps()                                                             # the flex's slopes are taped to them
     # ---------------- cuts ----------------
     body -= slab(stadium(*POCKET_IN), CAP_T, PT + 1)                               # remote pocket
     body += tabs()

@@ -160,31 +160,51 @@ def sensor_flex_checks(ins, tr):
     """Sensor flex (D-27): stack heights, spring-finger working height, clearances, jumper strip."""
     print("sensor flex (D-27)")
     import sensor_flex as sf, bilresa, post
-    stack = STIFF_T + FLEX_T + B2B_STACK
+    stack = PLUG_STIFF_T + SFLEX_T + B2B_STACK
     check(stack <= MSR_BACK_Z + 1e-6, f"CN2 plug stack {stack:.2f} mm fits behind the MSR-2 ({MSR_BACK_Z:.2f} mm, "
                                       f"B2B_STACK is MEASURE)")
-    top = FLEX_HI_Z + FLEX_T + STIFF_T
+    top = FLEX_HI_Z + SFLEX_T + STIFF_T
     check(top <= SKIN_Z - 0.1, f"stiffened flex top {top:.2f} mm under the face skin ({SKIN_Z})")
-    strip_edge = FLEX_X - FLEX_W / 2
-    face = FLANGE_OUT[0] / 2
-    check(strip_edge - face >= FLEX_LEAD_GAP - 1e-6, f"{strip_edge - face:.2f} mm strip along the flange face for the 5 V jumper")
     wall = PW / 2 - SKIN
-    check(wall - (FLEX_X + FLEX_W / 2) >= 0.15, f"flex clears the trim's side wall by {wall - (FLEX_X + FLEX_W / 2):.2f} mm")
-    rec = wall + TRIM_WALL_RECESS
-    check(rec - FINGER_SEC_OUT >= 0.3 - 1e-6 and SKIN - TRIM_WALL_RECESS >= 0.8,
-          f"finger section {rec - FINGER_SEC_OUT:.2f} mm inside the trim wall recess; wall left {SKIN - TRIM_WALL_RECESS} mm")
+    check(wall - FLEX_RIGHT >= 0.3, f"flex clears the trim's side wall by {wall - FLEX_RIGHT:.2f} mm")
+    win = ISLAND[0] / 2 + SPLIT_CLR
+    left = FLEX_RIGHT - FLEX_RUN_W
+    check(left - win >= 0.1 and FLEX_RIGHT <= FLANGE_OUT[0] / 2 - 0.1,
+          f"band run {left:.2f}..{FLEX_RIGHT} on the flange ({win:.2f}..{FLANGE_OUT[0] / 2:.2f}), in the trim's "
+          f"{FLEX_GROOVE} mm groove (skin left {SKIN - FLEX_GROOVE:.1f})")
+    check(FLEX_GROOVE - SFLEX_T >= TAPE_T, f"groove {FLEX_GROOVE} over the {SFLEX_T} flex: room for the {TAPE_T} tape "
+                                           f"that holds the band run in it")
+    import trim
+    gap = trim.flex_ramp().distance_to(sf.flex())
+    check(TAPE_T <= gap <= 0.15, f"flex rise from CN2 {gap:.2f} mm under the trim's ramp: taped to it all along")
+    gw, gd, gf = BC_NA_TGROOVE
+    check(gd - SFLEX_T >= 0.05 and gf - 2 * SFLEX_T >= 0.05 and gw - BC_NA_NECK_W >= 0.3,
+          f"tongue groove in the trim's underside {gw} x {gd} mm ({gf} at the fold) over the {SFLEX_T} tongue; "
+          f"the flange and the insert's notch floor clamp it")
+    rise = (FLEX_HI_Z - STIFF_T) / (FLEX_X - FLEX_EXIT_X)
+    check(rise <= 1.25, f"flex rises {FLEX_HI_Z - STIFF_T:.1f} mm over {FLEX_X - FLEX_EXIT_X:.1f} mm to the corner fold")
+    check(FINGER_SEC_IN - FRAME_RIGHT >= 0.3 and FINGER_SEC_Y[0] >= FLANGE_OUT[1] / 2 + SPLIT_CLR + 0.1,
+          f"finger section clear of the MSR-2 frame ({FINGER_SEC_IN - FRAME_RIGHT:.2f}) and above the flange")
+    xs = sorted(x for x, _ in FINGERS)
+    gap = xs[1] - xs[0] - FINGER_PAD[0]
+    lanes = FLEX_RIGHT - (xs[1] + FINGER_PAD[0] / 2)
+    check(gap >= 0.6 and lanes >= 4 * 0.2 + 3 * 0.2 + 0.4, f"finger pads {gap:.2f} mm apart; {lanes:.2f} mm right of "
+                                                           f"them for the SHT45's four tracks")
     lo, hi = FINGER_WH - FINGER_TOL, FINGER_WH + FINGER_TOL
     check(lo >= FINGER_WH_MIN and hi < FINGER_FREE, f"spring fingers at {FINGER_WH} +- {FINGER_TOL} mm working height, inside "
                                                     f"{FINGER_WH_MIN}..{FINGER_FREE} (S7081-42R)")
     tgt = sf.target().bounding_box()
-    mx = min(FINGER_X - tgt.min.X, tgt.max.X - FINGER_X)
-    my = min(min(y - tgt.min.Y, tgt.max.Y - y) for y in FINGER_Y)
+    mx = min(min(x - tgt.min.X, tgt.max.X - x) for x, _ in FINGERS)
+    my = min(min(y - tgt.min.Y, tgt.max.Y - y) for _, y in FINGERS)
     check(mx >= 1.0 and my >= 1.0, f"finger contact points over the jumper's pad end (margins x {mx:.2f}, y {my:.2f} mm)")
-    edge = sf.shelf_edge()
-    check(wall - edge >= 0.4, f"insert shelf {wall - edge:.2f} mm from the trim's side wall")
-    sec_top = FINGER_Y[1] + FINGER_PAD[1] / 2 + 0.5
-    check(TARGET_Y[1] - sec_top >= 2.5, f"{TARGET_Y[1] - sec_top:.2f} mm of the pad end's top left open for the "
-                                         f"jumper's run to join")
+    from math import hypot
+    r = PLUG_R + COLLAR_LIP
+    cx, cy = SEAL[0] / 2 - r, SEAL[1] / 2 - r
+    reach = max(hypot(max(x - cx, 0), max(y - cy, 0)) - r for x, y in FINGERS)
+    check(reach <= sf.shelf_limit() - 0.5, f"finger domes {reach:.2f} mm beyond the seal band, on the printable "
+                                           f"shelf (<= {sf.shelf_limit():.1f})")
+    check(TARGET_X[0] - FRAME_RIGHT >= 0.3 and wall - TARGET_X[1] >= 1.0,
+          f"pad end clear of the MSR-2 frame ({TARGET_X[0] - FRAME_RIGHT:.2f}) and the side wall ({wall - TARGET_X[1]:.2f})")
     parts = sf.parts()
     msr = Pos(0, MSR_Y, MSR_BACK_Z + MSR[2] / 2) * Box(*MSR)
     others = {"insert": ins, "trim": tr, "remote": bilresa.build(), "MSR-2 envelope": msr, "board posts": post.placed()}
@@ -235,20 +255,21 @@ def mic_checks(ins, tr):
     from build123d import Cylinder
     sec = sf.mic_section().bounding_box()
     body = Pos(MIC_X, MIC_Y, FLEX_HI_Z - MIC[2] / 2) * Box(MIC[0] + 2 * MIC_CLR, MIC[1] + 2 * MIC_CLR, MIC[2])
-    zc = (FLEX_HI_Z - MIC[2] + FLEX_HI_Z + FLEX_T) / 2           # mic underside up to the flex top
+    zc = (FLEX_HI_Z - MIC[2] + FLEX_HI_Z + SFLEX_T) / 2           # mic underside up to the flex top
     zone = Pos(sec.center().X, sec.center().Y, zc) * Box(sec.size.X + 2 * MIC_CLR, sec.size.Y + 2 * MIC_CLR,
-                                                         MIC[2] + FLEX_T)
+                                                         MIC[2] + SFLEX_T)
     for name, z in (("widened flex section", zone), ("mic body", body)):
         r = z & ins
         v = r.volume if r is not None else 0.0
         check(v < 0.01, f"{name} keeps {MIC_CLR} mm from the insert ({v:.3f} mm3)")
-    rise_end = MSR_Y - FLEX_RISE_DY
-    check(MIC_SEC_Y[1] <= rise_end - 1.0 and MIC_SEC_Y[0] >= FINGER_LANE_Y[1] + 1.0,
-          f"widened section y {MIC_SEC_Y[0]}..{MIC_SEC_Y[1]} on the flat channel run ({FINGER_LANE_Y[1]:.2f}..{rise_end:.2f})")
+    fold = SHT_Y + FLEX_RUN_W / 2
+    check(MIC_SEC_Y[1] <= -FLEX_Y_CLIMB - 1.0 and MIC_SEC_Y[0] >= fold + 0.5,
+          f"widened section y {MIC_SEC_Y[0]}..{MIC_SEC_Y[1]} on the flat run between the band ({-FLEX_Y_CLIMB:.2f}) and "
+          f"the bottom fold ({fold:.2f})")
     my0, my1 = MIC_Y - MIC[1] / 2, MIC_Y + MIC[1] / 2
     check(MIC_SEC_Y[0] <= my0 - 0.5 and MIC_SEC_Y[1] >= my1 + 0.5 and MIC_SEC_IN <= MIC_X - MIC[0] / 2 - 0.5,
           "mic body footprint inside the widened section")
-    z0 = FLEX_HI_Z + FLEX_T + STIFF_T
+    z0 = FLEX_HI_Z + SFLEX_T + STIFF_T
     check(SKIN_Z - z0 >= 0.1, f"gasket {SKIN_Z - z0:.2f} mm between the mic stiffener and the face skin")
     check(MIC_SKIN_HOLE_D < MIC_GASKET_D - 1.0, f"gasket ring {(MIC_GASKET_D - MIC_SKIN_HOLE_D) / 2:.2f} mm wide")
     probe = Pos(*MIC_PORT, (SKIN_Z + PT) / 2) * Cylinder(MIC_SKIN_HOLE_D / 2 - 0.05, SKIN - 0.1)
@@ -258,7 +279,7 @@ def mic_checks(ins, tr):
     ix = ISLAND[0] / 2 + SPLIT_CLR
     iy = ISLAND[1] / 2 + SPLIT_CLR
     r_hole = MIC_SKIN_HOLE_D / 2
-    gap_island = max(MIC_PORT[0] - ix, MIC_PORT[1] - iy) - r_hole
+    gap_island = max(abs(MIC_PORT[0]) - ix, abs(MIC_PORT[1]) - iy) - r_hole
     gap_edge = (PW / 2 - FACE_CHAMFER) - MIC_PORT[0] - r_hole
     check(gap_island >= 1.0 and gap_edge >= 1.0,
           f"sound hole on the flat face: {gap_island:.2f} mm from the insert window, {gap_edge:.2f} mm from the chamfer")
@@ -351,7 +372,7 @@ def barrier(ins):
     m = mains[0]
     for name, p in [("room in front of the face", (0, 0, PT + 5)),
                     ("remote pocket", (0, 0, SEAT_Z + 1)),
-                    ("trim hollow (low-voltage)", (PW / 2 - 4, 0, 5)),
+                    ("trim hollow (low-voltage)", (28.0, 60.0, 5)),
                     ("MSR-2 bay", (0, MSR_Y, 5))]:
         check(not m.is_inside(Vector(*p)), f"mains air does not reach the {name}")
     check(m.bounding_box().max.Z <= 0.01, f"mains air stays behind the wall plane (max z {m.bounding_box().max.Z:.2f})")
@@ -515,8 +536,33 @@ def cover_checks():
         v = r.volume if r is not None else 0.0
         check(v < 0.01, f"{k} above the rim inside the cells' outline (r {BC_END_R}, rounded tops; {v:.3f} mm3 out)")
     t, h, gap = BC_END_LIP
-    check(t >= 1.2 and h >= 0.8, f"end section held by a {t} x {h} mm lip at its foot; in use the battery contacts "
-                                 f"press it into the blocks (no hook on top)")
+    check(t >= 1.2 and h >= 0.8, f"end section held by a {t} x {h} mm lip at its foot")
+    nb = bc.run_notch().bounding_box()
+    nw = nb.size.X
+    check(nw <= 3.0 and BC_END_T >= 0.4, f"run drops into a {nw:.2f} mm notch through the GND block from above (no "
+                                         f"threading); the {BC_END_T} mm stiffener spans it behind the finger")
+    r = bc.run_notch() & ps["flex"]
+    check(r is not None and r.volume > 0.01, "the run lies in the notch")
+    es = bc.end_snaps()
+    check(len(es.solids()) == 2, f"{len(es.solids())} snap hooks beside the contact blocks")
+    for k in ("flex", "stiffener", "contacts"):
+        r = es & ps[k]
+        check(r is None or r.volume < 0.001, f"end snap hooks clear the {k}")
+    st, reach, sclr, lt, sgap = BC_END_SNAP
+    over = reach
+    z0, z1 = BC_END_SNAP_Z
+    check(over >= 0.3 and z1 <= B_SEAM_Z - 0.5, f"end snap lips {over} mm over the section's outer edges, z {z0}..{z1} "
+                                                f"(below the rim, clear of the housing's contact slots)")
+    xo = bc.end_blocks()[1][1]
+    inner = xo - reach
+    check(inner >= BC_CELL_X + BC_CONTACT_W / 2 + 0.1, f"end snap lips start at |x| {inner:.2f}, outside the battery "
+                                                       f"contacts (to {BC_CELL_X + BC_CONTACT_W / 2:.2f})")
+    check(lt + sgap <= FINGER_WH - 0.5, f"end snap lips {lt + sgap:.2f} mm in front of the copper (contacts at "
+                                        f"{FINGER_WH})")
+    arm = (z0 + z1) / 2 - BC_FLEX_SNAP_ROOT
+    strain = 1.5 * st * (reach + sclr) / arm ** 2
+    check(strain <= 0.03, f"end snap posts {st} thick, {arm:.1f} mm free: strain {strain * 100:.1f} % as the section "
+                          f"folds in (design target <= 3 %, PETG)")
     clips = bc.steel_clips()
     r = clips & ps["steel"]
     check(r is None or r.volume < 0.001, "steel plate clips clear the plate")
@@ -525,7 +571,7 @@ def cover_checks():
     arm = BC_STEEL_FLOOR + BC_STEEL[2] + 0.1 + ch / 2 - BC_STEEL_CLIP_ROOT
     strain = 1.5 * ct * over / arm ** 2                    # cantilever outer-fibre strain as the plate passes the hook
     check(strain <= 0.03, f"plate clips {cw} wide, {ct} thick, {arm:.1f} mm free from their relief: strain "
-                          f"{strain * 100:.1f} % snapping in (design target <= 3 % for PLA)")
+                          f"{strain * 100:.1f} % snapping in (design target <= 3 %; broke in PLA, PETG to verify)")
     check(over >= 0.3, f"steel plate clips hook {over:.2f} mm over the plate's ends")
     ear = bc.latches().bounding_box()
     reach = sorted(round(B_H / 2 - abs(e.bounding_box().min.Y if e.bounding_box().center().Y > 0
@@ -560,22 +606,23 @@ def cover_checks():
 
 
 def battery_free_checks(ins, tr):
-    """Battery-free remote, NA (D-41): tongue from the jumper's pad end through the insert above the wall
-    plane, floor insert in the pocket, replacement back cover seated on it."""
-    print("battery-free remote, NA (D-41)")
+    """Battery-free remote, NA (D-41, D-49): the sensor flex's tongue under the trim's tab and strip, the floor insert
+    hanging from the strip's foot, the replacement back cover seated on it; nothing of the tongue on the insert."""
+    print("battery-free remote, NA (D-41, D-49)")
     from build123d import Pos
     import backcover as bc
     import floor_na
     import jumper
     import sensor_flex as sf
-    w, below, above = BC_NA_SLOT
-    z_slot = TARGET_TOP_Z - JUMPER_T - below
-    low = min(z_slot, BC_NA_GROOVE_BOT)
-    check(low >= 0.3, f"tongue tunnel and groove above the wall plane (lowest z {low:.2f}): low-voltage to low-voltage")
-    check(w <= 3.0, f"tunnel roof bridges {w} mm (<= 3.0, no supports)")
-    check(BC_NA_NECK_W + 0.4 <= w, f"tongue {BC_NA_NECK_W} mm in the {w} mm tunnel")
-    t = jumper.tongue()
+    import insert, trim
+    ch = insert.tongue_channel().bounding_box()
+    check(ch.min.Z >= 0.3, f"insert's notch and arc groove above the wall plane (lowest z {ch.min.Z:.2f}): "
+                           f"low-voltage to low-voltage")
     sfp = sf.parts()
+    t = sf.tongue()
+    strip = trim.tongue_tab()
+    sb = strip.bounding_box()
+    check(abs(sb.max.Z - PT) < 1e-6, "trim tab fills the island notch flush with the face")
     fl = floor_na.parts()
     lift = SEAT_Z + BC_FLOOR_T
     cov = {k: Pos(0, 0, lift) * v for k, v in bc.cover_parts().items()}
@@ -584,24 +631,39 @@ def battery_free_checks(ins, tr):
     def vol(a, b):
         r = a & b
         return 0.0 if r is None else r.volume
-    for name, other in (("insert", ins), ("trim", tr), ("sensor flex", sfp["flex"]), ("fingers", sfp["fingers"])):
+    for name, other in (("insert", ins), ("trim", tr), ("fingers", sfp["fingers"]), ("jumper pad end", sfp["target"]),
+                        ("5 V jumper", jumper.build()["jumper"]), ("floor insert", fl["floor"])):
         v = vol(t, other)
         check(v < 0.01, f"tongue clears the {name} ({v:.3f} mm3)")
     for k in ("floor", "floor_flex", "floor_pads"):
-        v = vol(fl[k], ins)
-        check(v < 0.01, f"{k} clears the insert ({v:.3f} mm3)")
+        v = vol(fl[k], ins) + vol(fl[k], tr)
+        check(v < 0.01, f"{k} clears the insert and the trim ({v:.3f} mm3)")
     for k, c in cov.items():
-        v = vol(c, ins) + vol(c, t) + vol(c, fl["floor"]) + vol(c, fl["floor_flex"])
-        check(v < 0.01, f"back cover {k} clears the insert, tongue and floor ({v:.3f} mm3)")
-    v = vol(rem, ins) + vol(rem, t)
-    check(v < 0.01, f"remote on the floor insert clears the insert and tongue ({v:.3f} mm3)")
+        v = vol(c, ins) + vol(c, tr) + vol(c, t) + vol(c, fl["floor"]) + vol(c, fl["floor_flex"])
+        check(v < 0.01, f"back cover {k} clears the insert, trim strip, tongue and floor ({v:.3f} mm3)")
+    v = vol(rem, ins) + vol(rem, t) + vol(rem, strip) + vol(rem, fl["floor"])
+    check(v < 0.01, f"remote on the floor insert clears the insert, the trim's strip, the floor's tab and the tongue "
+                    f"({v:.3f} mm3)")
+    import bilresa
+    v = vol(bilresa.build(BC_FLOOR_T), strip) + vol(bilresa.build(BC_FLOOR_T), t)
+    check(v < 0.01, f"remote with its own battery cover on the floor insert clears the strip and the tongue ({v:.3f} "
+                    f"mm3; the floor insert comes with the face plate, so a battery remote sits on it too)")
+    reach, hh, (w0, w1) = BC_NA_FOOT_HOOK
+    over = reach - 0.05
+    arm = DECK_Z - (lift + w1)
+    strain = 1.5 * BC_NA_STRIP[1] * over / arm ** 2
+    check(over >= 0.3 and strain <= 0.03, f"floor insert hangs from the strip's foot: hook {over:.2f} mm into the "
+                                          f"tab's window, strip {arm:.1f} mm free, strain {strain * 100:.1f} % (PETG)")
     xd, wd, y_pad = BC_NA_DOWN
     for x, y in BC_FINGERS:
         check(abs(x - BC_FINGERS[0][0]) < 1e-6 and y + BC_FLOOR_PAD[1] / 2 <= y_pad - 0.3,
               f"floor pad under the finger at ({x}, {y}) on the pad strip")
     well_x, well_y0 = WELL_IN[0] / 2 + BC_FLOOR_CLR, SW_Y - WELL_IN[1] / 2 - BC_FLOOR_CLR
-    check(xd - wd / 2 - 0.3 >= well_x or y_pad + 0.3 <= well_y0,
-          f"tongue strip clear of the switch well's opening ({xd - wd / 2 - 0.3 - well_x:.2f} mm)")
+    hw = BC_NA_NECK_W / 2
+    web = xd - hw - 0.15 - well_x
+    check(web >= 0.5, f"tongue channel and slot clear of the switch well's opening by {web:.2f} mm")
+    check(BC_FINGERS[0][0] - BC_TONGUE_W / 2 - 0.15 >= well_x or y_pad + 0.3 <= well_y0,
+          "pad strip clear of the switch well's opening")
     s0, s1 = BC_STEEL_Y - BC_STEEL[1] / 2, BC_STEEL_Y + BC_STEEL[1] / 2
     m0, m1 = MAGNET_REC_Y - MAGNET[1] / 2, MAGNET_REC_Y + MAGNET[1] / 2
     share = max(0.0, min(s1, m1) - max(s0, m0)) / MAGNET[1]

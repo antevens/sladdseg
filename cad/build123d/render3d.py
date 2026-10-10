@@ -14,7 +14,7 @@ import trim
 
 R = Path(__file__).resolve().parents[2] / "docs" / "renders"
 COL = {"trim": "#f2f1ee", "insert": "#8d949b", "remote": "#fbfaf6", "rocker": "#b23a32",
-       "board": "#1f6b3a", "posts": "#d9822b", "flex": "#c98a1c", "plug": "#222222", "sht45": "#5b2a86",
+       "board": "#1f6b3a", "posts": "#d9822b", "flex": "#c98a1c", "tongue": "#c98a1c", "plug": "#222222", "sht45": "#5b2a86",
        "fingers": "#e3c565", "target": "#2f7a46", "jumper": "#d99a2b", "irm": "#2b2b2b", "wago": "#c9ccd1", "small": "#c8a03a",
        "msr": "#3a3a3a", "mic": "#2c5d8f", "floor": "#7d8a96", "floor_flex": "#d99a2b", "floor_pads": "#e3c565",
        "cover": "#e9e6df", "stiffener": "#2f7a46", "pads": "#e3c565", "contacts": "#c9a227", "regulator": "#2b2b2b",
@@ -68,12 +68,14 @@ def parts(lift=0.0, cut=False):
 
 
 def battery_free(lift_cover=0.0, lift_remote=0.0):
-    """NA battery-free remote (D-41): jumper with its tongue, floor insert, replacement back cover and the
-    remote's front half on it (lifted for exploded views)."""
+    """NA battery-free remote (D-41, D-49): floor insert (with the tongue's floor part), replacement back cover and
+    the remote's front half on it (lifted for exploded views)."""
     import backcover
     import floor_na
     seat = SEAT_Z + BC_FLOOR_T
-    ps = {"jumper": jumper.build(battery_free=True)["jumper"], **floor_na.parts()}
+    import sensor_flex
+    ps = dict(floor_na.parts())
+    ps["tongue"] = sensor_flex.tongue()
     cov = backcover.cover_parts()
     ps.update({("cflex" if k == "flex" else k): Pos(0, 0, seat + lift_cover) * v for k, v in cov.items()})
     ps["front_half"] = Pos(0, 0, seat + lift_remote) * backcover.remote_front()
@@ -112,6 +114,7 @@ def main():
     # exploded: remote, trim, insert (with rocker), wiring board pulled apart along z
     ps, _ = parts()
     off = {"remote": 95, "trim": 55, "msr": 55, "flex": 55, "plug": 55, "sht45": 55, "fingers": 55, "mic": 55,
+           "tongue": 55,
            "target": 0,
            "jumper": 0,
            "insert": 0, "posts": -25,
@@ -120,7 +123,7 @@ def main():
     shot("v0.3_exploded", exploded, [(330, -260, 120), (0, 0, 15), (0, 1, 0)], size=(1400, 1300), head=0.8)
     # face plate lifted off (trim see-through) with everything attached to it; the insert side
     # stays: the spring fingers on the target board are the only electrical interface (R9)
-    face = ("trim", "msr", "flex", "plug", "sht45", "fingers", "mic")
+    face = ("trim", "msr", "flex", "plug", "sht45", "fingers", "mic", "tongue")
     sep = {k: (Pos(0, 0, 35) * v if k in face else v) for k, v in ps.items()}
     shot("v0.3_separation", sep, [(230, -150, 110), (15, 5, 5), (0, 0, 1)], size=(1400, 1200),
          hide=("remote", "posts"), head=0.9, alpha={"trim": 0.18, "insert": 0.55})
@@ -137,25 +140,35 @@ def main():
     ps = {k: (v & keep if k in ("insert", "trim") else v) for k, v in ps.items()}
     shot("v0.3_power", ps, [(230, -40, 30), (22, 5, -8), (0, 1, 0)], size=(1400, 1100),
          hide=("remote", "trim", "posts", "msr"), head=1.0)
-    # battery-free remote (D-41): floor insert, tongue from the jumper's pad end, cover and remote lifted off
+    # battery-free remote (D-41, D-49): floor insert, the sensor flex's tongue, cover and remote lifted off
     ps, _ = parts()
     ps.pop("remote")
-    ps["jumper"] = None
     bf = battery_free(lift_cover=30, lift_remote=55)
-    ps = {k: v for k, v in ps.items() if v is not None}
     shot("v0.3_battery_free", {**ps, **bf}, [(260, -230, 210), (5, 0, 10), (0, 1, 0)], size=(1400, 1300),
          hide=("trim", "msr", "posts") + BOARD_KEYS, head=0.85)
-    # tongue path: insert, floor, cover and remote cut on the tongue's plane, seen from +y
+    # tongue path: insert, floor, cover and remote cut on the tongue's plane (x), seen from -x
     ps, _ = parts()
     ps.pop("remote")
-    ps.pop("jumper")
     bf = battery_free()
-    keep = Pos(0, BC_NA_TONGUE_Y - 100, 0) * Box(300, 200, 300)
-    cutp = {k: (v & keep) for k, v in {**ps, **bf}.items() if k not in BOARD_KEYS and k != "jumper"}
+    keep = Pos(tongue_arc()[2][0] + 100, 0, 0) * Box(200, 400, 300)
+    cutp = {k: (v & keep) for k, v in {**ps, **bf}.items() if k not in BOARD_KEYS and k != "tongue"}
     cutp = {k: v for k, v in cutp.items() if v is not None and v.volume > 1e-6}
-    cutp["jumper"] = jumper.tongue()
-    shot("v0.3_tongue", cutp, [(30, 200, 40), (24, BC_NA_TONGUE_Y, 3), (0, 0, 1)], size=(1400, 1000),
+    cutp["tongue"] = bf["tongue"]
+    shot("v0.3_tongue", cutp, [(tongue_arc()[2][0] - 200, 30, 40), (tongue_arc()[2][0], 30, 3), (0, 0, 1)], size=(1400, 1000),
          hide=("msr", "posts"), head=1.0, alpha={"trim": 0.35})
+    # D-49 views: remote lifted out (the pocket shows the floor insert, the trim's strip and the floor pads only),
+    # and the face plate lifted off with everything attached to it (the insert keeps only the jumper's pad end)
+    ps, _ = parts()
+    ps.pop("remote")
+    bf = battery_free()
+    pocket = {**{k: v for k, v in ps.items() if k not in BOARD_KEYS},
+              **{k: bf[k] for k in ("floor", "floor_flex", "floor_pads", "tongue")}}
+    shot("v0.3_pocket_empty", pocket, [(40, -60, 230), (0, 2, 0), (0, 1, 0)], size=(1200, 1400), hide=("posts",),
+         head=0.9)
+    face = ("trim", "msr", "flex", "plug", "sht45", "fingers", "mic", "tongue", "floor", "floor_flex", "floor_pads")
+    off = {k: (Pos(0, 0, 45) * v if k in face else v) for k, v in pocket.items()}
+    shot("v0.3_face_off", off, [(200, -220, 230), (5, 5, 15), (0, 0, 1)], size=(1400, 1300), hide=("posts",),
+         head=0.9, alpha={"trim": 0.3})
     shot("bilresa_model", {"remote": bilresa.build()}, [(70, -90, 120), (0, 0, 0), (0, 1, 0)], size=(900, 900))
     shot("bilresa_back", {"remote": bilresa.build()}, [(95, -60, -110), (0, 0, SEAT_Z + B_D / 2), (0, 1, 0)], size=(900, 900), head=1.0)
 

@@ -17,6 +17,63 @@ def msr_hooks():
     return board_hooks(MSR_Y, MSR_BOARD[0], MSR_BACK_Z, PT - RADAR_WALL, MSR[0] / 2 + CLR, MSR_HOOK)
 
 
+def band_groove():
+    """Groove in the skin's underside over the flange's right band: the sensor flex lies on the flange top."""
+    import sensor_flex as sf
+    x0, x1 = FLEX_RIGHT - FLEX_RUN_W - 0.15, FLEX_RIGHT + 0.15
+    y = sf.Y_CLIMB + 1.0
+    return Pos((x0 + x1) / 2, 0, SKIN_Z + FLEX_GROOVE / 2 - 0.005) * Box(x1 - x0, 2 * y, FLEX_GROOVE + 0.01)
+
+
+def flex_ramp():
+    """Ramp over the sensor flex's rise from the MSR-2 bay to the corner fold, down from the skin."""
+    from common import ramp_over
+    x1 = FLEX_X - FLEX_W / 2 - 0.3                       # stops short of the corner fold
+    z1 = FLEX_Z_LO + (FLEX_Z_HI - FLEX_Z_LO) * (x1 - FLEX_EXIT_X) / (FLEX_X - FLEX_EXIT_X)
+    return ramp_over((FLEX_EXIT_X, MSR_Y, FLEX_Z_LO), (x1, MSR_Y, z1), FLEX_W + 1.0, SFLEX_T, SKIN_Z + 0.01)
+
+
+def tongue_tab():
+    """Battery-free tongue (D-49): tab in the insert's island notch, flush with the face, down to the deck, and the
+    strip down the pocket's top arc in the insert's groove (flush above the groove's end, in front of the wall
+    below it, 45 deg between), the tongue behind both; the floor insert snaps onto the strip's foot."""
+    from common import bar, radial_prism
+    p, u, q = tongue_arc()
+    w = BC_NA_TAB_W
+    y1 = ISLAND[1] / 2 + SPLIT_CLR + 0.5
+    q2 = (q[0] + w / 2 * u[0], q[1] + w / 2 * u[1])
+    tab = bar((q[0], y1), q, w, DECK_Z, PT, w / 2) + bar(q2, p, w, DECK_Z, PT)
+    t, room = BC_NA_STRIP[1], BC_NA_TROOM
+    gb = BC_NA_GROOVE_BOT
+    zf = SEAT_Z + BC_FLOOR_T + 0.1                          # foot, just above the floor insert
+    strip = radial_prism(p, u, [(0.0, DECK_Z + 0.01), (0.0, gb + t + room), (-(t + room), gb), (-(t + room), zf),
+                                (-room, zf), (-room, gb), (t, gb + t + room), (t, DECK_Z + 0.01)], BC_NA_STRIP[0])
+    reach, hh, (w0, w1) = BC_NA_FOOT_HOOK
+    fl = SEAT_Z + BC_FLOOR_T
+    r0 = -(t + room)
+    z1 = fl + w1 - 0.1                                       # hook's top under the window's top edge
+    z0 = fl + w0 + reach + 0.05                              # the lead-in starts inside the window
+    hook = radial_prism(p, u, [(r0 + 0.01, z0 - reach), (r0 - reach, z0), (r0 - reach, z1), (r0 + 0.01, z1)],
+                        BC_NA_STRIP[0] - 2.0)
+    return tab + strip + hook
+
+
+def tongue_groove():
+    """Groove in the skin's underside for the tongue: the band from the finger section to the fold, then down the
+    plate over the flange to the island window, deeper at the fold (two layers); and in the tab's underside."""
+    from common import bar
+    p, u, q = tongue_arc()
+    gw, gd, gf = BC_NA_TGROOVE
+    y1 = ISLAND[1] / 2 + SPLIT_CLR
+    out = bar((FINGER_SEC_IN + 0.5, BC_NA_BAND_Y), (q[0], BC_NA_BAND_Y), gw, SKIN_Z - 0.01, SKIN_Z + gd, gw / 2)
+    out += bar((q[0], BC_NA_BAND_Y), (q[0], y1 - 0.5), gw, SKIN_Z - 0.01, SKIN_Z + gd, gw / 2)
+    out += bar((q[0], BC_NA_BAND_Y + gw / 2), (q[0], BC_NA_BAND_Y - gw / 2), gw, SKIN_Z - 0.01, SKIN_Z + gf, 0.2)
+    r_up = BC_NA_STRIP[1]
+    out += bar((q[0], y1 + 0.5), q, gw, DECK_Z - 0.01, DECK_Z + gd, gw / 2)
+    out += bar(q, (p[0] + r_up * u[0], p[1] + r_up * u[1]), gw, DECK_Z - 0.01, DECK_Z + gd)
+    return out
+
+
 def build():
     shell = Pos(0, PLATE_Y, 0) * slab(rr(PW, PH, PR), 0, PT)
     shell = chamfer(shell.edges().group_by(Axis.Z)[-1], FACE_CHAMFER)
@@ -46,20 +103,19 @@ def build():
     for i in range(-2, 3):  # MSR vents, top edge
         body -= Pos(i * 7 + 1.5, PLATE_Y + PH / 2 - SKIN + 2, 6) * Box(3, 6, 6)
     body -= Pos(0, SHT_Y, 0) * slab(rr(SHT[0] + 0.8, SHT[1] + 0.8, 0.5), -0.01, PT - SKIN)
-    # sensor flex (D-27) passes the bay frames: MSR-2 frame (right wall, at the wall plane) and the
+    # sensor flex (D-27, D-47) passes the bay frames: MSR-2 frame (right wall, at the wall plane) and the
     # SHT45 frame (right wall, just under the skin)
     nx = MSR[0] / 2 + CLR + 1.0                    # notch centre (room x), 4 mm long
     w = 2 * flex_half_width(nx - 2.0 - MSR_CN2_X) + 0.6
     body -= Pos(nx, MSR_Y, 0.45) * Box(4.0, w, 0.92)
-    w = FLEX_W + 0.6
+    w = FLEX_RUN_W + 0.6
     body -= Pos(SHT[0] / 2 + 0.4 + 0.8, SHT_Y, (SKIN_Z + 9.4) / 2) * Box(3.0, w, SKIN_Z - 9.4 + 0.01)
-    # side wall thinned on the inside over the flex's finger section (track lanes beside the pads)
-    ry0, ry1 = FINGER_LANE_Y[0] - 0.5, FINGER_LANE_Y[1] + 0.5
-    rz0 = FLEX_HI_Z - 0.5
-    body -= Pos(PW / 2 - SKIN + TRIM_WALL_RECESS / 2, (ry0 + ry1) / 2, (rz0 + SKIN_Z) / 2) * Box(
-        TRIM_WALL_RECESS, ry1 - ry0, SKIN_Z - rz0 + 0.01)
+    body -= band_groove()
     body -= Pos(*MIC_PORT, PT - SKIN / 2) * Cylinder(MIC_SKIN_HOLE_D / 2, SKIN + 1)   # microphone sound hole (D-29)
     body = body - reliefs + hooks                       # MSR-2 snap hooks (D-45)
+    body += tongue_tab()                                # island notch, strip down the arc (D-49)
+    body -= tongue_groove()
+    body += flex_ramp()                                 # the flex's rise from CN2 is taped to it
     for i in (-1, 0, 1):  # SHT vents: face + bottom edge
         body -= Pos(i * 4, SHT_Y, PT - 1) * Box(2, 6, 4)
         body -= Pos(i * 4, PLATE_Y - PH / 2 + 4, 5) * Box(2, 10, 6)

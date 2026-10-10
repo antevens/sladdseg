@@ -93,6 +93,9 @@ EU_TONGUE_Y = (PINS[0][1] + PINS[1][1]) / 2   # tongue centre (room y)
 EU_TONGUE_W = 1.6                         # tongue width from the pad section to the fold
 EU_FOLD_X = 17.6                          # 45 deg fold square centre (room x), beside the pads
 EU_STRIP_X0 = 13.2                        # pad strip's inner edge: clear of the switch cup's opening
+EU_RISE = (-4.0, -2.0)                    # floor slot where the neck above the fold rises onto the top (room y); the
+                                          # flex is slit from the fold up to its top end, beside the neck (D-49)
+EU_SLIT_X = (EU_FOLD_X - EU_TONGUE_W / 2 - 0.3, EU_FOLD_X - EU_TONGUE_W / 2)   # slit across (room x)
 EU_PAD_X = (13.5, 16.3)                   # floor pads (room x) under the fingers at x 14, clear of the cup opening
 WALL_RECESS = 0.6                         # trim pocket wall thinned at its foot over the pad section
 

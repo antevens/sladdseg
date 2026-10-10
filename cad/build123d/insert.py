@@ -40,11 +40,11 @@ def build():
     for s in (-1, 1):                                                       # #6 screw clearance
         body -= Pos(0, s * SCREW_PITCH / 2, DECK_Z / 2) * Cylinder(SCREW_D / 2, DECK_Z + 2)
     body -= pass_through()
-    body -= tongue_slot()                                                   # battery-free tongue (D-41), above z 0
+    body -= tongue_channel()                                                # battery-free tongue (D-47), above z 0
     for kx, ky in KEY_POS:                                                  # locating pins
         body += Pos(kx, ky, DECK_Z + KEY_H / 2 - 0.01) * Cylinder(KEY_D / 2, KEY_H + 0.02)
     import sensor_flex
-    body += sensor_flex.shelf()                                             # jumper pad end under the spring fingers (D-27)
+    body += sensor_flex.shelf()                                             # jumper pad end under the spring fingers (D-47)
     body += mount_bosses()                                                  # after the pocket cut
     body -= mount_holes()
     return body
@@ -87,28 +87,31 @@ def magnet_recess():
     return end + upper
 
 
-def tongue_slot():
-    """Battery-free tongue (D-41): tunnel through the flange from the jumper's pad end to the pocket at the
-    pad end's flex height and a groove down the pocket wall; all above the wall plane, between two
-    low-voltage spaces (trim hollow, remote pocket)."""
-    w, below, above = BC_NA_SLOT
-    z0, z1 = TARGET_TOP_Z - JUMPER_T - below, TARGET_TOP_Z + above
-    out_x, in_x = tongue_walls()
-    x0, x1 = in_x - 0.01, FLANGE_OUT[0] / 2 + 0.01
-    slot = Pos((x0 + x1) / 2, BC_NA_TONGUE_Y, (z0 + z1) / 2) * Box(x1 - x0, w, z1 - z0)
-    g1 = out_x + BC_NA_GROOVE_D
-    groove = Pos((x0 + g1) / 2, BC_NA_TONGUE_Y, (BC_NA_GROOVE_BOT + z1) / 2) * Box(g1 - x0, w, z1 - BC_NA_GROOVE_BOT)
-    return slot + groove
+def tongue_channel():
+    """Battery-free tongue (D-49): a notch across the island rim from the deck up (the trim's tab fills it) and a
+    groove down the pocket's top arc for the trim's strip and the tongue behind it, its lower end 45 deg out to
+    the wall. All above the wall plane, between low-voltage spaces (trim hollow, pocket)."""
+    from common import bar, radial_prism
+    p, u, q = tongue_arc()
+    w = BC_NA_TAB_W + 2 * BC_NA_TAB_CLR
+    run = bar((q[0], FLANGE_OUT[1] / 2 + 0.5), q, w, DECK_Z, PT + 1, w / 2)
+    radial = bar(q, (p[0] - 1.0 * u[0], p[1] - 1.0 * u[1]), w, DECK_Z, PT + 1, w / 2)
+    d = BC_NA_STRIP[1] + BC_NA_TROOM + 0.05                  # groove depth behind the pocket's wall
+    gb = BC_NA_GROOVE_BOT
+    e = BC_NA_JOG_E
+    groove = radial_prism(p, u, [(-0.5, gb - e), (-0.5, DECK_Z + 0.01), (d, DECK_Z + 0.01), (d, gb - e + d), (0.0, gb - e)],
+                          BC_NA_STRIP[0] + 2 * BC_NA_TAB_CLR)
+    return run + radial + groove
 
 
 def pass_through():
-    """The single 5 V jumper hole: up out of the box, then 45 deg out through the flange."""
-    sx = -1 if PASS_X < 0 else 1
+    """The single 5 V jumper hole: up out of the box, then 45 deg out through the flange's top-right corner."""
     z0, zk = -TAPER_D - 2, -1.0
+    ux, uy = PASS_DIR
     a = (PASS_X, PASS_Y, z0)
     k = (PASS_X, PASS_Y, zk)
-    run = FLANGE_OUT[0] / 2 + 3 - abs(PASS_X)
-    b = (PASS_X + sx * run, PASS_Y, zk + run)
+    run = flange_exit() + 3
+    b = (PASS_X + run * ux, PASS_Y + run * uy, zk + run)
     return rod(a, k, PASS_D) + rod(k, b, PASS_D) + Pos(*k) * Sphere(PASS_D / 2)
 
 

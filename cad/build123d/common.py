@@ -65,3 +65,51 @@ def board_hooks(cy, board_x, back_z, front_z, frame_in, hook, t=0.9, w=6.0, clr=
         reliefs = r if reliefs is None else reliefs + r
     return hooks, reliefs
 
+
+
+def bar(a, b, w, z0, z1, ext=0.0):
+    """Box from plan point a to b (extended by ext at both ends), w wide, z0..z1."""
+    from math import atan2, degrees, hypot
+    from build123d import Box, Pos, Rot
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    return Pos((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (z0 + z1) / 2) * Rot(0, 0, degrees(atan2(dy, dx))) * Box(
+        hypot(dx, dy) + 2 * ext, w, z1 - z0)
+
+
+def ramp_over(a, b, w, t, top, clr=0.1):
+    """Solid from a sloped flex segment a -> b (3D points sharing x, or sharing y) up to the plane z = top: the
+    flex (t thick, w wide strip) runs clr under its underside, room for a tape strip that holds it there."""
+    from math import hypot
+    from build123d import Plane, Polyline, extrude, make_face
+    along_y = abs(a[0] - b[0]) < 1e-9
+    i = 1 if along_y else 0
+    du, dz = b[i] - a[i], b[2] - a[2]
+    off = (t / 2 + clr) * hypot(du, dz) / abs(du)
+    pts = [(a[i], a[2] + off), (b[i], b[2] + off), (b[i], top), (a[i], top), (a[i], a[2] + off)]
+    plane = Plane.YZ if along_y else Plane.XZ
+    prism = extrude(plane * make_face(Polyline(*pts)), w / 2, both=True)
+    return Pos(a[0], 0, 0) * prism if along_y else Pos(0, a[1], 0) * prism
+
+
+def radial_prism(p, u, pts, w):
+    """Prism from a profile in the vertical plane through plan point p along the plan unit vector u: pts are
+    (r, z), r along u from p; w wide across, centred on the plane."""
+    from build123d import Plane, Polyline, extrude, make_face
+    pl = Plane(origin=(p[0], p[1], 0), x_dir=(u[0], u[1], 0), z_dir=(u[1], -u[0], 0))
+    return extrude(pl * make_face(Polyline(*pts, pts[0])), w / 2, both=True)
+
+
+def ribbon(pts, w, t, wall=(1, 0, 0)):
+    """Flat strip along a polyline: thin boxes along each segment, the width kept horizontal (on steep
+    segments: across the wall whose normal is `wall`)."""
+    from build123d import Box, Plane, Vector
+    wall = Vector(*wall)
+    out = None
+    for a, b in zip(pts, pts[1:]):
+        a, b = Vector(*a), Vector(*b)
+        d = b - a
+        up = Vector(0, 0, 1) if abs(d.normalized().Z) < 0.9 else wall
+        x_dir = d.cross(up).normalized()
+        s = Plane(origin=(a + b) * 0.5, x_dir=x_dir, z_dir=d) * Box(w, t, d.length + 0.01)
+        out = s if out is None else out + s
+    return out

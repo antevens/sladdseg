@@ -170,6 +170,12 @@ def sensors(cap, tr):
     probe = Pos(*MIC_PORT, (SKIN_Z + PT) / 2) * Cylinder(MIC_SKIN_HOLE_D / 2 - 0.05, SKIN - 0.1)
     r = probe & tr
     check(r is None or r.volume < 0.001, "microphone sound hole open through the face skin")
+    import sensor_eu
+    import trim_eu
+    flex = sensor_eu.flex()
+    for q in trim_eu.flex_ramps().solids():
+        gap = q.distance_to(flex)
+        check(0.06 <= gap <= 0.15, f"flex slope at y {q.center().Y:.1f} {gap:.2f} mm under the trim's ramp: taped to it")
     wh = FLEX_PIN_Z - WB_FRONT
     check(PIN_WH_MIN <= wh - PIN_TOL and wh + PIN_TOL <= PIN_WH_MAX,
           f"spring pins at {wh:.2f} +- {PIN_TOL} mm working height, inside {PIN_WH_MIN}..{PIN_WH_MAX} (P70-2200045)")

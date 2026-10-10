@@ -48,6 +48,7 @@ renders:        ## docs/renders/*.png: section sheet, shaded 3D views, wiring bo
 	cd $(CAD) && $(PY) renders.py
 	cd $(CAD) && $(if $(DISPLAY),,xvfb-run -a) $(PY) render3d.py
 	cd $(CAD) && $(if $(DISPLAY),,xvfb-run -a) $(PY) render_backcover.py
+	cd $(CAD) && $(if $(DISPLAY),,xvfb-run -a) $(PY) render_tape.py
 	$(RENDER_PCB) --side top -o docs/renders/wiring_board_front.png $(WB_PCB)
 	$(RENDER_PCB) --side bottom -o docs/renders/wiring_board_back.png $(WB_PCB)
 	$(RENDER_PCB) --side top --rotate "-40,0,30" -o docs/renders/wiring_board_iso_front.png $(WB_PCB)

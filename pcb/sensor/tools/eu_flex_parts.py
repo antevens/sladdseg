@@ -91,8 +91,13 @@ _up_y = (fy(_cx - (_cy + _h - _cy)), fy(_cx - (_y_top - _cy)))         # flat Y 
 _side_x = (s(_cy - (E.EU_STRIP_X0 - _cx)), s(_cy - (_side_x1 - _cx)))
 _side_y = (fy(_cx - (_y_bot - _cy)), _up_y[0])
 _run_x = (s(_cy + _h), s(_cy - _h))
+# the slit beside the neck above the fold (D-49): the neck stays under the floor insert up to its slot, the part
+# carrying the GND pad lies on the top beside it
+_slit = [flat_floor(E.EU_SLIT_X[0], E.EU_RISE[1]), flat_floor(E.EU_SLIT_X[1], E.EU_RISE[1])]
 TONGUE_PTS = [(_run_x[1], PAD_Y[1]), (_run_x[1], _up_y[1]), (_up_x[0], _up_y[1]), (_up_x[0], _side_y[0]),
-              (_side_x[1], _side_y[0]), (_side_x[1], _side_y[1]), (_run_x[0], _up_y[0]), (_run_x[0], PAD_Y[1])]
+              (_side_x[1], _side_y[0]), (_side_x[1], _side_y[1])] + _slit + [(_run_x[0], _up_y[0]),
+                                                                             (_run_x[0], PAD_Y[1])]
+GND_TURN_Y = E.EU_RISE[1] + 1.0                               # GND lane turns to its pad above the slit (room y)
 FOLD_LINE = ((_run_x[0], fy(_f1)), (_run_x[1], fy(_f0)))      # 45 deg fold across the run (flat)
 TONGUE_LANES = (s(_cy + 0.4), s(_cy - 0.4))                   # GND (from the GND pin pad), +5V
 

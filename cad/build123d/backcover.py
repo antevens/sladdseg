@@ -148,11 +148,9 @@ def cover():
         yb = ys - BC_TERM_Y * BC_BLOCK_T / 2
         body += Pos((a + b) / 2, yb, (BC_WALL + z1) / 2 - 0.25) * Box(b - a, BC_BLOCK_T, z1 - BC_WALL + 0.5) & end_round()
     body += end_retainers()
-    # slot under the GND contact block for the run (the flex slides in from the cell side)
-    xr0, xr1 = BC_RUN
-    yb = ys - BC_TERM_Y * BC_BLOCK_T / 2
-    body -= Pos((xr0 + xr1) / 2, yb, BC_FLEX_Z + (FLEX_T + 0.08) / 2) * Box(xr1 - xr0 + 0.3, BC_BLOCK_T + 1.0,
-                                                                            FLEX_T + 0.08)
+    body -= end_snap_reliefs()
+    body += end_snaps()
+    body -= run_notch()
     for x0, x1, y0, y1 in strip_boxes(0.1):               # relief over the flex where the 45 deg fill reaches it
         body -= Pos((x0 + x1) / 2, (y0 + y1) / 2, BC_FLEX_Z + (FLEX_T + 0.3) / 2) * Box(x1 - x0, y1 - y0, FLEX_T + 0.3)
     body &= Pos(0, 0, 50) * Box(200, 200, 100)                             # nothing below the back face
@@ -249,6 +247,58 @@ def end_retainers():
             b2 - a2, t, BC_FLEX_Z + h - BC_WALL)
         out = lip if out is None else out + lip
     return out
+
+
+def run_notch():
+    """Notch through the GND contact block, from the ledge up, for the run: it drops in from above (no threading);
+    the end section's stiffener spans the notch behind the GND finger."""
+    xr0, xr1 = BC_RUN
+    yb = stiffener_y() - BC_TERM_Y * BC_BLOCK_T / 2
+    z0 = BC_FLEX_Z
+    return Pos((xr0 + xr1) / 2, yb, z0 + 10.0) * Box(xr1 - xr0 + 0.3, BC_BLOCK_T + 1.0, 20.0)
+
+
+def end_snaps():
+    """A snap hook beside each contact block's outer side: a post rising from the bottom of its relief, beside the
+    end section's outer edge, with a lip over the section's copper face in the band BC_END_SNAP_Z and a 45 deg
+    lead-in on the lip's front (the section folds up onto the blocks and pushes the post outwards)."""
+    from build123d import Polyline, extrude, make_face
+    t, reach, clr, lt, gap = BC_END_SNAP
+    z0, z1 = BC_END_SNAP_Z
+    sy = -BC_TERM_Y                                      # +1: cells side (blocks) is +y
+    y_l = copper_y() - sy * gap                          # lip's back face, towards the copper
+    y_f = y_l - sy * lt                                  # lip's front face
+    y_b = stiffener_y() + sy * BC_END_SNAP_BACK
+    out = None
+    for a, b, _, _ in end_blocks()[:2]:
+        s = 1 if a + b > 0 else -1
+        ue = b if s > 0 else -a                          # section's outer edge, distance from x 0
+        post = [(ue + clr, y_b), (ue + clr + t, y_b), (ue + clr + t, y_f), (ue + clr, y_f)]
+        lip = [(ue + clr + t, y_l), (ue + clr + t, y_f), (ue, y_f), (ue - reach, y_f + sy * reach), (ue - reach, y_l)]
+        part = None
+        for pts, za in ((post, BC_FLEX_SNAP_ROOT), (lip, z0)):
+            f = make_face(Polyline(*[(s * u, y) for u, y in pts], (s * pts[0][0], pts[0][1])))
+            e = Pos(0, 0, za) * extrude(f, z1 - za)
+            part = e if part is None else part + e
+        out = part if out is None else out + part
+    return out & back_shape(0.0, 0.0)
+
+
+def end_snap_reliefs():
+    """Pockets round each end snap's post, down to BC_FLEX_SNAP_ROOT of shell, so the post bends from there."""
+    t, reach, clr, lt, gap = BC_END_SNAP
+    r = BC_FLEX_SNAP_RELIEF
+    sy = -BC_TERM_Y
+    y_f = copper_y() - sy * (gap + lt) - sy * r
+    y_b = stiffener_y() + sy * (BC_END_SNAP_BACK + r)
+    out = None
+    for a, b, _, _ in end_blocks()[:2]:
+        s = 1 if a + b > 0 else -1
+        ue = b if s > 0 else -a
+        u0, u1 = ue + 0.05, ue + clr + t + r
+        p = Pos(s * (u0 + u1) / 2, (y_f + y_b) / 2, 5.0) * Box(u1 - u0, abs(y_b - y_f), 10.0)
+        out = p if out is None else out + p
+    return out & back_shape(BC_FLEX_SNAP_ROOT, BC_FLEX_SNAP_ROOT)
 
 
 def flex():
@@ -393,29 +443,46 @@ def tongue_path(wall_x):
     return [run, fold, up]
 
 
-def floor_insert(pocket_in, wall_x, cutouts=(), path=None, pads=None):
-    """Pocket-floor insert (face plate side), z = 0 its underside: printed floor with the tongue's
-    recess, the tongue, its flush pads. cutouts: (x, y, w, h) openings (switch, trim tabs, bosses),
-    each with BC_FLOOR_CLR all round. path: the tongue's (x0, x1, y0, y1, layers) boxes on the floor
-    (default: tongue_path(wall_x)). pads: (x0, x1, y0, y1) of the flush pads (default: BC_FLOOR_PAD under the
-    fingers)."""
+def floor_insert(pocket_in, wall_x, cutouts=(), path=None, pads=None, t=FLEX_T, notches=()):
+    """Pocket-floor insert (face plate side), z = 0 its underside: printed floor, the tongue, its flush pads.
+    cutouts: (x, y, w, h) openings (switch, trim tabs, bosses), each with BC_FLOOR_CLR all round. path: the tongue's
+    (x0, x1, y0, y1, layers[, kind]) boxes on the floor (default: tongue_path(wall_x)); kind "top" (in a recess in
+    the top, pads flush), "under" (in a channel in the underside, hidden), "channel" (the channel only, the flex
+    drawn elsewhere) or "slot" (through the floor, rising from
+    under to top). notches: (x0, x1, y0, y1) cuts from a slot to the floor's edge, so the tongue is laid in
+    sideways. pads: (x0, x1, y0, y1) of the flush pads (default: BC_FLOOR_PAD under the fingers). t: flex
+    thickness."""
     w, h = pocket_in[0] - 2 * BC_FLOOR_CLR, pocket_in[1] - 2 * BC_FLOOR_CLR
     plate = slab(stadium(w, h), 0, BC_FLOOR_T)
     for x, y, cw, ch in cutouts:
         plate -= Pos(x, y, BC_FLOOR_T / 2) * Box(cw + 2 * BC_FLOOR_CLR, ch + 2 * BC_FLOOR_CLR, BC_FLOOR_T + 1)
     tongue = None
-    for x0, x1, y0, y1, n in (path or tongue_path(wall_x)):
-        d = n * FLEX_T
-        rec = Pos((x0 + x1) / 2, (y0 + y1) / 2, BC_FLOOR_T - (d + BC_RECESS_CLR) / 2 + 0.005) * \
-            Box(x1 - x0 + 0.3, y1 - y0 + 0.3 * (n == 1), d + BC_RECESS_CLR + 0.01)
-        plate -= rec
-        t = Pos((x0 + x1) / 2, (y0 + y1) / 2, BC_FLOOR_T - d / 2) * Box(x1 - x0, y1 - y0, d)
-        tongue = t if tongue is None else tongue + t
+    for e in (path or tongue_path(wall_x)):
+        x0, x1, y0, y1, n = e[:5]
+        kind = e[5] if len(e) > 5 else "top"
+        d = n * t
+        xc, yc = (x0 + x1) / 2, (y0 + y1) / 2
+        if kind == "top":
+            plate -= Pos(xc, yc, BC_FLOOR_T - (d + BC_RECESS_CLR) / 2 + 0.005) * \
+                Box(x1 - x0 + 0.3, y1 - y0 + 0.3 * (n == 1), d + BC_RECESS_CLR + 0.01)
+            z = BC_FLOOR_T - d / 2
+        elif kind in ("under", "channel"):
+            plate -= Pos(xc, yc, (d + BC_RECESS_CLR) / 2 - 0.005) * Box(x1 - x0 + 0.3, y1 - y0 + 0.3, d + BC_RECESS_CLR + 0.01)
+            z = d / 2
+            if kind == "channel":
+                continue
+        else:
+            plate -= Pos(xc, yc, BC_FLOOR_T / 2) * Box(x1 - x0 + 0.3, y1 - y0, BC_FLOOR_T + 1)
+            z = BC_FLOOR_T / 2
+        seg = Pos(xc, yc, z) * Box(x1 - x0, y1 - y0, d)
+        tongue = seg if tongue is None else tongue + seg
+    for x0, x1, y0, y1 in notches:
+        plate -= Pos((x0 + x1) / 2, (y0 + y1) / 2, BC_FLOOR_T / 2) * Box(x1 - x0, y1 - y0, BC_FLOOR_T + 1)
     pd = None
     for x0, x1, y0, y1 in (pads or [(x - BC_FLOOR_PAD[0] / 2, x + BC_FLOOR_PAD[0] / 2, y - BC_FLOOR_PAD[1] / 2,
                                       y + BC_FLOOR_PAD[1] / 2) for x, y in BC_FINGERS]):
-        p = Pos((x0 + x1) / 2, (y0 + y1) / 2, BC_FLOOR_T + 0.005) * Box(x1 - x0, y1 - y0, 0.01)
-        pd = p if pd is None else pd + p
+        q = Pos((x0 + x1) / 2, (y0 + y1) / 2, BC_FLOOR_T + 0.005) * Box(x1 - x0, y1 - y0, 0.01)
+        pd = q if pd is None else pd + q
     return {"floor": plate, "floor_flex": tongue, "floor_pads": pd}
 
 

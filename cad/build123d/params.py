@@ -21,8 +21,9 @@ Two printed parts (DESIGN D-12..D-17) and the wiring board (D-24..D-26):
 from math import sqrt, hypot
 
 # ---- trim plate ----
-PW, PH, PT, PR = 82.0, 150.0, 13.0, 6.0   # width, height, proud of wall, corner radius
-PLATE_Y = 0.0                             # plate centre above the box centre
+PW, PH, PT, PR = 72.2, 131.75, 13.0, 6.0  # width (the flange plus clearance and skin), height, proud of wall, corner
+                                          # radius (D-47: 5 V contact and mic above the flange, flex down its band)
+PLATE_Y = 7.175                           # plate centre above the box centre (MSR-2 bay top, SHT45 bay bottom)
 SKIN = 2.0                                # face/side wall of the hollow trim
 FACE_CHAMFER = 1.2
 
@@ -132,7 +133,8 @@ SCOOP = (6.0, 16.0, 9.0)                  # finger scoop ellipsoid radii (x, y, 
 SCOOP_ZC = PT + 2.5                       # scoop centre height
 PASS_D = 4.5                              # 5 V flex jumper pass-through (the only barrier opening): takes the
                                           # jumper's stiffened connector end when it is threaded through
-PASS_X, PASS_Y = 21.5, 31.6               # vertical leg position (room frame, same side as J2)
+PASS_X, PASS_Y = 21.5, 33.5               # vertical leg position (room frame, same side as J2)
+PASS_DIR = (0.7071, 0.7071)               # 45 deg leg's direction in plan: out through the flange's top-right corner
 BARRIER_MIN = 1.6                         # thinnest barrier wall allowed
 V0_RATED_T = 1.5                          # DATASHEET thickness at which the chosen filament is UL94 V-0
 
@@ -143,7 +145,7 @@ LUX_POS = (12.0, 0.0)                     # MEASURE light sensor offset from bay
 
 # ---- SHT45 breakout tab ----
 SHT = (12.0, 8.0, 4.0)                    # SHT45 bay (the sensor sits on the flex tail, D-27)
-SHT_Y = -62.0
+SHT_Y = -51.3                             # just under the bottom screw boss
 
 # ---- 5 V flex jumper: wiring board J2 -> pass-through -> pad end on the shelf (D-27, R9, no wires) ----
 # J2 is a Hirose FH12-6S-0.5SH slide-lock FPC connector (3 contacts per net); the jumper's pad end
@@ -157,54 +159,61 @@ JUMPER_T = 0.2                            # 2-layer polyimide flex (design value
 JUMPER_X = 15.0                           # run between the rocker body (x <= 11.3) and the right-hand bosses
 JUMPER_SERVICE = 40.0                     # spare length folded between board and insert (plug in with the board beside it)
 
-# ---- sensor flex (D-27): MSR-2 CN2 -> spring fingers over the 5 V jumper's pad end -> SHT45 ----
-# Single-layer flex in the trim: plug end under the MSR-2, up the top-right corner to just under
-# the face skin, down the right channel (spring-finger section over a shelf on the insert), along
-# the bottom to the SHT45 bay.
+# ---- sensor flex (D-27, D-47): MSR-2 CN2 -> spring fingers over the 5 V jumper's pad end -> SHT45 ----
+# Single-layer flex in the trim: plug end under the MSR-2, out of the bay frame's right wall and up to just
+# under the face skin while running right, a 45 deg fold into the top-right corner (microphone, spring-finger
+# section), down the flange's right band on the flange top in a groove of the trim, a 45 deg fold at the
+# bottom, along the bottom to the SHT45 bay.
 MSR_BOARD = (38.0, 21.5)                  # REF bare MSR-2 board, from Apollo's case cavity 38.08 x 21.67 (Printables 932026)
 MSR_HOOK = 0.5                            # snap hooks at the board's short ends: lip over its back face (D-45)
 MSR_CN2_IN = 6.4                          # MEASURE REF CN2 centre from the board's end (Apollo wiki photo); CN2 at the right end here
 B2B = (7.6, 3.0)                          # MEASURE REF CN2 housing (photo); 0.4 mm pitch, 2 rows, ~26-30 contacts (D-27)
 B2B_STACK = 1.5                           # MEASURE mated height of CN2 + plug (1.5 if P4S-like)
-FLEX_W, FLEX_T, STIFF_T = 4.0, 0.12, 0.15  # flex width, polyimide flex, FR4 stiffener under the plug / pins
+FLEX_W, FLEX_T, STIFF_T = 4.0, 0.12, 0.15  # flex width (to the fingers), single-layer polyimide flex (back cover, EU),
+                                          # FR4 stiffener under the plug / pins
+SFLEX_T = 0.2                             # NA sensor flex: two copper layers (D-47; design value, confirm the stack-up)
+PLUG_STIFF_T = 0.1                        # FR4 stiffener under the NA sensor flex's CN2 plug (stack behind the MSR-2)
+FLEX_RUN_W = 2.4                          # flex width down the flange band: SDA, SCL, 3V3, GND to the SHT45
 FLEX_PLUG = (12.0, 8.0)                   # plug end of the flex (along x, across): CN2 mate and fan-out
 FLEX_NECK_L = 10.0                        # taper from the plug end to FLEX_W
-FLEX_X = 36.8                             # flex centre line in the right channel
+FLEX_RIGHT = 33.4                         # flex's right edge in the corner and down the band (trim wall inside: PW / 2 - SKIN)
 FLEX_SKIN_GAP = 0.15                      # flex + stiffener top below the trim's face skin
-FLEX_LEAD_GAP = 1.0                       # free strip along the flange's right face for the 5 V jumper
-FLEX_RISE_DY = 12.0                       # run along y over which the flex rises from the wall to under the skin
-FINGER_SEC_OUT = 39.7                     # finger section's outer edge: lanes for 4 tracks beside the finger pads
-FINGER_LANE_MARGIN = 6.0                  # wall-side lanes extend beyond the pads: room for the tracks to step in
-TRIM_WALL_RECESS = 1.0                    # trim side wall thinned on the inside over the finger section
+FLEX_GROOVE = 0.3                         # groove in the trim's underside over the flange band (flex SFLEX_T + 0.1)
+TAPE_T = 0.06                             # 3M 467MP double-sided tape at the flex tape points (docs/ASSEMBLY.md)
+FLEX_EXIT = 0.5                           # flex starts its rise this far right of the bay frame's right wall
+SHT_PADDLE = 3.0                          # the tail widens back to FLEX_W from here (room x) for the SHT45
 SHT_CHIP = (1.5, 1.5, 0.5)                # DATASHEET Sensirion SHT45 DFN-4 body, on the flex tail
-# power contact: two Harwin S7081-42R SMT spring fingers (+5 V, GND) on the flex underside
+# power contact: two Harwin S7081-42R SMT spring fingers (+5 V, GND) on the flex underside, side by side
 FINGER = (3.18, 6.25)                     # DATASHEET S7081-42R body w x l (drawing S7081-42R iss. 7)
 FINGER_PAD = (3.60, 6.65)                 # DATASHEET recommended pad layout
 FINGER_FREE, FINGER_WH_MIN = 2.30, 1.70   # DATASHEET free height, recommended minimum working height
 FINGER_WH = 2.0                           # design working height (datasheet recommends 2.10)
 FINGER_TOL = 0.2                          # z stack tolerance (prints + flex) the working height must absorb
-FINGER_Y = (15.0, 22.3)                   # finger centres along the channel, long axis along y
-FINGER_X = 35.95                          # finger centre line: flex edge clears the flange, dome over the target
-SHELF_UNDER_Z = 7.0                       # shelf underside: the flange is solid to its outer face from z 6.8
-SHELF_OUT = 2.8                           # flat underside beyond the flange face (<= 3.0 printable), then 45 deg up
-SHELF_STOP = (0.8, 0.4)                   # stop at the shelf's lower end (D-45): length along y, height above the shelf
+FINGERS = ((24.65, 45.5), (29.05, 45.5))  # +5V (outer), GND (inner) finger centres (x, y), long axis along y: in the
+                                          # corner, left of the flex run, inside the shelf's print limit
+SHELF_UNDER_Z = 7.0                       # shelf underside: 45 deg out from the seal band up to this height, then flat
+SHELF_OUT = 2.8                           # flat underside beyond the 45 deg part (<= 3.0 prints unsupported)
 TARGET_T = 0.6                            # jumper pad end thickness, flex + stiffener (pads under the fingers)
-TARGET_Y = (11.3, 29.0)                   # jumper pad end extent along y (the run joins at the top)
+TARGET_X = (22.6, 31.1)                   # jumper pad end extent across (room x)
+TARGET_Y0 = 41.8                          # jumper pad end's lower edge (the run joins here); it extends up over the fingers
+TARGET_END = 1.6                          # pad end beyond the fingers' pads (upwards)
+JUMPER_JOIN = 0.3                         # the jumper's run ends this far into the pad end (clear of the fingers)
 
 # ---- microphone (D-29): I2S MEMS mic on the sensor flex, push-to-talk ----
-# PUI Audio DMM-4026-B-I2S-R, bottom port, on the flex's underside in the right channel (above the
-# finger section, where the flange corner rounds away). Its port faces the face skin through a hole
-# in flex + stiffener, sealed to the skin by an adhesive gasket, and a sound hole through the skin.
+# PUI Audio DMM-4026-B-I2S-R, bottom port, on the flex's underside on the run below the flange band, before
+# the bottom fold (D-47). Its port faces the face skin through a hole in flex + stiffener, sealed to the skin
+# by an adhesive gasket, and a sound hole through the skin.
 MIC = (3.00, 4.00, 1.00)                  # DATASHEET body w x l x h (DMM-4026-B-I2S-R rev A)
 MIC_PORT_IN = 1.00                        # DATASHEET port centre from the body's port end
-MIC_Y = 40.75                             # body centre along the channel (room y), port end down
-MIC_FLEX_Y = 2.0                          # body centre from the flex centre line, towards the flange
-MIC_SEC_W = 4.4                           # widened flex section: edge from the centre line, towards the flange
-MIC_SEC_Y = (38.0, 45.5)                  # widened section's extent along the channel (room y)
+MIC_Y = -44.4                             # body centre along the run (room y), port end up
+MIC_FLEX_Y = 2.0                          # body centre from the corner run's centre line (FLEX_X), inwards (-x)
+MIC_SEC_W = 5.4                           # widened flex section: edge from FLEX_X, inwards
+MIC_SEC_Y = (-49.5, -41.9)                # widened section's extent along the run (room y): below the flange, above
+                                          # the bottom fold
 MIC_FLEX_HOLE_D = 0.5                     # port hole through flex + stiffener
 MIC_GASKET_D = 2.6                        # adhesive gasket ring OD (ID = MIC_SKIN_HOLE_D), FLEX_SKIN_GAP thick
 MIC_SKIN_HOLE_D = 1.0                     # sound hole through the face skin
-MIC_CLR = 0.5                             # flex section and mic body to the insert flange
+MIC_CLR = 0.5                             # flex section and mic body to the insert and the bay frame
 
 # ---- replacement back cover (D-35): the BILRESA E2490 without cells, powered from the plate ----
 # Remote coordinates: origin = remote centre, x / y as the front view, z = 0 the back's outer face.
@@ -225,9 +234,10 @@ BC_LATCH_HOOK = (0.7, 0.7)                # hook at the clip's tip, inwards (cat
 BC_LATCH_RIM_GAP = 1.0                    # MEASURED top clip's top below the rim (human, 2026-10-09)
 # clip tops above the inside floor: bottom end (-y) MEASURED; top end (+y) from BC_LATCH_RIM_GAP
 BC_LATCH_TOPS = (4.7, B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
-# innermost point (hook tip) in from the outside rim: bottom end ESTIMATE (photos); top end MEASURED (human,
-# 2026-10-09). Where reach - hook - thickness < BC_WALL the clip's back merges into the end wall.
-BC_LATCH_REACH = (4.1 + 0.2, 2.8 + 0.2)    # photo / measured tips plus the deeper hooks
+# innermost point (hook tip) in from the outside rim: bottom end from its face 2.9 in (MEASURED on a print, human
+# 2026-10-09), top end measured 2.8 on the original; both plus the deeper hooks. Where reach - hook - thickness
+# < BC_WALL the clip's back merges into the end wall.
+BC_LATCH_REACH = (2.9 + 0.7, 2.8 + 0.2)
 # side ribs at mid-length (y 0), free-standing on the shell's curved floor, against flex (human, 2026-10-09)
 BC_SIDE_TAB = (6.0, 0.8)                  # length along y (ESTIMATE, photos), thickness (human, 2026-10-09)
 BC_SIDE_TAB_GAP = 36.2                    # MEASURED inside spacing between the ribs
@@ -251,8 +261,13 @@ BC_FLEX_SNAP_GAP = 0.05                   # lip underside above the stiffener's 
 BC_FLEX_SNAP_ROOT = 0.4                   # post root: shell left under the relief round each post (the post flexes)
 BC_FLEX_SNAP_RELIEF = 0.3                 # relief round each post (sides and behind)
 BC_END_LIP = (1.2, 1.0, 0.1)              # lip in front of each block's foot: thickness, height above the ledge, gap
+BC_END_SNAP = (1.0, 0.35, 0.1, 0.8, 0.05)  # snap hook beside each block's outer side over the end section's outer edge:
+                                          # post thickness (flexes in x), lip reach over the edge, post to the edge, lip
+                                          # thickness, lip to the copper face (PETG only, human 2026-10-09)
+BC_END_SNAP_Z = (7.0, 9.0)                # lip band (below the rim, nothing enters the housing's contact slots)
+BC_END_SNAP_BACK = 2.0                    # post length behind the stiffener (into the block's side)
 BC_STEEL_CLIP = (6.0, 0.8, 0.45)          # clips at both ends of the plate's pocket: width, tab thickness, hook over the
-                                          # plate's edge (4.0 x 0.8 x 0.5 broke in PLA, human 2026-10-09)
+                                          # plate's edge (broke in PLA; the cover prints in PETG, to verify)
 BC_STEEL_CLIP_ROOT = 0.4                  # tab root: shell left under the relief round each tab (the tab flexes)
 BC_STEEL_CLIP_RELIEF = 0.3                # relief round each tab (sides, behind, and towards the plate)
 BC_STEEL_Y = -5.5                         # steel plate centre in the cover (the EU magnet sits under it, clear of the switch cup)
@@ -288,15 +303,32 @@ BC_FLOOR_PAD = (4.0, 7.0)                 # flush gold pads on the tongue under 
 BC_TONGUE_W = 5.0                         # sensor-flex tongue width
 BC_TONGUE_Y = -12.0                       # tongue run from the right channel into the pocket (y), below the pads
 BC_RECESS_CLR = 0.02                      # tongue recess depth over the flex thickness
-# NA: the tongue leaves the 5 V jumper's pad end (on the insert shelf) at its inner edge, runs inwards in a
-# tunnel through the insert flange above the wall plane, down a groove in the pocket wall, free down the wall
-# into the floor insert's recess (copper up after the two bends), then L-turns to the pads under the fingers
-BC_NA_TONGUE_Y = 18.65                    # tongue centre (room y): between the pad end's GND and +5V contact pads
-BC_NA_NECK_W = 2.4                        # tongue width from the pad end to the pad strip on the floor
-BC_NA_SLOT = (2.8, 0.1, 0.35)             # tunnel width (roof bridge <= 3.0), floor below / roof above the flex
-BC_NA_DOWN = (15.5, 3.0, 7.8)             # floor: x centre and width of the strip down to the pads, pad strip top y
-BC_NA_GROOVE_D = 0.4                      # groove depth in the pocket wall
-BC_NA_GROOVE_BOT = 0.5                    # groove lower end (above the wall plane; the remote's round-over clears below)
+# NA (D-49): the tongue is part of the sensor flex (face plate side). It leaves the finger section's left edge, runs
+# left in the band above the flange under the trim's skin, a 45 deg fold turns it down the plate (copper up), along a
+# groove in the skin's underside over the flange and under the trim's tab in the island notch, turns in its plane to
+# meet the pocket's top arc square, down the wall behind the trim's strip (in a groove in the arc above the wall
+# plane, in front of the wall below it), under the floor insert (a channel in its underside), up through a slot onto
+# the pad strip on its top (copper up, pads flush) and the tail down through a second slot. A notch from each slot to
+# the floor insert's edge lets the tongue be laid in sideways (no threading). The floor insert hangs from the
+# strip's foot (snap), so face plate, strip, tongue and floor insert come off together; nothing is left on the insert.
+BC_NA_WALL_X = 16.5                       # tongue goes down the pocket's top arc here (room x of the arc point)
+BC_NA_TURN = 3.5                          # radial run on the island from the turn to the arc's top edge
+BC_NA_BAND_Y = 43.0                       # tongue centre (room y) in the band above the flange
+BC_NA_NECK_W = 2.4                        # tongue width from the finger section to the pad strip on the floor
+BC_NA_TAB_W = 4.0                         # trim tab in the island notch (the tongue in a groove in its underside)
+BC_NA_TAB_CLR = 0.25                      # trim tab and strip to the insert's notch and groove sides
+BC_NA_TGROOVE = (BC_NA_NECK_W + 0.4, 0.3, 0.5)   # groove for the tongue in the trim's underside: width, depth, depth
+                                          # at the fold (two layers)
+BC_NA_STRIP = (4.4, 1.0)                  # trim strip down the pocket's arc over the tongue: width, thickness
+BC_NA_TROOM = 0.3                         # room for the tongue behind the strip
+BC_NA_JOG_E = 0.15                        # the groove's 45 deg end runs this far behind the strip's jog (room for the tongue)
+BC_NA_DOWN = (15.4, 3.0, 7.8)             # floor: x centre and width of the strip down to the pads, pad strip top y
+BC_NA_GROOVE_BOT = 0.5                    # wall groove's lower end (above the wall plane), 45 deg down to the wall
+BC_NA_SLOT = 2.0                          # floor insert slots (the tongue rises / the tail drops): length along y
+BC_NA_TAIL = 3.0                          # tail under the floor insert beyond the tail slot
+BC_NA_FLOOR_TAB = (4.4, 0.8, 3.4)         # floor insert's tab in front of the strip's foot: width, thickness, height
+BC_NA_FOOT_HOOK = (0.4, 0.8, (1.2, 2.4))  # strip foot's hook into the tab's window: reach, height, window z above
+                                          # the floor insert's top
 
 # ================= derived =================
 BC_CELL_END_Y = BC_CELL_Y0 + BC_TERM_Y * AAA_L / 2                    # a full-length cell's terminal end
@@ -331,17 +363,30 @@ MSR_Y = SCREW_PITCH / 2 + max(BOSS_R + SPLIT_CLR, SCREW_HEAD_D / 2 + 1.0) + MSR[
 MSR_BACK_Z = PT - RADAR_WALL - MSR[2]     # MSR-2 board back (CN2 side) towards the wall
 MSR_CN2_X = MSR_BOARD[0] / 2 - MSR_CN2_IN
 SKIN_Z = PT - SKIN                        # underside of the trim's face skin
-FLEX_HI_Z = SKIN_Z - FLEX_SKIN_GAP - STIFF_T - FLEX_T   # flex underside in the channel
+FLEX_HI_Z = SKIN_Z - FLEX_SKIN_GAP - STIFF_T - SFLEX_T  # flex underside in the corner and the bottom
+FLEX_BAND_Z = DECK_Z                                    # flex underside down the flange band (on the flange top)
 TARGET_TOP_Z = FLEX_HI_Z - FINGER_WH                    # target pads at the fingers' working height
 SHELF_TOP_Z = TARGET_TOP_Z - TARGET_T
 SHT_ENTRY = SHT[0] / 2 + 0.4 + 1.6 + 1.0  # flex tail enters the SHT45 bay frame from the right
-FINGER_SEC_IN = FINGER_X - FINGER_PAD[0] / 2 - 0.3                    # finger section's inner (flange-side) edge
-FINGER_SEC_Y = (FINGER_Y[0] - FINGER_PAD[1] / 2 - 0.5, FINGER_Y[1] + FINGER_PAD[1] / 2 + 0.5)    # flange side
-FINGER_LANE_Y = (FINGER_Y[0] - FINGER_PAD[1] / 2 - FINGER_LANE_MARGIN,
-                 FINGER_Y[1] + FINGER_PAD[1] / 2 + FINGER_LANE_MARGIN)                       # wall side
+FLEX_X = FLEX_RIGHT - FLEX_W / 2                                      # flex centre line on the corner run
+FLEX_BAND_X = FLEX_RIGHT - FLEX_RUN_W / 2                             # flex centre line down the flange band
+FRAME_RIGHT = MSR[0] / 2 + CLR + 1.6                                  # MSR-2 bay frame's right wall, outer face
+FRAME_BOT = MSR_Y - MSR[1] / 2 - CLR - 1.6                            # MSR-2 bay frame's lower wall, outer face
+FLEX_EXIT_X = FRAME_RIGHT + FLEX_EXIT                                 # rise starts here (room x)
+FINGER_SEC_IN = min(x for x, _ in FINGERS) - FINGER_PAD[0] / 2 - 0.3  # finger section's inner (left) edge
+FINGER_SEC_Y = (FINGERS[0][1] - FINGER_PAD[1] / 2 - 0.5, MSR_Y - FLEX_W / 2 - 0.5)   # from the pads to the fold
+TARGET_Y = (TARGET_Y0, FINGERS[0][1] + FINGER_PAD[1] / 2 + TARGET_END)  # pad end extent along y
 MIC_X = FLEX_X - MIC_FLEX_Y                                           # mic body centre (room x)
-MIC_PORT = (MIC_X, MIC_Y - (MIC[1] / 2 - MIC_PORT_IN))                # port / sound hole axis (room x, y)
-MIC_SEC_IN = FLEX_X - MIC_SEC_W                                       # widened section's inner (flange-side) edge
+MIC_PORT = (MIC_X, MIC_Y + (MIC[1] / 2 - MIC_PORT_IN))                # port / sound hole axis (room x, y)
+MIC_SEC_IN = FLEX_X - MIC_SEC_W                                       # widened section's inner (left) edge
+FLEX_Z_LO = PLUG_STIFF_T + SFLEX_T / 2                                      # flex centre at the MSR-2 end
+FLEX_Z_HI = FLEX_HI_Z + SFLEX_T / 2                                    # flex centre in the corner and the bottom
+FLEX_Z_BAND = FLEX_BAND_Z + SFLEX_T / 2                                # flex centre down the band (on the flange)
+FLEX_Z_SHT = SKIN_Z - 0.5 - SHT_CHIP[2] - SFLEX_T / 2                  # SHT45 on the flex top, 0.5 under the vents
+_rc = ISLAND_R + FLANGE
+_xb = FLEX_RIGHT - FLEX_RUN_W                                          # band run's left edge: last onto the flange
+FLEX_Y_ON = FLANGE_OUT[1] / 2 - _rc + sqrt(max(0.0, _rc ** 2 - (_xb - (FLANGE_OUT[0] / 2 - _rc)) ** 2)) - 0.4
+FLEX_Y_CLIMB = FLEX_Y_ON + 1.4                                        # band run climbs onto the flange from here
 
 
 def pocket_wall_x(y):
@@ -364,10 +409,57 @@ def end_top(a, b, n=48):
     return pts
 
 
-def tongue_walls():
-    """NA tongue (D-41) across its width: (outermost wall x, innermost wall x) of the pocket wall."""
-    xs = [pocket_wall_x(BC_NA_TONGUE_Y + d * BC_NA_SLOT[0] / 2) for d in (-1, 0, 1)]
-    return max(xs), min(xs)
+def pocket_wall_y(x, w=None):
+    """y of the remote pocket's top wall at room x (inner stadium by default, or a stadium w wide)."""
+    a = (w or POCKET_IN[0]) / 2
+    return (POCKET_IN[1] / 2 - POCKET_IN[0] / 2) + sqrt(max(0.0, a * a - x * x))
+
+
+def tongue_arc():
+    """NA tongue (D-47) at the pocket's top arc: arc point P on the inner wall, outward radial unit u, the
+    turn point Q on the island (P + BC_NA_TURN u); the straight run down across flange and island is at Q's x."""
+    r = POCKET_IN[0] / 2
+    yc = POCKET_IN[1] / 2 - r
+    p = (BC_NA_WALL_X, pocket_wall_y(BC_NA_WALL_X))
+    u = (p[0] / r, (p[1] - yc) / r)
+    q = (p[0] + BC_NA_TURN * u[0], p[1] + BC_NA_TURN * u[1])
+    return p, u, q
+
+
+def na_tongue_route():
+    """NA tongue centre line (D-49), 3D, from the finger section's left edge to the floor insert's first slot: the
+    band (rising to the trim's groove), the 45 deg fold, down the plate, the radial turn, behind the strip down the
+    arc's groove, the 45 deg jog out of it, down the wall, under the floor insert radially in, down the floor."""
+    p, u, q = tongue_arc()
+    z_sec = FLEX_HI_Z + SFLEX_T / 2
+    z_g = SKIN_Z + BC_NA_TGROOVE[1] - SFLEX_T / 2
+    r_up = BC_NA_STRIP[1] + BC_NA_TROOM / 2                 # behind the strip in the groove
+    r_lo = -BC_NA_TROOM / 2 - 0.03                          # between the strip's proud foot and the wall (its curve)
+    z_f = SEAT_Z + SFLEX_T / 2                              # on the pocket floor, under the floor insert
+    gb = BC_NA_GROOVE_BOT
+    zj = lambda r: gb + r + BC_NA_TROOM / 2 - BC_NA_JOG_E / 2   # mid-line between the strip's jog and the groove's end
+    a, b = (p[0] + r_up * u[0], p[1] + r_up * u[1]), (p[0] + r_lo * u[0], p[1] + r_lo * u[1])
+    xd, _, y_pad = BC_NA_DOWN
+    s_floor = (b[0] - xd) / u[0]
+    f = (xd, b[1] - s_floor * u[1])
+    return [(FINGER_SEC_IN, BC_NA_BAND_Y, z_sec), (FINGER_SEC_IN - 1.5, BC_NA_BAND_Y, z_g), (q[0], BC_NA_BAND_Y, z_g),
+            (q[0], q[1], z_g), (*a, z_g), (*a, zj(r_up)), (*b, zj(r_lo)), (*b, z_f), (*f, z_f), (xd, y_pad + BC_NA_SLOT, z_f)]
+
+
+def in_rr(x, y, w, h, r):
+    """Inside a rounded rectangle w x h (corner radius r) centred on the origin."""
+    dx, dy = abs(x) - (w / 2 - r), abs(y) - (h / 2 - r)
+    if dx <= 0 or dy <= 0:
+        return abs(x) <= w / 2 and abs(y) <= h / 2
+    return hypot(dx, dy) <= r
+
+
+def flange_exit():
+    """Horizontal run from the pass-through's vertical leg along PASS_DIR to the flange's outer edge."""
+    t = 0.0
+    while in_rr(PASS_X + t * PASS_DIR[0], PASS_Y + t * PASS_DIR[1], *FLANGE_OUT, ISLAND_R + FLANGE):
+        t += 0.01
+    return t
 
 
 def flex_half_width(x):
@@ -382,23 +474,23 @@ def flex_half_width(x):
 
 def jumper_path():
     """5 V flex jumper centre line (room x, y, z): J2 -> service loop (Z-fold in the gap between board
-    and insert) -> pass-through (along the bottom of its 45 deg leg) -> pad end on the shelf."""
+    and insert) -> pass-through (along the bottom of its 45 deg leg) -> pad end on the corner shelf."""
     zk = -1.0                                            # bend of the pass-through (insert.pass_through)
-    face = FLANGE_OUT[0] / 2
+    ux, uy = PASS_DIR
     r = PASS_D / 2
     chord = r - sqrt(r * r - (JUMPER_W / 2) ** 2)        # the strip lies across the bottom of the round leg
-    o = (r - chord - JUMPER_T) / sqrt(2)                 # strip centre below the leg's axis (x and z parts)
-    t = face - PASS_X
-    pad_x = (FLANGE_OUT[0] / 2 + 0.15 + FLANGE_OUT[0] / 2 + SHELF_OUT + (SHELF_TOP_Z - SHELF_UNDER_Z) - 0.15) / 2
+    o = (r - chord - JUMPER_T) / sqrt(2)                 # strip centre below the leg's axis (plan and z parts)
+    t = flange_exit()
     e = (J2_POS[0], WB_Y + J2_POS[1] + FH12[1] / 2 + 0.3, WB_FRONT_Z + FH12[2] / 2)
     lo, mid, hi = WB_FRONT_Z + FH12[2] + 1.5, (WB_FRONT_Z + Z_BOT) / 2, Z_BOT - 2.5
     y0 = WB_Y + J2_POS[1] + 9.0
     fold = JUMPER_SERVICE / 2                            # two runs of the Z-fold add the spare length
+    xe, ye = PASS_X + (t + o) * ux, PASS_Y + (t + o) * uy
     return [e, (JUMPER_X, y0, lo), (JUMPER_X, y0 + fold, lo), (JUMPER_X, y0 + fold, mid),
             (JUMPER_X, y0, mid), (JUMPER_X, y0, hi), (JUMPER_X, PASS_Y - 4.0, hi),
-            (PASS_X + o, PASS_Y, Z_BOT - 1.7), (PASS_X + o, PASS_Y, zk - o),
-            (face + o, PASS_Y, zk + t - o),                                  # leaves the flange face
-            (pad_x, TARGET_Y[1] - 0.5, SHELF_TOP_Z + TARGET_T + JUMPER_T / 2)]
+            (PASS_X + o * ux, PASS_Y + o * uy, Z_BOT - 1.7), (PASS_X + o * ux, PASS_Y + o * uy, zk - o),
+            (xe, ye, zk + t - o),                                            # leaves the flange's corner
+            (xe, TARGET_Y[0] + JUMPER_JOIN, SHELF_TOP_Z + TARGET_T + JUMPER_T / 2)]
 
 
 def jumper_length():

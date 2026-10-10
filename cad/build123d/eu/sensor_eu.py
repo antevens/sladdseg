@@ -43,7 +43,7 @@ def mic_section():
 def flex():
     out = plug_end()
     for a, b in zip(ROUTE, ROUTE[1:]):
-        out += segment(a, b)
+        out += segment(a, b, FLEX_W, FLEX_T)
     out += mic_section()
     port = Pos(*MIC_PORT, Z_HI) * Cylinder(MIC_FLEX_HOLE_D / 2, FLEX_T + 0.1)
     return out - port
@@ -84,9 +84,9 @@ def pad_section():
 
 def tongue():
     """Battery-free tongue (D-41): from the pad section's inner edge, between the pins, under the pocket wall
-    to the floor insert's recess (the floor part is floor_eu's)."""
+    onto the cap, under the floor insert (the floor part is floor_eu's, D-49)."""
     wall_x = POCKET_IN[0] / 2 + POCKET_WALL
-    z_floor = CAP_T + BC_FLOOR_T - FLEX_T / 2 - BC_RECESS_CLR
+    z_floor = CAP_T + FLEX_T / 2
     a, b = (FLEX_PAD_SEC[0] + 0.3, EU_TONGUE_Y, Z_PIN), (wall_x, EU_TONGUE_Y, z_floor)
     dx, dz = b[0] - a[0], b[2] - a[2]
     from math import atan2, degrees, hypot
