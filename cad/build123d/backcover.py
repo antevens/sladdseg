@@ -71,18 +71,17 @@ def strip_boxes(clr=0.0):
             (xr0 - clr, xr1 + clr, min(yc, yb), max(yc, yb)), (xr0 - clr, xs0 + clr, yb - clr, yb + BC_RUN_JOG + clr)]
 
 
-def back_shape(inset=0.0, lift=0.0, inset_x=None):
+def back_shape(inset=0.0, lift=0.0):
     """The remote's back (flat pad, quarter-circle round-over, straight sides) inset by `inset` all
-    round (`inset_x` across x when given) and raised by `lift`. Below the curve's 45 deg point the round-over is replaced by its
+    round and raised by `lift`. Below the curve's 45 deg point the round-over is replaced by its
     45 deg tangent (a frustum), so the cover prints back down without supports."""
-    ix = inset if inset_x is None else inset_x           # across x (the long sides); inset along y
     n = bilresa.N_SECT
     secs = []
     for i in range(n // 2, n + 1):                        # from the 45 deg point up
         t = (pi / 2) * i / n
-        run = B_BACK_RUN * (1 - sin(t))
-        secs.append(Plane.XY.offset(lift + B_BACK_RISE * (1 - cos(t))) * stadium(B_W - 2 * (run + ix), B_H - 2 * (run + inset)))
-    w, h = B_W - 2 * ix, B_H - 2 * inset
+        run = B_BACK_RUN * (1 - sin(t)) + inset
+        secs.append(Plane.XY.offset(lift + B_BACK_RISE * (1 - cos(t))) * stadium(B_W - 2 * run, B_H - 2 * run))
+    w, h = B_W - 2 * inset, B_H - 2 * inset
     zt = EDGE_C / 2                                       # height of the 45 deg point (n even)
     frustum = chamfer(slab(stadium(w, h), lift, lift + B_SEAM_Z).edges().group_by(Axis.Z)[0], EDGE_C)
     frustum &= Pos(0, 0, lift + zt / 2) * Box(B_W + 2, B_H + 2, zt)
@@ -95,9 +94,8 @@ def outer():
 
 
 def shell():
-    """Cover shell: back_shape hollowed by BC_SIDE_WALL_X across x, BC_SIDE_WALL along y and BC_WALL at the back, open at
-    the seam."""
-    return outer() - back_shape(BC_SIDE_WALL, BC_WALL, BC_SIDE_WALL_X)
+    """Cover shell: back_shape hollowed by BC_SIDE_WALL sideways and BC_WALL at the back, open at the seam."""
+    return outer() - back_shape(BC_SIDE_WALL, BC_WALL)
 
 
 def corner_cuts():
@@ -148,9 +146,9 @@ def inner_x(z):
     """Long side wall's inside face (x) at height z: the shell's inner round-over, straight above it."""
     zr = z - BC_WALL
     if zr >= B_BACK_RISE:
-        return B_W / 2 - BC_SIDE_WALL_X
+        return B_W / 2 - BC_SIDE_WALL
     t = acos(max(-1.0, min(1.0, 1 - zr / B_BACK_RISE)))
-    return B_W / 2 - BC_SIDE_WALL_X - B_BACK_RUN * (1 - sin(t))
+    return B_W / 2 - BC_SIDE_WALL - B_BACK_RUN * (1 - sin(t))
 
 
 def tabs():
@@ -161,7 +159,7 @@ def tabs():
     y0, y1 = gi / 2 + BC_TAB_CLR, go / 2 - BC_TAB_CLR
     z0, z1 = B_SEAM_Z - top - h, B_SEAM_Z - top
     x_in = inner_x((z0 + z1) / 2)
-    x0, x1 = x_in - prot, B_W / 2 - BC_SIDE_WALL_X + 0.3
+    x0, x1 = x_in - prot, B_W / 2 - BC_SIDE_WALL + 0.3
     out = None
     for sx in (-1, 1):
         for sy in (-1, 1):

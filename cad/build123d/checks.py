@@ -655,9 +655,9 @@ def cover_checks():
     ps = bc.cover_parts()
     c = ps["cover"]
     check(c.is_valid and len(c.solids()) == 1, f"cover: one valid solid ({c.volume / 1000:.2f} cm3)")
-    check(min(BC_SIDE_WALL, BC_SIDE_WALL_X) >= 1.2,
-          f"side walls {BC_SIDE_WALL_X:.2f} (long sides) / {BC_SIDE_WALL:.2f} (ends) mm (back {BC_WALL}): "
-          f"{B_W - 2 * BC_SIDE_WALL_X:.2f} x {B_H - 2 * BC_SIDE_WALL:.2f} inside at the rim (D-75, D-93)")
+    check(BC_SIDE_WALL >= 1.2,
+          f"side wall {BC_SIDE_WALL:.1f} mm (back {BC_WALL}): {B_W - 2 * BC_SIDE_WALL:.1f} x {B_H - 2 * BC_SIDE_WALL:.1f} "
+          f"inside at the rim, 0.1 more all round for the remote's housing (D-75)")
     win = PIN_BARREL[0] / 2 + BC_WIN_CLR
     check(win - PIN_BARREL[0] / 2 >= 0.2 and BC_PAD_D / 2 >= win + 0.2,
           f"spring pin windows r {win:.2f} round the {PIN_BARREL[0]} barrel, pads r {BC_PAD_D / 2} over them (D-50)")
@@ -689,8 +689,8 @@ def cover_checks():
     for x, y in BC_FINGERS:
         check(BC_STRIP[0] + 0.2 <= x - BC_PAD_D / 2 and x + BC_PAD_D / 2 <= BC_STRIP[1] - 0.2,
               f"pad at ({x}, {y}) inside the flex strip")
-    check(BC_STEEL_FLOOR >= BC_WALL - 1e-6 and BC_REG_FLOOR >= 0.4 - 1e-6,
-          f"{BC_STEEL_FLOOR} mm of cover wall under the plate (full shell), {BC_REG_FLOOR} under the regulator")
+    check(BC_STEEL_FLOOR >= 1.0 - 1e-6 and BC_REG_FLOOR >= 0.4 - 1e-6,
+          f"{BC_STEEL_FLOOR:.1f} mm of cover wall under the plate (D-96), {BC_REG_FLOOR} under the regulator")
     rb = bc.steel_ridge().bounding_box()
     seat = (rb.size.X - 2 * BC_STEEL_RIDGE[0], rb.size.Y - 2 * BC_STEEL_RIDGE[0])
     check(abs(seat[0] - BC_STEEL[0] - 2 * BC_STEEL_CLR) < 0.01 and abs(seat[1] - BC_STEEL[1] - 2 * BC_STEEL_CLR) < 0.01,
