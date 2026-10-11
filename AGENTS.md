@@ -100,7 +100,7 @@ make check-renders  # no render older than its sources, every render used by a d
 make eu          # EU variant: CAD to build/eu, EU checks, EU renders
 make order       # DigiKey / Mouser CSVs for test plates (NA_PLATES, EU_PLATES)
 make stock       # live DigiKey / Mouser stock and lifecycle, parts rule D-84 (keys: pcb/order/README.md)
-make order-push  # DigiKey myLists link + Mouser cart for the lists (PRIMARY=digikey|mouser)
+make order-push  # DigiKey myLists link + Mouser cart: 1 NA plate by default (VARIANT=na|eu|both, PLATES, PRIMARY)
 ```
 
 KiCad 9.x (`kicad-cli` on PATH). `pcb/tools/build.sh` runs the generators with

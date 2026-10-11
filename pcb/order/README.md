@@ -38,11 +38,19 @@ plates; change with `make order NA_PLATES=4 EU_PLATES=1`.
   written to `build/stock.md`. It fails when a part breaks the parts rule (D-84: active and in stock or normally
   stocked at one of them); "review" marks a part listed active with none in stock. A distributor without keys is
   skipped.
-- `make order-push` (`PRIMARY=digikey` default, or `mouser`; `NA_PLATES`, `EU_PLATES`): the "all" list. The
-  primary distributor gets every part it carries, the other one the rest (as the `_rest_` files). DigiKey: the
+- `make order-push`: the parts for one plate by default, NA: `VARIANT=na|eu|both` (default `na`), `PLATES=n`
+  (default 1; `both` = n of each), exactly what the plates use: no spares (the CSVs keep theirs, Quantities, below). `PRIMARY=digikey` (default) or
+  `mouser`: the primary distributor gets every part it carries, the other one the rest (as the `_rest_` files).
+  Examples: `make order-push VARIANT=eu`, `make order-push PLATES=3`.
+  A part the primary distributor does not carry is replaced by its second source on the same footprint where it
+  has one (`ALTERNATES` in `order_bom.py`): DigiKey gets the E-Switch RA412C1100 for the Marquardt 1802.2504
+  (D-88; check its tab rows on the first part), so a DigiKey order needs no Mouser line.
+  With DigiKey keys set, each DigiKey line goes up to a price break where the larger quantity costs less in
+  total (e.g. 8 at 1.20 = 9.60 against 10 at 0.864 = 8.64); a lower unit price that costs more in total is left
+  alone. `--no-price-breaks` (`python3 pcb/tools/distributors.py push ...`) keeps the exact counts. DigiKey: the
   list goes to myLists' third-party endpoint (no key) and comes back as a single-use link that opens it as a
   cart or a myLists list. Mouser: a cart (Search key for the part numbers, Cart key for the cart); the cart key
-  is printed, the cart is in My Mouser. `python3 pcb/tools/distributors.py push 3 2 --dry-run` shows the
+  is printed, the cart is in My Mouser. `python3 pcb/tools/distributors.py push eu 1 --dry-run` shows the
   payloads without sending.
 
 ### Getting the keys

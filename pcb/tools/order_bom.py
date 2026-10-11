@@ -41,6 +41,9 @@ DIGIKEY = {
     "P70-2200045": "952-3124-ND",
     "55909-2474": "WM3787CT-ND",               # DigiKey lists it as 0559092474 (API 2026-10-11)
     "25503": "36-25503-ND",                    # bare 25503 is ambiguous at DigiKey (API 2026-10-11)
+    "RA412C1100": "EG5628-ND",                 # DigiKey API 2026-10-11 (584, 9 wk)
+    "ADAU7002ACBZ-R7": "505-ADAU7002ACBZ-R7CT-ND",   # cut tape (DigiKey cart, API 2026-10-11)
+    "C1206C104J3GACTU": "399-C1206C104J3GACTUCT-ND", # cut tape (DigiKey cart, API 2026-10-11)
 }
 # Mouser's own numbers where its BOM import does not match the MPN (search results 2026-10-09); None: not
 # carried by Mouser (import reported no match), those go to <name>_mouser_rest_digikey.csv
@@ -51,6 +54,9 @@ MOUSER = {
     "2604-3102": None,
     "P70-2200045": None,
 }
+# second sources on the same footprint, used by distributors.py push for a distributor that does not carry the part
+ALTERNATES = {"1802.2504": ("E-Switch", "RA412C1100", "Rocker switch DPST, 4.8 mm tabs into the slots, ENEC 10(4) A 250 V~, "
+                            "UL/cUL 16 A 125 VAC (second source, D-88)")}
 SMALL = ("0402", "1206", "SOT-23", "DFN", "SPK0641", "WLCSP", "S7081", "P70-", "FH12", "UMT250", "CU4032", "SMD", "WA-SMSI",
          "WA-SBRIE")
 # NA parts that are not on a board (D-50, D-57): the spacer posts' studs, the board standoffs and the 5 V FFC

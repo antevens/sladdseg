@@ -2,10 +2,12 @@
 
 Usage:
   python3 pcb/tools/distributors.py stock                       report, build/stock.md; exit 1 if a part breaks D-84
-  python3 pcb/tools/distributors.py push [NA_PLATES] [EU_PLATES] [--primary=digikey|mouser] [--dry-run]
-                                                                the "all" list: the primary distributor gets every part
-                                                                it carries, the other one the rest (as make order's
-                                                                <name>_<dist>.csv / _rest_ files)
+  python3 pcb/tools/distributors.py push [na|eu|both] [PLATES] [--primary=digikey|mouser] [--dry-run] [--no-price-breaks]
+                                                                exactly the parts for PLATES plates (default: na 1; both:
+                                                                PLATES of each), no spares; the primary distributor gets
+                                                                every part it carries, the other one the rest; with
+                                                                DigiKey keys a line goes up to a price break where that
+                                                                costs less
 
 Keys come from the environment only (never stored in the repo):
   DIGIKEY_CLIENT_ID, DIGIKEY_CLIENT_SECRET   DigiKey Product Information v4 (developer.digikey.com app, client credentials)
@@ -111,6 +113,37 @@ class DigiKey:
                     lead=f"{p['ManufacturerLeadWeeks']} wk" if p.get("ManufacturerLeadWeeks") else "")
 
 
+    def price_breaks(self, pn):
+        """[(break quantity, unit price)] for the packaging pn names (or the cut tape / first one for an MPN)."""
+        for attempt in range(3):
+            s, r = http(DK_DETAILS.format(urllib.parse.quote(pn, safe="")), headers=self.headers())
+            if s < 500:
+                break
+            time.sleep(2 * (attempt + 1))
+        if s != 200 or not isinstance(r, dict) or "Product" not in r:
+            return []
+        vs = r["Product"].get("ProductVariations") or []
+        v = next((v for v in vs if v.get("DigiKeyProductNumber") == pn), None) or \
+            next((v for v in vs if "Cut Tape" in ((v.get("PackageType") or {}).get("Name") or "")), None) or \
+            (vs[0] if vs else None)
+        if not v:
+            return []
+        return sorted((int(b["BreakQuantity"]), float(b["UnitPrice"])) for b in v.get("StandardPricing") or []
+                      if b.get("BreakQuantity") and b.get("UnitPrice") is not None)
+
+
+def best_quantity(n, breaks):
+    """(quantity, cost at n, cost at the quantity): the quantity >= n with the lowest extended price, n on a tie."""
+    def cost(q):
+        unit = next((u for b, u in reversed(breaks) if b <= q), None)
+        return None if unit is None else q * unit
+    base = cost(n)
+    if base is None:
+        return n, None, None
+    best = min([n] + [b for b, _ in breaks if b > n], key=lambda q: (round(cost(q), 4), q))
+    return best, base, cost(best)
+
+
 class Mouser:
     def __init__(self):
         self.search_key, self.cart_key = env("MOUSER_SEARCH_KEY"), env("MOUSER_CART_KEY")
@@ -206,21 +239,42 @@ def stock():
 def push(na, eu, primary, dry):
     plates = {"NA": na, "EU": eu}
     lines, _ = ob.collect(plates)
-    name = f"smart-wallplate v0.4 NA{na} EU{eu} {date.today().isoformat()}"
+    name = "smart-wallplate v0.4 " + " ".join(f"{k}{n}" for k, n in (("NA", na), ("EU", eu)) if n) + \
+        f" {date.today().isoformat()}"
     dk_parts, ms_items = [], []
     for mpn, line in lines.items():
-        n = ob.quantity(line, plates)
+        n = sum(k * plates[v] for v, k in line["per"].items())   # exact: no spares
         ref = ("WP " + " ".join(sorted({r.split()[0] for r in line["refs"]})) + " " + line["refs"][0].split()[-1])[:48]
         dkpn, mspn = dk_pn(mpn), ob.MOUSER.get(mpn, "")
+        mfr, note = line["mfr"], line["desc"]
+        if dkpn is None and primary == "digikey" and mpn in ob.ALTERNATES:   # second source DigiKey carries
+            mfr, alt, note = ob.ALTERNATES[mpn]
+            dkpn = dk_pn(alt)
+            print(f"  {mpn} is not at DigiKey: {mfr} {alt} instead ({note})")
         to_dk = dkpn is not None and (primary == "digikey" or mspn is None)
         if to_dk:
-            dk_parts.append({"requestedPartNumber": dkpn, "manufacturerName": line["mfr"],
+            dk_parts.append({"requestedPartNumber": dkpn, "manufacturerName": mfr,
                              "referenceDesignator": ", ".join(sorted({r.split()[-1] for r in line["refs"]}))[:200],
-                             "customerReference": ref, "notes": line["desc"][:200], "quantities": [{"quantity": n}]})
+                             "customerReference": ref, "notes": note[:200], "quantities": [{"quantity": n}]})
         elif mspn is not None:
             ms_items.append((mpn, mspn, n, ref))
         else:
             print(f"  {mpn}: carried by neither list, left out")
+    dk = DigiKey()
+    if dk.ok and dk_parts and "--no-price-breaks" not in sys.argv:          # a larger quantity that costs less
+        saved = 0.0
+        for part in dk_parts:
+            n = part["quantities"][0]["quantity"]
+            q, c0, c1 = best_quantity(n, dk.price_breaks(part["requestedPartNumber"]))
+            if q != n:
+                part["quantities"][0]["quantity"] = q
+                saved += c0 - c1
+                print(f"  {part['requestedPartNumber']}: {n} -> {q} at a price break ({c0:.2f} -> {c1:.2f} "
+                      f"{env('DIGIKEY_CURRENCY', 'CAD')})")
+        if saved:
+            print(f"  price breaks save {saved:.2f} {env('DIGIKEY_CURRENCY', 'CAD')}")
+    elif dk_parts:
+        print("  price breaks not checked (no DigiKey keys)")
     print(f"DigiKey myLists '{name}': {len(dk_parts)} lines")
     if not dk_parts:
         pass
@@ -271,7 +325,13 @@ def main():
         primary = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--primary=")), "digikey")
         if primary not in ("digikey", "mouser"):
             raise SystemExit("--primary must be digikey or mouser")
-        push(int(args[1]) if len(args) > 1 else 3, int(args[2]) if len(args) > 2 else 2, primary,
+        variant = args[1] if len(args) > 1 else "na"
+        if variant not in ("na", "eu", "both"):
+            raise SystemExit("variant must be na, eu or both")
+        n = int(args[2]) if len(args) > 2 else 1
+        if n < 1:
+            raise SystemExit("PLATES must be 1 or more")
+        push(n if variant in ("na", "both") else 0, n if variant in ("eu", "both") else 0, primary,
              "--dry-run" in sys.argv)
 
 

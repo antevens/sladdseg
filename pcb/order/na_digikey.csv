@@ -10,9 +10,9 @@ WM3787CT-ND,55909-2474,Molex,4,WP NA J2,"SlimStack plug 24 contacts, 0.4 mm, 2 r
 1649-SHT45-AD1B-R2CT-ND,SHT45-AD1B-R2,Sensirion,5,WP NA U1,"Humidity and temperature sensor, I2C 0x44 (1/plate NA; NA ring board U1)"
 490-6328-1-ND,GRM155R71C104KA88J,Murata,10,WP NA C2,Ceramic 100 nF 16 V X7R 0402 (2/plate NA; NA ring board C2; NA ring board C4)
 6017-SPK0641HT4H-1CT-ND,SPK0641HT4H-1,Knowles,5,WP NA MK1,"PDM MEMS microphone, top port, 1.6-3.6 V; SELECT low (1/plate NA; NA ring board MK1)"
-,ADAU7002ACBZ-R7,Analog Devices,5,WP NA U2,"Stereo PDM to I2S converter, WLCSP-8 0.4 mm; CONFIG high = I2S (1/plate NA; NA ring board U2)"
+505-ADAU7002ACBZ-R7CT-ND,ADAU7002ACBZ-R7,Analog Devices,5,WP NA U2,"Stereo PDM to I2S converter, WLCSP-8 0.4 mm; CONFIG high = I2S (1/plate NA; NA ring board U2)"
 311-100KLRCT-ND,RC0402FR-07100KL,Yageo,10,WP NA R1,Resistor 100 kOhm 1 % 0402 (1/plate NA; NA ring board R1)
-,C1206C104J3GACTU,KEMET,5,WP NA C3,"Microphone decoupling, C0G 25 V 1206 (1/plate NA; NA ring board C3)"
+399-C1206C104J3GACTUCT-ND,C1206C104J3GACTU,KEMET,5,WP NA C3,"Microphone decoupling, C0G 25 V 1206 (1/plate NA; NA ring board C3)"
 ,9774015243R,Wurth Elektronik,14,WP NA H1,"SMT steel spacer M2, 1.5 mm, tin (3/plate NA; NA ring board H1; NA ring board H2; NA ring board H3)"
 952-3124-ND,P70-2200045,Harwin,9,WP NA J1,"SMT spring pin with peg, 2 A, gold (2/plate NA; NA riser J1; NA riser J2)"
 952-1734-1-ND,S7081-42R,Harwin,9,WP NA J3,"SMT spring finger, gold, 4 A, working height 2.0 mm (2/plate NA; NA cover flex J3; NA cover flex J4)"

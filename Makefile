@@ -117,11 +117,13 @@ order:          ## DigiKey / Mouser lists for the test plates and PCBWay order p
 	else echo "stock not checked: no DigiKey / Mouser keys in the environment (pcb/order/README.md)"; fi
 
 PRIMARY ?= digikey
+VARIANT ?= na
+PLATES ?= 1
 stock:          ## live DigiKey / Mouser stock and lifecycle of every listed part (build/stock.md); fails on the parts rule (D-84)
 	python3 pcb/tools/distributors.py stock
 
-order-push:     ## send the lists: DigiKey myLists link + Mouser cart (PRIMARY=digikey|mouser, NA_PLATES / EU_PLATES)
-	python3 pcb/tools/distributors.py push $(NA_PLATES) $(EU_PLATES) --primary=$(PRIMARY)
+order-push:     ## DigiKey myLists link + Mouser cart for PLATES plates (default 1) of VARIANT=na|eu|both (default na); PRIMARY=digikey|mouser
+	python3 pcb/tools/distributors.py push $(VARIANT) $(PLATES) --primary=$(PRIMARY)
 
 eu:             ## EU variant (D-30, cad/build123d/eu/): STEP/STL to build/eu, checks, its renders (docs/renders/eu_*.png)
 	cd $(CAD)/eu && $(PY) cap_eu.py && $(PY) trim_eu.py && $(PY) checks_eu.py
