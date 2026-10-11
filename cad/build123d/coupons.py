@@ -3,7 +3,7 @@
   coupon_pocket_well  top of the insert: switch well + panel, magnet recess, upper pocket end, key pin,
                       5 V pass-through, top screw boss. Rocker snap-in + remote fit.
   coupon_msr          top of the trim: MSR-2 bay, radar skin, CO2 and light sensor grille, vents.
-  coupon_rocker       panel-thickness ladder for the C1300 snap-in (SW_PANEL_T is MEASURE):
+  coupon_rocker       panel-thickness ladder for the Marquardt 1802.2504 snap-in (SW_PANEL_T is MEASURE):
                       one notch per step on the frame edge = 1.0, 1.5, 2.0, 2.5, 3.0 mm.
   coupon_ribs         a straight piece of the collar with the flange's land and taper and three crush ribs at
                       RIB_STEPS interference (1, 2, 3 notches): press the ring board's window edge (or a 1.6 mm FR4

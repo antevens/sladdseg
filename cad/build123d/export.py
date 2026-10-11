@@ -22,7 +22,6 @@ PRINT_ORIENT = {
     "testbox_eu": lambda p: p,                      # floor down, open side up (D-76)
     "testbox_plate_eu": lambda p: p,                # flat
     "plate_jig_saw": lambda p: p,                   # floor down (D-52)
-    "plate_jig_marker": lambda p: p,
 }
 
 
@@ -56,7 +55,7 @@ def parts():
             "cap_eu": cap_eu.build(), "trim_eu": trim_eu.build(),
             "carrier_eu": capboard_eu.carrier(),
             "testbox_eu": testbox_eu.box(), "testbox_plate_eu": testbox_eu.plate(),
-            "plate_jig_saw": plate_jig.saw_guide(), "plate_jig_marker": plate_jig.marker_gauge()}
+            "plate_jig_saw": plate_jig.saw_guide()}
 
 
 def main():

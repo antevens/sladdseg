@@ -46,14 +46,14 @@ def build():
         cut += Pos(s * SCOOP_X, 0, SCOOP_ZC) * ellipsoid(*SCOOP)
     for s in (-1, 1):                                                                     # #6 screw clearance
         cut += Pos(0, s * SCREW_PITCH / 2, DECK_Z / 2) * Cylinder(SCREW_D / 2, DECK_Z + 2)
-    cut += pass_through() + ffc_channel()
+    cut += ffc_channel()
     cut += ring.pin_holes() + ring.riser_pocket()                                         # battery-free remote (D-50)
     body -= cut
     for kx, ky in KEY_POS:                                                                # locating pins
         body += Pos(kx, ky, DECK_Z + KEY_H / 2 - 0.01) * Cylinder(KEY_D / 2, KEY_H + 0.02)
     body += mount_bosses()                                                                # after the pocket cut
     body -= mount_holes()
-    body -= pass_through()                                                                # the bore past a boss's side
+    body -= pass_through()                                                                # after the bosses: past MH3's side
     return body
 
 
@@ -137,11 +137,17 @@ def magnet_recess():
     return end + upper
 
 
+def bore():
+    """The pass-through's straight bore (D-74), from below the underside up to the flat slot."""
+    _, e, _ = pass_points()
+    return rod(pass_at(Z_BOT - PASS_BELOW), e, PASS_D)
+
+
 def pass_through():
     """The single 5 V cable hole (D-74): one straight bore from the insert's underside in the top-right corner, past the
     remote pocket, to a flat slot out through the collar; its lower part opens through the corner taper as a groove."""
     _, e, f = pass_points()
-    leg = rod(pass_at(Z_BOT - 4.0), e, PASS_D)
+    leg = bore()
     from common import radial_prism
     w, h, _ = PASS_SLOT
     z0, z1 = PASS_TOP_Z - h / 2, PASS_TOP_Z + h / 2
@@ -156,7 +162,6 @@ def pass_through():
 
 
 if __name__ == "__main__":
-    import sys
     from pathlib import Path
     from build123d import export_step, export_stl
     out = Path(__file__).resolve().parents[2] / "build"

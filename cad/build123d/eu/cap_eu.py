@@ -1,7 +1,7 @@
 """EU CAP (D-30, D-36): the whole mains / low-voltage barrier of the EU plate.
 
 A flat 1.6 mm floor over the box and the seal band round the Ø68 hole (the remote rests on it; the
-cap board's carrier on it beyond the pocket), a cup under the remote's upper half down to the emergency rocker's
+cap board's carrier sits on the wall round it, its lip under the cap's edge), a cup under the remote's upper half down to the emergency rocker's
 panel (Marquardt 1802.2504; the rocker body plugs the cutout), bosses for the 5 V board and (long) for the mains
 board, holes for the 5 V board's four spring pins (no wires),
 a rebate in its underside outside the seal band over the carrier's lip, with four teeth that key the carrier (D-71).
@@ -99,7 +99,7 @@ def pin_holes():
         h = Pos(x, y, CAP_T / 2) * Cylinder(PIN_CAP_HOLE_D / 2, CAP_T + 2)
         out = h if out is None else out + h
     for x, y in BC_FINGERS:
-        out += Pos(x, y, CAP_T / 2) * Cylinder(PIN_BARREL[0] / 2 + PIN_RADIAL, CAP_T + 2)
+        out += Pos(x, y, CAP_T / 2) * Cylinder(PIN_CAP_HOLE_D / 2, CAP_T + 2)
     return out
 
 

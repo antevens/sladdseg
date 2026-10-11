@@ -1,7 +1,7 @@
 """EU variant checks (D-30), run by `make eu`.
 
 Barrier test as in checks.py: air = (box cavity less its four screw domes + space in front of the
-wall) - cap, with the rocker cutout (closed by the rocker body) and the two spring-pin holes
+wall) - cap, with the rocker cutout (closed by the rocker body) and the four spring-pin holes
 (pin barrels) plugged. The air touching the back of the box (mains) must stay behind the wall plane.
 """
 import sys
@@ -35,16 +35,19 @@ def _in_stadium(x, y, w, h):
 
 def layout():
     print("layout")
-    print(f"       plate {PW:.1f} x {PH:.1f} mm, {PT:.1f} mm proud (remote flush), centre y {PC[1]:.1f} from the box "
+    print(f"       plate {PW:.1f} x {PH:.1f} mm, {PT:.1f} mm proud (remote {B_PROUD} mm beyond it), centre y {PC[1]:.1f} from the box "
           f"centre; cap Ø{2 * CAP_R:.1f} x {CAP_T} mm")
+    floor = MAGNET_Z[0] - MAG_CUP_BOT
+    check(min(CAP_T, floor) >= V0_RATED_T, f"cap {CAP_T} mm and the steel piece's cup floor {floor:.1f} mm >= "
+                                          f"{V0_RATED_T} mm (V-0 rated thickness)")
     lim = BOX_R - PLUG_CLR
     r = _rmax(0, SW_Y, *CUP_OUT)
     check(r <= lim, f"switch cup inside the box (corner r {r:.2f} <= {lim:.2f})")
     hidden = all(_in_stadium(x, y, B_W - 2.0, B_H - 2.0) for x, y in _corners(0, SW_Y, *CUP_IN))
     check(hidden, "switch cup under the remote (1 mm inside its outline)")
     for x, y in SCREWS:
-        check(abs(hypot(x, y) - BOX_R) < 1e-6 and DOME_D >= SCREW_HEAD_D - 1.0,
-              f"cap screw at ({x:.0f}, {y:.0f}) lands on a box dome (Ø{DOME_D})")
+        check(abs(hypot(x, y) - BOX_R) < 1e-6 and DOME_D - SCREW_D >= 2.0,
+              f"cap screw at ({x:.0f}, {y:.0f}) on a box dome's axis (Ø{SCREW_D} in Ø{DOME_D})")
         inside = all(_in_stadium(x + dx, y + dy, POCKET_IN[0] - 1.0, POCKET_IN[1] - 1.0)
                      for dx, dy in ((SCREW_HEAD_D / 2, 0), (-SCREW_HEAD_D / 2, 0), (0, SCREW_HEAD_D / 2),
                                     (0, -SCREW_HEAD_D / 2)))
@@ -54,7 +57,7 @@ def layout():
         r = hypot(x, y) + PIN_PAD_D / 2
         check(r <= WB_R - 0.25, f"spring pin pad at ({x}, {y}) on the 5 V board (r {r:.2f} <= {WB_R - 0.25:.2f})")
         check(not _in_stadium(x - PIN_CAP_HOLE_D / 2 - 0.3, y, *POCKET_OUT),
-              f"spring pin hole at ({x}, {y}) outside the pocket walls (opens into the trim's right channel)")
+              f"spring pin hole at ({x}, {y}) outside the pocket walls (opens under the carrier, beside the pocket)")
         d = min(hypot(x - dx, y - dy) for dx, dy in DOMES) - DOME_NOTCH_R - PIN_PAD_D / 2
         check(d >= 0.0, f"spring pin pad {d:.2f} mm clear of the board's dome notches")
     g = BARRIER_MIN + MAGNET_CLR
@@ -171,7 +174,11 @@ def sensors(cap, tr):
         check(abs(tip - WB_FRONT - EU_PIN_WH) < 1e-6, f"{name}: tips {tip - WB_FRONT:.2f} mm above the 5 V board")
     gap = PIN_WH[0] - PIN_BARREL[1]
     check(gap >= 0.15, f"at the shortest working height the barrel tops stay {gap:.2f} mm under the pads")
-    check(PIN_CAP_HOLE_D - PIN_BARREL[0] <= 0.4, f"cap / carrier hole {PIN_CAP_HOLE_D} round the {PIN_BARREL[0]} mm pin "
+    holes = cap_eu.pin_holes().solids()
+    dia = sorted({round(2 * (h.bounding_box().size.X / 2), 3) for h in holes})
+    check(len(holes) == len(PINS) + len(BC_FINGERS) and dia == [round(PIN_CAP_HOLE_D, 3)],
+          f"{len(holes)} pin holes in the cap, all Ø{PIN_CAP_HOLE_D:.2f} (D-80)")
+    check(PIN_CAP_HOLE_D - PIN_BARREL[0] <= 0.4, f"cap / carrier hole {PIN_CAP_HOLE_D:.2f} round the {PIN_BARREL[0]} mm pin "
                                                   f"barrel ({(PIN_CAP_HOLE_D - PIN_BARREL[0]) / 2:.2f} mm radial gap)")
     proud = SEAT_Z + B_D - PT
     check(abs(proud - B_PROUD) < 1e-6, f"remote {proud:.1f} mm proud of the face (face plate {PT:.1f} mm, D-70)")
@@ -253,7 +260,7 @@ def bf_checks(cap, tr):
             g = hypot(x - px, y - py) - PIN_PAD_D
             check(g >= 0.5, f"pin at ({x}, {y}) clear of the sensor pin pad at ({px}, {py}) ({g:.2f} mm)")
     seated = Pos(0, 0, SEAT_Z) * backcover.cover()
-    for on, o in (("trim (tabs, walls)", tr), ("rocker", b["switch"]), ("cap", cap)):
+    for on, o in (("trim", tr), ("rocker", b["switch"]), ("cap", cap)):
         r = seated & o
         v = r.volume if r is not None else 0.0
         check(v < 0.05, f"seated back cover clears the {on} ({v:.3f} mm3)")
@@ -410,7 +417,7 @@ def test_socket(cap):
         p_out = Pos((BOX_HOLE / 2 - TB_GROOVE / 2) * cos(a), (BOX_HOLE / 2 - TB_GROOVE / 2) * sin(a), -d) * Box(0.1, 0.1, 0.1)
         r = (p_in + p_out) & bx
         check(r is None or r.volume < 1e-6, f"marker groove at {d:.0f} mm, {TB_GROOVE} deep inside and outside")
-    gap = (TB_DEPTH + DEEPEST) if DEEPEST < 0 else TB_DEPTH
+    gap = TB_DEPTH + DEEPEST
     print(f"       deepest part of the stack at {-DEEPEST:.1f} mm: {TB_DEPTH + DEEPEST:.1f} mm above the floor")
     check(gap > 0, f"stack inside the {TB_DEPTH} mm socket")
     stack = {"cap": cap, **{k: v for k, v in boards_eu.parts().items() if k not in ("magnet",)}}

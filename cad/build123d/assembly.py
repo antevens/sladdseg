@@ -10,7 +10,6 @@ Run: python assembly.py  -> ../../build/assembly.step
 from pathlib import Path
 from build123d import Box, Compound, Color, Pos, export_step, import_step
 from params import *
-from common import stadium, slab
 import insert
 import trim
 import bilresa

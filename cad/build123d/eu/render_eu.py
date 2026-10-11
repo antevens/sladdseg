@@ -33,7 +33,7 @@ def main():
     ps = parts()
     r3.shot("eu_front", ps, [(130, -170, 260), (0, 8, 0), (0, 1, 0)], hide=("box",))
     r3.shot("eu_remote_out", parts(lift=45), [(170, -190, 300), (0, 8, 15), (0, 1, 0)], hide=("box",))
-    keep = Pos(-100, 0, 0) * Box(200, 400, 400)          # half left of the x = 0 plane: cup, button, board, PSU
+    keep = Pos(-100, 0, 0) * Box(200, 400, 400)          # half left of the x = 0 plane: cup, rocker, boards, PSU
     cut = {k: v & keep for k, v in ps.items()}
     cut = {k: v for k, v in cut.items() if v is not None and v.volume > 1e-6}
     r3.shot("eu_section", cut, [(230, 40, 60), (0, 5, -8), (0, 0, 1)])

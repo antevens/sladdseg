@@ -28,11 +28,11 @@ BARRIER = {"wall_loops": "6", "top_shell_layers": "6", "bottom_shell_layers": "6
            "sparse_infill_density": "40%", "sparse_infill_pattern": "gyroid",
            "enable_support": "0", "brim_type": "outer_only", "brim_width": "5",
            "seam_position": "back", "detect_thin_wall": "1"}
-# Trim prints face-down: 7 bottom layers keep the 1.2 mm radar skin fully solid.
+# Trim prints face-down: 7 bottom layers keep the face skin solid (the radar skin is 0.6 mm, D-51).
 TRIM = {"wall_loops": "4", "top_shell_layers": "4", "bottom_shell_layers": "7",
         "sparse_infill_density": "20%", "sparse_infill_pattern": "gyroid",
         "enable_support": "0", "brim_type": "no_brim", "seam_position": "back"}
-# v0.4 insert (D-50): plug down; the flat back, its skirt and the riser pocket's ceiling stand on supports from the plate.
+# v0.4 insert (D-68): plug down; supports only under the seal lip and in the riser pocket.
 INSERT = dict(BARRIER, enable_support="1", support_type="normal(auto)", support_on_build_plate_only="1",
               support_threshold_angle="40")
 COUPON = dict(INSERT, brim_type="no_brim")
@@ -50,7 +50,7 @@ JOBS = {
     "trim_PETG": (["trim"], "Elegoo PETG @ECC2", TRIM),
     "coupons_PETG": (["coupon_pocket_well", "coupon_msr", "coupon_rocker", "coupon_ribs"], "Elegoo PETG @ECC2", COUPON),
     "backcover_PETG": (["back_cover"], "Elegoo PETG @ECC2", COVER),
-    "plate_jigs_PETG": (["plate_jig_saw", "plate_jig_marker"], "Elegoo PETG @ECC2", JIG),
+    "plate_jig_PETG": (["plate_jig_saw"], "Elegoo PETG @ECC2", JIG),
     "eu_cap_PC-FR": (["cap_eu"], "Elegoo PC-FR @ECC2", BARRIER),
     "eu_cap_PETG_testfit": (["cap_eu"], "Elegoo PETG @ECC2", dict(BARRIER, brim_type="no_brim")),
     "eu_trim_PETG": (["trim_eu"], "Elegoo PETG @ECC2", TRIM),
@@ -121,7 +121,14 @@ def main():
     print("slicer:", version(run), f"({exe})")
     gdir = ROOT / "build" / "print" / "gcode"
     gdir.mkdir(parents=True, exist_ok=True)
-    (ROOT / "print" / "profiles").mkdir(exist_ok=True)
+    pdir = ROOT / "print" / "profiles"
+    pdir.mkdir(exist_ok=True)
+    for f in pdir.glob("process_*.json"):                  # profiles of jobs no longer in JOBS
+        if f.stem[len("process_"):] not in JOBS:
+            f.unlink()
+    for f in (ROOT / "print").glob("*.3mf"):               # projects of jobs no longer in JOBS
+        if f.stem not in JOBS:
+            f.unlink()
     machine = flat(idx, "machine", PRINTER)
     report = []
     for job, (parts, fil, over) in JOBS.items():

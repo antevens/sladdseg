@@ -5,39 +5,36 @@ plate). Coordinates as in params.py, origin = box centre = remote centre: X widt
 the wall, z = 0 the wall surface, z < 0 inside the box (MAINS SIDE).
 
 - The BILRESA cannot go below the wall in a Ø60 box (its flat back alone spans ~Ø60), so it sits
-  on a 1.6 mm V-0 floor over the box, its top flush with the face: the plate stands out by the
-  floor plus the remote.
+  on a 1.6 mm V-0 floor over the box and stands B_PROUD out of the face plate (D-70).
 - The barrier is one flat V-0 cap over the box and the seal band: the floor under the remote, a
   cup down to the panel of the emergency rocker (Marquardt 1802.2504, DPST, PCB pins) under the
-  remote's upper half, two holes for the 5 V board's spring pins. Two countersunk screws into the
-  box's top and bottom domes, in the pocket floor under the remote.
+  remote's upper half, four holes for the 5 V board's spring pins (D-54, D-59). Two countersunk
+  screws into the box's top and bottom domes, in the pocket floor under the remote.
 - The supplied steel piece sits in a recess in the pocket floor (front side, as on NA), under the back cover's
   magnet; a cup under the recess keeps the barrier's floor under it (D-72).
 - Two boards (D-36). The mains board, at the rocker's PCB seat, carries the rocker, two WAGO
   2604-3102 push-in blocks (L in / switched, N in / switched; wires enter from the back of the box),
   fuse, MOV and the PSU (Traco TMPS 03-105) over a routed relief slot; the PSU's outputs land on a
   5 V island cut off by the slot, with a pin header. The 5 V board, just under the cap, takes 5 V
-  from that header through a pin socket and carries the two spring pins that reach through the cap
-  onto gold pads on the sensor flex (R9, R10). Both hang from bosses under the cap.
-- The trim (PETG) carries everything visible: face, remote pocket walls, finger scoops, MSR-2 and
-  SHT45 bays. Two M2 screws through tabs at the bottom of the pocket wall (under the remote's
-  rounded back edge) hold it to bosses under the cap.
+  from that header through a pin socket and carries four spring pins through the cap: two onto gold
+  pads under the cap board, two onto the back cover's pads (R9, R10). Both hang from bosses under the cap.
+- The sensors sit on a cap board in a printed carrier on the wall round the cap; the cap's edge pins
+  the carrier to the wall (D-56, D-70, D-71).
+- The face plate (PETG) carries everything visible: face, remote pocket walls, finger scoops, MSR-2
+  and SHT45 bays. Four fingers snap into closed windows in the carrier (D-77).
 """
 import sys
-from math import sqrt
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from params import (B_W, B_H, B_D, B_BACK_RUN, B_BACK_RISE, CLR, POCKET_WALL, MAGNET, MAGNET_Y, MAGNET_END_R, MAGNET_SETBACK, MAGNET_CLR,  # noqa: E402,F401
-                    MSR, RADAR_WALL, MSR_HOOK, MSR_SKIN_GAP, MSR2_POSTS, MSR2_POST_D, MSR2_POST_CLR, LUX_POS, VENT_RADAR_CLR, MSR2_SCD, MSR2_SCD_VENT, MSR2_LD, SHT, SKIN, FACE_CHAMFER, PR, SPLIT_CLR, BARRIER_MIN, V0_RATED_T,
-                    PASS_D, MSR_BOARD, MSR_CN2_IN, B2B, B2B_STACK, FLEX_W, FLEX_T, STIFF_T, FLEX_SKIN_GAP,
-                    FLEX_PLUG, FLEX_NECK_L, flex_half_width, SHT_CHIP, MIC, MIC_PORT_IN, MIC_FLEX_Y, MIC_FLEX_HOLE_D,
-                    MIC_GASKET_D, MIC_SKIN_HOLE_D, BC_FINGERS, BC_FLEX_Z, PIN_FREE, PIN_WH, PIN_TOL, PIN_FLANGE,
-                    PIN_BARREL, PIN_PLUNGER_D, PIN_PEG, PIN_PAD_D, PIN_HOLE_D, PIN_RADIAL, MSR_BOARD_T,
-                    RING_NUT, RING_NUT_HOLE, RING_NUT_PAD, MSR2_SW, MSR2_SW_X, MSR2_SW_CLR, MIC_WIN, MIC_CARRIER, MIC_TUBE, MIN_PRINT_HOLE, M2_HEAD, BC_DOME_DY, BC_STEEL_FLOOR, BC_STEEL_Y, BC_STEEL,
-                    SW_CUT, SW_PANEL_T, SW_BEZEL, SW_ROCKER_H, SW_ROCKER_TOL, SW_ROCKER_CLR, SW_BODY, SW_PIN_GRID, PAD_BODY_GAP)
-
-VARIANT = "eu"
+from params import (B_W, B_H, B_D, CLR, POCKET_WALL, MAGNET, MAGNET_END_R, MAGNET_SETBACK, MAGNET_CLR, MSR,  # noqa: E402,F401
+                    RADAR_WALL, MSR_SKIN_GAP, MSR2_POSTS, SHT, SKIN, FACE_CHAMFER, PR, SPLIT_CLR, BARRIER_MIN,
+                    V0_RATED_T, MSR_BOARD, MSR_CN2_IN, B2B, B2B_STACK, SHT_CHIP, MIC, MIC_PORT_IN, MIC_FLEX_HOLE_D,
+                    BC_FINGERS, BC_FLEX_Z, PIN_FREE, PIN_WH, PIN_TOL, PIN_FLANGE, PIN_BARREL, PIN_PLUNGER_D,
+                    PIN_PAD_D, PIN_HOLE_D, PIN_RADIAL, RING_NUT, RING_NUT_HOLE, MSR2_SW, MSR2_SW_X, MSR2_SW_CLR,
+                    MIC_WIN, MIC_CARRIER, MIC_TUBE, MIN_PRINT_HOLE, M2_HEAD, BC_STEEL_FLOOR, BC_STEEL_Y, BC_STEEL,
+                    SW_CUT, SW_PANEL_T, SW_BEZEL, SW_ROCKER_H, SW_ROCKER_TOL, SW_ROCKER_CLR, SW_BODY, SW_PIN_GRID,
+                    PAD_BODY_GAP, BAY_WALL, MSR_BAY_R, SHT_BAY_CLR, SHT_BAY_R, MSR_VENTS, SHT_VENTS)
 
 # ---- EU flush box: DIN 49073, Ø68 hole saw ----
 # Catalogue values (DIN 49073 box listings, e.g. Kaiser 1555-04; docs/MEASUREMENTS.md), not measured.
@@ -87,6 +84,8 @@ SNAP_TIP_Z = 0.2                          # finger tip over the wall
 SNAP_CLR = 0.15                           # finger to its window (tangential and radial)
 SNAP_WEB = 1.6                            # carrier between its bore and each snap window
 MSR_GAP = 1.0                             # pocket walls / cap to the MSR-2 and SHT45 bay frames
+BAY_EDGE = 1.0                            # bay frames to the face plate's inner wall (top and bottom)
+EU_VENT_Z = (6.0, 5.0, 6.0)               # edge vents: centre height at the top (MSR-2) and bottom (SHT45) edges, height
 
 # ---- sensors (D-56, D-59, D-70): cap board in a printed carrier, the MSR-2 on its CN2 mate and three spacers ----
 # All four spring pins on the 5 V board are the NA part (params.py PIN_*, Harwin P70-2200045) at one working height:
@@ -94,7 +93,7 @@ MSR_GAP = 1.0                             # pocket walls / cap to the MSR-2 and 
 # board's underside is level with the cover's pads. Nothing electrical crosses to the face plate (R9).
 EU_PIN_WH = 6.8                           # design working height of the four pins (6.5..7.1 with PIN_TOL)
 PINS = ((26.4, -4.8), (26.4, -7.6))       # sensor pins GND, +5 V (room x, y): on the 5 V board, clear of the right dome
-PIN_CAP_HOLE_D = 1.9                      # cap / carrier hole round each pin barrel (1.54)
+PIN_CAP_HOLE_D = PIN_BARREL[0] + 2 * PIN_RADIAL   # cap / carrier hole round each pin barrel, all four pins (D-80)
 CB_T = 1.6                                # cap board, FR4 (D-70)
 CB_EDGE = 0.5                             # carrier to the trim's outer walls
 CARRIER_RIM = 1.6                         # carrier's rim round the cap board, up to its top (D-70)
@@ -107,7 +106,7 @@ CB_SCREW_D, CB_TAP_D = 2.0, 1.6           # M2 clearance hole in the board; tap-
 CARRIER_CAP_CLR = 0.2                     # carrier's bore round the cap disc
 CARRIER_SIDE = 2.0                        # carrier left outside its bore at the plate's sides (D-78)
 # carrier clamp (D-71): a lip on the carrier's wall face reaches under the cap's edge into a rebate in the cap's
-# underside; the cap's screws pin it to the wall. Full-thickness teeth of the cap round each snap notch sit in gaps in
+# underside; the cap's screws pin it to the wall. Full-thickness teeth of the cap at each snap angle sit in gaps in
 # the lip: they stop the carrier turning (the wider key tooth: one way only).
 LIP_T = 0.8                               # lip thickness = rebate depth (line-to-line)
 LIP_SEAL_CLR = 0.5                        # rebate starts this far outside the seal band
@@ -145,7 +144,7 @@ MB_FRONT_PARTS = {"RV1": (10.2, 8.0, 4.5),  # DATASHEET TDK CU4032 body (w, h, t
                   "F1": (10.1, 3.1, 3.3)}  # REF Schurter UMT 250 body
 HDR = (2.54, 5.08, 10.67)                 # DATASHEET Samtec TSM-102-02-L-SV (SMT): insulator 2.54 + post 8.13 above the board
 HDR_BODY = 2.54                           # DATASHEET TSM insulator height
-SOCKET = (2.54, 5.08, 8.5)                # DATASHEET 2.54 mm pin socket 1x2, 8.5 mm (on the 5 V board's back)
+SOCKET = (2.54, 5.08, 8.5)                # MEASURE placeholder: 2.54 mm 1x2 pin socket, 8.5 mm (part and datasheet to cite)
 
 # ================= derived =================
 BOX_R = BOX_DIA / 2
@@ -193,10 +192,11 @@ SCOOP_X_EU = POCKET_IN[0] / 2 + 0.6       # scoop centre line (as NA): cuts into
 SCOOP_FLAT = 2.0                          # flat bottom width (x)
 SCOOP_WALL = 1.6                          # solid trim round each scoop
 SCOOP_STEP = 0.5                          # loft section spacing (depth)
-MSR_Y = POCKET_OUT[1] / 2 + MSR_GAP + 1.6 + MSR[1] / 2 + CLR
-SHT_Y = -(POCKET_OUT[1] / 2 + MSR_GAP + 1.6 + SHT[1] / 2 + 0.4)
+MSR_Y = POCKET_OUT[1] / 2 + MSR_GAP + BAY_WALL + MSR[1] / 2 + CLR
+SHT_Y = -(POCKET_OUT[1] / 2 + MSR_GAP + BAY_WALL + SHT[1] / 2 + SHT_BAY_CLR)
 PW = 2 * (CAP_R + CARRIER_CAP_CLR + CARRIER_SIDE + CB_EDGE + SKIN)   # face plate width: the carrier whole at the sides
-PL_Y = (SHT_Y - SHT[1] / 2 - 0.4 - 1.6 - SKIN - 1.0, MSR_Y + MSR[1] / 2 + CLR + 1.6 + SKIN + 1.0)
+PL_Y = (SHT_Y - SHT[1] / 2 - SHT_BAY_CLR - BAY_WALL - SKIN - BAY_EDGE,
+        MSR_Y + MSR[1] / 2 + CLR + BAY_WALL + SKIN + BAY_EDGE)
 PH = PL_Y[1] - PL_Y[0]
 PC = (0.0, (PL_Y[0] + PL_Y[1]) / 2)                        # plate centre relative to the box centre
 
@@ -205,9 +205,8 @@ MSR_BACK_Z = CB_TOP + B2B_STACK                            # MSR-2's back on CN2
 MSR_CN2_X = MSR_BOARD[0] / 2 - MSR_CN2_IN
 MSR_SPACERS = [(x, MSR_Y + y) for x, y in MSR2_POSTS]      # cap board's SMT spacers under the MSR-2, below its posts
 SKIN_Z = PT - SKIN
-MSR_FRAME = (MSR[0] + 2 * CLR, MSR[1] + 2 * CLR, 1.6)      # trim's MSR-2 bay frame: inside w, h, wall
+MSR_FRAME = (MSR[0] + 2 * CLR, MSR[1] + 2 * CLR, BAY_WALL)      # trim's MSR-2 bay frame: inside w, h, wall
 MIC_AT = (MSR_FRAME[0] / 2 + MSR_FRAME[2] + 0.3 + MIC_CARRIER[0] / 2, MSR_Y + MIC_ROW_DY)   # mic carrier, on the cap board
-CARRIER_TOP = CB_PAD_Z
 CB_INSET = CB_EDGE + CARRIER_RIM + CB_RIM_CLR              # cap board edge in from the trim's outer walls' inside
 SNAPS = [(a, SNAP_KEY_W if a == SNAP_ANGLES[0] else SNAP[0]) for a in SNAP_ANGLES]   # angle, width
 SNAP_WIN_R = CAP_R + CARRIER_CAP_CLR + SNAP_WEB                 # snap windows' inner wall (radius)

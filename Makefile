@@ -35,7 +35,7 @@ check:          ## geometry, barrier, wiring-board fit and printability checks, 
 print: $(if $(filter $(abspath $(ORCA_APPIMAGE)),$(SLICER)),$(ORCA_APPIMAGE))  ## OrcaSlicer projects (print/*.3mf) + G-code (build/print/gcode)
 	SLICER="$(SLICER)" $(PY) print/slice.py
 
-pcb:            ## KiCad: wiring board (pcb/), ring board, mic carrier, riser, cover flex, EU flex (pcb/sensor/), EU boards (pcb/eu/): ERC + DRC, fab packs
+pcb:            ## KiCad: wiring board (pcb/), ring board, mic carrier, riser, cover flex, EU cap board (pcb/sensor/), EU boards (pcb/eu/): ERC + DRC, fab packs
 	pcb/tools/build.sh
 	pcb/sensor/tools/build.sh
 	pcb/eu/tools/build.sh
@@ -56,7 +56,7 @@ BARE = python3 pcb/tools/render_bare.py
 BOARD_RENDERS = $(STAMP)/wiring_board $(STAMP)/ring_board $(STAMP)/mic_carrier $(STAMP)/riser_board \
                 $(STAMP)/cover_flex $(STAMP)/eu_cap_board \
                 $(STAMP)/eu_mains_board $(STAMP)/eu_5v_board
-RENDER_STAMPS = $(STAMP)/sections $(STAMP)/views $(STAMP)/backcover $(STAMP)/tape $(STAMP)/eu $(BOARD_RENDERS)
+RENDER_STAMPS = $(STAMP)/sections $(STAMP)/views $(STAMP)/backcover $(STAMP)/eu $(BOARD_RENDERS)
 
 renders: $(RENDER_STAMPS)  ## docs/renders/*.png, every group whose sources changed (3D needs xvfb-run headless)
 
@@ -77,10 +77,6 @@ $(STAMP)/views: $(CAD_SRC) $(WB_PCB) | $(STAMP)
 
 $(STAMP)/backcover: $(EU_SRC) | $(STAMP)
 	cd $(CAD) && $(XVFB) $(PY) render_backcover.py
-	touch $@
-
-$(STAMP)/tape: $(EU_SRC) | $(STAMP)
-	cd $(CAD) && $(XVFB) $(PY) render_tape.py
 	touch $@
 
 $(STAMP)/eu: $(EU_SRC) $(EU_MB) $(EU_LV) | $(STAMP)

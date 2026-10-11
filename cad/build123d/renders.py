@@ -19,7 +19,7 @@ def main():
     import insert, trim, ring, jumper, standoff
     import backcover as bc
     from build123d import Pos
-    from params import SW_Y, PASS_E, MSR_Y, SHT_AT, RING_T, WB_FRONT_Z, WB, BC_FINGERS, SEAT_Z, PT
+    from params import SW_Y, PASS_E, MSR_Y, SHT_AT, RING_T, WB_FRONT_Z, WB, BC_FINGERS, SEAT_Z
     rp = ring.parts()
     cov = bc.cover_parts()
     seated = lambda part: Pos(0, 0, SEAT_Z) * part
@@ -40,7 +40,7 @@ def main():
              (standoff.placed(), "standoffs_placed", "sienna", "board standoffs + screws (nylon, D-57)")]
     args = [f"{stl(part, name)}:{col}|{label}" for part, name, col, label in parts]
     x5, y5 = BC_FINGERS[0]
-    cuts = [f"x=0#long section: MSR-2 on CN2, remote, rocker well, SHT45, wiring board",
+    cuts = ["x=0#long section: MSR-2 on CN2, remote, rocker well, SHT45, wiring board",
             f"x={x5}#spring pins: riser on its posts, pocket floor, back cover pads, CN2",
             f"y={MSR_Y}@-38,38,-6,18#MSR-2 on CN2 on the ring board, 0.6 mm radar skin",
             f"y={SW_Y}#rocker well, wiring board, WAGO block",

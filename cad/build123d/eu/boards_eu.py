@@ -1,7 +1,7 @@
 """EU bought-in parts and boards as envelopes (D-30, D-36), for clearance checks and renders only:
 the BILRESA model, the supplied steel piece in the pocket floor's recess, the emergency rocker, the mains board
 (rocker, WAGO blocks, fuse, MOV, PSU over its relief slot, header on the 5 V island) and the 5 V
-board (socket, capacitor, spring pins up through the cap to the flex, R9).
+board (socket, capacitor, spring pins up through the cap onto the cap board's and the back cover's pads, R9).
 """
 from build123d import Box, Cylinder, Pos
 from params_eu import *

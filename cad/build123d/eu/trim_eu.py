@@ -5,7 +5,7 @@ windows (D-70, D-77). Low-voltage side only; any filament (PETG/ASA). Print face
 Run:  python trim_eu.py  -> ../../../build/eu/trim.step / .stl
 """
 from math import sqrt
-from build123d import Axis, Box, Circle, Cylinder, Ellipse, Plane, Pos, chamfer, loft
+from build123d import Axis, Box, Cylinder, Ellipse, Plane, Pos, chamfer, loft
 from params_eu import *
 from common import rr, stadium, slab, frame
 import msr2
@@ -86,28 +86,32 @@ def build():
     for sx in (-1, 1):
         body += scoop_block(sx)
     z0 = CB_TOP + SPLIT_CLR                                                          # bay frames down to the cap board
-    body += Pos(0, MSR_Y, 0) * frame(MSR_FRAME[0], MSR_FRAME[1], MSR_FRAME[2], 1, z0, PT)
-    body += Pos(0, SHT_Y, 0) * frame(SHT[0] + 0.8, SHT[1] + 0.8, 1.6, 0.5, z0, PT)
+    body += Pos(0, MSR_Y, 0) * frame(MSR_FRAME[0], MSR_FRAME[1], MSR_FRAME[2], MSR_BAY_R, z0, PT)
+    sb = (SHT[0] + 2 * SHT_BAY_CLR, SHT[1] + 2 * SHT_BAY_CLR)
+    body += Pos(0, SHT_Y, 0) * frame(*sb, BAY_WALL, SHT_BAY_R, z0, PT)
     body += mic_tube()
     # ---------------- cuts ----------------
     body -= slab(stadium(*POCKET_IN), CAP_T, PT + 1)                               # remote pocket
     for sx in (-1, 1):                                                               # finger scoops
         body -= scoop(sx)
-    body -= slab(Circle(CAP_R + SPLIT_CLR), -1, CAP_T)                              # cap clearance
-    body += snaps()                                                                  # after the cap clearance
-    body -= Pos(0, MSR_Y, 0) * slab(rr(MSR_FRAME[0], MSR_FRAME[1], 1), -0.01, PT - RADAR_WALL)
+    body += snaps()
+    body -= Pos(0, MSR_Y, 0) * slab(rr(MSR_FRAME[0], MSR_FRAME[1], MSR_BAY_R), -0.01, PT - RADAR_WALL)
     body += msr2.posts(0, MSR_Y, MSR_BACK_Z, PT - RADAR_WALL)        # in the hollowed bay: clamp the MSR-2's board (D-67)
     body -= msr2.scd_vents(0, MSR_Y, PT, RADAR_WALL)      # grille: CO2 sensor and light sensor (D-65, D-69)
-    for i in range(-2, 3):                                                           # MSR-2 vents, top edge
-        body -= Pos(i * 7 + 1.5, PL_Y[1] - SKIN + 2, 6) * Box(3, 6, 6)
-    body -= Pos(0, SHT_Y, 0) * slab(rr(SHT[0] + 0.8, SHT[1] + 0.8, 0.5), -0.01, PT - SKIN)
+    zt, zb, h = EU_VENT_Z
+    n, pitch, dx, w, d = MSR_VENTS
+    for i in range(n):                                                               # MSR-2 vents, top edge
+        body -= Pos((i - (n - 1) / 2) * pitch + dx, PL_Y[1] - SKIN + d / 2 - 1, zt) * Box(w, d, h)
+    body -= Pos(0, SHT_Y, 0) * slab(rr(*sb, SHT_BAY_R), -0.01, PT - SKIN)
     # microphone sound hole over the tube
     hd, web, rd = MIC_HOLE_EU                               # sound hole through a thin web, recess from the face (D-52)
     body -= Pos(*MIC_AT, PT - SKIN / 2) * Cylinder(hd / 2, SKIN + 1)
     body -= Pos(*MIC_AT, PT - (SKIN - web) / 2 + 0.005) * Cylinder(rd / 2, SKIN - web + 0.01)
-    for i in (-1, 0, 1):                                                             # SHT45 vents: face + bottom edge
-        body -= Pos(i * 4, SHT_Y, PT - 1) * Box(2, 6, 4)
-        body -= Pos(i * 4, PL_Y[0] + 4, 5) * Box(2, 10, 6)
+    n, pitch, w, lf, de = SHT_VENTS
+    for i in range(n):                                                               # SHT45 vents: face + bottom edge
+        x = (i - (n - 1) / 2) * pitch
+        body -= Pos(x, SHT_Y, PT - SKIN / 2) * Box(w, lf, SKIN + 2)
+        body -= Pos(x, PL_Y[0] + de / 2 - 1, zb) * Box(w, de, h)
     return body
 
 

@@ -155,14 +155,13 @@ def main():
     cutp.update({k: v for k, v in ps.items() if k in BOARD_KEYS})
     shot("v0.4_pins", cutp, [(x + 120, -5, -5), (x, -5, -8), (0, 0, 1)], size=(1400, 1100),
          hide=("trim", "posts", "wago"), head=1.0, alpha={"front_half": 0.35, "cover": 0.5})
-    # steel plate cutting jigs (D-52), the supplied plate in each, cut line red
+    # hacksaw guide for the steel plate (D-52, D-81), the supplied plate in it, cut line red
     import plate_jig as pj
     from params import MAGNET, JIG_FLOOR, JIG_SAW
     COL.update({"jig": "#f2a541", "steel": "#9aa0a6", "cut": "#d9534f"})
-    jigs = {"saw": Pos(-16, 0, 0) * pj.saw_guide(), "marker": Pos(16, 0, 0) * pj.marker_gauge()}
-    js = {"jig": jigs["saw"] + jigs["marker"], "steel": Pos(-16, 0, 0) * pj.plate() + Pos(16, 0, 0) * pj.plate(),
-          "cut": Pos(0, MAGNET[1], JIG_FLOOR + MAGNET[2] + JIG_SAW[2] + 0.1) * Box(70, 0.25, 0.05)}
-    shot("plate_jigs", js, [(80, -70, 95), (0, 20, 2), (0, 0, 1)], size=(1300, 950), head=0.9)
+    js = {"jig": pj.saw_guide(), "steel": pj.plate(),
+          "cut": Pos(0, MAGNET[1], JIG_FLOOR + MAGNET[2] + JIG_SAW[2] + 0.1) * Box(40, 0.25, 0.05)}
+    shot("plate_jigs", js, [(60, -55, 75), (0, 20, 2), (0, 0, 1)], size=(1100, 950), head=0.9)
     # MSR-2 with the CO2 add-on (msr2.py): front and back, board frame
     import msr2
     m2 = msr2.parts()

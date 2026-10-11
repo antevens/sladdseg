@@ -13,6 +13,9 @@ r3.COL.update({"cover": "#e9e6df", "flex": "#d99a2b", "stiffener": "#2f7a46", "p
                "cap": "#8d949b", "front_half": "#fbfaf6"})
 
 
+FLEX_LIFT = 2.5                         # flex drawn this far off the contact posts in flex_views()
+
+
 def placed(parts, z):
     return {k: Pos(0, 0, z) * v for k, v in parts.items()}
 
@@ -86,6 +89,22 @@ def finger_section():
         [f"x={xv}@{yc - 5},{yc + 7},-0.5,14#through the finger"])
 
 
+def flex_views():
+    """The cover flex lifted LIFT out of the cover towards the cells (drop-in order: end section, run, pad section)."""
+    from build123d import Box
+    ps = dict(bc.cover_parts())
+    ps = {k: (Pos(0, FLEX_LIFT * bc.BC_TERM_Y, 0) * v if k in ("flex", "stiffener", "contacts") else v)
+          for k, v in ps.items()}
+    glass = {"flex": 0.6}
+    r3.shot("bc_flex", ps, [(70, -120, 140), (0, -12, 4), (0, 0, 1)], size=(1300, 1100), head=0.7, alpha=glass)
+    end = Pos(0, bc.copper_y(), 6) * Box(34, 12, 16)
+    near = {k: v & end for k, v in ps.items()}
+    near = {k: v for k, v in near.items() if v is not None and v.volume > 1e-6}
+    r3.shot("bc_flex_end", near, [(25, bc.copper_y() - 45, 30), (0, bc.copper_y(), 6), (0, 0, 1)],
+            size=(1300, 1000), head=0.7, alpha=glass)
+
+
 if __name__ == "__main__":
     main()
     finger_section()
+    flex_views()

@@ -1,7 +1,6 @@
 """TRIM PLATE (face plate) - a plain cover (v0.4, D-50, D-51): face, thin radar skin over the MSR-2 with posts onto its
-board (D-66), SHT45 bay, vents,
-vents over the CO2 sensor, the
-microphone's sound hole and sound tube. No electronics and no contacts: the MSR-2, the SHT45 and the mic sit on the
+board (D-66), SHT45 bay, vents, vents over the CO2 sensor, the microphone's sound hole and sound
+tube. No electronics and no contacts: the MSR-2, the SHT45 and the mic sit on the
 ring board on the insert's collar (D-68).
 
 Low-voltage side only: it carries no barrier duty. Any filament (PETG/ASA).
@@ -22,7 +21,7 @@ def mic_tube():
     """Sound tube from the skin down to a gasket on the mic carrier (the face plate's screws press it on)."""
     od, bore, gasket = MIC_TUBE
     z0 = RING_T + MIC_CARRIER[2] + gasket
-    return Pos(*MIC_PORT, (z0 + SKIN_Z + 0.01) / 2) * (Cylinder(od / 2, SKIN_Z + 0.01 - z0) - Cylinder(bore / 2, PT))
+    return Pos(*MIC_AT, (z0 + SKIN_Z + 0.01) / 2) * (Cylinder(od / 2, SKIN_Z + 0.01 - z0) - Cylinder(bore / 2, PT))
 
 
 def msr_posts():
@@ -38,8 +37,9 @@ def build():
     body = shell
     # MSR-2 and SHT45 bay frames, down to just over the ring board's parts
     z0 = FRAME_Z0                                       # over the ring board's parts (D-68)
-    body += frame(MSR_BAY[0], MSR_BAY[1], 1.6, 1, z0, PT, MSR_Y)
-    body += frame(SHT[0] + 0.8, SHT[1] + 0.8, 1.6, 0.5, z0, PT, SHT_AT[1])
+    sb = (SHT[0] + 2 * SHT_BAY_CLR, SHT[1] + 2 * SHT_BAY_CLR)
+    body += frame(MSR_BAY[0], MSR_BAY[1], BAY_WALL, MSR_BAY_R, z0, PT, MSR_Y)
+    body += frame(*sb, BAY_WALL, SHT_BAY_R, z0, PT, SHT_AT[1])
     body += mic_tube()
 
     # ---------------- cuts ----------------
@@ -59,14 +59,17 @@ def build():
     body -= Pos(0, MSR_Y, 0) * slab(rr(*MSR_BAY, 1), -0.01, PT - RADAR_WALL)
     body += msr_posts()                                 # in the hollowed bay (D-66)
     body -= msr2.scd_vents(0, MSR_Y, PT, RADAR_WALL)      # grille: CO2 sensor and light sensor (D-65, D-69)
-    zv = RING_PARTS_TOP + 3.0                           # vents through the edges, above the ring board's parts
-    for i in range(-2, 3):  # MSR vents, top edge
-        body -= Pos(i * 7 + 1.5, PLATE_Y + PH / 2 - SKIN + 2, zv) * Box(3, 6, 5)
-    body -= Pos(0, SHT_AT[1], 0) * slab(rr(SHT[0] + 0.8, SHT[1] + 0.8, 0.5), -0.01, PT - SKIN)
-    body -= Pos(*MIC_PORT, PT - SKIN / 2) * Cylinder(MIC_SKIN_HOLE_D / 2, SKIN + 1)   # microphone sound hole (D-29)
-    for i in (-1, 0, 1):  # SHT vents: face + bottom edge
-        body -= Pos(i * 4, SHT_AT[1], PT - 1) * Box(2, 6, 4)
-        body -= Pos(i * 4, PLATE_Y - PH / 2 + 4, zv) * Box(2, 10, 5)
+    zv = RING_PARTS_TOP + VENT_Z_OVER                   # vents through the edges, above the ring board's parts
+    n, pitch, dx, w, d = MSR_VENTS
+    for i in range(n):  # MSR vents, top edge
+        body -= Pos((i - (n - 1) / 2) * pitch + dx, PLATE_Y + PH / 2 - SKIN + d / 2 - 1, zv) * Box(w, d, VENT_H)
+    body -= Pos(0, SHT_AT[1], 0) * slab(rr(*sb, SHT_BAY_R), -0.01, PT - SKIN)
+    body -= Pos(*MIC_AT, PT - SKIN / 2) * Cylinder(MIC_SKIN_HOLE_D / 2, SKIN + 1)   # microphone sound hole (D-29)
+    n, pitch, w, lf, de = SHT_VENTS
+    for i in range(n):  # SHT vents: face + bottom edge
+        x = (i - (n - 1) / 2) * pitch
+        body -= Pos(x, SHT_AT[1], PT - SKIN / 2) * Box(w, lf, SKIN + 2)
+        body -= Pos(x, PLATE_Y - PH / 2 + de / 2 - 1, zv) * Box(w, de, VENT_H)
     return body
 
 

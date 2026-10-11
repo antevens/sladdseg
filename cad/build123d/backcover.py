@@ -2,17 +2,17 @@
 cells from the plate's +3V3.
 
 The cover keeps the remote's back shape (cut to a 45 deg chamfer below the curve's 45 deg point,
-so it prints back down without supports) and carries the remote's steel plate. Inside, a
-single-layer flex lies copper down on a ledge BC_FLEX_Z above the back face; two Harwin S7081-42R
-spring fingers on it reach down through windows in the back. The flex runs to the terminal end,
-bends up once and stands against two contact blocks; two more S7081-42R fingers on it, on the cell
-axes, press on the remote's VBAT (fixed plate) and GND (leaf spring) battery contacts. The fingers
-on the back take +5 V; a 3.3 V regulator on the flex (copper down, in a recess in the cover) feeds
-VBAT. No cells: the remote's strap joins the bridge-end contacts.
+so it prints back down without supports) and carries the remote's magnet plate. Inside, a
+single-layer flex lies copper down on a ledge BC_FLEX_Z above the back face, held by snap hooks;
+two gold pads on it sit over windows in the back, where the plate's spring pins press (+5 V, GND;
+D-50, D-79). The flex runs along the GND contact post to the terminal end, bends up once and stands
+against two contact posts; two Harwin S7081-42R fingers on it, on the cell axes, press on the
+remote's VBAT (fixed plate) and GND (leaf spring) battery contacts. A 3.3 V regulator on the flex
+(copper down, in a recess in the cover) feeds VBAT. No cells: the remote's strap joins the
+bridge-end contacts.
 
-On the face plate side a printed pocket-floor insert carries a tongue of the sensor flex in a
-recess, its two gold pads flush under the fingers. The magnet holds the cover's back down on the
-insert: that hard stop sets the fingers' working height.
+The supplied steel piece in the plate's pocket floor holds the cover's back down on the floor: that
+hard stop sets the spring pins' working height.
 
 Remote coordinates: origin = remote centre, x / y as the front view, z = 0 the back's outer face.
 Sizes marked MEASURE / REF in params.py.
@@ -145,7 +145,7 @@ def side_tabs():
 def cover():
     """Printed cover: shell, flex ledge, contact blocks, spring pin windows, steel-plate pocket, snap ears, side tabs."""
     body = shell()
-    yc, ys = copper_y(), stiffener_y()
+    ys = stiffener_y()
     for x0, x1, y0, y1 in strip_boxes():
         body += Pos((x0 + x1) / 2, (y0 + y1) / 2, (BC_WALL + BC_FLEX_Z) / 2 - 0.25) * Box(x1 - x0, y1 - y0,
                                                                                        BC_FLEX_Z - BC_WALL + 0.5)
