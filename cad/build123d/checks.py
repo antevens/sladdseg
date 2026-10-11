@@ -655,9 +655,9 @@ def cover_checks():
     ps = bc.cover_parts()
     c = ps["cover"]
     check(c.is_valid and len(c.solids()) == 1, f"cover: one valid solid ({c.volume / 1000:.2f} cm3)")
-    check(BC_SIDE_WALL >= 1.2,
-          f"side wall {BC_SIDE_WALL:.1f} mm (back {BC_WALL}): {B_W - 2 * BC_SIDE_WALL:.1f} x {B_H - 2 * BC_SIDE_WALL:.1f} "
-          f"inside at the rim, 0.1 more all round for the remote's housing (D-75)")
+    check(min(BC_SIDE_WALL, BC_SIDE_WALL_X) >= 1.2,
+          f"side walls {BC_SIDE_WALL_X:.2f} (long sides) / {BC_SIDE_WALL:.2f} (ends) mm (back {BC_WALL}): "
+          f"{B_W - 2 * BC_SIDE_WALL_X:.2f} x {B_H - 2 * BC_SIDE_WALL:.2f} inside at the rim (D-75, D-93)")
     win = PIN_BARREL[0] / 2 + BC_WIN_CLR
     check(win - PIN_BARREL[0] / 2 >= 0.2 and BC_PAD_D / 2 >= win + 0.2,
           f"spring pin windows r {win:.2f} round the {PIN_BARREL[0]} barrel, pads r {BC_PAD_D / 2} over them (D-50)")
@@ -796,8 +796,8 @@ def cover_checks():
                                        else e.bounding_box().max.Y), 2) for e in bc.latches().solids())
     check(ear.max.Y < B_H / 2 and reach == sorted(round(r, 2) for r in BC_LATCH_REACH),
           f"snap clip hook tips {reach} mm in from the outside rim, hooks {BC_LATCH_HOOK} mm inwards (bottom, top)")
-    widths = [round(e.bounding_box().size.X, 2) for e in bc.latches().solids()]
-    check(all(abs(w - BC_LATCH_W) < 0.01 for w in widths), f"snap clips {widths} mm wide")
+    widths = [round(e.bounding_box().size.X, 2) for e in sorted(bc.latches().solids(), key=lambda e: e.bounding_box().center().Y)]
+    check(all(abs(w - BC_LATCH_W[i]) < 0.01 for i, w in enumerate(widths)), f"snap clips {widths} mm wide (bottom, top)")
     tops = sorted(round(e.bounding_box().max.Z - BC_WALL, 2) for e in bc.latches().solids())
     check(tops == sorted(round(t, 2) for t in BC_LATCH_TOPS) and ear.max.Z <= B_SEAM_Z, f"snap clips {tops} mm above the inside floor, "
                                                                   f"{B_SEAM_Z - BC_WALL - max(tops):.2f} below the rim")

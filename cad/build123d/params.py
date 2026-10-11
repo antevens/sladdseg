@@ -329,13 +329,16 @@ BC_TERM_Y = -1                            # REF terminal end (VBAT / GND contact
 BC_VBAT_X = -1                            # REF VBAT contact on the -x cell, GND on the +x cell (FCC photos; check on a unit)
 BC_WALL = 1.6                             # MEASURED cover shell thickness (human, 2026-10-09)
 BC_SIDE_WALL = BC_WALL - 0.1              # side wall: 0.1 more room inside all round for the remote's housing (D-75)
+BC_SIDE_WALL_X = BC_SIDE_WALL - 0.05      # long side walls: the inside 0.1 wider across x (human, 2026-10-11, D-93)
 BC_PRY = (6.0, 1.2)                       # MEASURE screwdriver notch in the rim at the bottom end (-y): width, depth
 # snap clips: one at each end (x = 0), free-standing inside the end wall, below the rim; the housing's edge comes
 # down into the cover and the clip's hook catches its wall
-BC_LATCH_W = 3.1                          # MEASURED clip width, both ends (human, 2026-10-09)
+BC_LATCH_W = (4.0 - 2 * 0.15, 3.1)        # clip width (bottom, top): bottom fills the housing's 4.0 slot less 0.15 each side
+                                          # (human 2026-10-11, D-92); top MEASURED 3.1 (human, 2026-10-09)
 BC_LATCH_T = 1.2                          # ESTIMATE ear thickness (radial; photos)
-BC_LATCH_HOOK = (0.8, 0.7)                # hook at the clip's tip, inwards (catches the housing's wall): top 0.2 deeper
-                                          # than the original's 0.5, bottom 0.3 (test prints, human 2026-10-09/10)
+BC_LATCH_HOOK = (0.8 + 0.3, 0.7)          # hook at the clip's tip, inwards (catches the housing's wall): top 0.2 deeper
+                                          # than the original's 0.5, bottom 0.3 (test prints, human 2026-10-09/10), bottom
+                                          # 0.3 more (it snapped once, then not again: human 2026-10-11, D-92)
 BC_LATCH_RIM_GAP = 1.0                    # MEASURED top clip's top below the rim (human, 2026-10-09)
 # clip tops above the inside floor: bottom end (-y) MEASURED 4.7 plus 0.2 towards the rim (test print, human
 # 2026-10-10); top end (+y) from BC_LATCH_RIM_GAP
@@ -347,8 +350,8 @@ BC_LATCH_REACH = (2.9 + BC_LATCH_HOOK[0], 2.8 + 0.2)
 # small tabs inside both long side walls, two per side either side of mid-length, into slots in the housing's long
 # sides (human, 2026-10-11, D-90): the slots' inside / outside spacing along y, tab top below the rim, tab height,
 # tab protrusion from the wall
-BC_TAB = (18.0, 25.0, 1.0, 0.8, 0.25)     # MEASURED (slots corrected 2026-10-11: 18 / 25, was 23 / 25); protrusion
-                                          # the human's figure, halved from 0.5
+BC_TAB = (18.0, 25.0, 1.0, 0.8, 0.25 + 0.2)   # MEASURED (slots corrected 2026-10-11: 18 / 25, was 23 / 25); protrusion
+                                          # the human's figure: 0.5, halved, then 0.2 more after the first print (D-92)
 BC_TAB_CLR = 0.15                         # tab ends clear of the slots' ends (along y)
 # side ribs at mid-length (y 0), free-standing on the shell's curved floor, against flex (human, 2026-10-09)
 BC_SIDE_TAB = (6.0, 0.8)                  # length along y (ESTIMATE, photos), thickness (human, 2026-10-09)
