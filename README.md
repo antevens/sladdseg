@@ -13,7 +13,7 @@ box, `cad/build123d/eu/`, `pcb/eu/`). Both can run the BILRESA without batteries
 replacement back cover powered from the plate.
 
 The plate is two printed parts: a **box insert** (all mains/low-voltage barrier
-geometry, UL94 V-0 PC-FR) and a passive **trim plate** (PETG/ASA), for an Elegoo Centauri
+geometry, UL94 V-0 PC-FR) and a passive **trim plate** (PLA for tests; PETG/ABS/ASA installed), for an Elegoo Centauri
 Carbon 2. The sensors sit on a **ring board** pressed onto the insert's collar, under the face plate (v0.4, D-50, D-68).
 
 The house wiring lands on one board: L/N/PE in and out on a WAGO push-in block,

@@ -10,17 +10,18 @@ every part is single-material.
 
 | File | Part(s) | Filament | Est. time / mass (OrcaSlicer 2.4.2) |
 |------|---------|----------|------------------------------------------|
-| `print/coupons_PETG.3mf` | pocket+well coupon (with the steel piece's recess), MSR-2 bay coupon, rocker panel ladder, crush-rib coupon (D-68) | PETG | 2 h 31 m / 65 g |
-| `print/insert_PETG_testfit.3mf` | NA box insert (fit check only, **not for mains**), on supports | PETG | 2 h 27 m / 58.9 g |
-| `print/trim_PETG.3mf` | NA trim plate (face plate, passive) | PETG (ASA if in sun) | 40 m / 21 g |
-| `print/insert_PC-FR.3mf` | NA box insert, **final**, on supports | Elegoo PC-FR (UL94 V-0) | 2 h 18 m / 51.9 g |
-| `print/backcover_PETG.3mf` | replacement back cover for the battery-free BILRESA (D-35), back down | PETG | 21 m / 8.5 g |
-| `print/plate_jig_PETG.3mf` | steel plate hacksaw guide (D-52, D-81), floor down | PETG | 21 m / 7.8 g |
-| `print/eu_cap_PETG_testfit.3mf` | EU cap (fit check only, **not for mains**), face down | PETG | 41 m / 10.9 g |
-| `print/eu_cap_PC-FR.3mf` | EU cap, **final** (the EU barrier), face down | Elegoo PC-FR (UL94 V-0) | 37 m / 9.8 g |
-| `print/eu_trim_PETG.3mf` | EU trim plate, face down | PETG | 1 h 16 m / 41.6 g |
-| `print/eu_carrier_PETG.3mf` | EU cap board carrier, bottom down: the rim up, the 0.8 mm lip under the cap on the bed (D-71) | PETG | 42 m / 17.6 g |
-| `print/eu_testbox_PETG.3mf` | EU test socket: the box floor down, the wall plate flat (D-76) | PETG | 3 h 35 m / 102.7 g |
+| `print/coupons_PLA.3mf` | pocket+well coupon (with the steel piece's recess), MSR-2 bay coupon, rocker panel ladder, crush-rib coupon (D-68) | PLA | 2 h 16 m / 59.8 g |
+| `print/insert_PLA_testfit.3mf` | NA box insert (fit check only, **not for mains**), on supports | PLA | 2 h 18 m / 58.9 g |
+| `print/trim_PLA.3mf` | NA trim plate (face plate, passive) | PLA | 38 m / 22.4 g |
+| `print/insert_PC-FR.3mf` | NA box insert, **final**, on supports | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 2 h 18 m / 51.9 g |
+| `print/backcover_PETG.3mf` | replacement back cover for the battery-free BILRESA (D-35), back down; PETG: its clips broke in PLA (D-44) | PETG | 21 m / 8.5 g |
+| `print/backcover_ABS.3mf` | the same cover in ABS, to test before the PETG arrives (shrinks more: check the fit first) | ABS | 17 m / 7.5 g |
+| `print/plate_jig_PLA.3mf` | steel plate hacksaw guide (D-52, D-81), floor down | PLA | 18 m / 7.8 g |
+| `print/eu_cap_PLA_testfit.3mf` | EU cap (fit check only, **not for mains**), face down | PLA | 28 m / 10.9 g |
+| `print/eu_cap_PC-FR.3mf` | EU cap, **final** (the EU barrier), face down | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 37 m / 9.8 g |
+| `print/eu_trim_PLA.3mf` | EU trim plate, face down | PLA | 1 h 5 m / 41.6 g |
+| `print/eu_carrier_PLA.3mf` | EU cap board carrier, bottom down: the rim up, the 0.8 mm lip under the cap on the bed (D-71) | PLA | 39 m / 17.6 g |
+| `print/eu_testbox_PLA.3mf` | EU test socket: the box floor down, the wall plate flat (D-76) | PLA | 3 h 12 m / 102.7 g |
 
 Open a `.3mf` in OrcaSlicer, check the plate, slice, send. The projects carry the
 printer (CC2 0.4 nozzle), filament and process settings; the parts are already
@@ -34,22 +35,25 @@ time/material lands in `build/print/gcode/`.
 
 ## Order of work
 
-1. `coupons_PETG`: rocker ladder → find the panel thickness that latches firmly,
+1. `coupons_PLA`: rocker ladder → find the panel thickness that latches firmly,
    record it as `SW_PANEL_T` in `docs/MEASUREMENTS.md`. Pocket+well coupon → remote
    drop-in/lift-out, rocker snap-in, key pin, pass-through. MSR-2 coupon → board fit,
    radar skin, the grille for the CO2 and light sensors (D-69), the three Ø1.8 posts onto the MSR-2's board (D-66).
    Crush-rib coupon → the ring board's fit on the ribs (0.10 / 0.15 / 0.20), record `RING_RIB`.
 2. Update `params.py` from the measurements, `make cad check print`.
-3. `insert_PETG_testfit` + `trim_PETG` → full dry fit in the box (breaker off, nothing
+3. `insert_PLA_testfit` + `trim_PLA` → full dry fit in the box (breaker off, nothing
    connected). Check the corner taper against the box ears.
 4. `insert_PC-FR` for the installed part. Keep the filament datasheet with the build record.
-5. `plate_jig_PETG`: saw the supplied steel plate (D-43, D-52: one straight cut, an 18.5 mm piece
+5. `plate_jig_PLA`: saw the supplied steel plate (D-43, D-52: one straight cut, an 18.5 mm piece
    with one round end; check its real size first).
 6. Battery-free remote: `backcover_PETG` on a BILRESA (latches, the remote's magnet plate, contact
    positions, the end fingers' ramp; the plate clips and flex snap hooks snapped in PLA: snap the plate
-   in and out a few times and check the clips survive in PETG, D-44).
-7. EU: `eu_testbox_PETG` (test socket, D-76), then `eu_cap_PETG_testfit`, `eu_carrier_PETG` and
-   `eu_trim_PETG` in it (domes, the carrier clamp, the snaps, the depth of the board stack against
+   in and out a few times and check the clips survive in PETG, D-44; they broke in PLA). ABS (`backcover_ABS`)
+   until the PETG arrives: it typically shrinks 0.5–0.7 % (PETG 0.2–0.4 %), so measure the inside against the
+   model (42.0 × 67.0 mm at the rim) and try it on a remote; if it is tight, set OrcaSlicer's filament
+   shrinkage from the measured shortfall.
+7. EU: `eu_testbox_PLA` (test socket, D-76), then `eu_cap_PLA_testfit`, `eu_carrier_PLA` and
+   `eu_trim_PLA` in it (domes, the carrier clamp, the snaps, the depth of the board stack against
    the depth markers); then `eu_cap_PC-FR`.
 
 Many BILRESA dimensions are `ESTIMATE` (from photos and drawings, `docs/MEASUREMENTS.md`): the
@@ -86,13 +90,15 @@ adjusting, not final parts.
 
 ## Materials
 
-- Test fits: PETG.
+- Test fits: Elegoo PLA (human 2026-10-11), except the back cover: PETG (its clips broke in PLA, D-44). On hand: PLA, ABS, TPU 72A, TPU 95A; on
+  the way: PC, PC-FR, PETG (all Elegoo). OrcaSlicer has CC2 profiles for all of them but TPU 72A.
+- PLA softens from about 55 °C: fine for fit checks, not for parts in a warm box or in sun.
 - Insert (barrier): Elegoo PC-FR for now. Its data sheet claims flame retardancy and
   rapid self-extinguishing but states no UL94 class or test thickness. Certification is
   out of scope for this stage (human decision 2026-10-08); a spool with a stated UL94 V-0
   rating will be chosen before an installed build, and its rated thickness goes into
   `V0_RATED_T` (`make check` compares it with the thinnest barrier wall, 1.6 mm).
-- Trim: PETG or ASA.
+- Trim: PLA for tests; PETG (or ABS / ASA where it gets warm or sunny) for the installed plate.
 
 ## Checks after printing
 

@@ -5,7 +5,7 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | Ref | Part | MPN / source | Notes |
 |-----|------|--------------|-------|
 | — | IKEA BILRESA remote, scroll wheel | IKEA 906.174.56 (white) | Kept intact: 2×AAA, or the replacement back cover (no cells). |
-| — | Adhesive steel plate, cut | supplied with the BILRESA | D-43, D-52: cut once across to an 18.5 mm piece from one round end (~47.4 × 17.5, ESTIMATE) in the hacksaw guide (`print/plate_jig_PETG.3mf`, D-81); round end down in the pocket-floor recess (NA insert; EU cap, D-72). |
+| — | Adhesive steel plate, cut | supplied with the BILRESA | D-43, D-52: cut once across to an 18.5 mm piece from one round end (~47.4 × 17.5, ESTIMATE) in the hacksaw guide (`print/plate_jig_PLA.3mf`, D-81); round end down in the pocket-floor recess (NA insert; EU cap, D-72). |
 | S1 | **Rocker DPST, PCB pins** | **Marquardt 1802.2504** (drawing 1802.2504 rev g) | ENEC 12(4) A 250 V~; UL-recognized/CSA 15 A 125–250 VAC; cutout 19.4 × 21.9 (1.25–2 mm panel); 5.3 mm above the panel, PCB seat 16.2 mm below. Pinout to be checked with a meter (D-26). |
 | J1 | **Terminal block, push-in lever, 6-pole, 5 mm, 4 mm² / 12 AWG** | **WAGO 2604-1106** | L/N/PE in and out; 400 V (III/2). On the board's back, wire entries face the top edge. |
 | PS1 | **AC-DC 5 V 600 mA** | **Mean Well IRM-03-5** (DigiKey 1866-3020-ND) | 85–305 VAC, 37×24×15 mm, on the board's back. |
@@ -39,14 +39,14 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | C3, C4 (cover flex) | 1 µF 10 V X5R 0402 | Samsung CL05A105KP5NNNC (the Murata GRM155R61A105KE15D first chosen is obsolete) | LDO input / output (TLV755P: ≥ 1 µF). |
 | — | Cover flex stiffener, FR4 0.8 mm, flush with the flex's long edges | PCBWay (with the cover flex) | D-45: on the pad and regulator sections; the cover's snap hooks hold it by its long edges. |
 | PCB | EU cap board, 2-layer FR4 1.6 mm, round the remote pocket | PCBWay; `pcb/sensor/` eu_cap_board (no fab files until CN2 is confirmed) | D-56, D-70: pin pads underneath, CN2 mate (MSR-2 straight on it), three 1.5 mm SMT spacers H5–H7 (Würth 9774015243R), SHT45, the mic carrier over a window. |
-| — | EU cap board carrier | printed, `print/eu_carrier_PETG.3mf` | D-56: the carrier under the cap board, its lip pinned to the wall by the cap's edge, the cap's teeth stop it turning (D-71). |
+| — | EU cap board carrier | printed, `print/eu_carrier_PLA.3mf` | D-56: the carrier under the cap board, its lip pinned to the wall by the cap's edge, the cap's teeth stop it turning (D-71). |
 | — | M2 × 6 thread-forming screws ×4 (EU) | any | D-70: cap board into the carrier. |
 | — | Board standoffs ×4: nylon M3 male-female hex, 15 mm, 5.0 mm hex | **Keystone 25503** | D-57: stud into the insert's tapped boss, the top-right one's stud cut to 5 mm. Nylon 6/6 UL94 V-2 (catalog M65 p.76). |
 | — | Board screws ×4: nylon M3 × 8 slotted pan head (ISO 1580) | any | D-57: through the board's Ø3.2 holes into the standoffs (6.4 mm engaged). |
 | — | M3 × 0.5 tap | any | Tap the insert's four boss holes (2.5 mm tap-drill size as printed; 8.5 mm deep, top right 5.5). |
 | — | #6-32 × 1" oval-head screws | — | ×2, to box ears. |
 | — | **Filament, NA insert and EU cap: Elegoo PC-FR** (UL 94 V-0 per listing) | see PRINTING.md | ≈ 52 g insert with supports, ≈ 10 g EU cap (PRINTING.md). Keep the TDS on file. |
-| — | Filament, trim + test fits: PETG (ASA in sun) | see PRINTING.md | Per part in PRINTING.md (NA trim ≈ 21 g, EU trim ≈ 42 g). |
+| — | Filament: test fits Elegoo PLA; installed trim PETG / ABS / ASA; barrier parts PC-FR | see PRINTING.md | Per part in PRINTING.md (NA trim ≈ 22 g, EU trim ≈ 42 g). |
 | — | EU mains board and 5 V board parts (rocker, WAGO 2604-3102 ×2, Traco TMPS 03-105, F1, RV1, header, socket, C1) | `pcb/eu/README.md`; order lists in `pcb/order/` | D-32, D-36, D-59. |
 
 ## Links

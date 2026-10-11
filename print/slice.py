@@ -43,19 +43,23 @@ COVER = {"wall_loops": "3", "top_shell_layers": "4", "bottom_shell_layers": "2",
 JIG = {"wall_loops": "4", "top_shell_layers": "4", "bottom_shell_layers": "4", "sparse_infill_density": "40%",
        "sparse_infill_pattern": "gyroid", "enable_support": "0", "brim_type": "no_brim", "seam_position": "back"}
 
+# test prints: PLA (human, 2026-10-11), except the back cover (PETG, D-44); the barrier parts also as PC-FR finals
+TEST = "Elegoo PLA @ECC2"
+
 JOBS = {
     # name: (parts, filament, process overrides)
     "insert_PC-FR": (["insert"], "Elegoo PC-FR @ECC2", INSERT),
-    "insert_PETG_testfit": (["insert"], "Elegoo PETG @ECC2", dict(INSERT, brim_type="no_brim")),
-    "trim_PETG": (["trim"], "Elegoo PETG @ECC2", TRIM),
-    "coupons_PETG": (["coupon_pocket_well", "coupon_msr", "coupon_rocker", "coupon_ribs"], "Elegoo PETG @ECC2", COUPON),
-    "backcover_PETG": (["back_cover"], "Elegoo PETG @ECC2", COVER),
-    "plate_jig_PETG": (["plate_jig_saw"], "Elegoo PETG @ECC2", JIG),
+    "insert_PLA_testfit": (["insert"], TEST, dict(INSERT, brim_type="no_brim")),
+    "trim_PLA": (["trim"], TEST, TRIM),
+    "coupons_PLA": (["coupon_pocket_well", "coupon_msr", "coupon_rocker", "coupon_ribs"], TEST, COUPON),
+    "backcover_PETG": (["back_cover"], "Elegoo PETG @ECC2", COVER),   # its clips broke in PLA (D-44)
+    "backcover_ABS": (["back_cover"], "Elegoo ABS @ECC2", COVER),     # test while the PETG is on its way; ABS shrinks more
+    "plate_jig_PLA": (["plate_jig_saw"], TEST, JIG),
     "eu_cap_PC-FR": (["cap_eu"], "Elegoo PC-FR @ECC2", BARRIER),
-    "eu_cap_PETG_testfit": (["cap_eu"], "Elegoo PETG @ECC2", dict(BARRIER, brim_type="no_brim")),
-    "eu_trim_PETG": (["trim_eu"], "Elegoo PETG @ECC2", TRIM),
-    "eu_carrier_PETG": (["carrier_eu"], "Elegoo PETG @ECC2", JIG),   # cap board carrier (D-70)
-    "eu_testbox_PETG": (["testbox_eu", "testbox_plate_eu"], "Elegoo PETG @ECC2", JIG),   # test socket (D-76)
+    "eu_cap_PLA_testfit": (["cap_eu"], TEST, dict(BARRIER, brim_type="no_brim")),
+    "eu_trim_PLA": (["trim_eu"], TEST, TRIM),
+    "eu_carrier_PLA": (["carrier_eu"], TEST, JIG),   # cap board carrier (D-70)
+    "eu_testbox_PLA": (["testbox_eu", "testbox_plate_eu"], TEST, JIG),   # test socket (D-76)
 }
 
 

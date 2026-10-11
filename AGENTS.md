@@ -302,14 +302,14 @@ the cover flex's fab files (`COVER_CONFIRMED`), PC-FR datasheet (`V0_RATED_T`), 
 
 1. **Measurements and test prints** – help the human fill `docs/MEASUREMENTS.md`
    (coupons first: the rocker ladder gives `SW_PANEL_T`, the crush-rib coupon `RING_RIB`; then the
-   PETG insert and trim, the back cover on a remote, the EU cap, carrier and trim in the test socket),
+   PLA insert and trim, the back cover on a remote, the EU cap, carrier and trim in the test socket),
    update params, `make cad check print`. Replace `ESTIMATE` values as readings come in.
 2. **CN2 (D-50, D-51)**: the part and contact map (from a GPIO add-on or Apollo); until then the
    ring board and the EU cap board have no fab files. Microphone: pin 1 check on a part, firmware
    test on an MSR-2 (sample rate, C3 load); the carrier's castellations and window on a sample.
 3. **Human review** of the PCB (`pcb/fab/README.md` checklist: F1 rating,
    isolation, thermal, approvals) before ordering from PCBWay.
-4. Dry-fit prints (PETG insert + trim) in a real box; check the corner taper vs
+4. Dry-fit prints (PLA insert + trim) in a real box; check the corner taper vs
    box ears and the wire room behind the board. Then the PC-FR insert.
 5. Rocker feel: confirm the panel thickness and that the latches hold.
 6. ESPHome YAML for MSR-2 + SHT45 + microphone (starting point in
