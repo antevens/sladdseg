@@ -162,8 +162,8 @@ cap side, nothing in the face plate and no flex (D-56, D-59, D-70): a 1.6 mm FR4
 carrier with the MSR-2 on its CN2 mate and three SMT spacers, the microphone and the SHT45, as on the NA ring
 board. The carrier goes on the wall first; the cap's edge pins its lip to the wall and the cap's teeth stop it
 turning (D-71). The face plate snaps into the carrier: four fingers at the corners catch grooves in closed, keyed
-windows (D-77). Box values are catalogue placeholders until measured; the stack reaches 43 mm deep (to be
-tried in a box).
+windows (D-77). The plate is 84.6 × 122.4 mm, 19.0 mm thick (D-70, D-78). Box values are catalogue placeholders
+until measured; the stack reaches 43.8 mm deep, to be tried in the printed test socket (D-76) and a real box.
 
 | Remote in place | Remote lifted: rocker |
 | --- | --- |
@@ -202,13 +202,12 @@ section at the top: the lip under the cap's rebate, outside the seal band.
 | ![EU 5 V board, front](docs/renders/eu_5v_board_front.png) | ![EU 5 V board, back](docs/renders/eu_5v_board_back.png) |
 | ![EU 5 V board, front copper](docs/renders/eu_5v_board_copper_front.png) | ![EU 5 V board, back copper](docs/renders/eu_5v_board_copper_back.png) |
 
-### Steel plate cutting jigs (D-52)
+### Steel plate hacksaw guide (D-52, D-81)
 
-The steel plate that ships with the BILRESA is cut to an 18.5 mm piece for the insert (NA) or the cap (EU). Left: hacksaw
-guide (clamp in a vise, saw down the slot). Right: marker gauge (mark along the fence, cut with shears, a grinder or a
-saw). Red: the cut line.
+The steel plate that ships with the BILRESA is cut to an 18.5 mm piece for the insert (NA) or the cap (EU) in a hacksaw
+guide: clamp it in a vise, saw down the slot. Red: the cut line.
 
-![Steel plate cutting jigs](docs/renders/plate_jigs.png)
+![Steel plate hacksaw guide](docs/renders/plate_jigs.png)
 
 ### Replacement back cover (D-35, D-40, D-41, D-44, D-45)
 
@@ -217,8 +216,9 @@ the top and bottom, side ribs, a pry notch) and carries the remote's magnet plat
 and a flex: two gold pads behind windows in its back take +5 V and GND from the plate (NA: the spring pins
 through the pocket floor, D-50; EU: two spring pins from the 5 V board through the cap, D-54), a 3.3 V regulator on the flex feeds the
 remote, and at the terminal end two spring fingers press on the remote's VBAT plate and GND spring. The flex is
-held by a 0.8 mm stiffener under six snap hooks on its long edges and, at the end, by a lip at the foot of each
-contact block and a slot along each block's outer face that it slides down into. Several remote dimensions are still estimates
+held by a 0.8 mm stiffener under five snap hooks on its long edges, its run lies in a notch along the GND contact
+post (D-79) and, at the end, a lip at the foot of each contact block and a slot along each block's outer face that it
+slides down into hold it. Several remote dimensions are still estimates
 (`docs/MEASUREMENTS.md`).
 
 | Cover, inside | Cover, back (pin windows) |

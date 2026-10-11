@@ -1,8 +1,7 @@
 # Assembly: what holds each part
 
-Every board, flex and electronic part is held by a screw, a solder joint, a printed snap or hook, or a
-named tape point. Tape is **3M 467MP** (0.06 mm, double-sided), cut to the pad
-sizes below. Nothing here is a compliance statement; mains work is a human decision (SAFETY).
+Every board, flex and electronic part is held by a screw, a solder joint, or a printed snap, hook or slot; no
+tape. Nothing here is a compliance statement; mains work is a human decision (SAFETY).
 
 ## NA plate
 
@@ -20,15 +19,14 @@ sizes below. Nothing here is a compliance statement; mains work is a human decis
 | FFC, ring board end | FH12 slide latch on the ring board's J1 | |
 | Ring board | pressed onto eight crush ribs on the collar's outside (0.15 mm into its window edge) for handling; in the box the flange's 1.8 mm land clamps its inner edge against the wall, the face plate's posts and frames the rest | D-50, D-68 |
 | MSR-2 | CN2 on the ring board and three 1.5 mm SMT spacers under its board; three posts on the face plate press its board onto the spacers (the skin stands 0.3 mm clear of the CO2 add-on and the radar) | D-50, D-66, D-68 |
-| SHT45, passives, J1, nuts | soldered on the ring board | |
+| SHT45, passives, J1, SMT spacers H1–H3 | soldered on the ring board | D-68 |
 | Mic carrier | soldered flat on the ring board by its castellated edges; the face plate's sound tube presses its gasket on | D-50 |
-| Supplied steel plate (cut piece) | its own adhesive in the pocket-floor recess; cut with the hacksaw guide or the marker gauge | D-43, D-52 |
+| Supplied steel plate (cut piece) | its own adhesive in the pocket-floor recess; cut with the hacksaw guide | D-43, D-52 |
 
 ## Order of work for the NA plate
 
-0. Cut the supplied steel plate: lay it whole in a jig, round end on the stop. Hacksaw guide: clamp the jig in a vise
-   and saw down the slot. Marker gauge: mark along the fence, then cut with metal shears, a grinder or a hacksaw.
-   Deburr the cut edge.
+0. Cut the supplied steel plate: lay it whole in the hacksaw guide, round end on the stop, clamp the guide in a vise
+   and saw down the slot. Deburr the cut edge.
 1. Wiring board: solder P1 / P2 with the SMD parts (reflow); screw the WA-SBRIE studs in; heatshrink.
 2. Ring board: solder the parts and the mic carrier; plug the MSR-2 onto CN2.
 3. Insert: fit the rocker.
@@ -63,30 +61,30 @@ sizes below. Nothing here is a compliance statement; mains work is a human decis
 | --- | --- | --- |
 | Cover on the remote | two snap clips (top, bottom) on the housing's wall; side ribs keep it from flexing | pry it off at the notch |
 | Plate (magnet, 12 × 20 × 2) | a ridge round it on the full-thickness shell, a clip at each end | snap in from above; print the cover in PETG (the clips broke in PLA) |
-| Cover flex, pad and regulator sections | 0.8 mm FR4 stiffener on top, pressed down past six snap hooks on its long edges (each side of each pin pad and of the regulator) | press straight down until all six click; to remove, spread the hooks on one edge with a pick |
-| Cover flex, run | the slot under the GND contact block | |
+| Cover flex, pad and regulator sections | 0.8 mm FR4 stiffener on top, pressed down past five snap hooks on its long edges (each side of each pin pad and of the regulator, none on the inner edge beside the GND pad, D-79) | press straight down until all five click; to remove, spread the hooks on one edge with a pick |
+| Cover flex, run | lies on the ledge, in a notch along the GND contact post's inner face (D-79) | drops in from above |
 | Cover flex, end section | slides down a slot along each contact block's outer face (lip over its outer edge) into the slot behind the foot lips (D-55) | slide the end section in from above first, then lay the strip on the ledge and press the pad section down past its hooks |
 
 ## Order of work for the back cover
 
 1. Snap the plate into its pocket.
-2. Thread the flex's run through the slot under the GND block from the cell side; press the pad and
-   regulator sections straight down onto the ledge, the pin pads over their windows and the regulator
-   into its recess, until the six snap hooks click over the stiffener.
-3. Check that no hook is left standing on the stiffener's top.
-4. Fold the end section up (foot into the lip slots) and press it onto the blocks until both side hooks
-   click over its outer edges.
-5. Snap the cover onto the remote (both clips), notch at the bottom end.
+2. Slide the end section (bent up, fingers facing the battery contacts) straight down the slots along the two contact
+   blocks' outer faces until its foot sits in the slot behind the foot lips.
+3. Lay the run on the ledge, in the notch along the GND contact post's inner face.
+4. Press the pad and regulator sections straight down onto the ledge, the pin pads over their windows and
+   the regulator into its recess, until the five snap hooks click over the stiffener.
+5. Check that no hook is left standing on the stiffener's top.
+6. Snap the cover onto the remote (both clips), notch at the bottom end.
 
-## Tape points, rendered
+## Back cover flex, rendered
 
-The back cover with its flex drawn 2.5 mm off it, so both show (`cad/build123d/render_tape.py`).
+The back cover with its flex drawn 2.5 mm off it, so both show (`cad/build123d/render_backcover.py`).
 
-NA plate: no flex and no tape (D-50).
+NA and EU plates: no flex (D-50, D-56).
 
-Replacement back cover: no tape; snap hooks hold the pad and regulator sections, the end section slides
-down a slot along each contact block (D-55).
+Replacement back cover: snap hooks hold the pad and regulator sections, the end section slides down a slot
+along each contact block (D-55), the run lies in the notch along the GND contact post (D-79).
 
 | Cover | End section |
 | --- | --- |
-| ![Back cover and flex](renders/tape_cover.png) | ![Back cover end section](renders/tape_cover_end.png) |
+| ![Back cover and flex](renders/bc_flex.png) | ![Back cover end section](renders/bc_flex_end.png) |

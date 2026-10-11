@@ -7,19 +7,20 @@ Printer: **Elegoo Centauri Carbon 2 Combo** (256 × 256 × 256 mm, enclosed, har
 every part is single-material.
 
 ## Files
+
 | File | Part(s) | Filament | Est. time / mass (OrcaSlicer 2.4.2) |
 |------|---------|----------|------------------------------------------|
-| `print/coupons_PETG.3mf` | pocket+well+magnet coupon, MSR-2 bay coupon, rocker panel ladder | PETG | 2 h 31 m / 65 g |
-| `print/insert_PETG_testfit.3mf` | NA box insert (fit check only, **not for mains**), on supports | PETG | 3 h 06 m / 80 g |
+| `print/coupons_PETG.3mf` | pocket+well coupon (with the steel piece's recess), MSR-2 bay coupon, rocker panel ladder, crush-rib coupon (D-68) | PETG | 2 h 31 m / 65 g |
+| `print/insert_PETG_testfit.3mf` | NA box insert (fit check only, **not for mains**), on supports | PETG | 2 h 27 m / 58.9 g |
 | `print/trim_PETG.3mf` | NA trim plate (face plate, passive) | PETG (ASA if in sun) | 40 m / 21 g |
-| `print/insert_PC-FR.3mf` | NA box insert, **final**, on supports | Elegoo PC-FR (UL94 V-0) | 2 h 56 m / 71 g |
-| `print/backcover_PETG.3mf` | replacement back cover for the battery-free BILRESA (D-35), back down | PETG | 21 m / 9 g |
-| `print/plate_jigs_PETG.3mf` | steel plate cutting jigs: hacksaw guide and marker gauge (D-52), floor down | PETG | 30 m / 12 g |
-| `print/eu_cap_PETG_testfit.3mf` | EU cap (fit check only, **not for mains**), face down | PETG | 41 m / 11 g |
-| `print/eu_cap_PC-FR.3mf` | EU cap, **final** (the EU barrier), face down | Elegoo PC-FR (UL94 V-0) | 36 m / 10 g |
-| `print/eu_trim_PETG.3mf` | EU trim plate, face down | PETG | 1 h 15 m / 44 g |
-| `print/eu_carrier_PETG.3mf` | EU cap board carrier, bottom down: the rim up, the 0.8 mm lip under the cap on the bed (D-71) | PETG | re-slice |
-| `print/eu_testbox_PETG.3mf` | EU test socket: the box floor down, the wall plate flat (D-76) | PETG | — |
+| `print/insert_PC-FR.3mf` | NA box insert, **final**, on supports | Elegoo PC-FR (UL94 V-0) | 2 h 18 m / 51.9 g |
+| `print/backcover_PETG.3mf` | replacement back cover for the battery-free BILRESA (D-35), back down | PETG | 21 m / 8.5 g |
+| `print/plate_jig_PETG.3mf` | steel plate hacksaw guide (D-52, D-81), floor down | PETG | 21 m / 7.8 g |
+| `print/eu_cap_PETG_testfit.3mf` | EU cap (fit check only, **not for mains**), face down | PETG | 41 m / 10.9 g |
+| `print/eu_cap_PC-FR.3mf` | EU cap, **final** (the EU barrier), face down | Elegoo PC-FR (UL94 V-0) | 37 m / 9.8 g |
+| `print/eu_trim_PETG.3mf` | EU trim plate, face down | PETG | 1 h 16 m / 41.6 g |
+| `print/eu_carrier_PETG.3mf` | EU cap board carrier, bottom down: the rim up, the 0.8 mm lip under the cap on the bed (D-71) | PETG | 42 m / 17.6 g |
+| `print/eu_testbox_PETG.3mf` | EU test socket: the box floor down, the wall plate flat (D-76) | PETG | 3 h 35 m / 102.7 g |
 
 Open a `.3mf` in OrcaSlicer, check the plate, slice, send. The projects carry the
 printer (CC2 0.4 nozzle), filament and process settings; the parts are already
@@ -32,30 +33,36 @@ to use another OrcaSlicer build. Headless machines need `xvfb-run` (`make system
 time/material lands in `build/print/gcode/`.
 
 ## Order of work
+
 1. `coupons_PETG`: rocker ladder → find the panel thickness that latches firmly,
    record it as `SW_PANEL_T` in `docs/MEASUREMENTS.md`. Pocket+well coupon → remote
    drop-in/lift-out, rocker snap-in, key pin, pass-through. MSR-2 coupon → board fit,
    radar skin, the grille for the CO2 and light sensors (D-69), the three Ø1.8 posts onto the MSR-2's board (D-66).
+   Crush-rib coupon → the ring board's fit on the ribs (0.10 / 0.15 / 0.20), record `RING_RIB`.
 2. Update `params.py` from the measurements, `make cad check print`.
 3. `insert_PETG_testfit` + `trim_PETG` → full dry fit in the box (breaker off, nothing
    connected). Check the corner taper against the box ears.
 4. `insert_PC-FR` for the installed part. Keep the filament datasheet with the build record.
-5. Battery-free remote: `backcover_PETG` on a BILRESA (latches, steel plate, contact positions,
-   the end fingers' ramp; the plate clips and flex snap hooks snapped in PLA: snap the plate in and
-   out a few times and check the clips survive in PETG, D-44). Cut the supplied magnet first (D-43:
-   one straight cut, an 18.5 mm piece with one round end; check its real size).
-6. EU: `eu_cap_PETG_testfit` + `eu_trim_PETG` in a 60 mm round box (domes, depth of the board
-   stack), then `eu_cap_PC-FR`.
+5. `plate_jig_PETG`: saw the supplied steel plate (D-43, D-52: one straight cut, an 18.5 mm piece
+   with one round end; check its real size first).
+6. Battery-free remote: `backcover_PETG` on a BILRESA (latches, the remote's magnet plate, contact
+   positions, the end fingers' ramp; the plate clips and flex snap hooks snapped in PLA: snap the plate
+   in and out a few times and check the clips survive in PETG, D-44).
+7. EU: `eu_testbox_PETG` (test socket, D-76), then `eu_cap_PETG_testfit`, `eu_carrier_PETG` and
+   `eu_trim_PETG` in it (domes, the carrier clamp, the snaps, the depth of the board stack against
+   the depth markers); then `eu_cap_PC-FR`.
 
 Many BILRESA dimensions are `ESTIMATE` (from photos and drawings, `docs/MEASUREMENTS.md`): the
 first prints of the trim pockets and the back cover are for measuring and
 adjusting, not final parts.
 
 ## Settings (and why)
+
 - **Back cover** (`COVER`): back down as modelled, 3 walls (1.2 mm), 2 bottom layers (the 0.4 mm
-  floor under the steel plate and the regulator), 30 % gyroid, no supports (the back's round-over
+  floor under the regulator; the magnet plate sits on the full 1.6 mm shell, D-44), 30 % gyroid, no supports (the back's round-over
   is filled to 45° below its 45° point for that).
-- **EU cap**: the EU barrier, `BARRIER` settings like the NA insert, face down.
+- **EU cap**: the EU barrier, `BARRIER` settings like the NA insert, face down. The floor of the steel
+  piece's recess prints as an 18.1 mm bridge (D-72); check it for sag.
 - **Insert** (`INSERT`: `BARRIER` plus supports): the whole insert is barrier, so no
   modifiers are needed: 6 walls (≈ 2.7 mm, so every 1.6 mm barrier wall prints solid),
   6 top/bottom layers, 40 % gyroid, 5 mm outer brim for PC-FR (warping). Orientation: as
@@ -78,6 +85,7 @@ adjusting, not final parts.
   12.2 vs 70.9 kJ/m², data sheet).
 
 ## Materials
+
 - Test fits: PETG.
 - Insert (barrier): Elegoo PC-FR for now. Its data sheet claims flame retardancy and
   rapid self-extinguishing but states no UL94 class or test thickness. Certification is
@@ -87,15 +95,13 @@ adjusting, not final parts.
 - Trim: PETG or ASA.
 
 ## Checks after printing
-- Remote drops in and lifts out with the finger scoops; magnet holds.
-- Magnet strength: fit the supplied magnet in its recess on the pocket coupon
-  first. It sits 0.5 mm below the seat (`MAGNET_SETBACK`).
+
+- Remote drops in and lifts out with the finger scoops; its magnet holds onto the steel piece.
+- Hold: fit the cut steel piece in its recess on the pocket coupon first. It sits 0.5 mm below
+  the seat (`MAGNET_SETBACK`).
   - Too strong: add a thin non-magnetic spacer on top of it (tape, card), or
-    reprint with a larger `MAGNET_SETBACK`. If the magnet is a flexible sheet,
-    it can also be cut down with scissors.
-  - Too weak: shim under the magnet to bring it up to the seat.
-  - Do not cut a rigid magnet: ceramic magnets shatter, and neodymium dust
-    can ignite.
+    reprint with a larger `MAGNET_SETBACK`.
+  - Too weak: shim under the steel piece to bring it up to the seat.
 - Rocker snaps in and latches; rocker clears the remote's back in both positions.
 - Trim seats on the flange with the two key pins; island flush with the face.
 - Board standoffs (D-57): tap the insert's four boss holes M3 × 0.5 (8.5 mm deep, the top right 5.5;

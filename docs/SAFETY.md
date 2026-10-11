@@ -28,15 +28,19 @@ hard requirement.
    stay connected on the board. Use the breaker for work on fixtures.
 
 ## Mechanical / material
-8. Barrier geometry (pocket shell, switch well, collar; the box insert) is
-   printed in a UL94 V-0 filament with its datasheet on file. PLA/PETG are for
-   test fits only.
-9. No holes may be added to the barrier other than the 5 V pass-through and the two
-   spring-pin holes in the pocket floor (D-50, human decision 2026-10-10). The rocker
-   panel cutout is closed by the rocker body itself, each pin hole by its pin's barrel:
-   never energise with the rocker, the riser or a pin out.
-   `make check` runs a barrier-continuity test (mains air must not reach the pocket,
-   trim hollow or room); it must pass.
+8. Barrier geometry (NA: the box insert's pocket shell, switch well, collar; EU:
+   the cap) is printed in a UL94 V-0 filament with its datasheet on file. PLA/PETG
+   are for test fits only.
+9. No holes may be added to the barrier other than (D-80):
+   - NA: the 5 V bore and the two spring-pin holes in the pocket floor (D-50, D-74,
+     human decision 2026-10-10);
+   - EU: the four spring-pin holes (D-54, D-59) and the two device-screw holes in the cap.
+
+   The rocker panel cutout is closed by the rocker body itself, each pin hole by its
+   pin's barrel, each EU screw hole by its screw: never energise with the rocker, the
+   riser, the 5 V board, a pin or a cap screw out. `make check` and `make eu` run a
+   barrier-continuity test (mains air must not reach the pocket, plate hollow or
+   room); it must pass.
 
 ## Regulatory (BC, Canada)
 10. Work under a homeowner electrical permit; ask the inspector about the concealed
