@@ -94,14 +94,15 @@ def short(desc, n=90):
     return d if len(d) <= n else d[:n].rsplit(" ", 1)[0]
 
 
-def collect(plates):
-    """MPN -> line (manufacturer, description, per-plate count per variant, refs); open parts listed apart."""
+def collect(plates, keep=None):
+    """MPN -> line (manufacturer, description, per-plate count per variant, refs); open parts listed apart.
+    keep(variant, board, ref): only the parts it accepts (all when None)."""
     lines, open_parts = OrderedDict(), []
     for variant, board, parts in tables():
         if not plates.get(variant):
             continue
         for ref, p in parts.items():
-            if not p.get("in_bom", True) or not p.get("mpn"):
+            if not p.get("in_bom", True) or not p.get("mpn") or (keep and not keep(variant, board, ref)):
                 continue
             mfr, mpn, desc = p["mfr"], p["mpn"], p.get("desc", "")
             if mpn == "TBD":
@@ -123,7 +124,7 @@ def quantity(line, plates):
     return need + 1
 
 
-def write(name, lines, plates):
+def write(name, lines, plates, out=OUT):
     rows = []
     for mpn, line in lines.items():
         q = quantity(line, plates)
@@ -140,12 +141,12 @@ def write(name, lines, plates):
                                           else ("digikey", DIGIKEY, dk_head))
         here = [r for r in rows if table.get(r[1], "") is not None]
         rest = [r for r in rows if table.get(r[1], "") is None]
-        with (OUT / f"{name}_{dist}.csv").open("w", newline="") as f:
+        with (out / f"{name}_{dist}.csv").open("w", newline="") as f:
             w = csv.writer(f)
             w.writerow(head)
             w.writerows((table.get(mpn, ""), mpn, mfr, q, ref, desc) for q, mpn, mfr, ref, desc in here)
         files.append(f"_{dist}.csv ({len(here)})")
-        rest_path = OUT / f"{name}_{dist}_rest_{other}.csv"
+        rest_path = out / f"{name}_{dist}_rest_{other}.csv"
         if rest:
             with rest_path.open("w", newline="") as f:
                 w = csv.writer(f)
@@ -154,7 +155,7 @@ def write(name, lines, plates):
             files.append(f"_{dist}_rest_{other}.csv ({len(rest)}: not at {dist})")
         elif rest_path.exists():
             rest_path.unlink()
-    print(f"wrote {OUT / name}: " + ", ".join(files))
+    print(f"wrote {out / name}: " + ", ".join(files))
 
 
 def main():

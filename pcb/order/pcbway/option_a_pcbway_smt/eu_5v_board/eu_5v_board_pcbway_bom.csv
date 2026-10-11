@@ -1,0 +1,3 @@
+Item #,Designator,Qty,Manufacturer,Mfg Part #,Description / Value,Package/Footprint,Type,Your Instructions / Notes
+1,C1,1,Samsung Electro-Mechanics,CL31A226KPHNNNE,"22uF 10V X5R - Ceramic 22 uF 10 V X5R 1206, 1.8 mm max",C_1206_3216Metric,SMD,Source this MPN exactly
+2,"P1,P2,P3,P4",4,Harwin,P70-2200045,"P70-2200045 GND - Spring pin with peg, 2 A",Harwin_P70-2200045,SMD,Source this MPN exactly

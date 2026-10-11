@@ -109,8 +109,10 @@ $(STAMP)/eu_mains_board $(STAMP)/eu_5v_board: $(STAMP)/%: pcb/eu/kicad/%.kicad_p
 
 NA_PLATES ?= 3
 EU_PLATES ?= 2
-order:          ## DigiKey / Mouser order lists for hand-soldered test plates (pcb/order/), NA_PLATES / EU_PLATES
+KICAD_PYTHON ?= python3
+order:          ## DigiKey / Mouser lists for the test plates and PCBWay order packs (pcb/order/), NA_PLATES / EU_PLATES
 	python3 pcb/tools/order_bom.py $(NA_PLATES) $(EU_PLATES)
+	$(KICAD_PYTHON) pcb/tools/order_pcbway.py $(NA_PLATES) $(EU_PLATES)
 
 eu:             ## EU variant (D-30, cad/build123d/eu/): STEP/STL to build/eu, checks, its renders (docs/renders/eu_*.png)
 	cd $(CAD)/eu && $(PY) cap_eu.py && $(PY) trim_eu.py && $(PY) checks_eu.py

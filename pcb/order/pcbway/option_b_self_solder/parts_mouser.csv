@@ -1,0 +1,16 @@
+Mouser Part Number,Mfr Part Number,Manufacturer,Quantity,Customer Part Number,Description
+,1802.2504,Marquardt,6,WP EU NA S1,"Rocker switch DPST, ENEC 12(4) A 250 V~, UL/CSA 15 A 125-250 VAC, PCB pins, emergency off (1/plate NA, 1/plate EU; NA wiring board S1; EU mains board S1)"
+,2604-1106,WAGO,4,WP NA J1,"PCB terminal block, push-in, lever, 6-pole, 5 mm pitch, 4 mm2 / 12 AWG, entry parallel to (1/plate NA; NA wiring board J1)"
+,IRM-03-5,Mean Well,4,WP NA PS1,"AC-DC module 85-305 VAC in, 5 V 600 mA, 37x24x15 mm (1/plate NA; NA wiring board PS1)"
+,3404.2416.22,Schurter,8,WP EU NA F1,"SMD fuse UMT 250, time-lag 1 A 250 VAC (1/plate NA, 1/plate EU; NA wiring board F1; EU mains board F1)"
+,B72660M0271K093,TDK,8,WP EU NA RV1,"SMD varistor SIOV-CU4032K275G2K1, 275 VAC (1/plate NA, 1/plate EU; NA wiring board RV1; EU mains board RV1)"
+,9774070243R,Wurth Elektronik,9,WP NA P1,"SMT steel spacer, internal thread M2, 7 mm, tin (2/plate NA; NA wiring board P1; NA wiring board P2)"
+,FH12-6S-0.5SH(55),Hirose,5,WP NA J2,"FPC connector 0.5 mm, 6 contacts, slide lock (1/plate NA; NA wiring board J2)"
+,DMM-4026-B-I2S-R,PUI Audio,5,WP NA MK1,"I2S MEMS microphone, bottom port, 1.62-3.63 V; LR low = left channel (1/plate NA; NA mic carrier MK1)"
+,971100244,Wurth Elektronik,9,WP NA ST1,"Brass spacer stud M2 male-female, 10 mm, 4 mm hex (2/plate NA; NA mechanical ST1; NA mechanical ST2)"
+,25503,Keystone,13,WP NA SO1,"Nylon M3 male-female hex standoff, 15 mm, 5.0 mm hex (4/plate NA; NA mechanical SO1; NA mechanical SO2; NA mechanical SO3; NA mechanical SO4)"
+,687606152002,Wurth Elektronik,4,WP NA W1,"FFC 0.5 mm, 6 contacts, 152 mm, Type 1 (1/plate NA; NA mechanical W1)"
+495-TMPS03-105,TMPS 03-105,Traco Power,3,WP EU PS1,"AC-DC module 85-264 VAC in, 5 V 600 mA, 25.4x25.4x16.3 mm, IEC/UL 62368-1, IEC 60335-1 (1/plate EU; EU mains board PS1)"
+,TSM-102-02-L-SV,Samtec,4,WP EU J3,"SMT pin header 1x2, 2.54 mm, 8.13 mm post, gold on post (1/plate EU; EU mains board J3)"
+,SSW-102-01-G-S,Samtec,3,WP EU J1,5 V from the mains board's header (1/plate EU; EU 5 V board J1)
+,CL31A226KPHNNNE,Samsung Electro-Mechanics,4,WP EU C1,"Ceramic 22 uF 10 V X5R 1206, 1.8 mm max (1/plate EU; EU 5 V board C1)"
