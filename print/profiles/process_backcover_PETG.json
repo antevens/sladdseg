@@ -11,5 +11,6 @@
   "sparse_infill_pattern": "gyroid",
   "enable_support": "0",
   "brim_type": "no_brim",
-  "seam_position": "back"
+  "seam_position": "back",
+  "detect_thin_wall": "1"
 }

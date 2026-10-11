@@ -38,7 +38,8 @@ INSERT = dict(BARRIER, enable_support="1", support_type="normal(auto)", support_
 COUPON = dict(INSERT, brim_type="no_brim")
 # Replacement back cover (D-35): back down, 1.2 mm walls, 0.4 mm floor under the steel plate and the regulator.
 COVER = {"wall_loops": "3", "top_shell_layers": "4", "bottom_shell_layers": "2", "sparse_infill_density": "30%",
-         "sparse_infill_pattern": "gyroid", "enable_support": "0", "brim_type": "no_brim", "seam_position": "back"}
+         "sparse_infill_pattern": "gyroid", "enable_support": "0", "brim_type": "no_brim", "seam_position": "back",
+         "detect_thin_wall": "1"}                     # the plate clips' 0.48 mm tabs print as one line (D-99)
 # Steel plate cutting jigs (D-52): small, solid enough to take a vise and a saw.
 JIG = {"wall_loops": "4", "top_shell_layers": "4", "bottom_shell_layers": "4", "sparse_infill_density": "40%",
        "sparse_infill_pattern": "gyroid", "enable_support": "0", "brim_type": "no_brim", "seam_position": "back"}

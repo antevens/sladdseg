@@ -689,8 +689,8 @@ def cover_checks():
     for x, y in BC_FINGERS:
         check(BC_STRIP[0] + 0.2 <= x - BC_PAD_D / 2 and x + BC_PAD_D / 2 <= BC_STRIP[1] - 0.2,
               f"pad at ({x}, {y}) inside the flex strip")
-    check(BC_STEEL_FLOOR >= 1.0 - 1e-6 and BC_REG_FLOOR >= 0.4 - 1e-6,
-          f"{BC_STEEL_FLOOR:.1f} mm of cover wall under the plate (D-96), {BC_REG_FLOOR} under the regulator")
+    check(BC_STEEL_FLOOR >= 0.8 - 1e-6 and BC_REG_FLOOR >= 0.4 - 1e-6,
+          f"{BC_STEEL_FLOOR:.1f} mm of cover wall under the plate (D-96, D-99), {BC_REG_FLOOR} under the regulator")
     rb = bc.steel_ridge().bounding_box()
     seat = (rb.size.X - 2 * BC_STEEL_RIDGE[0], rb.size.Y - 2 * BC_STEEL_RIDGE[0])
     check(abs(seat[0] - BC_STEEL[0] - 2 * BC_STEEL_CLR) < 0.01 and abs(seat[1] - BC_STEEL[1] - 2 * BC_STEEL_CLR) < 0.01,

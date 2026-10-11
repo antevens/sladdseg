@@ -358,8 +358,9 @@ BC_SIDE_TAB_GAP = 36.2                    # MEASURED inside spacing between the 
 BC_SIDE_TAB_RIM_GAP = 3.6                 # MEASURED rib's top below the rim
 BC_STEEL = (12.0, 20.0, 2.0)              # MEASURED the remote's plate (a magnet), x, y, t (human, 2026-10-09); moved
                                           # from its own cover
-BC_STEEL_FLOOR = BC_WALL - 0.3            # plate, its ridge and clips 0.3 deeper than the full shell (a clip post touched
-                                          # the housing: human 2026-10-11, D-96)
+BC_STEEL_FLOOR = 0.8                      # plate, its ridge and clips 0.8 deeper than the full shell: a clip post touched
+                                          # the housing (D-96), then as deep as the clips allow, for a stronger pull on
+                                          # the steel piece (human 2026-10-11, D-99)
 BC_STEEL_CLR = 0.05                       # plate to the ridge (0.15 rattled on the first print, human 2026-10-09)
 BC_STEEL_CLIP_CLR = 0.15                  # plate's ends to the clips' tabs (fit confirmed on the first print)
 BC_STEEL_RIDGE = (0.8, 1.2)               # ESTIMATE ridge round the plate (photos): thickness, height above the floor
@@ -378,9 +379,9 @@ BC_FLEX_SNAP_RELIEF = 0.3                 # relief round each post (sides and be
 BC_END_LIP = (1.2, 1.0, 0.1)              # lip in front of each block's foot: thickness, height above the ledge, gap
 BC_END_SLOT = (0.8, 0.1, 0.5, 0.8, 0.1)   # slot along each block's outer face, the end section slides down it: side wall,
                                           # wall to the section's edge, lip reach over the edge, lip thickness, lip to copper
-BC_STEEL_CLIP = (6.0, 0.65, 0.45)         # clips at both ends of the plate's pocket: width, tab thickness, hook over the
-                                          # plate's edge (broke in PLA; the cover prints in PETG, to verify); tab 0.65
-                                          # (was 0.8): 0.3 shorter with the plate sunk, strain <= 3 % (D-96)
+BC_STEEL_CLIP = (6.0, 0.48, 0.45)         # clips at both ends of the plate's pocket: width, tab thickness, hook over the
+                                          # plate's edge (broke in PLA; the cover prints in PETG, to verify); tab 0.48
+                                          # (was 0.8): 0.8 shorter with the plate sunk, strain <= 3 % (D-96, D-99)
 BC_STEEL_CLIP_ROOT = 0.4                  # tab root: shell left under the relief round each tab (the tab flexes)
 BC_STEEL_CLIP_RELIEF = 0.3                # relief round each tab (sides, behind, and towards the plate)
 BC_STEEL_Y = -5.5                         # steel plate centre in the cover (the EU magnet sits under it, clear of the switch cup)
