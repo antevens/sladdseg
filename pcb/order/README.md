@@ -45,6 +45,41 @@ plates; change with `make order NA_PLATES=4 EU_PLATES=1`.
   is printed, the cart is in My Mouser. `python3 pcb/tools/distributors.py push 3 2 --dry-run` shows the
   payloads without sending.
 
+### Getting the keys
+
+DigiKey (Product Information v4, client credentials; reads stock and status, cannot touch an account):
+
+1. Sign in at https://developer.digikey.com/ with a DigiKey account.
+2. Organizations (top of the page), Create Organization, give it a name, Add Organization.
+3. In the organization: Production Apps, Create Production App, give it a name.
+4. OAuth Callback: any https URL, e.g. `https://localhost:8139/digikey_callback` (the stock check signs in
+   without it, the form needs one).
+5. Tick Product Information V4, save.
+6. View, Credentials, show key: copy the Client ID and Client Secret into `DIGIKEY_CLIENT_ID` and
+   `DIGIKEY_CLIENT_SECRET`.
+
+Mouser (two separate keys):
+
+1. Sign in to My Mouser at https://www.mouser.com/ (create the account if needed).
+2. My Account (personal information), APIs: request a Search API key (form). Mouser emails it: put it in
+   `MOUSER_SEARCH_KEY`. It reads stock, lifecycle and Mouser part numbers.
+3. On the same page, request the Order API key: Mouser uses it for the Cart API too. Put it in
+   `MOUSER_CART_KEY`. **This key can place orders on the account**: keep it out of shared machines and
+   containers that do not need it; the stock check does not.
+
+Setting them: environment variables only, e.g. in `~/.bashrc` (or the shell's profile):
+
+```bash
+export DIGIKEY_CLIENT_ID='...'
+export DIGIKEY_CLIENT_SECRET='...'
+export MOUSER_SEARCH_KEY='...'
+export MOUSER_CART_KEY='...'      # only where carts are built
+```
+
+In the devcontainer, pass them from the host instead of writing them into a file in the repo, e.g. in
+`.devcontainer/devcontainer.json`: `"remoteEnv": {"MOUSER_SEARCH_KEY": "${localEnv:MOUSER_SEARCH_KEY}"}` (one line
+per variable). Never commit a key; `make stock` and `make order-push` print no key.
+
 ## Quantities
 
 Per-plate count times the plates, plus spares: half again (at least 2) for the small hand-soldered parts

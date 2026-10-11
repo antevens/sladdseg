@@ -99,7 +99,7 @@ make renders     # docs/renders/*.png: every group whose sources changed (sectio
 make check-renders  # no render older than its sources, every render used by a doc - must pass
 make eu          # EU variant: CAD to build/eu, EU checks, EU renders
 make order       # DigiKey / Mouser CSVs for test plates (NA_PLATES, EU_PLATES)
-make stock       # live DigiKey / Mouser stock and lifecycle (keys in the environment), parts rule D-84
+make stock       # live DigiKey / Mouser stock and lifecycle, parts rule D-84 (keys: pcb/order/README.md)
 make order-push  # DigiKey myLists link + Mouser cart for the lists (PRIMARY=digikey|mouser)
 ```
 
