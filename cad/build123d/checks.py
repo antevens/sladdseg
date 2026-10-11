@@ -67,7 +67,7 @@ def dims():
     check(min(POCKET_WALL, BARRIER_MIN) >= V0_RATED_T, f"barrier walls >= V-0 rated thickness {V0_RATED_T} (fill V0_RATED_T from the datasheet)")
     msr_top = MSR_Y + MSR[1] / 2 + CLR
     check(msr_top <= PLATE_Y + PH / 2 - SKIN, f"MSR-2 bay top {msr_top:.2f} inside trim (<= {PLATE_Y + PH/2-SKIN})")
-    check(SHT_AT[1] - SHT[1] / 2 - 0.4 >= PLATE_Y - PH / 2 + SKIN, "SHT45 bay inside trim")
+    check(SHT_AT[1] - SHT[1] / 2 - 0.4 >= PLATE_Y - PH / 2 + SKIN, "SHT40 bay inside trim")
     deepest = min(WB_BACK_Z - WAGO6[2], WB_BACK_Z - IRM[2])
     left = BOX_D + deepest
     print(f"       board {WB_FRONT_Z:.1f}..{WB_BACK_Z:.1f} mm, deepest part {deepest:.1f} mm; "
@@ -379,7 +379,7 @@ def ring_checks(ins, tr):
         """Front-layer copper disc at (x, y), radius r, at least k_front (plan) from the box opening's rectangle."""
         dx, dy = max(abs(x) - BOX_W / 2, 0.0), max(abs(y) - BOX_H / 2, 0.0)
         return (dx * dx + dy * dy) ** 0.5 - r
-    for name, (x, y), r in [("J1", RING_J1, max(FH12[:2]) / 2 + 0.5), ("SHT45", SHT_AT, 1.5),
+    for name, (x, y), r in [("J1", RING_J1, max(FH12[:2]) / 2 + 0.5), ("SHT40", SHT_AT, 1.5),
                             ("microphone", (MIC_AT[0], MIC_BODY_Y), max(MIC[:2]) / 2 + 0.3),
                             ("CN2 mate", (MSR_CN2_X, MSR_Y), max(B2B) / 2 + 0.5)] + \
                            [(k, p, max(d[:2]) / 2 + 0.3) for k, (p, d) in RING_SMALL.items()] + \

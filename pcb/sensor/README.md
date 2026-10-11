@@ -19,7 +19,7 @@ front (F faces the insert):
   C1 22 µF at J1.
 - J2: Molex 55909-2474 (24 contacts, 0.4 mm) mating the MSR-2's rear connector CN2 (D-82); land pattern from Molex
   SD-55909-003 rev J (D-89); contact map and pin 1 placeholders, below.
-- U1: SHT45 with C2 (100 nF) under the face plate's vents at the bottom.
+- U1: SHT40 with C2 (100 nF) under the face plate's vents at the bottom.
 - MK1: Knowles SPK0641HT4H-1 (top-port PDM microphone, SELECT low) at the top right, port end up under the face
   plate's sound column; U2: Analog Devices ADAU7002 (PDM to I²S, CONFIG high = I²S, WLCSP-8 0.4 mm) to its left with
   C4 (100 nF), R1 (100 kΩ I²S SD pull-down: SDATA is tristated between words) and C3 (the mic's 100 nF, C0G 1206, D-85) outside the
@@ -32,7 +32,7 @@ front (F faces the insert):
 Copper keeps 8 mm along the wall from the box opening (rule areas: front 6.4 mm in plan, the board
 edge adds 1.6; back 8.0). So the back layer only has the bands above and below the box; the right
 side carries three front lanes (SCL, SDA, +3V3; 0.15 mm, 0.33 mm pitch) round the box's corner to the
-SHT45, the left side a GND pour that joins the top and bottom pours. SDA, SCL and +3V3 cross the top
+SHT40, the left side a GND pour that joins the top and bottom pours. SDA, SCL and +3V3 cross the top
 band on the back, under J1, to three vias above the rail; the I²S lanes and +5V stay on the front. Vias 0.45 / 0.2 mm
 round CN2 and U2.
 
@@ -51,7 +51,7 @@ back cover's pad positions. 1 mm tracks.
 
 ## 5 V FFC
 
-Stock: Würth WR-FFC 687606152002 (0.5 mm, 6 contacts, 152 mm, Type 1). Wiring board J2 → the straight bore in the
+Stock: GCT 05-06-A-0152-A-4-06-4-G or Würth WR-FFC 687606152002 (0.5 mm, 6 contacts, 152 mm, Type 1; D-98). Wiring board J2 → the straight bore in the
 insert's top-right corner (D-74) → out of the flange onto the ring board → ring board J1, both latched (FH12 slide
 lock); the spare length lies folded flat in four layers (12 mm) at y 43.4, between the flange and J1 (D-68). Assembly:
 with the wiring board on its standoffs, push the end up the bore from the insert's underside round its one bend into
@@ -127,7 +127,7 @@ the MSR-2's CN2 (Molex land pattern, placeholder contact map) and H5–H7 (Würt
 posts; MK1 and U2 with C3, C4 and R1 as on the ring board (`route_mic`, D-83), the mic at x 32.0 so its parts and
 lanes sit between it and the MSR-2's bay frame. I²S from CN2's upper row up, right, down and into U2, +3V3 from the
 lower row down and right to the parts' bus; SDA, SCL and +3V3 on the back
-down the outer left edge (outside the snap windows and the screws) to U1 (SHT45) and C2 at the bottom; +5V from the
+down the outer left edge (outside the snap windows and the screws) to U1 (SHT40) and C2 at the bottom; +5V from the
 pin pad on the back up the outer right edge to CN2; GND pours on both layers; 0.45 / 0.2 mm vias round CN2. Windows at
 the four corners pass the face plate's snap fingers; notches in the top edge clear the MSR-2's back switches. H1–H4:
 holes for the M2 screws into the carrier. No fab files until CN2 is confirmed.

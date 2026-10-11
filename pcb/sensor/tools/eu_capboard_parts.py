@@ -2,7 +2,7 @@
 
 FR4 1.6 mm in the cap's printed carrier, round the remote pocket. TP1 / TP2 on its underside take GND / +5V from the
 5 V board's sensor spring pins; as on the NA ring board, J2 mates the MSR-2's CN2 (the MSR-2 rests on CN2 and the three
-SMT spacers H5-H7), MK1 the top-port microphone with U2, the ADAU7002, beside it (D-83), U1 the SHT45 under its vents. Windows at the
+SMT spacers H5-H7), MK1 the top-port microphone with U2, the ADAU7002, beside it (D-83), U1 the SHT40 under its vents. Windows at the
 corners let the face plate's snap fingers pass to the cap's edge; notches in the top edge clear the MSR-2's back
 switches. Coordinates: room front view (x, y) in mm, from cad/build123d/eu/params_eu.py.
 """
@@ -80,11 +80,11 @@ CAPBOARD_PARTS = {
                     "1.5 mm mated; land pattern and contact map placeholders, D-82)",
                ds="https://www.molex.com/en-us/products/part-detail/559092474"),
     **sp.mic_parts(E.MIC_AT),
-    "U1": dict(label="Sensirion SHT45", sym="SHT4x", fp=sp.FP_SHT, value="SHT45",
+    "U1": dict(label="Sensirion SHT40", sym="SHT4x", fp=sp.FP_SHT, value="SHT40",
                nets={"1": "SDA", "2": "SCL", "3": "+3V3", "4": "GND"}, pos=(0.0, E.SHT_Y, 0), mfr="Sensirion",
-               mpn="SHT45-AD1B-R2", desc="Humidity and temperature sensor, I2C 0x44", ds=sp.SHT_DS),
+               mpn="SHT40-AD1B-R2", desc="Humidity and temperature sensor, I2C 0x44", ds=sp.SHT_DS),
     "C2": dict(label="100nF", sym="C", fp=sp.FP_C, value="100nF", nets={"1": "+3V3", "2": "GND"},
-               pos=(2.6, E.SHT_Y, 90), mfr="any", mpn="0402 X7R 100 nF 16 V", desc="SHT45 decoupling", ds=""),
+               pos=(2.6, E.SHT_Y, 90), mfr="any", mpn="0402 X7R 100 nF 16 V", desc="SHT40 decoupling", ds=""),
 }
 for _i, (_x, _y) in enumerate(E.CB_SCREWS):
     CAPBOARD_PARTS[f"H{_i + 1}"] = dict(sym="MountingHole", fp=FP_HOLE, value="M2", nets={}, pos=(_x, _y, 0),

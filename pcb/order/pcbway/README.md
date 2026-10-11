@@ -33,8 +33,8 @@ Per board (add to the order remarks):
 - **riser_board** (`riser_board_v0.4_gerbers.zip`): 0.8 mm FR4; Two plated 2.2 mm holes for the M2 screws (P1, P2) and plated 1.2 mm holes for the spring pins' pegs; Small board: let PCBWay panelize it for assembly.
 - **eu_mains_board** (`eu_mains_board_v0.4_gerbers.zip`): Routed relief slot under the PSU in the outline (Edge.Cuts): do not omit; Mains board: do the review in pcb/eu/fab/README.md before ordering.
 - **eu_5v_board** (`eu_5v_board_v0.4_gerbers.zip`): Plated 1.2 mm holes for the spring pins' pegs.
-- **ring_board** (`ring_board_v0.4_PROTOTYPE_gerbers.zip`): Copper keeps 8 mm from the box opening (do not let PCBWay add copper fill there); Fit test: outline, crush-rib window, spacers H1-H3, SHT45, FFC connector J1; microphone MK1 and the ADAU7002 U2 (WLCSP 0.4 mm pitch: order this board with PCBWay assembly, option A, either way).
-- **eu_cap_board** (`eu_cap_board_v0.4_PROTOTYPE_gerbers.zip`): Closed snap windows at the corners (routed cut-outs inside the outline): do not omit; Fit test: outline, snap windows, screws, spacers H5-H7, SHT45, sensor pin pads; microphone MK1 and the ADAU7002 U2 (WLCSP 0.4 mm pitch: order this board with PCBWay assembly, option A, either way).
+- **ring_board** (`ring_board_v0.4_PROTOTYPE_gerbers.zip`): Copper keeps 8 mm from the box opening (do not let PCBWay add copper fill there); Fit test: outline, crush-rib window, spacers H1-H3, SHT40, FFC connector J1; microphone MK1 and the ADAU7002 U2 (WLCSP 0.4 mm pitch: order this board with PCBWay assembly, option A, either way).
+- **eu_cap_board** (`eu_cap_board_v0.4_PROTOTYPE_gerbers.zip`): Closed snap windows at the corners (routed cut-outs inside the outline): do not omit; Fit test: outline, snap windows, screws, spacers H5-H7, SHT40, sensor pin pads; microphone MK1 and the ADAU7002 U2 (WLCSP 0.4 mm pitch: order this board with PCBWay assembly, option A, either way).
 - **cover_flex** (`cover_flex_v0.4_PROTOTYPE_gerbers.zip`): FLEX PCB: one copper layer (F.Cu), polyimide, about 0.12 mm thick without stiffeners; coverlay on F.Mask openings; FR4 stiffeners on the non-copper side: 0.4 mm behind the end section, 0.8 mm on the pad and regulator sections; outlines on the User_1 Gerber and the fab drawing; One 90 deg bend at the marked line, copper outside: no stiffener across it.
 
 ## Option A: PCB + SMD assembly by PCBWay
@@ -52,7 +52,7 @@ Per board in `option_a_pcbway_smt/<board>/`: the Gerber zip, `<board>_pcbway_bom
 Per board in `option_b_self_solder/<board>/`: the Gerber zip (the prototypes also their fab drawing).
 
 1. pcbway.com → PCB Instant Quote (the cover flex: Flex PCB). Upload the Gerber zip, fill the board settings from the table.
-2. Optional: add a stencil (framework-less, top) for the boards with SMD parts: the paste layers are in the Gerbers. The microphone (LGA), the SHT45 (DFN), the WA-SMSI posts and spacers and the P70 spring pins are reflow parts (hot plate or hot air with paste). The ADAU7002 (WLCSP-8, 0.4 mm pitch) is not a hand part: order the ring board and the EU cap board with PCBWay assembly (option A) even here.
+2. Optional: add a stencil (framework-less, top) for the boards with SMD parts: the paste layers are in the Gerbers. The microphone (LGA), the SHT40 (DFN), the WA-SMSI posts and spacers and the P70 spring pins are reflow parts (hot plate or hot air with paste). The ADAU7002 (WLCSP-8, 0.4 mm pitch) is not a hand part: order the ring board and the EU cap board with PCBWay assembly (option A) even here.
 3. Buy every part: `parts_digikey.csv` / `parts_mouser.csv` (and the `_rest_` file).
 
 ## Quantities

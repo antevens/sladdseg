@@ -25,7 +25,7 @@ tape. Nothing here is a compliance statement; mains work is a human decision (SA
 | FFC, ring board end | FH12 slide latch on the ring board's J1 | |
 | Ring board | pressed onto eight crush ribs on the collar's outside (0.15 mm into its window edge) for handling; in the box the flange's 1.8 mm land clamps its inner edge against the wall, the face plate's posts and frames the rest | D-50, D-68 |
 | MSR-2 | CN2 on the ring board and three 1.5 mm SMT spacers under its board; three posts on the face plate press its board onto the spacers (the skin stands 0.3 mm clear of the CO2 add-on and the radar) | D-50, D-66, D-68 |
-| SHT45, passives, J1, SMT spacers H1–H3 | soldered on the ring board | D-68 |
+| SHT40, passives, J1, SMT spacers H1–H3 | soldered on the ring board | D-68 |
 | Microphone, ADAU7002 | soldered on the ring board (PCBWay assembly: the ADAU7002 is a 0.4 mm WLCSP); the face plate's sound column presses its gasket on the board round the mic | D-83 |
 | Supplied steel plate (cut piece) | its own adhesive in the pocket-floor recess; cut with the hacksaw guide | D-43, D-52 |
 
@@ -63,7 +63,7 @@ tape. Nothing here is a compliance statement; mains work is a human decision (SA
 | Cap board | in the carrier's rim, four M2 × 6 screws into the carrier; the 5 V board's sensor pins press up on its pads | D-56, D-70 |
 | MSR-2 board | CN2 on the cap board and three 1.5 mm SMT spacers under its board; three posts on the face plate press its board onto the spacers (the skin stands 1.3 mm clear of its front) | D-67, D-70 |
 | Microphone, ADAU7002 | soldered on the cap board (PCBWay assembly); the face plate's sound column on its gasket round the mic | D-83 |
-| SHT45 | soldered on the cap board under its vents | D-56 |
+| SHT40 | soldered on the cap board under its vents | D-56 |
 
 ## Order of work for the EU mains board
 

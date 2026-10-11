@@ -17,7 +17,7 @@ v0.4 (DESIGN D-50, D-68): the printed insert and face plate, the wiring board an
                        its land on the ring board. UL94 V-0 filament.
   trim    (trim.py)    face plate, a plain cover: radar skin, bays, vents, sound hole. Any filament, face-down.
   board   (pcb/)       wiring board; positions mirrored below and compared by checks.py.
-  ring    (ring.py)    ring board round the insert's plug: MSR-2 on CN2, SHT45, mic carrier, 5 V FFC in; the
+  ring    (ring.py)    ring board round the insert's plug: MSR-2 on CN2, SHT40, mic carrier, 5 V FFC in; the
                        riser with the battery-free remote's two spring pins (pcb/sensor/).
 Also printed: the replacement back cover (backcover.py), coupons (coupons.py), steel plate jigs (plate_jig.py).
 """
@@ -27,7 +27,7 @@ from math import sqrt, hypot
 PW, PH, PT, PR = 72.2, 131.75, 14.4, 6.0  # width (the flange plus clearance and skin), height, proud of wall, corner
                                           # radius; PT = ring board + CN2 stack + MSR-2 + skin gap + radar skin (D-51,
                                           # D-66, checked)
-PLATE_Y = 7.175                           # plate centre above the box centre (MSR-2 bay top, SHT45 bay bottom)
+PLATE_Y = 7.175                           # plate centre above the box centre (MSR-2 bay top, SHT40 bay bottom)
 SKIN = 2.0                                # face/side wall of the hollow trim
 FACE_CHAMFER = 1.2
 
@@ -191,14 +191,14 @@ RADAR_WALL = 0.6                          # radar skin over the MSR-2 bay: three
 LUX_POS = (12.0, 0.0)                     # MEASURE light sensor offset from bay centre
 
 # ---- face plate bays and edge vents (NA and EU) ----
-BAY_WALL = 1.6                            # MSR-2 and SHT45 bay frame wall
+BAY_WALL = 1.6                            # MSR-2 and SHT40 bay frame wall
 MSR_BAY_R = 1.0                           # MSR-2 bay frame inside corner radius
-SHT_BAY_CLR, SHT_BAY_R = 0.4, 0.5         # SHT45 bay frame: inside clearance round SHT (each side), corner radius
+SHT_BAY_CLR, SHT_BAY_R = 0.4, 0.5         # SHT40 bay frame: inside clearance round SHT (each side), corner radius
 MSR_VENTS = (5, 7.0, 1.5, 3.0, 6.0)       # vents through the top edge: count, pitch, x offset, slot width, depth (y)
-SHT_VENTS = (3, 4.0, 2.0, 6.0, 10.0)      # SHT45 vents: count, pitch, slot width, face slot length, edge slot depth
+SHT_VENTS = (3, 4.0, 2.0, 6.0, 10.0)      # SHT40 vents: count, pitch, slot width, face slot length, edge slot depth
 
-# ---- SHT45 bay ----
-SHT = (12.0, 8.0, 4.0)                    # SHT45 bay (the SHT45 DFN on the ring board below it, D-50)
+# ---- SHT40 bay ----
+SHT = (12.0, 8.0, 4.0)                    # SHT40 bay (the SHT40 DFN on the ring board below it, D-50)
 
 # ---- 5 V cable: wiring board J2 -> pass-through -> ring board J1 (D-50) ----
 # A stock FFC (6 contacts, 0.5 mm pitch) latched in Hirose FH12-6S-0.5SH slide-lock connectors at both ends: J2 on the
@@ -209,7 +209,7 @@ FH12 = (6.1, 5.6, 2.0)                    # REF FH12-6S body (x, y, height): KiC
 JUMPER_W = 3.5                            # FFC width (6 contacts at 0.5)
 JUMPER_END = (3.5, 4.0, 0.3)              # FFC contact end: width, stiffened length, thickness (FH12 FPC spec)
 JUMPER_T = 0.12                           # FFC thickness
-JUMPER_STOCK_L = 152.0                    # DATASHEET Wurth WR-FFC 687606152002: length
+JUMPER_STOCK_L = 152.0                    # DATASHEET GCT 05-06-A-0152-A-4-06-4-G (or Wurth 687606152002): length
 JUMPER_SLACK = (2.0, 10.0)                # spare length the route may leave (it bows in the free span): min, max
 JUMPER_SPARE = 4.0                        # spare length the fold is sized to leave
 JUMPER_FOLD_Y = 43.4                      # fold's centre line (room y): on the ring board between the flange and J1
@@ -234,7 +234,7 @@ MSR2_FRONT = max(MSR_BOARD_T + MSR2_CN1_STACK + MSR2_CO2_BOARD[2] + MSR2_SCD[2],
                  MSR2_LD_BACK + MSR2_LD_T + max(MSR2_LD_PARTS, MSR2_LD_PINS[3]))   # front above the board's back
 MSR = (40.0, 24.0, MSR2_FRONT)            # envelope (x, y from Apollo's case outside, height from the model)
 FLEX_T = 0.12                             # single-layer polyimide flex (back cover)
-SHT_CHIP = (1.5, 1.5, 0.5)                # DATASHEET Sensirion SHT45 DFN-4 body
+SHT_CHIP = (1.5, 1.5, 0.5)                # DATASHEET Sensirion SHT40 DFN-4 body
 # spring fingers: Harwin S7081-42R (the back cover's end contacts; EU)
 FINGER = (3.18, 6.25)                     # DATASHEET S7081-42R body w x l (drawing S7081-42R iss. 7)
 FINGER_PAD = (3.60, 6.65)                 # DATASHEET recommended pad layout
@@ -255,11 +255,11 @@ MIC_TUBE = (1.6, 0.3)                     # face plate's sound column: bore, gas
 MIC_BOOT = (0.2, 0.8, 0.3)                # boot over the mic: clearance round the body, wall, gap over its top
 ADAU = (0.76, 1.56, 0.56)                 # DATASHEET ADAU7002 WLCSP CB-8-6 (rev C): w x l nominal, max height
 # parts round the port: offset from the port (room x, y), body w, h, max height (C4 0402, 0.5 +-0.05 high; C3 1206 C0G,
-# KEMET C1003_C0G 2/20/2025: 3.20 x 1.60 +-0.20, thickness code EH 1.60 +-0.20)
+# Murata GRM3195C1H104JA05D: 3.2 x 1.6, 0.95 max (DigiKey, D-98))
 MIC_PARTS = {"U2": ((-4.1, -0.2), ADAU),                  # ADAU7002, ball A1 top left
              "C4": ((-5.2, -1.08), (0.5, 1.0, 0.55)),     # ADAU7002 100 nF on IOVDD
              "R1": ((-7.5, -0.6), (1.0, 0.5, 0.40)),      # I2S SD pull-down 100 k (ADAU7002 tristates SDATA)
-             "C3": ((3.5, -2.525), (1.6, 3.2, 1.8))}      # microphone 100 nF C0G, outside the column's foot, pin 1 on the bus
+             "C3": ((3.5, -2.525), (1.6, 3.2, 0.95))}     # microphone 100 nF C0G, outside the column's foot, pin 1 on the bus
 MIC_SPAN = (9.6, 4.5)                     # board room the mic and its parts and lanes take left / right of the port
 
 # ---- ring board (D-50, D-68): FR4 round the insert's collar, against the wall, under the face plate ----
@@ -273,13 +273,13 @@ RING_RIBS = (("x", 22.0), ("y", 14.0))    # ribs on each straight side: along x 
 RING_R = 3.4                              # outer corner radius
 RING_KEEP = 8.0                           # copper path from the box opening's edge, along the wall (front layer: plus
                                           # the board's edge, RING_T); mains to 5 V target as on the wiring board (D-24)
-SHT_AT = (0.0, -51.3)                     # SHT45 on the ring board (room x, y), in the face plate's vented bay
+SHT_AT = (0.0, -51.3)                     # SHT40 on the ring board (room x, y), in the face plate's vented bay
 RING_NUT = (4.35, 1.5)                    # DATASHEET Wurth WA-SMSI M2 L1.5 9774015243R (SMT spacer): body diameter,
                                           # height; three under the MSR-2's board (D-68)
 RING_NUT_HOLE, RING_NUT_PAD = 3.0, 5.3    # DATASHEET 9774015243R: unplated hole for its spigot, solder pad diameter
 # small parts on the ring board: centre (room x, y), body w, h, max height
 RING_SMALL = {"C1": ((21.0, 50.6), (1.6, 3.2, 1.8)),     # 22 uF 16 V 1206 at J1 (KEMET C1206C226M4PACTU, 1.8 max: DigiKey, D-95)
-              "C2": ((2.6, -51.3), (0.5, 1.0, 0.55)),    # SHT45 100 nF 0402 (0.5 +-0.05)
+              "C2": ((2.6, -51.3), (0.5, 1.0, 0.55)),    # SHT40 100 nF 0402 (0.5 +-0.05)
               **{k: ((MIC_AT[0] + dx, MIC_AT[1] + dy), s) for k, ((dx, dy), s) in MIC_PARTS.items()}}
 
 # ---- battery-free remote (D-50): two spring pins from the wiring board's 5 V area to the back cover's pads ----
@@ -446,7 +446,7 @@ _r = POCKET_OUT[0] / 2
 _cx, _cy = PLUG[0] / 2 - PLUG_R * (1 - 0.7071), PLUG[1] / 2 - PLUG_R * (1 - 0.7071)
 TAPER_D = round(hypot(_cx, _cy - (POCKET_OUT[1] / 2 - _r)) - _r + 0.6, 1)
 
-# MSR-2 bay sits just above the top screw (boss + countersink), SHT45 bay as before
+# MSR-2 bay sits just above the top screw (boss + countersink), SHT40 bay as before
 MSR_Y = SCREW_PITCH / 2 + max(BOSS_R + SPLIT_CLR, SCREW_HEAD_D / 2 + 1.0) + MSR[1] / 2 + CLR
 MSR_BACK_Z = RING_T + B2B_STACK         # MSR-2 board back (CN2 side): on CN2 on the ring board, MSR_SKIN_GAP under the skin
 MSR_CN2_X = MSR_BOARD[0] / 2 - MSR_CN2_IN

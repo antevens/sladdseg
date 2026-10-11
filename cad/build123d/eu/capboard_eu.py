@@ -6,7 +6,7 @@ on the wall first: a lip on its wall face reaches under the cap's edge, the cap'
 teeth in gaps in the lip stop it turning (D-71). The 5 V board's two sensor spring pins come up through the cap
 and the carrier onto gold pads under the board, level with the battery-free pins' pads on the back cover. On the board,
 as on the NA ring board: the MSR-2 on its CN2 mate and three SMT spacers under the face plate's posts, the top-port
-microphone and its ADAU7002 (D-83), the SHT45 under its vents. The face plate's four snap fingers drop into closed windows in the
+microphone and its ADAU7002 (D-83), the SHT40 under its vents. The face plate's four snap fingers drop into closed windows in the
 board and the carrier at the corners and catch grooves in the carrier (D-77).
 Run:  python capboard_eu.py  -> ../../../build/eu/carrier.step / .stl
 """

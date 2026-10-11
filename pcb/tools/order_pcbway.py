@@ -53,12 +53,12 @@ BOARDS = [
     dict(name="ring_board", pcb="pcb/sensor/kicad/ring_board.kicad_pcb", fab=None, tables=[("NA", "ring board")],
          finish="ENIG", proto=CN2_PROTO, layers=RIGID, skip={"J2"},
          notes=["Copper keeps 8 mm from the box opening (do not let PCBWay add copper fill there)",
-                "Fit test: outline, crush-rib window, spacers H1-H3, SHT45, FFC connector J1; microphone MK1 "
+                "Fit test: outline, crush-rib window, spacers H1-H3, SHT40, FFC connector J1; microphone MK1 "
                 "and the ADAU7002 U2 (WLCSP 0.4 mm pitch: order this board with PCBWay assembly, option A, either way)"]),
     dict(name="eu_cap_board", pcb="pcb/sensor/kicad/eu_cap_board.kicad_pcb", fab=None, tables=[("EU", "cap board")],
          finish="ENIG", proto=CN2_PROTO, layers=RIGID, skip={"J2"},
          notes=["Closed snap windows at the corners (routed cut-outs inside the outline): do not omit",
-                "Fit test: outline, snap windows, screws, spacers H5-H7, SHT45, sensor pin pads; microphone MK1 "
+                "Fit test: outline, snap windows, screws, spacers H5-H7, SHT40, sensor pin pads; microphone MK1 "
                 "and the ADAU7002 U2 (WLCSP 0.4 mm pitch: order this board with PCBWay assembly, option A, either way)"]),
     dict(name="cover_flex", pcb="pcb/sensor/kicad/cover_flex.kicad_pcb", fab=None,
          tables=[("NA", "cover flex"), ("EU", "cover flex")], finish="ENIG",
@@ -250,7 +250,7 @@ def write_readme(rows, plates):
           "1. pcbway.com → PCB Instant Quote (the cover flex: Flex PCB). Upload the Gerber zip, fill the board "
           "settings from the table.",
           "2. Optional: add a stencil (framework-less, top) for the boards with SMD parts: the paste layers are in "
-          "the Gerbers. The microphone (LGA), the SHT45 (DFN), the WA-SMSI posts and spacers and the P70 spring "
+          "the Gerbers. The microphone (LGA), the SHT40 (DFN), the WA-SMSI posts and spacers and the P70 spring "
           "pins are reflow parts (hot plate or hot air with paste). The ADAU7002 (WLCSP-8, 0.4 mm pitch) is not a "
           "hand part: order the ring board and the EU cap board with PCBWay assembly (option A) even here.",
           "3. Buy every part: `parts_digikey.csv` / `parts_mouser.csv` (and the `_rest_` file).", "",

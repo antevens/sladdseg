@@ -165,8 +165,8 @@ def solids(cap, tr):
 
 
 def sensors(cap, tr):
-    """Cap board, carrier, MSR-2, microphone, SHT45 (D-56, D-70): pin heights, stack, clearances."""
-    print("cap board, MSR-2, microphone, SHT45 (D-56, D-59, D-70)")
+    """Cap board, carrier, MSR-2, microphone, SHT40 (D-56, D-70): pin heights, stack, clearances."""
+    print("cap board, MSR-2, microphone, SHT40 (D-56, D-59, D-70)")
     lo, hi = EU_PIN_WH - PIN_TOL, EU_PIN_WH + PIN_TOL
     check(lo >= PIN_WH[0] - 1e-6 and hi <= PIN_WH[2] + 1e-6,
           f"all four spring pins at {EU_PIN_WH} mm working height, +-{PIN_TOL} -> {lo:.1f}..{hi:.1f} inside "

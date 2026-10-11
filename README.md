@@ -1,7 +1,7 @@
 # Smart wall plate
 
 Replacement for a single-gang light switch: recessed IKEA BILRESA remote, hidden
-emergency rocker, Apollo MSR-2 mmWave presence + SHT45 climate + a push-to-talk
+emergency rocker, Apollo MSR-2 mmWave presence + SHT40 climate + a push-to-talk
 microphone for Home Assistant voice, powered by a Mean Well IRM-03-5 on the wiring board.
 
 Start with `AGENTS.md` (for people too), then `docs/SAFETY.md`. `docs/PRINTING.md` lists the print
@@ -64,7 +64,7 @@ the sensors and the automations could not control them.
 
 Shaded views of the assembly: face plate (white), box insert (grey), BILRESA remote (model), Marquardt
 1802.2504 rocker (red), wiring board (green, KiCad model), ring board (green) on the insert's collar
-with the MSR-2 (black), the microphone and the SHT45, nylon board standoffs. Regenerate with `make renders`.
+with the MSR-2 (black), the microphone and the SHT40, nylon board standoffs. Regenerate with `make renders`.
 
 | Front | Remote lifted out |
 | --- | --- |
@@ -80,12 +80,12 @@ posts, the four nylon board standoffs (D-57), wiring board.
 ![v0.4 exploded assembly](docs/renders/v0.4_exploded.png)
 
 Face plate lifted off (see-through): it carries nothing but plastic; the ring board, the MSR-2, the
-microphone and the SHT45 stay on the insert (D-50, D-68).
+microphone and the SHT40 stay on the insert (D-50, D-68).
 
 ![v0.4 face plate lifted off](docs/renders/v0.4_face_off.png)
 
 Ring board from the front, red where copper may not go (8 mm along the wall from the box opening): the
-MSR-2 on CN2 and three SMT spacers, J1 for the FFC, the microphone and its ADAU7002 at the top right, the SHT45 at
+MSR-2 on CN2 and three SMT spacers, J1 for the FFC, the microphone and its ADAU7002 at the top right, the SHT40 at
 the bottom.
 
 ![v0.4 ring board](docs/renders/v0.4_ring.png)
@@ -161,7 +161,7 @@ the rocker's PCB seat (rocker, two WAGO push-in blocks, fuse, MOV, PSU over a ro
 5 V island with a header) and a 5 V board just under the cap (pin socket on the header, four spring pins
 up through the cap: two for the battery-free back cover, two onto a cap board). The sensors sit on the
 cap side, nothing in the face plate and no flex (D-56, D-59, D-70): a 1.6 mm FR4 cap board in a printed
-carrier with the MSR-2 on its CN2 mate and three SMT spacers, the microphone and the SHT45, as on the NA ring
+carrier with the MSR-2 on its CN2 mate and three SMT spacers, the microphone and the SHT40, as on the NA ring
 board. The carrier goes on the wall first; the cap's edge pins its lip to the wall and the cap's teeth stop it
 turning (D-71). The face plate snaps into the carrier: four fingers at the corners catch grooves in closed, keyed
 windows (D-77). The plate is 84.6 × 122.4 mm, 19.0 mm thick (D-70, D-78). Box values are catalogue placeholders
@@ -175,7 +175,7 @@ until measured; the stack reaches 43.8 mm deep, to be tried in the printed test 
 ![EU exploded](docs/renders/eu_exploded.png)
 
 The sensors' side with the face plate and remote off: the carrier round the cap, the cap board in it with the MSR-2 on
-CN2 and its spacers, the microphone, the SHT45.
+CN2 and its spacers, the microphone, the SHT40.
 
 ![EU sensors](docs/renders/eu_sensors.png)
 
@@ -245,7 +245,7 @@ through the VBAT contact: the finger on the end section, its dome on the remote'
 KiCad projects in `pcb/sensor/` (D-50). Ring board: the microphone and the ADAU7002 at the top right (D-83), I²S and
 +5V on the front, SDA, SCL and +3V3 across the
 top band on the back to the right rail, down the rail on the front round the box's corner keep-out to the
-SHT45; GND pours (the left rail carries GND). The CN2 mate and its map are placeholders: no fab files yet.
+SHT40; GND pours (the left rail carries GND). The CN2 mate and its map are placeholders: no fab files yet.
 
 | Ring board, front | Ring board, back |
 | --- | --- |

@@ -26,7 +26,7 @@ bulb. Bulbs stay powered; control is wireless. Each plate holds:
   the face plate; 5 V from the wiring board over a stock FFC. On it:
   - an **Apollo MSR-2** (ESP32-C3 + LD2410B mmWave, ESPHome over Wi-Fi) on its
     rear connector (CN2), in a bay above the remote behind a 0.6 mm radar skin (D-51);
-  - an **SHT45** temp/humidity sensor in its own vented bay below the remote
+  - an **SHT40** temp/humidity sensor in its own vented bay below the remote
     (I²C from the MSR-2);
   - a **top-port PDM MEMS microphone** (Knowles SPK0641HT4H-1) with an **ADAU7002**
     PDM-to-I²S converter beside it (the ESP32-C3 has no PDM input), under the face
@@ -49,7 +49,7 @@ docs/                DESIGN (requirements + decisions), SAFETY, BOM,
 cad/build123d/       ACTIVE parametric CAD (Python, build123d)
   params.py          single source of truth for ALL geometry
   insert.py          box insert (ALL barrier geometry, rocker panel, UL94 V-0)
-  trim.py            trim plate (face, MSR-2 / SHT45 bays)
+  trim.py            trim plate (face, MSR-2 / SHT40 bays)
   standoff.py        wiring board standoffs: Keystone 25503 nylon M3, screwed into the insert's bosses (D-57)
   ring.py            ring board, its parts and microphone, riser board, spring pins, spacer posts (D-50)
   jumper.py          5 V FFC: wiring board J2 (FH12) -> pass-through -> ring board J1 (D-50)
@@ -282,7 +282,7 @@ The decision log in `docs/DESIGN.md` (D-50..D-79 for v0.4) has the history.
 
 NA: box insert (PC-FR barrier) and passive face plate; wiring board (rocker, WAGO block, PSU,
 J2) on four nylon standoffs (D-57), ERC/DRC clean, PCBWay pack in `pcb/fab/`; ring board on the
-insert's collar (crush ribs, D-68) with the MSR-2 on CN2, the SHT45 and the microphone + ADAU7002 (D-83); 5 V over
+insert's collar (crush ribs, D-68) with the MSR-2 on CN2, the SHT40 and the microphone + ADAU7002 (D-83); 5 V over
 a stock FFC through one straight bore (D-74); battery-free remote on two Harwin P70 spring pins
 from a riser on two spacer posts (D-59, D-60, D-79).
 
@@ -317,7 +317,7 @@ the cover flex's fab files (`COVER_CONFIRMED`), PC-FR datasheet (`V0_RATED_T`), 
 4. Dry-fit prints (PLA insert + trim) in a real box; check the corner taper vs
    box ears and the wire room behind the board. Then the PC-FR insert.
 5. Rocker feel: confirm the panel thickness and that the latches hold.
-6. ESPHome YAML for MSR-2 + SHT45 + microphone (starting point in
+6. ESPHome YAML for MSR-2 + SHT40 + microphone (starting point in
    `pcb/sensor/README.md`), once the CN2 contact map is known.
 7. Later: UK (86 mm, shallow back box) variant; versions for the BILRESA
    dual-button remote (E2489, outline and cells recorded from IKEA's drawing);

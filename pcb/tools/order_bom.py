@@ -32,7 +32,7 @@ DIGIKEY = {
     "C1206C226M4PACTU": "399-12290-1-ND",             # DigiKey API 2026-10-11 (D-95)
     "FH12-6S-0.5SH(55)": "HFJ106CT-ND",
     "S7081-42R": "952-1734-1-ND",
-    "SHT45-AD1B-R2": "1649-SHT45-AD1B-R2CT-ND",
+    "SHT40-AD1B-R2": "1649-SHT40-AD1B-R2CT-ND",
     "GRM155R71C104KA88J": "490-6328-1-ND",             # KA88D: 0 at DigiKey (API 2026-10-11)
     "SPK0641HT4H-1": "6017-SPK0641HT4H-1CT-ND",           # DigiKey listing, 2026-10-11
     "RC0402FR-07100KL": "311-100KLRCT-ND",
@@ -45,7 +45,8 @@ DIGIKEY = {
     "RA412C1100": "EG5628-ND",                 # DigiKey API 2026-10-11 (584, 9 wk)
     "221-412": "2946-221-412-ND",              # DigiKey API 2026-10-11 (bulk)
     "ADAU7002ACBZ-R7": "505-ADAU7002ACBZ-R7CT-ND",   # cut tape (DigiKey cart, API 2026-10-11)
-    "C1206C104J3GACTU": "399-C1206C104J3GACTUCT-ND", # cut tape (DigiKey cart, API 2026-10-11)
+    "GRM3195C1H104JA05D": "490-GRM3195C1H104JA05DCT-ND",   # DigiKey API 2026-10-11 (D-98)
+    "05-06-A-0152-A-4-06-4-G": "2073-05-06-A-0152-A-4-06-4-G-ND",   # DigiKey API 2026-10-11 (D-98)
 }
 # Mouser's own numbers where its BOM import does not match the MPN (search results 2026-10-09); None: not
 # carried by Mouser (import reported no match), those go to <name>_mouser_rest_digikey.csv
@@ -72,7 +73,7 @@ EXTRA_NA = {
                 "4 mm hex: spacer post, wiring board P2 to the riser"),
     **{f"SO{i}": dict(mfr="Keystone", mpn="25503", fp="standoff", desc="Nylon M3 male-female hex standoff, 15 mm, "
                       "5.0 mm hex: wiring board to the insert (D-57)") for i in range(1, 5)},
-    "W1": dict(mfr="Wurth Elektronik", mpn="687606152002", fp="FFC", desc="FFC 0.5 mm, 6 contacts, 152 mm, Type 1: "
+    "W1": dict(mfr="GCT", mpn="05-06-A-0152-A-4-06-4-G", fp="FFC", desc="FFC 0.5 mm, 6 contacts, 152 mm, Type 1: "
                "wiring board J2 to the ring board J1"),
 }
 # EU parts that are not on a board (D-94): the lights' protective earth, joined in the box

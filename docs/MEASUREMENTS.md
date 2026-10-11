@@ -49,7 +49,7 @@ REF (published or third-party reference value in use until measured).
 | — | MSR-2 current draw at 5 V (sizes the sensor board's input protection) | USB meter, radar on | | TODO |
 | LUX_POS | LTR-390 offset from board centre, and which face it is on (Apollo's backplate has a 2.4 mm square window at about (16.7, −8.5) from the centre, at a small windowed part on the board's back) | calipers, look at the board | (12.0, 0.0) placeholder; the grille's middle slot is centred on it (D-69) | TODO |
 | — | MSR-2 radar antenna position on board | photo | | TODO |
-| SHT | face plate bay over the SHT45 (DFN-4, 1.5 × 1.5 × 0.5, datasheet) on the ring board: vents and clearance | on a print with the ring board | 12.0 × 8.0 × 4.0 (bay) | TODO |
+| SHT | face plate bay over the SHT40 (DFN-4, 1.5 × 1.5 × 0.5, datasheet) on the ring board: vents and clearance | on a print with the ring board | 12.0 × 8.0 × 4.0 (bay) | TODO |
 | BOX_D | box depth, per room | ruler to back wall | | TODO |
 | BOX_DIA (EU) | DIN 49073 box inside diameter (device opening) | calipers on a box | 60.0 (catalogue, e.g. Kaiser 1555-04) | TODO |
 | BOX_HOLE (EU) | box rim outer diameter (hole in the wall) | calipers on a box | 68.0 (catalogue) | TODO |

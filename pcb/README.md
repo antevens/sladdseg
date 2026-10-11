@@ -161,7 +161,7 @@ from the datasheet dimensions. Vendor files stay in the git-ignored `scratch/` (
 | Harwin S7081-42R | envelope (shape from the drawing) | <https://www.harwin.com/products/S7081-42R/> |
 | Knowles SPK0641HT4H-1 | envelope (top port marked) | <https://www.knowles.com/docs/default-source/model-downloads/spk0641ht4h-1-rev-a.pdf> |
 | Analog Devices ADAU7002 (WLCSP-8) | envelope | <https://www.analog.com/en/products/adau7002.html> |
-| Sensirion SHT45 (DFN-4) | envelope | <https://sensirion.com/products/catalog/SHT45> |
+| Sensirion SHT40 (DFN-4) | envelope | <https://sensirion.com/products/catalog/SHT40> |
 
 To use a vendor model: put its STEP in `scratch/3d/`, add the file name and its transform to the
 entry in `tools/gen_3d.py`, run `make pcb`, and check the pins against the pads (export the board

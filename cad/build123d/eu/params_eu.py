@@ -1,6 +1,6 @@
 """EU variant (D-30): geometry for a round EU flush box (DIN 49073, 68 mm hole saw, Ø60 inside).
 
-A design of its own (shares only the BILRESA, the MSR-2, the SHT45 and the microphone with the NA
+A design of its own (shares only the BILRESA, the MSR-2, the SHT40 and the microphone with the NA
 plate). Coordinates as in params.py, origin = box centre = remote centre: X width, Y up, Z out of
 the wall, z = 0 the wall surface, z < 0 inside the box (MAINS SIDE).
 
@@ -21,7 +21,7 @@ the wall, z = 0 the wall surface, z < 0 inside the box (MAINS SIDE).
 - The sensors sit on a cap board in a printed carrier on the wall round the cap; the cap's edge pins
   the carrier to the wall (D-56, D-70, D-71).
 - The face plate (PETG) carries everything visible: face, remote pocket walls, finger scoops, MSR-2
-  and SHT45 bays. Four fingers snap into closed windows in the carrier (D-77).
+  and SHT40 bays. Four fingers snap into closed windows in the carrier (D-77).
 """
 import sys
 from pathlib import Path
@@ -83,9 +83,9 @@ SNAP_GROOVE = (0.2, 1.4)                  # groove in the window's outer wall: z
 SNAP_TIP_Z = 0.2                          # finger tip over the wall
 SNAP_CLR = 0.15                           # finger to its window (tangential and radial)
 SNAP_WEB = 1.6                            # carrier between its bore and each snap window
-MSR_GAP = 1.0                             # pocket walls / cap to the MSR-2 and SHT45 bay frames
+MSR_GAP = 1.0                             # pocket walls / cap to the MSR-2 and SHT40 bay frames
 BAY_EDGE = 1.0                            # bay frames to the face plate's inner wall (top and bottom)
-EU_VENT_Z = (6.0, 5.0, 6.0)               # edge vents: centre height at the top (MSR-2) and bottom (SHT45) edges, height
+EU_VENT_Z = (6.0, 5.0, 6.0)               # edge vents: centre height at the top (MSR-2) and bottom (SHT40) edges, height
 
 # ---- sensors (D-56, D-59, D-70): cap board in a printed carrier, the MSR-2 on its CN2 mate and three spacers ----
 # All four spring pins on the 5 V board are the NA part (params.py PIN_*, Harwin P70-2200045) at one working height:

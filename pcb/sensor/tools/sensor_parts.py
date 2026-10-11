@@ -4,7 +4,7 @@ Geometry comes from cad/build123d/params.py. All coordinates are room front view
 board says otherwise.
 
 Ring board: 1.6 mm FR4, two layers, round the insert's collar against the wall (pressed onto its crush ribs, D-68).
-The MSR-2 on CN2 and three SMT spacers, J1 for the 5 V FFC from the wiring board, the SHT45, the top-port PDM
+The MSR-2 on CN2 and three SMT spacers, J1 for the 5 V FFC from the wiring board, the SHT40, the top-port PDM
 microphone and the ADAU7002 that turns its PDM into I2S on CN2 (D-83). Front copper keeps
 RING_KEEP - RING_T (plan) from the box opening, back copper RING_KEEP: the sides carry front copper only.
 
@@ -57,7 +57,7 @@ FP_FINGER = "Harwin_S7081-42R"
 FP_SHT = "Sensirion_DFN-4_1.5x1.5mm_P0.8mm_SHT4x_NoCentralPad"
 FP_C = "C_0402_1005Metric"
 FP_C1206 = "C_1206_3216Metric"
-C0G_DS = "https://content.kemet.com/datasheets/KEM_C1003_C0G_SMD.pdf"
+C0G_DS = "https://pim.murata.com/asset/pim4/ceramicCapacitorSMD/GRM3195C1H104JA05-01A-EN_PDF_CERAMICCAPACITORSMD"
 FP_R = "R_0402_1005Metric"
 FP_SOT = "SOT-23-5"
 FP_FH12 = "Hirose_FH12-6S-0.5SH_1x06-1MP_P0.50mm_Horizontal"
@@ -119,7 +119,7 @@ def mic_parts(port):
         "R1": dict(label="100k", sym="R", fp=FP_R, value="100k", nets={"1": "I2S_SD", "2": "GND"}, pos=pos("R1"),
                    mfr="any", mpn="0402 1% 100 kOhm", desc="I2S SD pull-down (ADAU7002 tristates SDATA)", ds=""),
         "C3": dict(label="100nF C0G", sym="C", fp=FP_C1206, value="100nF C0G", nets={"1": "+3V3", "2": "GND"},
-                   pos=pos("C3"), mfr="KEMET", mpn="C1206C104J3GACTU", desc="Microphone decoupling, C0G 25 V 1206",
+                   pos=pos("C3"), mfr="Murata", mpn="GRM3195C1H104JA05D", desc="Microphone decoupling, C0G 50 V 1206",
                    ds=C0G_DS),
     }
 
@@ -191,11 +191,11 @@ RING_PARTS = {
                desc="SlimStack plug 24 contacts, 0.4 mm, 2 rows, mating the MSR-2's CN2 (assumed Molex 51338-2474, "
                     "1.5 mm mated; land pattern and contact map placeholders, D-82)",
                ds="https://www.molex.com/en-us/products/part-detail/559092474"),
-    "U1": dict(label="Sensirion SHT45", sym="SHT4x", fp=FP_SHT, value="SHT45",
+    "U1": dict(label="Sensirion SHT40", sym="SHT4x", fp=FP_SHT, value="SHT40",
                nets={"1": "SDA", "2": "SCL", "3": "+3V3", "4": "GND"}, pos=(*SHT_AT, 0), mfr="Sensirion",
-               mpn="SHT45-AD1B-R2", desc="Humidity and temperature sensor, I2C 0x44", ds=SHT_DS),
+               mpn="SHT40-AD1B-R2", desc="Humidity and temperature sensor, I2C 0x44", ds=SHT_DS),
     "C2": dict(label="100nF", sym="C", fp=FP_C, value="100nF", nets={"1": "+3V3", "2": "GND"}, pos=_small("C2"),
-               mfr="any", mpn="0402 X7R 100 nF 16 V", desc="SHT45 decoupling", ds=""),
+               mfr="any", mpn="0402 X7R 100 nF 16 V", desc="SHT40 decoupling", ds=""),
     **mic_parts(MIC_AT),
 }
 for i, (x, y) in enumerate(MSR_SPACERS):

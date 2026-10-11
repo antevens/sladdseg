@@ -29,7 +29,7 @@ def main():
              (rp["ring"], "ring_placed", "darkgreen", "ring board"),
              (rp["msr"], "msr_placed", "dimgray", "MSR-2 with CO2 add-on (model)"),
              (rp["cn2"] + rp["j1"] + rp["sht45"] + rp["passives"] + rp["mic"] + rp["spacers"],
-              "ring_parts_placed", "gold", "ring board parts (CN2, J1, SHT45, mic, spacers)"),
+              "ring_parts_placed", "gold", "ring board parts (CN2, J1, SHT40, mic, spacers)"),
              (rp["riser"] + rp["pins"] + rp["posts"] + rp["screws"], "riser_placed", "darkorange",
               "riser, spring pins, spacer posts"),
              (jumper.build()["jumper"], "ffc_placed", "cyan", "5 V FFC"),
@@ -40,13 +40,13 @@ def main():
              (standoff.placed(), "standoffs_placed", "sienna", "board standoffs + screws (nylon, D-57)")]
     args = [f"{stl(part, name)}:{col}|{label}" for part, name, col, label in parts]
     x5, y5 = BC_FINGERS[0]
-    cuts = ["x=0#long section: MSR-2 on CN2, remote, rocker well, SHT45, wiring board",
+    cuts = ["x=0#long section: MSR-2 on CN2, remote, rocker well, SHT40, wiring board",
             f"x={x5}#spring pins: riser on its posts, pocket floor, back cover pads, CN2",
             f"y={MSR_Y}@-38,38,-6,18#MSR-2 on CN2 on the ring board, 0.6 mm radar skin",
             f"y={SW_Y}#rocker well, wiring board, WAGO block",
             f"y={y5}@-8,32,-30,16#+5V spring pin from the riser through the pocket floor",
             f"y={PASS_E[1]}#5 V FFC through the pass-through",
-            f"y={SHT_AT[1]}@-38,38,-6,18#SHT45 on the ring board under its vents",
+            f"y={SHT_AT[1]}@-38,38,-6,18#SHT40 on the ring board under its vents",
             f"z={RING_T / 2}#ring board on the insert's collar, crush ribs at its window",
             f"z={WB_FRONT_Z - WB[2] / 2}#wiring board: posts, spacer posts, J2"]
     tool = [sys.executable, str(ROOT / "cad" / "tools" / "sections.py")]

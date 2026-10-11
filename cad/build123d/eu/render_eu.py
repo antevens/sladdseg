@@ -44,7 +44,7 @@ def main():
            "mains_board": -45, "mains_front": -45, "header": -45, "psu": -45, "wago": -45}
     ex = {k: Pos(0, 0, off[k]) * v for k, v in ps.items() if k in off}
     r3.shot("eu_exploded", ex, [(300, -240, 120), (0, 0, -5), (0, 1, 0)], size=(1400, 1300), head=0.8)
-    # the sensors' side on the cap: carrier, cap board with the MSR-2 on CN2 and its spacers, the mic, SHT45
+    # the sensors' side on the cap: carrier, cap board with the MSR-2 on CN2 and its spacers, the mic, SHT40
     r3.shot("eu_sensors", ps, [(150, -110, 170), (5, 20, 6), (0, 1, 0)], size=(1400, 1200),
             hide=("trim", "remote", "box"), head=0.9, alpha={"cap": 0.5, "msr": 0.6})
     # cut through the sensor pins: 5 V board, pins through the cap and the carrier onto the cap board's pads

@@ -1,6 +1,6 @@
 """TRIM PLATE (face plate) - a plain cover (v0.4, D-50, D-51): face, thin radar skin over the MSR-2 with posts onto its
-board (D-66), SHT45 bay, vents, vents over the CO2 sensor, the microphone's sound hole and sound
-column (D-83). No electronics and no contacts: the MSR-2, the SHT45 and the mic sit on the
+board (D-66), SHT40 bay, vents, vents over the CO2 sensor, the microphone's sound hole and sound
+column (D-83). No electronics and no contacts: the MSR-2, the SHT40 and the mic sit on the
 ring board on the insert's collar (D-68).
 
 Low-voltage side only: it carries no barrier duty. Any filament (PETG/ASA).
@@ -34,7 +34,7 @@ def build():
     shell = chamfer(shell.edges().group_by(Axis.Z)[-1], FACE_CHAMFER)
     shell -= Pos(0, PLATE_Y, 0) * slab(rr(PW - 2 * SKIN, PH - 2 * SKIN, PR - SKIN), -1, PT - SKIN)
     body = shell
-    # MSR-2 and SHT45 bay frames, down to just over the ring board's parts
+    # MSR-2 and SHT40 bay frames, down to just over the ring board's parts
     z0 = FRAME_Z0                                       # over the ring board's parts (D-68)
     sb = (SHT[0] + 2 * SHT_BAY_CLR, SHT[1] + 2 * SHT_BAY_CLR)
     body += frame(MSR_BAY[0], MSR_BAY[1], BAY_WALL, MSR_BAY_R, z0, PT, MSR_Y)

@@ -3794,7 +3794,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "SHT45"
+		(property "Value" "SHT40"
 			(at 160.48 99.94 0)
 			(effects
 				(font
@@ -3839,7 +3839,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "SHT45-AD1B-R2"
+		(property "MPN" "SHT40-AD1B-R2"
 			(at 157.48 91.44 0)
 			(effects
 				(font
@@ -4070,7 +4070,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "SHT45 decoupling"
+		(property "Description" "SHT40 decoupling"
 			(at 198.12 91.44 0)
 			(effects
 				(font
@@ -5558,7 +5558,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://content.kemet.com/datasheets/KEM_C1003_C0G_SMD.pdf"
+		(property "Datasheet" "https://pim.murata.com/asset/pim4/ceramicCapacitorSMD/GRM3195C1H104JA05-01A-EN_PDF_CERAMICCAPACITORSMD"
 			(at 157.48 157.48 0)
 			(effects
 				(font
@@ -5567,7 +5567,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Microphone decoupling, C0G 25 V 1206"
+		(property "Description" "Microphone decoupling, C0G 50 V 1206"
 			(at 157.48 157.48 0)
 			(effects
 				(font
@@ -5576,7 +5576,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "KEMET"
+		(property "Manufacturer" "Murata"
 			(at 157.48 157.48 0)
 			(effects
 				(font
@@ -5585,7 +5585,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "C1206C104J3GACTU"
+		(property "MPN" "GRM3195C1H104JA05D"
 			(at 157.48 157.48 0)
 			(effects
 				(font
@@ -6598,7 +6598,7 @@
 			)
 		)
 	)
-	(text "Ring board (docs/DESIGN.md D-50): FR4 1.6 mm round the insert's plug, against the wall.\nJ1: 5 V from the wiring board's J2 over a 6-way 0.5 mm FFC (pinout mirror-symmetric).\nJ2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin).\nU1: SHT45, I2C on the MSR-2 bus (SDA = IO1, SCL = IO0).\nMK1: top-port PDM microphone, SELECT low; U2: ADAU7002 PDM to I2S, CONFIG high = I2S (D-83).\nI2S to the MSR-2: SCK = IO4, WS = IO6, SD = IO7. Sample rate >= 16 kHz (PDM clock 64 x fs >= 1 MHz).\nH1-H3: SMT spacers under the MSR-2's board. Copper keeps 8 mm from the box opening."
+	(text "Ring board (docs/DESIGN.md D-50): FR4 1.6 mm round the insert's plug, against the wall.\nJ1: 5 V from the wiring board's J2 over a 6-way 0.5 mm FFC (pinout mirror-symmetric).\nJ2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin).\nU1: SHT40, I2C on the MSR-2 bus (SDA = IO1, SCL = IO0).\nMK1: top-port PDM microphone, SELECT low; U2: ADAU7002 PDM to I2S, CONFIG high = I2S (D-83).\nI2S to the MSR-2: SCK = IO4, WS = IO6, SD = IO7. Sample rate >= 16 kHz (PDM clock 64 x fs >= 1 MHz).\nH1-H3: SMT spacers under the MSR-2's board. Copper keeps 8 mm from the box opening."
 		(exclude_from_sim no)
 		(at 25 180 0)
 		(effects

@@ -13,8 +13,8 @@ WM3787CT-ND,55909-2474,Molex,1,WP EU J2,"SlimStack plug 24 contacts, 0.4 mm, 2 r
 505-ADAU7002ACBZ-R7CT-ND,ADAU7002ACBZ-R7,Analog Devices,1,WP EU U2,"Stereo PDM to I2S converter, WLCSP-8 0.4 mm; CONFIG high = I2S (1/plate EU; EU cap board U2)"
 490-6328-1-ND,GRM155R71C104KA88J,Murata,2,WP EU C4,Ceramic 100 nF 16 V X7R 0402 (2/plate EU; EU cap board C4; EU cap board C2)
 311-100KLRCT-ND,RC0402FR-07100KL,Yageo,1,WP EU R1,Resistor 100 kOhm 1 % 0402 (1/plate EU; EU cap board R1)
-399-C1206C104J3GACTUCT-ND,C1206C104J3GACTU,KEMET,1,WP EU C3,"Microphone decoupling, C0G 25 V 1206 (1/plate EU; EU cap board C3)"
-1649-SHT45-AD1B-R2CT-ND,SHT45-AD1B-R2,Sensirion,1,WP EU U1,"Humidity and temperature sensor, I2C 0x44 (1/plate EU; EU cap board U1)"
+490-GRM3195C1H104JA05DCT-ND,GRM3195C1H104JA05D,Murata,1,WP EU C3,"Microphone decoupling, C0G 50 V 1206 (1/plate EU; EU cap board C3)"
+1649-SHT40-AD1B-R2CT-ND,SHT40-AD1B-R2,Sensirion,1,WP EU U1,"Humidity and temperature sensor, I2C 0x44 (1/plate EU; EU cap board U1)"
 ,9774015243R,Wurth Elektronik,3,WP EU H5,"SMT steel spacer M2, 1.5 mm, tin (3/plate EU; EU cap board H5; EU cap board H6; EU cap board H7)"
 952-1734-1-ND,S7081-42R,Harwin,2,WP EU J3,"SMT spring finger, gold, 4 A, working height 2.0 mm (2/plate EU; EU cover flex J3; EU cover flex J4)"
 296-50411-1-ND,TLV75533PDBVR,Texas Instruments,1,WP EU U1,"LDO 3.3 V 500 mA, 1.45-5.5 V in, SOT-23-5 (1/plate EU; EU cover flex U1)"

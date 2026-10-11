@@ -331,7 +331,7 @@ def route_mic(bd, port):
 def build_eu_capboard():
     """EU cap board (D-70), as the NA ring board round CN2: I2S from CN2's upper row up, right, down and right into the
     microphone's parts (route_mic), +3V3 from the lower row down and right to their bus; SDA, SCL, +3V3 on the back down
-    the outer left edge (outside the snap windows and the screws) to the SHT45; +5V from the pin pad on the back up the
+    the outer left edge (outside the snap windows and the screws) to the SHT40; +5V from the pin pad on the back up the
     outer right edge and across to CN2; GND pours on both layers."""
     bd = Board(CTX, eu.CAPBOARD, 2, eu.E.CB_T, 0.12, 0.12, via_min=(0.45, 0.2))    # fine vias round CN2
     bd.outline(eu.CB_OUTER, eu.CB_OUTER_R)
@@ -365,13 +365,13 @@ def build_eu_capboard():
     bd.track("SCL", 0.12, [(pin["18"][0], lo), (pin["18"][0], lo - 0.45), (vscl[0], lo - 0.65), vscl])
     via("SDA", vsda)
     via("SCL", vscl)
-    # back: down, left above the pocket, down the outer left edge, right below the pocket to the SHT45
+    # back: down, left above the pocket, down the outer left edge, right below the pocket to the SHT40
     u = {n: bd.pad_xy("U1", n) for n in ("1", "2", "3", "4")}
     c2p, c2g = bd.pad_xy("C2", "1"), bd.pad_xy("C2", "2")
     xl = {"SCL": -34.8, "SDA": -34.3, "+3V3": -33.8}        # the lane leaving highest runs outermost
     yt = {"SCL": 44.6, "SDA": 44.0, "+3V3": 43.4}
     yb = {"SCL": -41.2, "SDA": -40.6, "+3V3": -40.0}
-    xv = {"SCL": -2.0, "SDA": -1.3, "+3V3": 4.2}            # vias to the front at the SHT45
+    xv = {"SCL": -2.0, "SDA": -1.3, "+3V3": 4.2}            # vias to the front at the SHT40
     for net, v in (("SCL", vscl), ("SDA", vsda), ("+3V3", v33)):
         bd.track(net, 0.2, [v, (v[0], yt[net]), (xl[net], yt[net]), (xl[net], yb[net]), (xv[net], yb[net])], B)
         bd.via(net, xv[net], yb[net])
@@ -503,7 +503,7 @@ def place_ring():
 def build_ring():
     """Ring board: CN2 fan-out on the front, I2S lanes up and right to the microphone's parts (route_mic), +3V3 from
     CN2 to their bus; SDA, SCL, +3V3 on the back across the top band to the right rail, down the rail on the front round
-    the box's corner keep-out and along the bottom band to the SHT45; +5V from J1 on the back to CN2; GND pours."""
+    the box's corner keep-out and along the bottom band to the SHT40; +5V from J1 on the back to CN2; GND pours."""
     bd = place_ring()
     F, B = P.F_Cu, P.B_Cu
     rule_area(bd, sp.KEEP_FRONT, F, "front copper keep-out: box opening + 6.4 mm")
@@ -589,11 +589,11 @@ def build_ring():
         elif net == "SDA":
             pts += [(-1.3, yl), (-1.3, u1["1"][1]), u1["1"]]   # into pin 1 from outside the sensor's keep-out
             bd.track(net, w, pts)
-        else:                                               # SCL: round the left of the SHT45 into pin 2
+        else:                                               # SCL: round the left of the SHT40 into pin 2
             pts += [(-2.0, yl), (-2.0, u1["2"][1]), u1["2"]]
             bd.track(net, w, pts)
     bd.track("GND", 0.2, [u1["4"], c2g])
-    vs = (c2g[0], c2g[1] + 1.1)                              # the SHT45's GND patch to the back pour
+    vs = (c2g[0], c2g[1] + 1.1)                              # the SHT40's GND patch to the back pour
     bd.track("GND", 0.25, [c2g, vs])
     for v in (vs, (-20.0, -50.0), (20.0, -50.0), (-20.0, 52.0), (-8.0, 68.5), (8.0, 68.5)):   # stitching, beside the switch notches
         bd.via("GND", *v)
@@ -634,7 +634,7 @@ def main():
               "Ring board (docs/DESIGN.md D-50): FR4 1.6 mm round the insert's plug, against the wall.\n"
               "J1: 5 V from the wiring board's J2 over a 6-way 0.5 mm FFC (pinout mirror-symmetric).\n"
               "J2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin).\n"
-              "U1: SHT45, I2C on the MSR-2 bus (SDA = IO1, SCL = IO0).\n"
+              "U1: SHT40, I2C on the MSR-2 bus (SDA = IO1, SCL = IO0).\n"
               "MK1: top-port PDM microphone, SELECT low; U2: ADAU7002 PDM to I2S, CONFIG high = I2S (D-83).\n"
               "I2S to the MSR-2: SCK = IO4, WS = IO6, SD = IO7. Sample rate >= 16 kHz (PDM clock 64 x fs >= 1 MHz).\n"
               "H1-H3: SMT spacers under the MSR-2's board. Copper keeps 8 mm from the box opening.")
@@ -650,7 +650,7 @@ def main():
               "EU cap board (docs/DESIGN.md D-56, D-70): FR4 1.6 mm in the cap's printed carrier.\n"
               "TP1 / TP2 on the underside: pads under the 5 V board's sensor spring pins (GND, +5 V).\n"
               "J2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin); H5-H7 SMT spacers.\n"
-              "MK1: top-port PDM microphone; U2: ADAU7002 PDM to I2S (D-83); U1: SHT45 on the MSR-2's I2C.\n"
+              "MK1: top-port PDM microphone; U2: ADAU7002 PDM to I2S (D-83); U1: SHT40 on the MSR-2's I2C.\n"
               "H1-H4: holes for the M2 screws into the carrier.")
     # board files: build in memory, save (KiCad 9 python cannot refill/reload safely in one board)
     build_ring()

@@ -15,16 +15,16 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | P1, P2 | SMT steel spacer M2, 7 mm, tin | Würth WA-SMSI 9774070243R | D-50: spacer posts on the 5 V area (+5V, GND), reflowed on a Ø5.3 pad over a Ø3.0 unplated hole. |
 | — | Brass spacer stud M2 male-female, 10 mm, 4 mm hex ×2 | Würth WA-SBRIE 971100244 | D-50: screwed into P1 / P2 (5 mm male thread, ends inside the 7 mm spacer); carry the riser and its 5 V. |
 | — | Heatshrink 6 mm 2:1, 15 mm ×2 | any | D-50: over each spacer post. |
-| — | FFC 0.5 mm, 6 contacts, 152 mm, Type 1 | Würth WR-FFC 687606152002 | D-50, D-74: wiring board J2 → straight bore → ring board J1; 140 mm along the route incl. 46 mm folded flat beside J1, 4 mm into each connector. |
+| — | FFC 0.5 mm, 6 contacts, 152 mm, Type 1 | GCT 05-06-A-0152-A-4-06-4-G (or Würth WR-FFC 687606152002; D-98) | D-50, D-74: wiring board J2 → straight bore → ring board J1; 140 mm along the route incl. 46 mm folded flat beside J1, 4 mm into each connector. |
 | PCB | Wiring board 47 × 72 mm, 2-layer 1.6 mm | PCBWay; order pack in `pcb/fab/` | Routed isolation slot in the outline. S1 is soldered by hand last: after it is snapped into the insert and the board is screwed down (slotted holes, D-88). Copper weight: thermal review. |
 | — | Apollo MSR-2 mmWave multisensor | apolloautomation.com / The Pi Hut | ESP32-C3, LD2410B, DPS310, LTR-390; optional SCD-40. Used out of case. |
 | PCB | Ring board, 2-layer FR4 1.6 mm, 66.3 × 125.9 mm with a 53.9 × 79.3 mm window | PCBWay; `pcb/sensor/` ring_board (no fab files until CN2 is confirmed) | D-50, D-68: on the insert's collar (crush ribs), under the face plate. Copper 8 mm from the box opening. |
 | H1–H3 (ring) | SMT steel spacer M2, 1.5 mm, tin | Würth WA-SMSI 9774015243R | D-68: the MSR-2's board rests on them under the face plate's posts. |
 | J1 (ring) | FPC connector, 6 contacts, 0.5 mm | Hirose FH12-6S-0.5SH(55) | D-50: 5 V in from the FFC. |
 | C1 (ring, EU cap board, EU 5 V board) | 22 µF 16 V X5R ±20 % 1206, 1.8 mm max | KEMET C1206C226M4PACTU (DigiKey 399-12290-1-ND) | At J1 / the 5 V input (D-95; was Samsung CL31A226KPHNNNE, 61-week maker lead time). |
-| U1 (ring) | SHT45 | Sensirion SHT45-AD1B-R2 (DFN-4 1.5 × 1.5) | On the ring board under its vents, I²C from the MSR-2. |
-| C2, C4, R1 (ring, EU cap board) | 100 nF X7R 0402 ×2; 100 kΩ 1 % 0402 | any (Murata GRM155R71C104KA88J, Yageo RC0402FR-07100KL in the order lists) | SHT45 and ADAU7002 decoupling; I²S SD pull-down (the ADAU7002 tristates SDATA). |
-| C3 (ring, EU cap board) | 100 nF C0G 25 V ±5 % 1206, 3.2 × 1.6 × 1.8 max | KEMET C1206C104J3GACTU | D-85: the mic's decoupling; Knowles: no Class 2 dielectrics near the mic. 100 nF C0G starts at 1206 (KEMET, TDK, AVX, Murata catalogs). |
+| U1 (ring) | SHT40 | Sensirion SHT40-AD1B-R2 (DFN-4 1.5 × 1.5) | On the ring board under its vents, I²C from the MSR-2. |
+| C2, C4, R1 (ring, EU cap board) | 100 nF X7R 0402 ×2; 100 kΩ 1 % 0402 | any (Murata GRM155R71C104KA88J, Yageo RC0402FR-07100KL in the order lists) | SHT40 and ADAU7002 decoupling; I²S SD pull-down (the ADAU7002 tristates SDATA). |
+| C3 (ring, EU cap board) | 100 nF C0G 50 V ±5 % 1206, 3.2 × 1.6 × 0.95 max | Murata GRM3195C1H104JA05D | D-85, D-98: the mic's decoupling; Knowles: no Class 2 dielectrics near the mic. 100 nF C0G starts at 1206. |
 | J2 (ring board, EU cap board) | CN2 mating plug, SlimStack 24 contacts, 0.4 mm, 2 rows | Molex 55909-2474 | D-82, D-89: mates the MSR-2's CN2, assumed Molex 51338-2474 (1.5 mm mated); land pattern from Molex SD-55909-003 rev J; contact map and pin 1 wait for Apollo's pinout. |
 | MK1 (ring, EU cap board) | PDM MEMS microphone, top port, 3 × 4 × 1 mm | Knowles SPK0641HT4H-1 (DigiKey lists it under Syntiant) | D-83: on the board, port end up under the face plate's sound column. |
 | U2 (ring, EU cap board) | PDM to I²S converter, WLCSP-8 0.4 mm | Analog Devices ADAU7002ACBZ-R7 | D-83: the ESP32-C3 has no PDM input; CONFIG high = I²S. Needs PCBWay assembly. |
@@ -39,7 +39,7 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | U1 (cover flex) | LDO 3.3 V 500 mA, SOT-23-5 | **TI TLV75533PDBVR** | D-41: the remote's 3.3 V from the pins' +5 V, on the cover flex. Datasheet: https://www.ti.com/lit/ds/symlink/tlv755p.pdf |
 | C3, C4 (cover flex) | 1 µF 16 V X5R 0402 | Samsung CL05A105KO5NNNC (Murata GRM155R61A105KE15D: obsolete; CL05A105KP5NNNC: out of stock at both, 2026-10-11) | LDO input / output (TLV755P: ≥ 1 µF). |
 | — | Cover flex stiffener, FR4 0.8 mm, flush with the flex's long edges | PCBWay (with the cover flex) | D-45: on the pad and regulator sections; the cover's snap hooks hold it by its long edges. |
-| PCB | EU cap board, 2-layer FR4 1.6 mm, round the remote pocket | PCBWay; `pcb/sensor/` eu_cap_board (no fab files until CN2 is confirmed) | D-56, D-70: pin pads underneath, CN2 mate (MSR-2 straight on it), three 1.5 mm SMT spacers H5–H7 (Würth 9774015243R), SHT45, the microphone and the ADAU7002 (D-83). |
+| PCB | EU cap board, 2-layer FR4 1.6 mm, round the remote pocket | PCBWay; `pcb/sensor/` eu_cap_board (no fab files until CN2 is confirmed) | D-56, D-70: pin pads underneath, CN2 mate (MSR-2 straight on it), three 1.5 mm SMT spacers H5–H7 (Würth 9774015243R), SHT40, the microphone and the ADAU7002 (D-83). |
 | — | EU cap board carrier | printed, `print/eu_carrier_PLA.3mf` | D-56: the carrier under the cap board, its lip pinned to the wall by the cap's edge, the cap's teeth stop it turning (D-71). |
 | — | M2 × 6 thread-forming screws ×4 (EU) | any | D-70: cap board into the carrier. |
 | — | Board standoffs ×4: nylon M3 male-female hex, 15 mm, 5.0 mm hex | **Keystone 25503** | D-57: stud into the insert's tapped boss, the top-right one's stud cut to 5 mm. Nylon 6/6 UL94 V-2 (catalog M65 p.76). |
@@ -62,6 +62,7 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 - MSR-2 ESPHome page: https://devices.esphome.io/devices/apollo-automation-msr-2
 - MSR-2 firmware repo: https://github.com/ApolloAutomation/MSR-2
 - SPK0641HT4H-1 datasheet (rev A): https://www.knowles.com/docs/default-source/model-downloads/spk0641ht4h-1-rev-a.pdf
-- KEMET C0G SMD datasheet (C1003_C0G, 2/20/2025): https://content.kemet.com/datasheets/KEM_C1003_C0G_SMD.pdf
+- Murata GRM3195C1H104JA05D (C3): https://pim.murata.com/asset/pim4/ceramicCapacitorSMD/GRM3195C1H104JA05-01A-EN_PDF_CERAMICCAPACITORSMD
+- Sensirion SHT4x datasheet (U1, SHT40): https://sensirion.com/media/documents/33FD6951/6A7C10A0/HT_DS_Datasheet_SHT4x_V7.3.pdf
 - ADAU7002 datasheet (rev C): https://www.analog.com/media/en/technical-documentation/data-sheets/ADAU7002.pdf
 - BILRESA: https://www.ikea.com/us/en/p/-70617457/

@@ -4821,7 +4821,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://content.kemet.com/datasheets/KEM_C1003_C0G_SMD.pdf"
+		(property "Datasheet" "https://pim.murata.com/asset/pim4/ceramicCapacitorSMD/GRM3195C1H104JA05-01A-EN_PDF_CERAMICCAPACITORSMD"
 			(at 116.84 157.48 0)
 			(effects
 				(font
@@ -4830,7 +4830,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Microphone decoupling, C0G 25 V 1206"
+		(property "Description" "Microphone decoupling, C0G 50 V 1206"
 			(at 116.84 157.48 0)
 			(effects
 				(font
@@ -4839,7 +4839,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "KEMET"
+		(property "Manufacturer" "Murata"
 			(at 116.84 157.48 0)
 			(effects
 				(font
@@ -4848,7 +4848,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "C1206C104J3GACTU"
+		(property "MPN" "GRM3195C1H104JA05D"
 			(at 116.84 157.48 0)
 			(effects
 				(font
@@ -5024,7 +5024,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "SHT45"
+		(property "Value" "SHT40"
 			(at 160.48 165.98 0)
 			(effects
 				(font
@@ -5069,7 +5069,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "SHT45-AD1B-R2"
+		(property "MPN" "SHT40-AD1B-R2"
 			(at 157.48 157.48 0)
 			(effects
 				(font
@@ -5300,7 +5300,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "SHT45 decoupling"
+		(property "Description" "SHT40 decoupling"
 			(at 198.12 157.48 0)
 			(effects
 				(font
@@ -6655,7 +6655,7 @@
 			)
 		)
 	)
-	(text "EU cap board (docs/DESIGN.md D-56, D-70): FR4 1.6 mm in the cap's printed carrier.\nTP1 / TP2 on the underside: pads under the 5 V board's sensor spring pins (GND, +5 V).\nJ2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin); H5-H7 SMT spacers.\nMK1: top-port PDM microphone; U2: ADAU7002 PDM to I2S (D-83); U1: SHT45 on the MSR-2's I2C.\nH1-H4: holes for the M2 screws into the carrier."
+	(text "EU cap board (docs/DESIGN.md D-56, D-70): FR4 1.6 mm in the cap's printed carrier.\nTP1 / TP2 on the underside: pads under the 5 V board's sensor spring pins (GND, +5 V).\nJ2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin); H5-H7 SMT spacers.\nMK1: top-port PDM microphone; U2: ADAU7002 PDM to I2S (D-83); U1: SHT40 on the MSR-2's I2C.\nH1-H4: holes for the M2 screws into the carrier."
 		(exclude_from_sim no)
 		(at 25 180 0)
 		(effects

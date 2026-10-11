@@ -1,5 +1,5 @@
 """EU TRIM PLATE (D-30, D-56): a passive cover: face, remote pocket walls (standing on the cap), finger scoops both sides (D-73),
-MSR-2 bay (radar skin, vents over the CO2 sensor, posts onto the MSR-2's board) above, SHT45 bay below, the microphone's sound hole and column. No electronics and no contacts:
+MSR-2 bay (radar skin, vents over the CO2 sensor, posts onto the MSR-2's board) above, SHT40 bay below, the microphone's sound hole and column. No electronics and no contacts:
 the sensors sit on the cap board (capboard_eu.py). Four snap fingers at the corners catch grooves in the carrier's
 windows (D-70, D-77). Low-voltage side only; any filament (PETG/ASA). Print face-down, no supports.
 Run:  python trim_eu.py  -> ../../../build/eu/trim.step / .stl
@@ -106,7 +106,7 @@ def build():
     body -= Pos(*MIC_AT, PT - SKIN / 2) * Cylinder(hd / 2, SKIN + 1)
     body -= Pos(*MIC_AT, PT - (SKIN - web) / 2 + 0.005) * Cylinder(rd / 2, SKIN - web + 0.01)
     n, pitch, w, lf, de = SHT_VENTS
-    for i in range(n):                                                               # SHT45 vents: face + bottom edge
+    for i in range(n):                                                               # SHT40 vents: face + bottom edge
         x = (i - (n - 1) / 2) * pitch
         body -= Pos(x, SHT_Y, PT - SKIN / 2) * Box(w, lf, SKIN + 2)
         body -= Pos(x, PL_Y[0] + de / 2 - 1, zb) * Box(w, de, h)

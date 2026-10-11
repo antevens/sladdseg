@@ -1,6 +1,6 @@
 """RING BOARD (D-50, D-68): one FR4 board round the insert's collar, against the wall, under the face plate.
 
-It carries the MSR-2 on CN2 and three SMT spacers under its board, the SHT45 in its vented bay, the top-port PDM
+It carries the MSR-2 on CN2 and three SMT spacers under its board, the SHT40 in its vented bay, the top-port PDM
 microphone with the ADAU7002 that turns its PDM into I2S for the MSR-2 (D-83), and J1, where the 5 V FFC from the wiring
 board latches. Front-layer
 copper keeps RING_KEEP along the wall plus the board's edge from the box opening; back-layer copper RING_KEEP.
