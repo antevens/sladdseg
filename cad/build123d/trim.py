@@ -1,77 +1,34 @@
-"""TRIM PLATE - face, MSR-2 bay (radar skin), SHT45 bay, vents, microphone sound hole.
+"""TRIM PLATE (face plate) - a plain cover (v0.4, D-50, D-51): face, thin radar skin over the MSR-2 with posts onto its
+board (D-66), SHT45 bay, vents,
+vents over the CO2 sensor, the
+microphone's sound hole and sound tube. No electronics and no contacts: the MSR-2, the SHT45 and the mic sit on the
+ring board on the insert's collar (D-68).
 
 Low-voltage side only: it carries no barrier duty. Any filament (PETG/ASA).
 Print: face down (the exported print STL is already flipped), no supports.
 Run:  python trim.py  -> ../../build/trim.step / .stl
 """
 from math import radians, tan
-from build123d import Box, Cylinder, Cone, Rectangle, Pos, Axis, chamfer
+from build123d import Box, Cylinder, Cone, Pos, Axis, chamfer
 from params import *
 from common import rr, slab, frame
-import insert
+import msr2
 
 
-def msr_hooks():
-    """Snap hooks holding the MSR-2 board in its bay (D-45): at the board's short ends, from the radar skin."""
-    from common import board_hooks
-    return board_hooks(MSR_Y, MSR_BOARD[0], MSR_BACK_Z, PT - RADAR_WALL, MSR[0] / 2 + CLR, MSR_HOOK)
+MSR_BAY = (MSR[0] + 2 * CLR, MSR[1] + 2 * CLR)          # round the MSR-2
 
 
-def band_groove():
-    """Groove in the skin's underside over the flange's right band: the sensor flex lies on the flange top."""
-    import sensor_flex as sf
-    x0, x1 = FLEX_RIGHT - FLEX_RUN_W - 0.15, FLEX_RIGHT + 0.15
-    y = sf.Y_CLIMB + 1.0
-    return Pos((x0 + x1) / 2, 0, SKIN_Z + FLEX_GROOVE / 2 - 0.005) * Box(x1 - x0, 2 * y, FLEX_GROOVE + 0.01)
+def mic_tube():
+    """Sound tube from the skin down to a gasket on the mic carrier (the face plate's screws press it on)."""
+    od, bore, gasket = MIC_TUBE
+    z0 = RING_T + MIC_CARRIER[2] + gasket
+    return Pos(*MIC_PORT, (z0 + SKIN_Z + 0.01) / 2) * (Cylinder(od / 2, SKIN_Z + 0.01 - z0) - Cylinder(bore / 2, PT))
 
 
-def flex_ramp():
-    """Ramp over the sensor flex's rise from the MSR-2 bay to the corner fold, down from the skin."""
-    from common import ramp_over
-    x1 = FLEX_X - FLEX_W / 2 - 0.3                       # stops short of the corner fold
-    z1 = FLEX_Z_LO + (FLEX_Z_HI - FLEX_Z_LO) * (x1 - FLEX_EXIT_X) / (FLEX_X - FLEX_EXIT_X)
-    return ramp_over((FLEX_EXIT_X, MSR_Y, FLEX_Z_LO), (x1, MSR_Y, z1), FLEX_W + 1.0, SFLEX_T, SKIN_Z + 0.01)
-
-
-def tongue_tab():
-    """Battery-free tongue (D-49): tab in the insert's island notch, flush with the face, down to the deck, and the
-    strip down the pocket's top arc in the insert's groove (flush above the groove's end, in front of the wall
-    below it, 45 deg between), the tongue behind both; the floor insert snaps onto the strip's foot."""
-    from common import bar, radial_prism
-    p, u, q = tongue_arc()
-    w = BC_NA_TAB_W
-    y1 = ISLAND[1] / 2 + SPLIT_CLR + 0.5
-    q2 = (q[0] + w / 2 * u[0], q[1] + w / 2 * u[1])
-    tab = bar((q[0], y1), q, w, DECK_Z, PT, w / 2) + bar(q2, p, w, DECK_Z, PT)
-    t, room = BC_NA_STRIP[1], BC_NA_TROOM
-    gb = BC_NA_GROOVE_BOT
-    zf = SEAT_Z + BC_FLOOR_T + 0.1                          # foot, just above the floor insert
-    strip = radial_prism(p, u, [(0.0, DECK_Z + 0.01), (0.0, gb + t + room), (-(t + room), gb), (-(t + room), zf),
-                                (-room, zf), (-room, gb), (t, gb + t + room), (t, DECK_Z + 0.01)], BC_NA_STRIP[0])
-    reach, hh, (w0, w1) = BC_NA_FOOT_HOOK
-    fl = SEAT_Z + BC_FLOOR_T
-    r0 = -(t + room)
-    z1 = fl + w1 - 0.1                                       # hook's top under the window's top edge
-    z0 = fl + w0 + reach + 0.05                              # the lead-in starts inside the window
-    hook = radial_prism(p, u, [(r0 + 0.01, z0 - reach), (r0 - reach, z0), (r0 - reach, z1), (r0 + 0.01, z1)],
-                        BC_NA_STRIP[0] - 2.0)
-    return tab + strip + hook
-
-
-def tongue_groove():
-    """Groove in the skin's underside for the tongue: the band from the finger section to the fold, then down the
-    plate over the flange to the island window, deeper at the fold (two layers); and in the tab's underside."""
-    from common import bar
-    p, u, q = tongue_arc()
-    gw, gd, gf = BC_NA_TGROOVE
-    y1 = ISLAND[1] / 2 + SPLIT_CLR
-    out = bar((FINGER_SEC_IN + 0.5, BC_NA_BAND_Y), (q[0], BC_NA_BAND_Y), gw, SKIN_Z - 0.01, SKIN_Z + gd, gw / 2)
-    out += bar((q[0], BC_NA_BAND_Y), (q[0], y1 - 0.5), gw, SKIN_Z - 0.01, SKIN_Z + gd, gw / 2)
-    out += bar((q[0], BC_NA_BAND_Y + gw / 2), (q[0], BC_NA_BAND_Y - gw / 2), gw, SKIN_Z - 0.01, SKIN_Z + gf, 0.2)
-    r_up = BC_NA_STRIP[1]
-    out += bar((q[0], y1 + 0.5), q, gw, DECK_Z - 0.01, DECK_Z + gd, gw / 2)
-    out += bar(q, (p[0] + r_up * u[0], p[1] + r_up * u[1]), gw, DECK_Z - 0.01, DECK_Z + gd)
-    return out
+def msr_posts():
+    """Posts from the radar skin onto the MSR-2's board (D-66): they press it onto the ring board's spacers (D-68); the skin stands
+    MSR_SKIN_GAP clear of its front."""
+    return msr2.posts(0, MSR_Y, MSR_BACK_Z, PT - RADAR_WALL)
 
 
 def build():
@@ -79,10 +36,11 @@ def build():
     shell = chamfer(shell.edges().group_by(Axis.Z)[-1], FACE_CHAMFER)
     shell -= Pos(0, PLATE_Y, 0) * slab(rr(PW - 2 * SKIN, PH - 2 * SKIN, PR - SKIN), -1, PT - SKIN)
     body = shell
-    # MSR-2 and SHT45 bay frames
-    body += frame(MSR[0] + 2 * CLR, MSR[1] + 2 * CLR, 1.6, 1, 0, PT, MSR_Y)
-    body += frame(SHT[0] + 0.8, SHT[1] + 0.8, 1.6, 0.5, 0, PT, SHT_Y)
-    hooks, reliefs = msr_hooks()
+    # MSR-2 and SHT45 bay frames, down to just over the ring board's parts
+    z0 = FRAME_Z0                                       # over the ring board's parts (D-68)
+    body += frame(MSR_BAY[0], MSR_BAY[1], 1.6, 1, z0, PT, MSR_Y)
+    body += frame(SHT[0] + 0.8, SHT[1] + 0.8, 1.6, 0.5, z0, PT, SHT_AT[1])
+    body += mic_tube()
 
     # ---------------- cuts ----------------
     # clearance envelope of the insert: island window through the face, flange underneath
@@ -98,27 +56,17 @@ def build():
         body -= Pos(0, y, PT / 2) * Cylinder(SCREW_D / 2, PT + 2)
         d = (SCREW_HEAD_D - SCREW_D) / 2 / tan(radians(SCREW_CSK / 2))   # countersink depth
         body -= Pos(0, y, PT - d / 2 + 0.005) * Cone(SCREW_D / 2, SCREW_HEAD_D / 2 + 0.01, d + 0.01)
-    body -= Pos(0, MSR_Y, 0) * slab(rr(MSR[0] + 2 * CLR, MSR[1] + 2 * CLR, 1), -0.01, PT - RADAR_WALL)
-    body -= Pos(LUX_POS[0], MSR_Y + LUX_POS[1], PT - 0.5) * Cylinder(1.5, 6)
+    body -= Pos(0, MSR_Y, 0) * slab(rr(*MSR_BAY, 1), -0.01, PT - RADAR_WALL)
+    body += msr_posts()                                 # in the hollowed bay (D-66)
+    body -= msr2.scd_vents(0, MSR_Y, PT, RADAR_WALL)      # grille: CO2 sensor and light sensor (D-65, D-69)
+    zv = RING_PARTS_TOP + 3.0                           # vents through the edges, above the ring board's parts
     for i in range(-2, 3):  # MSR vents, top edge
-        body -= Pos(i * 7 + 1.5, PLATE_Y + PH / 2 - SKIN + 2, 6) * Box(3, 6, 6)
-    body -= Pos(0, SHT_Y, 0) * slab(rr(SHT[0] + 0.8, SHT[1] + 0.8, 0.5), -0.01, PT - SKIN)
-    # sensor flex (D-27, D-47) passes the bay frames: MSR-2 frame (right wall, at the wall plane) and the
-    # SHT45 frame (right wall, just under the skin)
-    nx = MSR[0] / 2 + CLR + 1.0                    # notch centre (room x), 4 mm long
-    w = 2 * flex_half_width(nx - 2.0 - MSR_CN2_X) + 0.6
-    body -= Pos(nx, MSR_Y, 0.45) * Box(4.0, w, 0.92)
-    w = FLEX_RUN_W + 0.6
-    body -= Pos(SHT[0] / 2 + 0.4 + 0.8, SHT_Y, (SKIN_Z + 9.4) / 2) * Box(3.0, w, SKIN_Z - 9.4 + 0.01)
-    body -= band_groove()
+        body -= Pos(i * 7 + 1.5, PLATE_Y + PH / 2 - SKIN + 2, zv) * Box(3, 6, 5)
+    body -= Pos(0, SHT_AT[1], 0) * slab(rr(SHT[0] + 0.8, SHT[1] + 0.8, 0.5), -0.01, PT - SKIN)
     body -= Pos(*MIC_PORT, PT - SKIN / 2) * Cylinder(MIC_SKIN_HOLE_D / 2, SKIN + 1)   # microphone sound hole (D-29)
-    body = body - reliefs + hooks                       # MSR-2 snap hooks (D-45)
-    body += tongue_tab()                                # island notch, strip down the arc (D-49)
-    body -= tongue_groove()
-    body += flex_ramp()                                 # the flex's rise from CN2 is taped to it
     for i in (-1, 0, 1):  # SHT vents: face + bottom edge
-        body -= Pos(i * 4, SHT_Y, PT - 1) * Box(2, 6, 4)
-        body -= Pos(i * 4, PLATE_Y - PH / 2 + 4, 5) * Box(2, 10, 6)
+        body -= Pos(i * 4, SHT_AT[1], PT - 1) * Box(2, 6, 4)
+        body -= Pos(i * 4, PLATE_Y - PH / 2 + 4, zv) * Box(2, 10, 5)
     return body
 
 

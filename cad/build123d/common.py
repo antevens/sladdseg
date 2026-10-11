@@ -113,3 +113,28 @@ def ribbon(pts, w, t, wall=(1, 0, 0)):
         s = Plane(origin=(a + b) * 0.5, x_dir=x_dir, z_dir=d) * Box(w, t, d.length + 0.01)
         out = s if out is None else out + s
     return out
+
+
+def segment(a, b, w, t):
+    """Flat strip w x t from a to b (a run in x with a change in z, or in the y-z plane)."""
+    from math import atan2, degrees, hypot
+    from build123d import Box
+    dx, dy, dz = b[0] - a[0], b[1] - a[1], b[2] - a[2]
+    c = Pos((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2)
+    if abs(dy) < 1e-9:
+        tilt = degrees(atan2(dz, dx))
+        return c * Rot(0, -tilt, 0) * Box(hypot(dx, dz) + 0.01, w, t)
+    if abs(dx) < 1e-9:
+        tilt = degrees(atan2(dz, dy))
+        return c * Rot(tilt, 0, 0) * Box(w, hypot(dy, dz) + 0.01, t)
+    raise ValueError("segments run along x or along y")
+
+
+def pogo(x, y, z_board, tip_z, flange, barrel, plunger_d):
+    """Spring pin standing on a board face at z_board, plunger tip at tip_z: flange (d, h), barrel (d, top above the
+    board), plunger."""
+    from build123d import Cylinder, Pos
+    out = Pos(x, y, z_board + flange[1] / 2) * Cylinder(flange[0] / 2, flange[1])
+    out += Pos(x, y, z_board + (flange[1] + barrel[1]) / 2) * Cylinder(barrel[0] / 2, barrel[1] - flange[1])
+    zb = z_board + barrel[1]
+    return out + Pos(x, y, (zb + tip_z) / 2) * Cylinder(plunger_d / 2, tip_z - zb)

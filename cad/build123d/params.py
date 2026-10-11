@@ -12,17 +12,20 @@ Tags:
   DATASHEET value that must come from a cited datasheet (see docs/BOM.md).
   derived   computed below - do not edit, change the inputs instead.
 
-Two printed parts (DESIGN D-12..D-17) and the wiring board (D-24..D-26):
-  insert  (insert.py)  all barrier geometry: remote pocket, switch well and rocker
-                       panel, collar flange. UL94 V-0 filament, printed floor-down.
-  trim    (trim.py)    face, MSR-2 / SHT45 bays, vents. Any filament, face-down.
-  board   (pcb/)       KiCad project; positions mirrored below and compared by checks.py.
+v0.4 (DESIGN D-50): two printed parts, the wiring board and the ring board:
+  insert  (insert.py)  all barrier geometry: remote pocket, switch well and rocker panel, collar flange,
+                       a flat back over the ring board with a skirt to the wall. UL94 V-0 filament.
+  trim    (trim.py)    face plate, a plain cover: radar skin, bays, vents, sound hole. Any filament, face-down.
+  board   (pcb/)       wiring board; positions mirrored below and compared by checks.py.
+  ring    (ring.py)    ring board round the insert's plug: MSR-2 on CN2, SHT45, mic carrier, 5 V FFC in; the
+                       riser with the battery-free remote's two spring pins (pcb/sensor/).
 """
 from math import sqrt, hypot
 
 # ---- trim plate ----
-PW, PH, PT, PR = 72.2, 131.75, 13.0, 6.0  # width (the flange plus clearance and skin), height, proud of wall, corner
-                                          # radius (D-47: 5 V contact and mic above the flange, flex down its band)
+PW, PH, PT, PR = 72.2, 131.75, 14.4, 6.0  # width (the flange plus clearance and skin), height, proud of wall, corner
+                                          # radius; PT = ring board + CN2 stack + MSR-2 + skin gap + radar skin (D-51,
+                                          # D-66, checked)
 PLATE_Y = 7.175                           # plate centre above the box centre (MSR-2 bay top, SHT45 bay bottom)
 SKIN = 2.0                                # face/side wall of the hollow trim
 FACE_CHAMFER = 1.2
@@ -48,7 +51,7 @@ B_WHEEL_GAP = 0.3                         # ESTIMATE gap ring around the wheel
 B_LED_Y = -12.0                           # ESTIMATE three LED dots, y of the row (terminal end)
 B_LED_PITCH = 3.9                         # ESTIMATE
 B_SEAM_Z = 9.8                            # MEASURED back cover depth, rim to back (human, 2026-10-09)
-B_PROUD = 2.0
+B_PROUD = 2.6                             # remote face above the plate face (keeps the seat with the thinner skin, D-51)
 CLR = 0.5                                 # remote to pocket wall; 0.6 no longer fits the box with B_W = 45
 POCKET_WALL = 1.6                         # pocket shell = mains barrier
 SEAT_T = 2.5                              # minimum material under the remote seat
@@ -57,8 +60,13 @@ SEAT_T = 2.5                              # minimum material under the remote se
 # the magnet by MAGNET_SETBACK: the air gap weakens the pull (shim it up to strengthen).
 # The supplied magnet (ESTIMATE ~47.4 x 17.5, full round ends R8.75) is cut once across by the user: the piece
 # keeps one round end (down, in the recess's round end) and has a straight cut edge up.
-MAGNET_FULL = (17.5, 47.4)                # ESTIMATE supplied magnet before the cut (w, length; label drawing ring)
-MAGNET = (17.5, 18.5, 2.0)                # cut piece (w, length from the round end to the cut, t ESTIMATE incl. tape)
+MAGNET_FULL = (17.5, 47.4)                # ESTIMATE supplied steel plate (adhesive) before the cut (w, length; label drawing)
+MAGNET = (17.5, 18.5, 2.0)                # cut steel piece (w, length from the round end to the cut, t ESTIMATE incl. tape)
+# cutting jigs for the supplied steel plate (D-52): the whole plate in a pocket, round end on the stop, cut at MAGNET[1]
+JIG_CLR, JIG_WALL, JIG_FLOOR = 0.15, 3.0, 2.0   # pocket clearance round the plate, side wall, floor
+JIG_SAW = (1.2, 0.6, 8.0)                 # hacksaw guide: slot width, slot depth below the plate, wall height above it
+JIG_FENCE = (3.0, 2.0, 0.2)               # marker gauge fence: length (bridges the pocket), height, gap over the plate
+JIG_NOTCH_R = 4.0                         # finger notches in the side walls to lift the plate out
 MAGNET_Y = 0.0                            # ESTIMATE centre of the remote's internal plate (FCC photo: centred in its cover)
 MAGNET_REC_Y = -3.75                      # cut piece centre: over the remote's plate and the back cover's steel, the
                                           # cut edge SEAT_T clear of the switch well
@@ -94,29 +102,27 @@ WAGO6 = (32.4, 16.1, 20.7)                # DATASHEET WAGO 2604-1106 (3D model):
 WAGO_X, WAGO_Y = 3.0, 5.05                # terminal block centre at the board (front-view x, y; from pcb/)
 WAGO_ENTRY = (0, 1)                       # direction the wire entries face (front-view x, y): away from the PSU
 WAGO_PSU_GAP = 1.0                        # minimum gap from the block's closed back to the PSU body
-J2_POS = (13.0, -19.5)                    # SMD 5 V connector on F (front-view x, y; from pcb/), right of the slot
+J2_POS = (13.5, -24.8)                    # SMD 5 V connector on F (front-view x, y; from pcb/), below the posts, FFC to +x
 WIRE_SPACE_MIN = 10.0                     # free depth wanted behind the terminal block
 
-# ---- board mounting: screw-in snap posts (D-28) ----
-# Four PC-FR posts screw into bosses on the insert's underside and snap through holes in the
-# board. Threads are cut after printing, M4 x 0.7: the bosses' holes are printed at the tap-drill
-# size and tapped, the posts' studs at the major diameter and cut with a die.
+# ---- board mounting: nylon standoffs (D-57) ----
+# Four Keystone 25503 nylon M3 male-female hex standoffs (15 mm): the stud screws into a tapped blind hole in a boss
+# on the insert's underside, a nylon M3 x 8 pan head screw through each board hole into the standoff. At the top
+# right the pocket corner leaves room for a 5.5 mm hole only: that standoff's stud is cut to 5 mm before fitting.
 MOUNT_HOLES = ((-21.0, 33.5), (-21.0, -33.5), (21.0, 24.77), (21.0, -33.5))  # board holes (front-view x, y; from pcb/)
-MOUNT_HOLE_D = 2.6                        # board hole (pcb MOUNT_D)
-MOUNT_BOSS_D = 7.0                        # boss on the insert, stands on the print-bed plane Z_BOT
-# boss tops: 1 mm into the corner taper; top right rises into the pocket corner under the remote's
-# back round-over, just enough to keep BARRIER_MIN over the hole's cone tip
-MOUNT_BOSS_TOP = (-1.6, -1.6, -2.55, -1.6)
-MOUNT_THREAD_D, MOUNT_TAP_D = 4.0, 3.3    # M4 x 0.7: stud before the die, tap-drill hole
-MOUNT_THREAD_L = 7.0                      # tapped depth (the hole ends in a 45 deg cone)
-MOUNT_THREAD_MIN = 6.0                    # minimum engagement, 1.5 x M4
+MOUNT_HOLE_D = 3.2                        # board hole, M3 clearance (ISO 273 fine)
+MOUNT_BOSS_D = 7.0                        # boss on the insert, from the standoff's face up into the insert
+# boss tops: 1 mm into the corner taper; top right rises into the pocket corner under the remote's back round-over
+MOUNT_BOSS_TOP = (-1.6, -1.6, -2.0, -1.6)
+STANDOFF = (5.0, 8.0, 8.0)                # DATASHEET Keystone 25503 (catalog M65 p.76): hex across flats, male
+                                          # thread length, internal thread depth; nylon 6/6 UL94 V-2
+STANDOFF_L = 15.0                         # DATASHEET Keystone 25503 body length
+MOUNT_STUD = (8.0, 8.0, 5.0, 8.0)         # stud length per hole (MOUNT_HOLES order): as supplied, top right cut to 5
+STANDOFF_SCREW = (8.0, 5.6, 1.8)          # nylon M3 x 8 slotted pan head: length; head diameter and height ISO 1580 max
+MOUNT_THREAD_D, MOUNT_TAP_D = 3.0, 2.5    # M3 x 0.5: stud, tap-drill hole (ISO 2306)
+MOUNT_THREAD_L = tuple(s + 0.5 for s in MOUNT_STUD)   # tapped depth per hole: the stud plus 0.5 (45 deg cone end)
+MOUNT_THREAD_MIN = 1.5 * 3.0              # stud engagement in the printed thread, >= 1.5 x M3
 MOUNT_PASS_GAP = 1.0                      # boss to the 5 V pass-through channel
-POST_SHAFT_D = 2.3                        # through the board hole
-POST_SHOULDER_D = 4.5                     # carries the board's front face
-POST_HEAD_D, POST_HEAD_H = 3.2, 1.8       # split cone head over the board's back face
-POST_SPLIT_W, POST_SPLIT_L = 0.6, 4.5     # slot through head and shaft, length above the head
-POST_HEX_AF, POST_HEX_H = 6.0, 2.0        # hex collar against the boss, across flats
-POST_FLAT = 0.1                           # flat on the stud side so the post prints lying down
 
 # ---- insert (box side, V-0) ----
 PLUG_CLR = 0.75                           # insert body to box wall, each side
@@ -131,89 +137,168 @@ KEY_POS = ((25.0, 30.0), (-25.0, -22.0))
 SPLIT_CLR = 0.25                          # trim to insert clearance
 SCOOP = (6.0, 16.0, 9.0)                  # finger scoop ellipsoid radii (x, y, z)
 SCOOP_ZC = PT + 2.5                       # scoop centre height
-PASS_D = 4.5                              # 5 V flex jumper pass-through (the only barrier opening): takes the
-                                          # jumper's stiffened connector end when it is threaded through
-PASS_X, PASS_Y = 21.5, 33.5               # vertical leg position (room frame, same side as J2)
-PASS_DIR = (0.7071, 0.7071)               # 45 deg leg's direction in plan: out through the flange's top-right corner
+PASS_D = 4.5                              # 5 V FFC pass-through (barrier opening, with the two pin holes): takes
+                                          # the FFC's stiffened contact end when it is threaded through
+PASS_E = (20.9, 32.9)                     # straight bore's top (D-74): it meets the flat slot here, at PASS_TOP_Z
+PASS_RUN = 3.0                            # bore's run in plan from the underside plane (Z_BOT) to PASS_E, along PASS_DIR:
+                                          # the most that keeps BARRIER_MIN to the remote pocket
+PASS_DIR = (0.7071, 0.7071)               # bore and slot direction in plan: out through the flange's top-right corner
 BARRIER_MIN = 1.6                         # thinnest barrier wall allowed
 V0_RATED_T = 1.5                          # DATASHEET thickness at which the chosen filament is UL94 V-0
 
-# ---- Apollo MSR-2 (bare board, out of its case) ----
-MSR = (40.0, 24.0, 10.0)                  # MEASURE envelope
-RADAR_WALL = 1.2
+# ---- Apollo MSR-2 with the SCD40 CO2 add-on, out of its case (msr2.py) ----
+# Board frame: origin at the board's centre on its back face, x along the board (+x: the CN1 / CN2 end), y across
+# (+y: the radar's edge), z out of the front. Sources: Apollo's case (Printables 932026, measured), the module
+# datasheets, Apollo wiki photos (add-ons: CO2, GPIO header, rear USB-C); see docs/MEASUREMENTS.md.
+MSR2_CASE = (38.08, 21.67, 10.41)         # REF case cavity w x h; face underside above the board's back plane
+MSR2_ESP = (13.2, 16.6, 2.4)              # DATASHEET ESP32-C3-MINI-1 v1.3 (w x l x h)
+MSR2_ESP_ANT = 4.1                        # DATASHEET antenna end of the module (MINI-1 16.6 less MINI-1U 12.5)
+MSR2_ESP_IN = 13.7                        # ESTIMATE module's +x side from the board's +x end; antenna end at the -y edge
+MSR2_NOTCH = (13.7, 4.65)                 # ESTIMATE board notch under the ESP antenna (x, y), at the -y edge
+MSR2_USB = (8.94, 7.35, 3.26)             # ESTIMATE USB-C receptacle (w, depth, h), top mount, flush with the -x end
+MSR2_USB_Y = -5.3                         # REF case: USB opening y -9.65..1.35 about the cavity centre 1.19
+MSR2_LD = (35.0, 7.0)                     # DATASHEET HLK-LD2410B module (x, y); flush with the +x end and the +y edge
+MSR2_LD_T = 1.0                           # ESTIMATE radar board thickness
+MSR2_LD_BACK = 8.4                        # ESTIMATE radar board's back above the board's back (photo, below the face)
+MSR2_LD_PARTS = 0.9                       # ESTIMATE parts on the radar's front (its chip)
+MSR2_LD_PINS = (5, 1.27, 1.2, 1.0)        # DATASHEET 5 pins at 1.27 along y; ESTIMATE 1.2 in from its +x end, 1.0 out of its front
+MSR2_LD_PROP = (5.0, 5.0)                 # ESTIMATE support under the radar's -x end (photo; part unknown)
+MSR2_CN1_IN = (6.1, 6.1)                  # ESTIMATE CN1 (front, the CO2 add-on's connector) centre from the +x end, -y edge
+MSR2_CO2_BOARD = (11.0, 11.5, 0.8)        # ESTIMATE CO2 add-on board, centred on CN1
+MSR2_SCD = (10.1, 10.1, 6.5)              # DATASHEET Sensirion SCD4x v1.4: 10.1 x 10.1 x 6.5 (Table 36, page 1)
+MSR2_SW = (4.0, 3.0, 2.0)                 # ESTIMATE Boot / RST side-push switches on the back at the +y edge (x, y, h)
+MSR2_SW_X = (-4.0, 4.0)                   # REF case: button holes at x -4.0 / 4.0, 0.5..1.5 behind the board
+MSR2_HOLES = (0.9, 4.7)                   # ESTIMATE two plated holes on CN2's axis: diameter, offset either side of
+                                          # CN2's centre (Apollo photos: CO2 add-on pic 8, rear USB-C pic 2)
+MSR_SKIN_GAP = 0.3                        # NA: radar skin clear of the MSR-2's front (SCD4x, radar pins) (D-66)
+MSR2_POSTS = ((-9.8, -3.9), (6.35, -3.9), (-17.5, 1.5))   # ESTIMATE face plate posts onto part-free spots on the
+                                          # MSR-2's front (board frame): USB-C / ESP32, ESP32 / CO2 add-on, USB end;
+                                          # NA: the ring board's spacers stand under them (D-68)
+MSR2_POST_D = 1.8                         # NA: post diameter
+MSR2_POST_CLR = 0.05                      # NA: least gap from a post to the MSR-2's parts
+MSR2_SW_CLR = 0.3                         # switch bodies to the ring board's notches and the insert's ledge
+MSR2_SCD_VENT = (2.0, 3, 3.5, 1.0)        # grille through the radar skin for the SCD4x and the light sensor: slot width,
+                                          # count, pitch (along x), slot length = the SCD4x less this inset at each end;
+                                          # the middle slot centred on the light sensor (D-65, D-69)
+VENT_RADAR_CLR = 1.0                      # grille to the radar module's outline (slots shortened to keep it)
+RADAR_WALL = 0.6                          # radar skin over the MSR-2 bay: three 0.2 mm layers (D-51)
 LUX_POS = (12.0, 0.0)                     # MEASURE light sensor offset from bay centre
 
 # ---- SHT45 breakout tab ----
 SHT = (12.0, 8.0, 4.0)                    # SHT45 bay (the sensor sits on the flex tail, D-27)
 SHT_Y = -51.3                             # just under the bottom screw boss
 
-# ---- 5 V flex jumper: wiring board J2 -> pass-through -> pad end on the shelf (D-27, R9, no wires) ----
-# J2 is a Hirose FH12-6S-0.5SH slide-lock FPC connector (3 contacts per net); the jumper's pad end
-# lies on the insert shelf where the face plate's spring fingers press it. Its connector end is
-# threaded through the pass-through from the shelf side and plugged into J2 with the board held
-# beside the insert (latch in view); the spare length folds into the gap between board and insert.
+# ---- 5 V cable: wiring board J2 -> pass-through -> ring board J1 (D-50) ----
+# A stock FFC (6 contacts, 0.5 mm pitch) latched in Hirose FH12-6S-0.5SH slide-lock connectors at both ends: J2 on the
+# wiring board, J1 on the ring board. It is pushed through the pass-through (a straight bore in the insert, D-74) from
+# the box side; no loop in the box: J2 is plugged from the side with the board on its standoffs. The stock cable's
+# spare length lies flat on the ring board, folded in four layers beside J1 (face side).
 FH12 = (6.1, 5.6, 2.0)                    # REF FH12-6S body (x, y, height): KiCad footprint / Hirose FH12 series
-JUMPER_W = 3.0                            # flex run width
-JUMPER_END = (3.5, 4.0, 0.3)              # MEASURE connector end: width (6 contacts at 0.5), stiffened length, thickness
-JUMPER_T = 0.2                            # 2-layer polyimide flex (design value; confirm with the PCBWay stack-up)
-JUMPER_X = 15.0                           # run between the rocker body (x <= 11.3) and the right-hand bosses
-JUMPER_SERVICE = 40.0                     # spare length folded between board and insert (plug in with the board beside it)
+JUMPER_W = 3.5                            # FFC width (6 contacts at 0.5)
+JUMPER_END = (3.5, 4.0, 0.3)              # FFC contact end: width, stiffened length, thickness (FH12 FPC spec)
+JUMPER_T = 0.12                           # FFC thickness
+JUMPER_STOCK_L = 152.0                    # DATASHEET Wurth WR-FFC 687606152002: length
+JUMPER_SLACK = (2.0, 10.0)                # spare length the route may leave (it bows in the free span): min, max
+JUMPER_SPARE = 4.0                        # spare length the fold is sized to leave
+JUMPER_FOLD_Y = 43.4                      # fold's centre line (room y): on the ring board between the flange and J1
+JUMPER_LAYER = 0.15                       # fold's layer pitch (FFC 0.12)
+JUMPER_SIDE_X, JUMPER_TURN_Y = 21.3, -11.0  # FFC from J2 out to the right, up past the spacer posts
+JUMPER_WAYPOINT = (15.5, 24.8, -14.0)     # then between the rocker and the top-right standoff to the mouth (D-74)
+PASS_TOP_Z = 2.3                          # the pass-through's 45 deg leg ends here (centre), a flat slot goes on out
+PASS_SLOT = (4.5, 1.0, 3.5)               # flat slot out of the 45 deg leg, then a channel out to the board: width, height,
+                                          # length along PASS_DIR
+RING_J1 = (27.0, 48.2)                    # FH12 on the ring board (room x, y), cable in from -y
 
-# ---- sensor flex (D-27, D-47): MSR-2 CN2 -> spring fingers over the 5 V jumper's pad end -> SHT45 ----
-# Single-layer flex in the trim: plug end under the MSR-2, out of the bay frame's right wall and up to just
-# under the face skin while running right, a 45 deg fold into the top-right corner (microphone, spring-finger
-# section), down the flange's right band on the flange top in a groove of the trim, a 45 deg fold at the
-# bottom, along the bottom to the SHT45 bay.
+# ---- shared with the EU sensor flex and the back cover flex (D-27, D-35) ----
 MSR_BOARD = (38.0, 21.5)                  # REF bare MSR-2 board, from Apollo's case cavity 38.08 x 21.67 (Printables 932026)
-MSR_HOOK = 0.5                            # snap hooks at the board's short ends: lip over its back face (D-45)
+MSR_BOARD_T = 1.6                         # MEASURE MSR-2 board thickness (the MSR envelope's x / y apply above it)
+MSR_HOOK = 0.5                            # EU: snap hooks at the board's short ends: lip over its back face (D-45)
 MSR_CN2_IN = 6.4                          # MEASURE REF CN2 centre from the board's end (Apollo wiki photo); CN2 at the right end here
 B2B = (7.6, 3.0)                          # MEASURE REF CN2 housing (photo); 0.4 mm pitch, 2 rows, ~26-30 contacts (D-27)
 B2B_STACK = 1.5                           # MEASURE mated height of CN2 + plug (1.5 if P4S-like)
-FLEX_W, FLEX_T, STIFF_T = 4.0, 0.12, 0.15  # flex width (to the fingers), single-layer polyimide flex (back cover, EU),
-                                          # FR4 stiffener under the plug / pins
-SFLEX_T = 0.2                             # NA sensor flex: two copper layers (D-47; design value, confirm the stack-up)
-PLUG_STIFF_T = 0.1                        # FR4 stiffener under the NA sensor flex's CN2 plug (stack behind the MSR-2)
-FLEX_RUN_W = 2.4                          # flex width down the flange band: SDA, SCL, 3V3, GND to the SHT45
-FLEX_PLUG = (12.0, 8.0)                   # plug end of the flex (along x, across): CN2 mate and fan-out
-FLEX_NECK_L = 10.0                        # taper from the plug end to FLEX_W
-FLEX_RIGHT = 33.4                         # flex's right edge in the corner and down the band (trim wall inside: PW / 2 - SKIN)
-FLEX_SKIN_GAP = 0.15                      # flex + stiffener top below the trim's face skin
-FLEX_GROOVE = 0.3                         # groove in the trim's underside over the flange band (flex SFLEX_T + 0.1)
-TAPE_T = 0.06                             # 3M 467MP double-sided tape at the flex tape points (docs/ASSEMBLY.md)
-FLEX_EXIT = 0.5                           # flex starts its rise this far right of the bay frame's right wall
-SHT_PADDLE = 3.0                          # the tail widens back to FLEX_W from here (room x) for the SHT45
-SHT_CHIP = (1.5, 1.5, 0.5)                # DATASHEET Sensirion SHT45 DFN-4 body, on the flex tail
-# power contact: two Harwin S7081-42R SMT spring fingers (+5 V, GND) on the flex underside, side by side
+MSR2_CN1_STACK = B2B_STACK                # ESTIMATE CN1 + the add-on's plug: CN2's family assumed
+MSR2_FRONT = max(MSR_BOARD_T + MSR2_CN1_STACK + MSR2_CO2_BOARD[2] + MSR2_SCD[2],
+                 MSR2_LD_BACK + MSR2_LD_T + max(MSR2_LD_PARTS, MSR2_LD_PINS[3]))   # front above the board's back
+MSR = (40.0, 24.0, MSR2_FRONT)            # envelope (x, y from Apollo's case outside, height from the model)
+FLEX_W, FLEX_T, STIFF_T = 4.0, 0.12, 0.15  # flex width, single-layer polyimide flex (back cover, EU), FR4 stiffener
+FLEX_PLUG = (12.0, 8.0)                   # EU: plug end of the flex (along x, across): CN2 mate and fan-out
+FLEX_NECK_L = 10.0                        # EU: taper from the plug end to FLEX_W
+FLEX_SKIN_GAP = 0.15                      # EU: flex + stiffener top below the trim's face skin
+TAPE_T = 0.06                             # 3M 467MP double-sided tape where a tape point is left (docs/ASSEMBLY.md)
+SHT_CHIP = (1.5, 1.5, 0.5)                # DATASHEET Sensirion SHT45 DFN-4 body
+# spring fingers: Harwin S7081-42R (the back cover's end contacts; EU)
 FINGER = (3.18, 6.25)                     # DATASHEET S7081-42R body w x l (drawing S7081-42R iss. 7)
 FINGER_PAD = (3.60, 6.65)                 # DATASHEET recommended pad layout
 FINGER_FREE, FINGER_WH_MIN = 2.30, 1.70   # DATASHEET free height, recommended minimum working height
 FINGER_WH = 2.0                           # design working height (datasheet recommends 2.10)
 FINGER_TOL = 0.2                          # z stack tolerance (prints + flex) the working height must absorb
-FINGERS = ((24.65, 45.5), (29.05, 45.5))  # +5V (outer), GND (inner) finger centres (x, y), long axis along y: in the
-                                          # corner, left of the flex run, inside the shelf's print limit
-SHELF_UNDER_Z = 7.0                       # shelf underside: 45 deg out from the seal band up to this height, then flat
-SHELF_OUT = 2.8                           # flat underside beyond the 45 deg part (<= 3.0 prints unsupported)
-TARGET_T = 0.6                            # jumper pad end thickness, flex + stiffener (pads under the fingers)
-TARGET_X = (22.6, 31.1)                   # jumper pad end extent across (room x)
-TARGET_Y0 = 41.8                          # jumper pad end's lower edge (the run joins here); it extends up over the fingers
-TARGET_END = 1.6                          # pad end beyond the fingers' pads (upwards)
-JUMPER_JOIN = 0.3                         # the jumper's run ends this far into the pad end (clear of the fingers)
 
-# ---- microphone (D-29): I2S MEMS mic on the sensor flex, push-to-talk ----
-# PUI Audio DMM-4026-B-I2S-R, bottom port, on the flex's underside on the run below the flange band, before
-# the bottom fold (D-47). Its port faces the face skin through a hole in flex + stiffener, sealed to the skin
-# by an adhesive gasket, and a sound hole through the skin.
+# ---- microphone (D-29, D-50): PUI Audio DMM-4026-B-I2S-R, bottom port, I2S ----
+# No top-port I2S part is in production (2026-10); the bottom-port part sits upside down under a small carrier
+# soldered on the ring board by its edge pads; a tube on the face plate seals from the carrier to the sound hole.
 MIC = (3.00, 4.00, 1.00)                  # DATASHEET body w x l x h (DMM-4026-B-I2S-R rev A)
 MIC_PORT_IN = 1.00                        # DATASHEET port centre from the body's port end
-MIC_Y = -44.4                             # body centre along the run (room y), port end up
-MIC_FLEX_Y = 2.0                          # body centre from the corner run's centre line (FLEX_X), inwards (-x)
-MIC_SEC_W = 5.4                           # widened flex section: edge from FLEX_X, inwards
-MIC_SEC_Y = (-49.5, -41.9)                # widened section's extent along the run (room y): below the flange, above
-                                          # the bottom fold
-MIC_FLEX_HOLE_D = 0.5                     # port hole through flex + stiffener
-MIC_GASKET_D = 2.6                        # adhesive gasket ring OD (ID = MIC_SKIN_HOLE_D), FLEX_SKIN_GAP thick
-MIC_SKIN_HOLE_D = 1.0                     # sound hole through the face skin
-MIC_CLR = 0.5                             # flex section and mic body to the insert and the bay frame
+MIC_FLEX_Y = 2.0                          # EU: body centre from the flex centre line
+MIC_FLEX_HOLE_D = 0.5                     # port hole through flex / carrier
+MIC_GASKET_D = 2.6                        # gasket ring OD (ID = MIC_SKIN_HOLE_D)
+MIC_SKIN_HOLE_D = 1.6                     # sound hole through the face skin (1.0 closed up on the print, D-61)
+MIN_PRINT_HOLE = 1.5                      # smallest open vertical hole the 0.4 mm nozzle prints reliably (D-61)
+MIC_AT = (28.5, 63.0)                     # NA: carrier and port centre (room x, y), top right beside the MSR-2
+MIC_CARRIER = (7.0, 6.0, 0.8)             # carrier w, h, FR4 t: flat on the ring board on castellated edge pads
+MIC_WIN = 0.3                             # ring board window round the mic body (the mic hangs into it)
+MIC_BODY_Y = MIC_AT[1] + (MIC[1] / 2 - MIC_PORT_IN)   # mic body centre (port end down, port under MIC_AT)
+MIC_TUBE = (3.2, 1.6, 0.3)                # face plate's sound tube: OD, bore, gasket under its foot
+
+# ---- ring board (D-50, D-68): FR4 round the insert's collar, against the wall, under the face plate ----
+RING_T = 1.6
+RING_SIDE_CLR = 0.7                       # board edge to the face plate's side wall (beyond SPLIT_CLR)
+RING_WIN_CLR = 0.3                        # board's window round the seal band
+RING_LAND = 1.5                           # flat land at the flange taper's foot over the board's inner edge (D-68)
+RING_RIB = (1.0, 0.15)                    # crush ribs on the collar's outside: width, interference into the board's
+                                          # window edge (press fit for handling, D-68; COUPON coupon_ribs)
+RING_RIBS = (("x", 22.0), ("y", 14.0))    # ribs on each straight side: along x at y +-22, along y at x +-14
+RING_R = 3.4                              # outer corner radius
+RING_KEEP = 8.0                           # copper path from the box opening's edge, along the wall (front layer: plus
+                                          # the board's edge, RING_T); mains to 5 V target as on the wiring board (D-24)
+SHT_AT = (0.0, -51.3)                     # SHT45 on the ring board (room x, y), in the face plate's vented bay
+RING_NUT = (4.35, 1.5)                    # DATASHEET Wurth WA-SMSI M2 L1.5 9774015243R (SMT spacer): body diameter,
+                                          # height; three under the MSR-2's board (D-68)
+RING_NUT_HOLE, RING_NUT_PAD = 3.0, 5.3    # DATASHEET 9774015243R: unplated hole for its spigot, solder pad diameter
+# small parts on the ring board: centre (room x, y), body w, h, max height
+RING_SMALL = {"C1": ((21.0, 50.6), (1.6, 3.2, 1.8)),     # 22 uF 10 V 1206 at J1 (Samsung CL31A226KPHNNNE, 1.6 +-0.2)
+              "C2": ((2.6, -51.3), (0.5, 1.0, 0.55)),    # SHT45 100 nF 0402 (0.5 +-0.05)
+              "C3": ((32.4, 58.8), (0.5, 1.0, 0.55)),    # microphone 100 nF 0402
+              "R1": ((21.0, 62.4), (1.0, 0.5, 0.40))}   # I2S SD pull-down 100 k 0402 (0.35 +-0.05)
+
+# ---- battery-free remote (D-50): two spring pins from the wiring board's 5 V area to the back cover's pads ----
+# Harwin P70-2200045 SMT spring pin with peg (drawing P70-2200045 iss. 2, 2021-06-04). They stand on a riser board in
+# a pocket under the pocket floor, through two holes in the floor (pin-filled barrier openings, human decision
+# 2026-10-10); barrel and plunger enter windows in the cover's back onto pads on the cover flex. Two SMT spacer posts
+# carry the riser and +5 V / GND up from the wiring board. The EU 5 V board carries the same pins (D-59).
+PIN_FREE = 8.20                           # DATASHEET free height above the board
+PIN_WH = (6.40, 7.10, 7.20)               # DATASHEET working height: minimum, normal, maximum
+PIN_TOL = 0.3                             # stack tolerance the design working height must absorb (printed parts, boards)
+PIN_FLANGE = (2.00, 1.00)                 # DATASHEET flange diameter, height
+PIN_BARREL = (1.54, 6.20)                 # DATASHEET barrel diameter, top above the board
+PIN_PLUNGER_D = 0.90                      # DATASHEET plunger
+PIN_PEG = (1.00, 2.10)                    # DATASHEET peg diameter, length below the board
+PIN_PAD_D, PIN_HOLE_D = 2.20, 1.20        # DATASHEET recommended solder pad, plated through hole for the peg
+PIN_RADIAL = 0.2                          # floor holes round barrel and plunger
+RISER = (14.0, 12.0, 0.8)                 # riser board w, h, t
+RISER_C = (13.25, -13.4)                  # riser centre (room x, y): posts at its lower corners (in the wiring board's
+                                          # 5 V area), the pins above and between them (D-79)
+RISER_CLR = 0.3                           # riser to its pocket under the floor
+POSTS = ((9.85, -16.5), (16.65, -16.5))   # spacer posts on the wiring board's 5 V area (+5V, GND), level, the pins either side (D-60)
+# each post: Wurth WA-SMSI M2 SMT spacer (soldered on the wiring board, 4.35 OD, through bore) + WA-SBRIE M2
+# male-female brass standoff (4 mm hex) screwed into it; an M2 screw through the riser into the top; heatshrink over
+# the stack
+POST_STACK = (7.0, 10.0)                  # DATASHEET SMSI 9774070243R L 7 +-0.1, SBRIE 971100244 L 10
+POST_THREAD = (5.0, 5.0)                  # DATASHEET SBRIE 971100244: male thread length, internal thread depth
+POST_SPIGOT = (2.8, 1.4)                  # DATASHEET SMSI 9774070243R: locating spigot diameter, length (in the
+                                          # land pattern's 3.0 unplated hole; solder on the front ring only)
+RISER_SCREW_L = 5.0                       # M2 x 5 pan head through the riser into the SBRIE
+M2_HEAD = (4.0, 1.6)                      # DATASHEET ISO 7045 M2 pan head dk, k (max)
+POST_SP = (4.62, 0.4)                     # post across the hex corners, sleeve (heatshrink) wall
 
 # ---- replacement back cover (D-35): the BILRESA E2490 without cells, powered from the plate ----
 # Remote coordinates: origin = remote centre, x / y as the front view, z = 0 the back's outer face.
@@ -224,20 +309,22 @@ BC_CELL_Z = 6.8                           # ESTIMATE cell axis above the back's 
 BC_TERM_Y = -1                            # REF terminal end (VBAT / GND contacts) at -y, the LED end (FCC photos)
 BC_VBAT_X = -1                            # REF VBAT contact on the -x cell, GND on the +x cell (FCC photos; check on a unit)
 BC_WALL = 1.6                             # MEASURED cover shell thickness (human, 2026-10-09)
+BC_SIDE_WALL = BC_WALL - 0.1              # side wall: 0.1 more room inside all round for the remote's housing (D-75)
 BC_PRY = (6.0, 1.2)                       # MEASURE screwdriver notch in the rim at the bottom end (-y): width, depth
 # snap clips: one at each end (x = 0), free-standing inside the end wall, below the rim; the housing's edge comes
 # down into the cover and the clip's hook catches its wall
 BC_LATCH_W = 3.1                          # MEASURED clip width, both ends (human, 2026-10-09)
 BC_LATCH_T = 1.2                          # ESTIMATE ear thickness (radial; photos)
-BC_LATCH_HOOK = (0.7, 0.7)                # hook at the clip's tip, inwards (catches the housing's wall): both 0.2 deeper
-                                          # than the original's 0.5 (did not catch on the print, human 2026-10-09)
+BC_LATCH_HOOK = (0.8, 0.7)                # hook at the clip's tip, inwards (catches the housing's wall): top 0.2 deeper
+                                          # than the original's 0.5, bottom 0.3 (test prints, human 2026-10-09/10)
 BC_LATCH_RIM_GAP = 1.0                    # MEASURED top clip's top below the rim (human, 2026-10-09)
-# clip tops above the inside floor: bottom end (-y) MEASURED; top end (+y) from BC_LATCH_RIM_GAP
-BC_LATCH_TOPS = (4.7, B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
+# clip tops above the inside floor: bottom end (-y) MEASURED 4.7 plus 0.2 towards the rim (test print, human
+# 2026-10-10); top end (+y) from BC_LATCH_RIM_GAP
+BC_LATCH_TOPS = (4.7 + 0.2, B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
 # innermost point (hook tip) in from the outside rim: bottom end from its face 2.9 in (MEASURED on a print, human
 # 2026-10-09), top end measured 2.8 on the original; both plus the deeper hooks. Where reach - hook - thickness
 # < BC_WALL the clip's back merges into the end wall.
-BC_LATCH_REACH = (2.9 + 0.7, 2.8 + 0.2)
+BC_LATCH_REACH = (2.9 + BC_LATCH_HOOK[0], 2.8 + 0.2)
 # side ribs at mid-length (y 0), free-standing on the shell's curved floor, against flex (human, 2026-10-09)
 BC_SIDE_TAB = (6.0, 0.8)                  # length along y (ESTIMATE, photos), thickness (human, 2026-10-09)
 BC_SIDE_TAB_GAP = 36.2                    # MEASURED inside spacing between the ribs
@@ -261,28 +348,31 @@ BC_FLEX_SNAP_GAP = 0.05                   # lip underside above the stiffener's 
 BC_FLEX_SNAP_ROOT = 0.4                   # post root: shell left under the relief round each post (the post flexes)
 BC_FLEX_SNAP_RELIEF = 0.3                 # relief round each post (sides and behind)
 BC_END_LIP = (1.2, 1.0, 0.1)              # lip in front of each block's foot: thickness, height above the ledge, gap
-BC_END_SNAP = (1.0, 0.35, 0.1, 0.8, 0.05)  # snap hook beside each block's outer side over the end section's outer edge:
-                                          # post thickness (flexes in x), lip reach over the edge, post to the edge, lip
-                                          # thickness, lip to the copper face (PETG only, human 2026-10-09)
-BC_END_SNAP_Z = (7.0, 9.0)                # lip band (below the rim, nothing enters the housing's contact slots)
-BC_END_SNAP_BACK = 2.0                    # post length behind the stiffener (into the block's side)
+BC_END_SLOT = (0.8, 0.1, 0.5, 0.8, 0.1)   # slot along each block's outer face, the end section slides down it: side wall,
+                                          # wall to the section's edge, lip reach over the edge, lip thickness, lip to copper
 BC_STEEL_CLIP = (6.0, 0.8, 0.45)          # clips at both ends of the plate's pocket: width, tab thickness, hook over the
                                           # plate's edge (broke in PLA; the cover prints in PETG, to verify)
 BC_STEEL_CLIP_ROOT = 0.4                  # tab root: shell left under the relief round each tab (the tab flexes)
 BC_STEEL_CLIP_RELIEF = 0.3                # relief round each tab (sides, behind, and towards the plate)
 BC_STEEL_Y = -5.5                         # steel plate centre in the cover (the EU magnet sits under it, clear of the switch cup)
-BC_FLEX_Z = FINGER_WH                     # flex underside above the back face: fingers at working height on flush pads
-BC_FINGERS = ((14.4, 4.0), (14.4, -5.0))  # +5V, GND spring fingers (S7081-42R) on the cover's back (x, y), long axis y
+BC_FLEX_Z = 2.0                           # flex underside above the back face (the regulator hangs in a recess under it)
+BC_FINGERS = ((13.2, -8.9), (13.2, -13.5))    # +5V, GND pads on the cover flex (x, y), the pad section above the GND
+                                          # contact post (D-79): the spring pins come up
+                                          # through windows in the back onto them, either side of the posts' line (D-53)
 BC_DOME_DY = 0.0                          # DATASHEET contact dome 3.15 +-0.25 from the bend end of the 6.25 body (~centred)
-BC_WIN_CLR = 0.3                          # finger window round the finger body
-BC_STRIP = (11.3, 16.5)                   # flex pad section across x (finger windows + the +3V3 lane past the GND finger)
-BC_RUN = (10.7, 13.3)                     # flex run across x to the terminal end (clear of the curved wall; slot roof <= 3 mm)
-BC_JOG = 6.0                              # y length of the regulator section between the pad section and the run
+BC_WIN_CLR = 0.3                          # window round the spring pin's barrel (it enters the window)
+BC_PAD_D = 2.6                            # gold pad under each spring pin (cover flex)
+BC_STRIP = (10.7, 16.5)                   # pad and regulator sections across x: +3V3 lane left of the pads, GND right
+BC_RUN = (7.2, 9.8)                       # flex run across x to the terminal end: past the GND contact post's inner face,
+                                          # clear of the steel plate's ridge (D-79)
+BC_RUN_JOG = 2.0                          # jog from the pad section's inner edge across to the run, at its bottom
+BC_JOG = 6.6                              # y length of the regulator section, above the pad section (D-53)
+BC_PAD_LOW = 0.6                          # flex below the lower pad (the pad section ends just above the terminal bend)
 # 3.3 V regulator on the cover flex (D-41), copper down in a recess in the cover: TI TLV75533PDBVR + 1 uF in / out
-BC_REG = {"U1": (13.1, -11.8), "C3": (14.6, -9.2), "C4": (12.5, -14.6)}   # part centres (remote x, y)
+BC_REG = {"U1": (13.6, -3.3), "C3": (15.0, -5.7), "C4": (13.2, -0.7)}    # part centres (remote x, y)
 BC_REG_BODY = (3.0, 3.0, 1.45)            # DATASHEET TLV755P DBV (SOT-23-5): body + leads <= 3.0 x 3.0, 1.45 max high
 BC_CAP0402 = (1.0, 0.5, 0.55)             # DATASHEET 0402 capacitor (CL05A105KP5NNNC): 1.0 x 0.5, 0.55 max high
-BC_REG_RECESS = (11.4, 16.4, -15.0, -8.8) # recess under the regulator section (x0, x1, y0, y1), down to BC_REG_FLOOR
+BC_REG_RECESS = (11.4, 16.4, -6.5, -0.3) # recess under the regulator section (x0, x1, y0, y1), down to BC_REG_FLOOR
 BC_END_T = 0.4                            # FR4 stiffener behind the flex's end section
 BC_END_H = 8.8                            # flex end section height above the flex plane: the contact pads plus 0.5
 BC_END_R = AAA_D / 2 - 0.25               # above the rim, blocks and end section stay inside this circle round each cell
@@ -296,39 +386,8 @@ BC_BRIDGE_H = 2.0                         # MEASURE flex band passing under the 
 BC_LANE_H = 0.6                           # +3V3 lane across the band, above the bend line (below the contact fingers)
 BC_BLOCK_T = 4.0                          # contact block depth behind the end section (along the cell axis)
 BC_BLOCK_W = BC_CONTACT_W + 1.0           # contact block width across
-# pocket-floor insert (face plate side): printed floor, sensor-flex tongue with flush pads under the fingers
-BC_FLOOR_T = 0.6                          # floor insert under the remote (raises it by this)
-BC_FLOOR_CLR = 0.3                        # floor insert to the pocket wall
-BC_FLOOR_PAD = (4.0, 7.0)                 # flush gold pads on the tongue under the fingers (finger 6.25 long)
-BC_TONGUE_W = 5.0                         # sensor-flex tongue width
-BC_TONGUE_Y = -12.0                       # tongue run from the right channel into the pocket (y), below the pads
-BC_RECESS_CLR = 0.02                      # tongue recess depth over the flex thickness
-# NA (D-49): the tongue is part of the sensor flex (face plate side). It leaves the finger section's left edge, runs
-# left in the band above the flange under the trim's skin, a 45 deg fold turns it down the plate (copper up), along a
-# groove in the skin's underside over the flange and under the trim's tab in the island notch, turns in its plane to
-# meet the pocket's top arc square, down the wall behind the trim's strip (in a groove in the arc above the wall
-# plane, in front of the wall below it), under the floor insert (a channel in its underside), up through a slot onto
-# the pad strip on its top (copper up, pads flush) and the tail down through a second slot. A notch from each slot to
-# the floor insert's edge lets the tongue be laid in sideways (no threading). The floor insert hangs from the
-# strip's foot (snap), so face plate, strip, tongue and floor insert come off together; nothing is left on the insert.
-BC_NA_WALL_X = 16.5                       # tongue goes down the pocket's top arc here (room x of the arc point)
-BC_NA_TURN = 3.5                          # radial run on the island from the turn to the arc's top edge
-BC_NA_BAND_Y = 43.0                       # tongue centre (room y) in the band above the flange
-BC_NA_NECK_W = 2.4                        # tongue width from the finger section to the pad strip on the floor
-BC_NA_TAB_W = 4.0                         # trim tab in the island notch (the tongue in a groove in its underside)
-BC_NA_TAB_CLR = 0.25                      # trim tab and strip to the insert's notch and groove sides
-BC_NA_TGROOVE = (BC_NA_NECK_W + 0.4, 0.3, 0.5)   # groove for the tongue in the trim's underside: width, depth, depth
-                                          # at the fold (two layers)
-BC_NA_STRIP = (4.4, 1.0)                  # trim strip down the pocket's arc over the tongue: width, thickness
-BC_NA_TROOM = 0.3                         # room for the tongue behind the strip
-BC_NA_JOG_E = 0.15                        # the groove's 45 deg end runs this far behind the strip's jog (room for the tongue)
-BC_NA_DOWN = (15.4, 3.0, 7.8)             # floor: x centre and width of the strip down to the pads, pad strip top y
-BC_NA_GROOVE_BOT = 0.5                    # wall groove's lower end (above the wall plane), 45 deg down to the wall
-BC_NA_SLOT = 2.0                          # floor insert slots (the tongue rises / the tail drops): length along y
-BC_NA_TAIL = 3.0                          # tail under the floor insert beyond the tail slot
-BC_NA_FLOOR_TAB = (4.4, 0.8, 3.4)         # floor insert's tab in front of the strip's foot: width, thickness, height
-BC_NA_FOOT_HOOK = (0.4, 0.8, (1.2, 2.4))  # strip foot's hook into the tab's window: reach, height, window z above
-                                          # the floor insert's top
+BC_BLOCK_XO = BC_CELL_X + BC_CONTACT_W / 2 + 0.5            # contact blocks' outer faces (|x|)
+BC_END_XO = BC_BLOCK_XO - BC_END_SLOT[0] - BC_END_SLOT[1]   # end section's outer edges (|x|), inside the slots
 
 # ================= derived =================
 BC_CELL_END_Y = BC_CELL_Y0 + BC_TERM_Y * AAA_L / 2                    # a full-length cell's terminal end
@@ -344,6 +403,7 @@ DECK_Z = PT - SKIN                        # insert flange top = trim face unders
 
 WB_FRONT_Z = WELL_FLOOR_Z - SW_BODY[2]    # board front face = rocker PCB seat (measured from the panel's front face)
 WB_BACK_Z = WB_FRONT_Z - WB[2]
+MOUNT_FACE_Z = WB_FRONT_Z + STANDOFF_L    # bosses' faces: the standoffs' bodies between them and the board
 Z_BOT = PANEL_BOT_Z                       # lowest point of the insert = print bed (panel underside)
 
 # insert outline
@@ -360,33 +420,29 @@ TAPER_D = round(hypot(_cx, _cy - (POCKET_OUT[1] / 2 - _r)) - _r + 0.6, 1)
 
 # MSR-2 bay sits just above the top screw (boss + countersink), SHT45 bay as before
 MSR_Y = SCREW_PITCH / 2 + max(BOSS_R + SPLIT_CLR, SCREW_HEAD_D / 2 + 1.0) + MSR[1] / 2 + CLR
-MSR_BACK_Z = PT - RADAR_WALL - MSR[2]     # MSR-2 board back (CN2 side) towards the wall
+MSR_BACK_Z = RING_T + B2B_STACK         # MSR-2 board back (CN2 side): on CN2 on the ring board, front on the skin
 MSR_CN2_X = MSR_BOARD[0] / 2 - MSR_CN2_IN
+# the MSR-2's back switches stand deeper than the CN2 stack: notches in the ring board's top edge
+MSR_SW_CUTS = [(x - MSR2_SW[0] / 2 - MSR2_SW_CLR, x + MSR2_SW[0] / 2 + MSR2_SW_CLR,
+                MSR_Y + MSR_BOARD[1] / 2 - MSR2_SW[1] - MSR2_SW_CLR) for x in MSR2_SW_X]   # x0, x1, y0 (room)
+RING_NOTCH_R = 0.5                        # inside corner radius of milled notches
+MSR_SPACERS = [(x, MSR_Y + y) for x, y in MSR2_POSTS]   # ring board's SMT spacers under the MSR-2, below its posts (room)
 SKIN_Z = PT - SKIN                        # underside of the trim's face skin
-FLEX_HI_Z = SKIN_Z - FLEX_SKIN_GAP - STIFF_T - SFLEX_T  # flex underside in the corner and the bottom
-FLEX_BAND_Z = DECK_Z                                    # flex underside down the flange band (on the flange top)
-TARGET_TOP_Z = FLEX_HI_Z - FINGER_WH                    # target pads at the fingers' working height
-SHELF_TOP_Z = TARGET_TOP_Z - TARGET_T
-SHT_ENTRY = SHT[0] / 2 + 0.4 + 1.6 + 1.0  # flex tail enters the SHT45 bay frame from the right
-FLEX_X = FLEX_RIGHT - FLEX_W / 2                                      # flex centre line on the corner run
-FLEX_BAND_X = FLEX_RIGHT - FLEX_RUN_W / 2                             # flex centre line down the flange band
 FRAME_RIGHT = MSR[0] / 2 + CLR + 1.6                                  # MSR-2 bay frame's right wall, outer face
 FRAME_BOT = MSR_Y - MSR[1] / 2 - CLR - 1.6                            # MSR-2 bay frame's lower wall, outer face
-FLEX_EXIT_X = FRAME_RIGHT + FLEX_EXIT                                 # rise starts here (room x)
-FINGER_SEC_IN = min(x for x, _ in FINGERS) - FINGER_PAD[0] / 2 - 0.3  # finger section's inner (left) edge
-FINGER_SEC_Y = (FINGERS[0][1] - FINGER_PAD[1] / 2 - 0.5, MSR_Y - FLEX_W / 2 - 0.5)   # from the pads to the fold
-TARGET_Y = (TARGET_Y0, FINGERS[0][1] + FINGER_PAD[1] / 2 + TARGET_END)  # pad end extent along y
-MIC_X = FLEX_X - MIC_FLEX_Y                                           # mic body centre (room x)
-MIC_PORT = (MIC_X, MIC_Y + (MIC[1] / 2 - MIC_PORT_IN))                # port / sound hole axis (room x, y)
-MIC_SEC_IN = FLEX_X - MIC_SEC_W                                       # widened section's inner (left) edge
-FLEX_Z_LO = PLUG_STIFF_T + SFLEX_T / 2                                      # flex centre at the MSR-2 end
-FLEX_Z_HI = FLEX_HI_Z + SFLEX_T / 2                                    # flex centre in the corner and the bottom
-FLEX_Z_BAND = FLEX_BAND_Z + SFLEX_T / 2                                # flex centre down the band (on the flange)
-FLEX_Z_SHT = SKIN_Z - 0.5 - SHT_CHIP[2] - SFLEX_T / 2                  # SHT45 on the flex top, 0.5 under the vents
-_rc = ISLAND_R + FLANGE
-_xb = FLEX_RIGHT - FLEX_RUN_W                                          # band run's left edge: last onto the flange
-FLEX_Y_ON = FLANGE_OUT[1] / 2 - _rc + sqrt(max(0.0, _rc ** 2 - (_xb - (FLANGE_OUT[0] / 2 - _rc)) ** 2)) - 0.4
-FLEX_Y_CLIMB = FLEX_Y_ON + 1.4                                        # band run climbs onto the flange from here
+MIC_PORT = (MIC_AT[0], MIC_AT[1])                                     # NA sound hole axis (room x, y)
+# ring board
+_ring_in = SKIN + SPLIT_CLR + RING_SIDE_CLR                            # trim's outer edge to the board's edge
+RING_HALF_W = PW / 2 - _ring_in
+RING_Y = (PLATE_Y - PH / 2 + _ring_in, PLATE_Y + PH / 2 - _ring_in)
+RING_INNER = (SEAL[0] + 2 * RING_WIN_CLR, SEAL[1] + 2 * RING_WIN_CLR, PLUG_R + COLLAR_LIP + RING_WIN_CLR)
+RING_PARTS_TOP = RING_T + max([FH12[2]] + [d[2] for _, d in RING_SMALL.values()])   # tallest part on the ring board
+FRAME_Z0 = RING_PARTS_TOP + SPLIT_CLR     # face plate's bay frames end here, over the ring board's parts (D-68)
+# spring pins: tip on the cover flex's pads, riser board under the pocket floor
+PIN_TIP_Z = SEAT_Z + BC_FLEX_Z
+RISER_BOT = WB_FRONT_Z + POST_STACK[0] + POST_STACK[1]
+RISER_TOP = RISER_BOT + RISER[2]
+PIN_WORK = PIN_TIP_Z - RISER_TOP          # pins' design working height on the pads
 
 
 def pocket_wall_x(y):
@@ -398,14 +454,17 @@ def pocket_wall_x(y):
 
 def end_top(a, b, n=48):
     """Top edge (x, z) of a contact block / flex end section from x = a to x = b: flat at BC_END_H above the flex,
-    above the rim no further out than BC_END_R from the cell axis on that side."""
+    no further out than BC_END_R from the cell axis on that side above the rim, and outboard of the axis above it
+    (the battery holder shell wraps the cell there)."""
     cx = BC_CELL_X if a + b > 0 else -BC_CELL_X
     pts = []
     for i in range(n + 1):
         x = a + (b - a) * i / n
         dx = abs(x - cx)
-        zc = BC_CELL_Z + sqrt(BC_END_R ** 2 - dx ** 2) if dx < BC_END_R else B_SEAM_Z
-        pts.append((x, min(BC_FLEX_Z + BC_END_H, max(B_SEAM_Z, zc))))
+        zc = BC_CELL_Z + sqrt(BC_END_R ** 2 - dx ** 2) if dx < BC_END_R else BC_CELL_Z
+        outboard = (x - cx) * cx > 0
+        floor = BC_CELL_Z if outboard else B_SEAM_Z
+        pts.append((x, min(BC_FLEX_Z + BC_END_H, max(floor, zc))))
     return pts
 
 
@@ -415,51 +474,12 @@ def pocket_wall_y(x, w=None):
     return (POCKET_IN[1] / 2 - POCKET_IN[0] / 2) + sqrt(max(0.0, a * a - x * x))
 
 
-def tongue_arc():
-    """NA tongue (D-47) at the pocket's top arc: arc point P on the inner wall, outward radial unit u, the
-    turn point Q on the island (P + BC_NA_TURN u); the straight run down across flange and island is at Q's x."""
-    r = POCKET_IN[0] / 2
-    yc = POCKET_IN[1] / 2 - r
-    p = (BC_NA_WALL_X, pocket_wall_y(BC_NA_WALL_X))
-    u = (p[0] / r, (p[1] - yc) / r)
-    q = (p[0] + BC_NA_TURN * u[0], p[1] + BC_NA_TURN * u[1])
-    return p, u, q
-
-
-def na_tongue_route():
-    """NA tongue centre line (D-49), 3D, from the finger section's left edge to the floor insert's first slot: the
-    band (rising to the trim's groove), the 45 deg fold, down the plate, the radial turn, behind the strip down the
-    arc's groove, the 45 deg jog out of it, down the wall, under the floor insert radially in, down the floor."""
-    p, u, q = tongue_arc()
-    z_sec = FLEX_HI_Z + SFLEX_T / 2
-    z_g = SKIN_Z + BC_NA_TGROOVE[1] - SFLEX_T / 2
-    r_up = BC_NA_STRIP[1] + BC_NA_TROOM / 2                 # behind the strip in the groove
-    r_lo = -BC_NA_TROOM / 2 - 0.03                          # between the strip's proud foot and the wall (its curve)
-    z_f = SEAT_Z + SFLEX_T / 2                              # on the pocket floor, under the floor insert
-    gb = BC_NA_GROOVE_BOT
-    zj = lambda r: gb + r + BC_NA_TROOM / 2 - BC_NA_JOG_E / 2   # mid-line between the strip's jog and the groove's end
-    a, b = (p[0] + r_up * u[0], p[1] + r_up * u[1]), (p[0] + r_lo * u[0], p[1] + r_lo * u[1])
-    xd, _, y_pad = BC_NA_DOWN
-    s_floor = (b[0] - xd) / u[0]
-    f = (xd, b[1] - s_floor * u[1])
-    return [(FINGER_SEC_IN, BC_NA_BAND_Y, z_sec), (FINGER_SEC_IN - 1.5, BC_NA_BAND_Y, z_g), (q[0], BC_NA_BAND_Y, z_g),
-            (q[0], q[1], z_g), (*a, z_g), (*a, zj(r_up)), (*b, zj(r_lo)), (*b, z_f), (*f, z_f), (xd, y_pad + BC_NA_SLOT, z_f)]
-
-
 def in_rr(x, y, w, h, r):
     """Inside a rounded rectangle w x h (corner radius r) centred on the origin."""
     dx, dy = abs(x) - (w / 2 - r), abs(y) - (h / 2 - r)
     if dx <= 0 or dy <= 0:
         return abs(x) <= w / 2 and abs(y) <= h / 2
     return hypot(dx, dy) <= r
-
-
-def flange_exit():
-    """Horizontal run from the pass-through's vertical leg along PASS_DIR to the flange's outer edge."""
-    t = 0.0
-    while in_rr(PASS_X + t * PASS_DIR[0], PASS_Y + t * PASS_DIR[1], *FLANGE_OUT, ISLAND_R + FLANGE):
-        t += 0.01
-    return t
 
 
 def flex_half_width(x):
@@ -472,25 +492,53 @@ def flex_half_width(x):
     return w - (w - FLEX_W / 2) * (x - p) / FLEX_NECK_L
 
 
-def jumper_path():
-    """5 V flex jumper centre line (room x, y, z): J2 -> service loop (Z-fold in the gap between board
-    and insert) -> pass-through (along the bottom of its 45 deg leg) -> pad end on the corner shelf."""
-    zk = -1.0                                            # bend of the pass-through (insert.pass_through)
+def pass_points():
+    """Pass-through axis (D-74): the straight bore's point in the underside plane (Z_BOT), its top where it meets the
+    flat slot, the slot's end (room x, y, z)."""
     ux, uy = PASS_DIR
-    r = PASS_D / 2
-    chord = r - sqrt(r * r - (JUMPER_W / 2) ** 2)        # the strip lies across the bottom of the round leg
-    o = (r - chord - JUMPER_T) / sqrt(2)                 # strip centre below the leg's axis (plan and z parts)
-    t = flange_exit()
-    e = (J2_POS[0], WB_Y + J2_POS[1] + FH12[1] / 2 + 0.3, WB_FRONT_Z + FH12[2] / 2)
-    lo, mid, hi = WB_FRONT_Z + FH12[2] + 1.5, (WB_FRONT_Z + Z_BOT) / 2, Z_BOT - 2.5
-    y0 = WB_Y + J2_POS[1] + 9.0
-    fold = JUMPER_SERVICE / 2                            # two runs of the Z-fold add the spare length
-    xe, ye = PASS_X + (t + o) * ux, PASS_Y + (t + o) * uy
-    return [e, (JUMPER_X, y0, lo), (JUMPER_X, y0 + fold, lo), (JUMPER_X, y0 + fold, mid),
-            (JUMPER_X, y0, mid), (JUMPER_X, y0, hi), (JUMPER_X, PASS_Y - 4.0, hi),
-            (PASS_X + o * ux, PASS_Y + o * uy, Z_BOT - 1.7), (PASS_X + o * ux, PASS_Y + o * uy, zk - o),
-            (xe, ye, zk + t - o),                                            # leaves the flange's corner
-            (xe, TARGET_Y[0] + JUMPER_JOIN, SHELF_TOP_Z + TARGET_T + JUMPER_T / 2)]
+    e = (*PASS_E, PASS_TOP_Z)
+    m = (e[0] - PASS_RUN * ux, e[1] - PASS_RUN * uy, Z_BOT)
+    f = (e[0] + PASS_SLOT[2] * ux, e[1] + PASS_SLOT[2] * uy, PASS_TOP_Z)
+    return m, e, f
+
+
+def pass_at(z):
+    """Point on the bore's axis at height z."""
+    m, e, _ = pass_points()
+    t = (z - m[2]) / (e[2] - m[2])
+    return tuple(m[i] + t * (e[i] - m[i]) for i in range(3))
+
+
+def jumper_path():
+    """5 V FFC centre line (room x, y, z): J2 -> out to the right, up past the spacer posts -> between the rocker and the
+    top-right standoff to the mouth -> the straight bore -> the flat slot -> out of the flange onto the ring board ->
+    the fold -> J1 (D-74)."""
+    return _jumper_pts(jumper_fold())
+
+
+def _jumper_pts(fold):
+    """The route with a fold of length `fold` (four flat layers along -x from J1's x, on the ring board)."""
+    _, e, f = pass_points()
+    jy = WB_Y + J2_POS[1]
+    ent = (J2_POS[0] + FH12[1] / 2 + 0.3, jy, WB_FRONT_Z + FH12[2] / 2)          # J2 turned: cable out to +x
+    lo = WB_FRONT_Z + FH12[2] + 1.5
+    j1 = (RING_J1[0], RING_J1[1] - FH12[1] / 2 - 0.3, RING_T + 0.6)
+    xr, xl, yb = RING_J1[0], RING_J1[0] - fold, JUMPER_FOLD_Y
+    zs = [RING_T + 0.1 + i * JUMPER_LAYER for i in range(4)]
+    layers = [(xr, yb, zs[0]), (xl, yb, zs[0]), (xl, yb, zs[1]), (xr, yb, zs[1]),
+              (xr, yb, zs[2]), (xl, yb, zs[2]), (xl, yb, zs[3]), (xr, yb, zs[3])]
+    return [ent, (JUMPER_SIDE_X, jy, lo), (JUMPER_SIDE_X, JUMPER_TURN_Y, lo), JUMPER_WAYPOINT, pass_at(Z_BOT - 1.0),
+            e, f] + layers + [j1]
+
+
+def _length(pts):
+    return sum(hypot(*(b[i] - a[i] for i in range(3))) for a, b in zip(pts, pts[1:]))
+
+
+def jumper_fold():
+    """Fold length that leaves JUMPER_SPARE of the stock cable (4 mm of each end in its connector)."""
+    target = JUMPER_STOCK_L - 2 * JUMPER_END[1] - JUMPER_SPARE
+    return (target - _length(_jumper_pts(0.0))) / 4
 
 
 def jumper_length():

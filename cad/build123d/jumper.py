@@ -1,12 +1,10 @@
-"""5 V FLEX JUMPER (D-31, D-47, R9, R10): wiring board J2 -> pass-through -> pad end on the corner shelf.
+"""5 V CABLE (D-50, R9, R10): wiring board J2 -> pass-through -> J1 on the ring board.
 
-A single-layer flex carries 5 V, so nothing is wired or soldered at assembly. The
-connector end (stiffened) latches into J2, a Hirose FH12-6S slide-lock FPC connector on the board's
-front face. The run goes up the gap between board and insert at x = JUMPER_X with a Z-folded
-service loop (JUMPER_SERVICE of spare length, so it can be plugged in with the board held beside the
-insert), up the pass-through's vertical leg, along the bottom of its 45 deg leg (exits the flange's
-top-right corner) and onto the corner shelf, where its pad end (flex on an FR4 stiffener) carries the gold
-pads the face plate's spring fingers press on (D-49: the battery-free tongue is on the sensor flex).
+A stock FFC (6 contacts, 0.5 mm pitch) latched in Hirose FH12-6S slide-lock connectors at both ends, so nothing
+is wired or soldered at assembly. It leaves J2 to the right, runs up past the spacer posts at JUMPER_SIDE_X, between the
+rocker and the top-right standoff to the straight bore's mouth on the insert's underside, through the bore and the slot
+(D-74) and out of the flange onto the ring board,
+where the stock cable's spare lies folded flat in four layers beside J1 (D-68).
 """
 from build123d import Box, Pos
 from params import *
@@ -14,7 +12,7 @@ from common import ribbon
 
 
 def entry():
-    """Where the jumper leaves J2 (the connector is turned so the flex enters from +y)."""
+    """Where the jumper leaves J2 (the connector is turned so the flex enters from +x)."""
     return jumper_path()[0]
 
 
@@ -25,7 +23,7 @@ def path():
 def end():
     """Stiffened connector end, in J2."""
     x, y, z = entry()
-    return Pos(x, y - JUMPER_END[1] / 2, z) * Box(JUMPER_END[0], JUMPER_END[1], JUMPER_END[2])
+    return Pos(x - JUMPER_END[1] / 2, y, z) * Box(JUMPER_END[1], JUMPER_END[0], JUMPER_END[2])
 
 
 def length():

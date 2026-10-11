@@ -8,7 +8,7 @@ import sys
 import numpy as np
 from build123d import Box, Pos, Rectangle, Vector
 from params import *
-from common import slab, rr
+from common import slab, rr, stadium
 import insert
 import trim
 
@@ -39,7 +39,10 @@ def dims():
     check(m >= 0.5, f"switch well inside the pocket footprint (corner margin {m:.1f} mm, no undercut)")
     pin_y = min(SW_Y, SW_Y + SW_SW_DIR * SW_PIN_GRID[1]) - 1.2
     check(pin_y >= WB_Y + WAGO_Y + WAGO6[1] / 2, f"rocker pins (pad edge y {pin_y:.1f}) clear of the terminal block")
-    check(PASS_X * J2_POS[0] > 0, "5 V pass-through is on the same side as the 5 V connector")
+    check(PASS_E[0] * J2_POS[0] > 0, "5 V pass-through is on the same side as the 5 V connector")
+    stack = RING_T + B2B_STACK + MSR[2] + MSR_SKIN_GAP + RADAR_WALL
+    check(abs(PT - stack) < 1e-6, f"plate {PT} mm = ring board {RING_T} + CN2 stack {B2B_STACK} + MSR-2 {MSR[2]} + gap "
+                                  f"{MSR_SKIN_GAP} + radar skin {RADAR_WALL} (D-51, D-66; MSR[2] and B2B_STACK MEASURE)")
     mag_floor = SEAT_Z - MAGNET[2] - MAGNET_SETBACK
     check(Z_BOT <= mag_floor - SEAT_T + 1e-6, "floor >= SEAT_T under the magnet recess")
     pad = (B_W - 2 * B_BACK_RUN, B_H - 2 * B_BACK_RUN)
@@ -62,7 +65,7 @@ def dims():
     check(min(POCKET_WALL, BARRIER_MIN) >= V0_RATED_T, f"barrier walls >= V-0 rated thickness {V0_RATED_T} (fill V0_RATED_T from the datasheet)")
     msr_top = MSR_Y + MSR[1] / 2 + CLR
     check(msr_top <= PLATE_Y + PH / 2 - SKIN, f"MSR-2 bay top {msr_top:.2f} inside trim (<= {PLATE_Y + PH/2-SKIN})")
-    check(SHT_Y - SHT[1] / 2 - 0.4 >= PLATE_Y - PH / 2 + SKIN, "SHT45 bay inside trim")
+    check(SHT_AT[1] - SHT[1] / 2 - 0.4 >= PLATE_Y - PH / 2 + SKIN, "SHT45 bay inside trim")
     deepest = min(WB_BACK_Z - WAGO6[2], WB_BACK_Z - IRM[2])
     left = BOX_D + deepest
     print(f"       board {WB_FRONT_Z:.1f}..{WB_BACK_Z:.1f} mm, deepest part {deepest:.1f} mm; "
@@ -115,35 +118,201 @@ def pad_body_check(b):
           f"{gap:.2f} mm >= {PAD_BODY_GAP})")
 
 
-def mounting(ins):
-    """Board posts (D-28): bosses, tapped holes, posts against the board, KiCad holes."""
-    print("board mounting (screw-in snap posts)")
+def msr2_model():
+    """MSR-2 model (msr2.py): inside Apollo's case cavity, its front at the envelope's height, the radar on top."""
+    print("MSR-2 model (CO2 version)")
+    import msr2
+    bb = msr2.model().bounding_box()
+    check(bb.size.X <= MSR2_CASE[0] and bb.size.Y <= MSR2_CASE[1],
+          f"model {bb.size.X:.2f} x {bb.size.Y:.2f} inside the case cavity {MSR2_CASE[0]} x {MSR2_CASE[1]}")
+    check(bb.max.Z <= MSR2_CASE[2] + 1e-6, f"front {bb.max.Z:.2f} mm under the case's face ({MSR2_CASE[2]}) above the "
+                                           f"board's back")
+    check(abs(bb.max.Z - MSR[2]) < 1e-6, f"envelope height MSR[2] {MSR[2]:.2f} = the model's front")
+
+
+def scd_vent_checks(tr, msr_y, back_z, pt):
+    """Grille through the radar skin (D-65, D-69): open, the middle slot centred on the light sensor, the rest over
+    the SCD4x, off the radar; no separate light-sensor hole."""
+    print("grille: CO2 sensor and light sensor (D-65, D-69)")
+    from build123d import Box
+    import msr2
+    w, n, pitch, inset = MSR2_SCD_VENT
+    lx, ly = LUX_POS[0], msr_y + LUX_POS[1]
+    check(w >= MIN_PRINT_HOLE, f"slot width {w} >= {MIN_PRINT_HOLE} (prints open)")
+    for i in range(n):
+        x = lx + (i - (n - 1) / 2) * pitch
+        probe = Pos(x, ly, pt - RADAR_WALL / 2) * Box(w - 0.2, 0.4, RADAR_WALL + 0.2)
+        r = probe & tr
+        check(r is None or r.volume < 1e-4, f"slot {i + 1} at x {x:.1f} open through the {RADAR_WALL} mm skin")
+    v = msr2.scd_vents(0, msr_y, pt, RADAR_WALL)
+    mid = [s_ for s_ in v.solids() if abs(s_.center().X - lx) < 1e-3]
+    c = mid[0].center() if mid else None
+    check(n % 2 == 1 and c is not None and abs(c.Y - ly) < 1e-3, f"middle slot centred on the light sensor at "
+                                                                  f"({lx}, {ly - msr_y:.1f}) from the MSR-2's centre")
+    sx, sy = msr2.scd_centre()
+    scd = Pos(sx, msr_y + sy, pt) * Box(MSR2_SCD[0], MSR2_SCD[1], 10)
+    over = v & scd
+    a = (over.volume if over else 0.0) / (RADAR_WALL + 1)
+    check(a >= 15.0, f"{a:.1f} mm2 of the grille's {v.volume / (RADAR_WALL + 1):.1f} mm2 over the SCD4x (>= 15)")
+    bb = v.bounding_box()
+    radar_y0 = msr_y + MSR_BOARD[1] / 2 - MSR2_LD[1]
+    check(bb.max.Y + VENT_RADAR_CLR <= radar_y0 + 1e-6, f"grille {radar_y0 - bb.max.Y:.2f} mm clear of the radar "
+                                                        f"module's outline (>= {VENT_RADAR_CLR}; slots {msr2.vent_length():.1f} long)")
+    gap = (pt - RADAR_WALL) - (back_z + MSR_BOARD_T + MSR2_CN1_STACK + MSR2_CO2_BOARD[2] + MSR2_SCD[2])
+    check(gap >= -1e-6, f"SCD4x top {gap:.2f} mm under the skin (no interference)")
+
+
+def msr_posts(tr, msr_y, back_z, pt):
+    """Face plate posts (D-66, D-67): each lands on the MSR-2's board inside its outline, clear of its parts; the skin
+    stands clear of the MSR-2's front, so the clamp goes through the board, not the CO2 add-on or the radar's pins."""
+    print("MSR-2 clamp: face plate posts (D-66, D-67)")
     from build123d import Cylinder
-    import bilresa, post, assembly
-    check(MOUNT_THREAD_L >= MOUNT_THREAD_MIN, f"tapped depth {MOUNT_THREAD_L} mm >= {MOUNT_THREAD_MIN} (1.5 x M4)")
-    for (x, y), top in zip(MOUNT_HOLES, MOUNT_BOSS_TOP):
-        tip = Z_BOT + MOUNT_THREAD_L + MOUNT_TAP_D / 2
-        shell = Pos(x, y, (Z_BOT + tip + BARRIER_MIN) / 2) * Cylinder(MOUNT_TAP_D / 2 + BARRIER_MIN,
-                                                                      tip + BARRIER_MIN - Z_BOT)
-        gap = (shell - insert.mount_hole(x, y)) - ins
+    import msr2
+    mp = msr2.placed_parts(0, msr_y, back_z)
+    front = back_z + MSR_BOARD_T
+    posts = msr2.posts(0, msr_y, back_z, pt - RADAR_WALL)
+    r = posts & tr
+    check(r is not None and abs(r.volume - posts.volume) < 0.01, "posts are part of the face plate")
+    for i, (x, y) in enumerate(MSR2_POSTS):
+        r = MSR2_POST_D / 2
+        inside = abs(x) + r <= MSR_BOARD[0] / 2 and abs(y) + r <= MSR_BOARD[1] / 2
+        check(inside, f"post {i + 1} at ({x}, {y}) on the board's outline")
+        foot = Pos(x, msr_y + y, front - 0.05) * Cylinder(r - 0.05, 0.1)
+        on = foot & mp["board"]
+        a = on.volume / 0.05 if on is not None else 0.0
+        check(a >= 0.9 * 3.14159 * (r - 0.05) ** 2, f"post {i + 1} foot on solid board ({a:.2f} mm2; notch and holes clear)")
+        grown = Pos(x, msr_y + y, (front + pt) / 2 + 0.01) * Cylinder(r + MSR2_POST_CLR, pt - front)
+        hit = [k for k, v in mp.items() if k != "board" and (grown & v) is not None and (grown & v).volume > 1e-5]
+        check(not hit, f"post {i + 1} {MSR2_POST_CLR} mm clear of the MSR-2's parts" + (f" (hits {hit})" if hit else ""))
+    bb = posts.bounding_box()
+    check(abs(bb.min.Z - front) < 1e-6, f"posts end on the board's front (z {bb.min.Z:.2f})")
+    skin = pt - RADAR_WALL
+    for k in ("scd", "radar"):
+        g = skin - mp[k].bounding_box().max.Z
+        check(g >= MSR_SKIN_GAP - 1e-6, f"skin {g:.2f} mm clear of the {'SCD4x' if k == 'scd' else 'radar and its pins'}")
+    r = tr & (mp["scd"] + mp["radar"] + mp["co2"] + mp["cn1"])
+    check(r is None or r.volume < 1e-6, "face plate touches neither the CO2 add-on nor the radar")
+
+
+def msr_spacers(ins):
+    """MSR-2 (D-68): on CN2 and three SMT spacers on the ring board, each under a face plate post; the spacers on
+    solid board on both sides, clear of the MSR-2's back parts and CN2's mate."""
+    print("MSR-2 support: ring board spacers (D-68)")
+    import ring
+    import msr2
+    from build123d import Cylinder
+    rp = ring.parts()
+    mp = msr2.placed_parts(0, MSR_Y, MSR_BACK_Z)
+    check(abs(RING_NUT[1] - B2B_STACK) < 1e-6, f"spacers {RING_NUT[1]} mm = the CN2 stack {B2B_STACK} mm: the MSR-2's "
+                                               f"back rests on them with CN2 mated (both to be measured)")
+    check(all(abs(x - px) < 1e-6 and abs(y - MSR_Y - py) < 1e-6 for (x, y), (px, py) in zip(MSR_SPACERS, MSR2_POSTS))
+          and len(MSR_SPACERS) == len(MSR2_POSTS), "a spacer under each face plate post")
+    r0 = RING_NUT[0] / 2
+    for i, (x, y) in enumerate(MSR_SPACERS):
+        disc = Cylinder(r0 - 0.05, 0.1)
+        top = (Pos(x, y, MSR_BACK_Z + 0.05) * disc) & mp["board"]
+        foot = (Pos(x, y, RING_T - 0.05) * disc) & rp["ring"]
+        full = 3.14159 * (r0 - 0.05) ** 2 * 0.1
+        ring_a = full - 3.14159 * (RING_NUT_HOLE / 2) ** 2 * 0.1          # less its spigot hole
+        a, f = (top.volume if top else 0.0) / full, (foot.volume if foot else 0.0) / ring_a
+        check(a >= 0.9 and f >= 0.95, f"spacer {i + 1}: {a * 100:.0f} % under solid MSR-2 board, {f * 100:.0f} % on solid "
+                                       f"ring board round its spigot hole")
+    sp = rp["spacers"]
+    for name, o in (("MSR-2's back switches", mp["sw"]), ("CN2 mate", rp["cn2"]), ("MSR-2 board", mp["board"])):
+        r = sp & o
+        check(r is None or r.volume < 1e-4, f"spacers clear of the {name}")
+    for k in ("cn2", "msr", "spacers"):
+        r = rp[k] & ins
+        v = r.volume if r is not None else 0.0
+        check(v < 0.01, f"{k} clear of the insert ({v:.3f} mm3)")
+    r = rp["msr"] & rp["ring"]
+    v = r.volume if r is not None else 0.0
+    check(v < 0.01, f"MSR-2 (back switches {MSR2_SW[2]} mm deep, CN2 stack {B2B_STACK}) clear of the ring board's notches "
+                    f"({v:.3f} mm3)")
+
+
+def ring_mount(ins):
+    """Ring board on the insert (D-68): no flat back over it; crush ribs grip its window edge; the flange's land
+    rests on its inner edge; the land and the taper print without supports."""
+    print("ring board on the insert (D-68)")
+    import ring
+    import insert
+    from build123d import Box, Cylinder
+    rb = ring.board()
+    yc = (RING_Y[0] + RING_Y[1]) / 2
+    over = Pos(0, yc, (RING_T + PT) / 2) * Box(2 * RING_HALF_W, RING_Y[1] - RING_Y[0], PT - RING_T)
+    over -= slab(rr(*FLANGE_OUT, ISLAND_R + FLANGE), -1, PT + 1)
+    for s in (-1, 1):
+        over -= Pos(0, s * SCREW_PITCH / 2, PT / 2) * Cylinder(BOSS_R, PT + 2)
+    r = ins & over
+    check(r is None or r.volume < 0.01, f"no insert over the ring board beyond the flange ({r.volume if r else 0.0:.3f} mm3)")
+    ribs = insert.ribs()
+    n = len(ribs.solids())
+    w, interf = RING_RIB
+    check(n == 4 * len(RING_RIBS), f"{n} crush ribs on the collar's outside")
+    bite = ribs & rb
+    v = bite.volume if bite else 0.0
+    d = RING_WIN_CLR + interf
+    want = n * w * interf * (RING_T - (RING_WIN_CLR + interf / 2))      # the 45 deg lead-in takes z < r
+    check(abs(v - want) < 0.02 * want + 1e-3, f"ribs bite {interf} mm into the board's window edge ({v:.3f} mm3, "
+                                              f"{n} x {w} wide above the {d:.2f} mm lead-in)")
+    r = rb & ins
+    rv = r.volume if r else 0.0
+    check(abs(rv - v) < 1e-3, f"the board meets the insert only at the ribs ({rv:.3f} mm3)")
+    bb = ribs.bounding_box()
+    check(bb.min.Z >= -1e-6 and bb.max.Z <= RING_T + 1e-6, f"ribs within the board's thickness, above the wall plane "
+                                                           f"(z {bb.min.Z:.2f}..{bb.max.Z:.2f})")
+    land = RING_WIN_CLR + RING_LAND
+    band = slab(rr(*[v_ + 2 * land - 0.1 for v_ in RING_INNER[:2]], RING_INNER[2] + land), RING_T + 0.02, RING_T + 0.07) \
+        - slab(rr(*RING_INNER), -1, PT)
+    c = band & ins
+    a = (c.volume if c else 0.0) / 0.05
+    full = band.volume / 0.05
+    check(RING_LAND >= 1.0 and a >= 0.7 * full, f"flange land {RING_LAND} mm over the board's inner edge, on it over "
+                                                f"{a:.0f} of {full:.0f} mm2 (the #6 bosses and the FFC channel aside)")
+    chk = (ins & (Pos(0, 0, RING_T - 0.05) * Box(300, 300, 0.1))) - slab(rr(*SEAL, PLUG_R + COLLAR_LIP), -1, 10)
+    for s in (-1, 1):
+        chk -= Pos(0, s * SCREW_PITCH / 2, 0) * Cylinder(BOSS_R + 0.01, 30)
+    rest = (chk - ribs) if chk else None
+    check(rest is None or rest.volume < 1e-3, "nothing of the insert between the board and the wall but the collar, the "
+                                              "#6 bosses and the ribs")
+
+
+def mounting(ins):
+    """Board standoffs (D-57): bosses, tapped holes, standoffs and screws against the board, KiCad holes."""
+    print("board mounting (nylon standoffs)")
+    from build123d import Cylinder
+    import bilresa, standoff, assembly
+    check(all(d >= s + 0.5 - 1e-6 for d, s in zip(MOUNT_THREAD_L, MOUNT_STUD)) and min(MOUNT_STUD) >= MOUNT_THREAD_MIN,
+          f"tapped depths {MOUNT_THREAD_L} mm for the studs {MOUNT_STUD} (>= {MOUNT_THREAD_MIN} engaged, 1.5 x M3)")
+    check(MOUNT_FACE_Z >= Z_BOT - 1e-6, f"boss faces at z {MOUNT_FACE_Z:.1f}, {STANDOFF_L} mm standoffs to the board, "
+                                       f"{MOUNT_FACE_Z - Z_BOT:.1f} above the insert's lowest point")
+    hex_af, stud, depth = STANDOFF
+    sl, head_d, head_h = STANDOFF_SCREW
+    eng = sl - WB[2]
+    check(eng >= 2 * MOUNT_THREAD_D - 1e-6 and eng <= depth - 0.5, f"screw {eng:.1f} mm into the standoff's {depth} mm "
+                                                                  f"thread (>= 2 x M3 in nylon, short of its end)")
+    face = MOUNT_FACE_Z
+    for (x, y), top, depth in zip(MOUNT_HOLES, MOUNT_BOSS_TOP, MOUNT_THREAD_L):
+        tip = face + depth + MOUNT_TAP_D / 2
+        shell = Pos(x, y, (face + tip + BARRIER_MIN) / 2) * Cylinder(MOUNT_TAP_D / 2 + BARRIER_MIN,
+                                                                     tip + BARRIER_MIN - face)
+        gap = (shell - insert.mount_hole(x, y, depth)) - ins
         v = gap.volume if gap is not None else 0.0
-        check(v < 0.05, f"hole at ({x:.1f}, {y:.1f}): {MOUNT_THREAD_L} mm thread with >= {BARRIER_MIN} mm wall "
+        check(v < 0.05, f"hole at ({x:.1f}, {y:.1f}): {depth} mm thread with >= {BARRIER_MIN} mm wall "
                         f"({v:.2f} mm3 missing)")
         check(abs(x) + MOUNT_BOSS_D / 2 <= PLUG[0] / 2 and abs(y - WB_Y) + MOUNT_BOSS_D / 2 <= PLUG[1] / 2,
               f"boss at ({x:.1f}, {y:.1f}) inside the box-fit outline")
-        d = ((x - PASS_X) ** 2 + (y - PASS_Y) ** 2) ** 0.5 - MOUNT_BOSS_D / 2 - PASS_D / 2
-        check(d >= MOUNT_PASS_GAP - 1e-6, f"boss at ({x:.1f}, {y:.1f}) clears the 5 V pass-through by {d:.2f} mm")
-        reach = Pos(x, y, (Z_BOT + top + CLR) / 2) * Cylinder(MOUNT_BOSS_D / 2 + CLR, top + CLR - Z_BOT)
+        reach = Pos(x, y, (face + top + CLR) / 2) * Cylinder(MOUNT_BOSS_D / 2 + CLR, top + CLR - face)
         r = reach & bilresa.build()
         check((r.volume if r is not None else 0.0) < 0.01, f"boss at ({x:.1f}, {y:.1f}) clears the remote by {CLR} mm")
     board = assembly.wiring_board()
-    r = post.placed() & board
+    r = standoff.placed() & board
     ov = r.volume if r is not None else 0.0
     src = "KiCad STEP" if assembly.WB_STEP.exists() else "envelope (no holes)"
-    check(ov < 0.05 or not assembly.WB_STEP.exists(), f"posts pass through the board holes, clear of all parts "
-                                                       f"({src}: {ov:.2f} mm3)")
-    lying = export_orient("post", post.build())
-    overhangs("post lying on its flat", lying, small=5.0)
+    check(ov < 0.05 or not assembly.WB_STEP.exists(), f"standoffs and screws clear of the board's parts, screws "
+                                                       f"through its holes ({src}: {ov:.2f} mm3)")
+    check(MOUNT_HOLE_D >= MOUNT_THREAD_D + 0.2, f"board holes {MOUNT_HOLE_D} mm for the M3 screws")
     import kicad_board
     if kicad_board.WB_PCB.exists():
         b = kicad_board.Board()
@@ -156,147 +325,151 @@ def mounting(ins):
               f"KiCad J2 at ({k[0]:.2f}, {k[1]:.2f}) matches params J2_POS")
 
 
-def sensor_flex_checks(ins, tr):
-    """Sensor flex (D-27): stack heights, spring-finger working height, clearances, jumper strip."""
-    print("sensor flex (D-27)")
-    import sensor_flex as sf, bilresa, post
-    stack = PLUG_STIFF_T + SFLEX_T + B2B_STACK
-    check(stack <= MSR_BACK_Z + 1e-6, f"CN2 plug stack {stack:.2f} mm fits behind the MSR-2 ({MSR_BACK_Z:.2f} mm, "
-                                      f"B2B_STACK is MEASURE)")
-    top = FLEX_HI_Z + SFLEX_T + STIFF_T
-    check(top <= SKIN_Z - 0.1, f"stiffened flex top {top:.2f} mm under the face skin ({SKIN_Z})")
-    wall = PW / 2 - SKIN
-    check(wall - FLEX_RIGHT >= 0.3, f"flex clears the trim's side wall by {wall - FLEX_RIGHT:.2f} mm")
-    win = ISLAND[0] / 2 + SPLIT_CLR
-    left = FLEX_RIGHT - FLEX_RUN_W
-    check(left - win >= 0.1 and FLEX_RIGHT <= FLANGE_OUT[0] / 2 - 0.1,
-          f"band run {left:.2f}..{FLEX_RIGHT} on the flange ({win:.2f}..{FLANGE_OUT[0] / 2:.2f}), in the trim's "
-          f"{FLEX_GROOVE} mm groove (skin left {SKIN - FLEX_GROOVE:.1f})")
-    check(FLEX_GROOVE - SFLEX_T >= TAPE_T, f"groove {FLEX_GROOVE} over the {SFLEX_T} flex: room for the {TAPE_T} tape "
-                                           f"that holds the band run in it")
-    import trim
-    gap = trim.flex_ramp().distance_to(sf.flex())
-    check(TAPE_T <= gap <= 0.15, f"flex rise from CN2 {gap:.2f} mm under the trim's ramp: taped to it all along")
-    gw, gd, gf = BC_NA_TGROOVE
-    check(gd - SFLEX_T >= 0.05 and gf - 2 * SFLEX_T >= 0.05 and gw - BC_NA_NECK_W >= 0.3,
-          f"tongue groove in the trim's underside {gw} x {gd} mm ({gf} at the fold) over the {SFLEX_T} tongue; "
-          f"the flange and the insert's notch floor clamp it")
-    rise = (FLEX_HI_Z - STIFF_T) / (FLEX_X - FLEX_EXIT_X)
-    check(rise <= 1.25, f"flex rises {FLEX_HI_Z - STIFF_T:.1f} mm over {FLEX_X - FLEX_EXIT_X:.1f} mm to the corner fold")
-    check(FINGER_SEC_IN - FRAME_RIGHT >= 0.3 and FINGER_SEC_Y[0] >= FLANGE_OUT[1] / 2 + SPLIT_CLR + 0.1,
-          f"finger section clear of the MSR-2 frame ({FINGER_SEC_IN - FRAME_RIGHT:.2f}) and above the flange")
-    xs = sorted(x for x, _ in FINGERS)
-    gap = xs[1] - xs[0] - FINGER_PAD[0]
-    lanes = FLEX_RIGHT - (xs[1] + FINGER_PAD[0] / 2)
-    check(gap >= 0.6 and lanes >= 4 * 0.2 + 3 * 0.2 + 0.4, f"finger pads {gap:.2f} mm apart; {lanes:.2f} mm right of "
-                                                           f"them for the SHT45's four tracks")
-    lo, hi = FINGER_WH - FINGER_TOL, FINGER_WH + FINGER_TOL
-    check(lo >= FINGER_WH_MIN and hi < FINGER_FREE, f"spring fingers at {FINGER_WH} +- {FINGER_TOL} mm working height, inside "
-                                                    f"{FINGER_WH_MIN}..{FINGER_FREE} (S7081-42R)")
-    tgt = sf.target().bounding_box()
-    mx = min(min(x - tgt.min.X, tgt.max.X - x) for x, _ in FINGERS)
-    my = min(min(y - tgt.min.Y, tgt.max.Y - y) for _, y in FINGERS)
-    check(mx >= 1.0 and my >= 1.0, f"finger contact points over the jumper's pad end (margins x {mx:.2f}, y {my:.2f} mm)")
-    from math import hypot
-    r = PLUG_R + COLLAR_LIP
-    cx, cy = SEAL[0] / 2 - r, SEAL[1] / 2 - r
-    reach = max(hypot(max(x - cx, 0), max(y - cy, 0)) - r for x, y in FINGERS)
-    check(reach <= sf.shelf_limit() - 0.5, f"finger domes {reach:.2f} mm beyond the seal band, on the printable "
-                                           f"shelf (<= {sf.shelf_limit():.1f})")
-    check(TARGET_X[0] - FRAME_RIGHT >= 0.3 and wall - TARGET_X[1] >= 1.0,
-          f"pad end clear of the MSR-2 frame ({TARGET_X[0] - FRAME_RIGHT:.2f}) and the side wall ({wall - TARGET_X[1]:.2f})")
-    parts = sf.parts()
-    msr = Pos(0, MSR_Y, MSR_BACK_Z + MSR[2] / 2) * Box(*MSR)
-    others = {"insert": ins, "trim": tr, "remote": bilresa.build(), "MSR-2 envelope": msr, "board posts": post.placed()}
-    for pn, p in parts.items():
-        for on, o in others.items():
-            if pn == "target" and on == "insert":
-                continue                                      # the pad end sits on the shelf
-            r = p & o
+def ring_checks(ins, tr):
+    """Ring board (D-50, D-68): inside the face plate, copper keep-out from the box opening, the parts on it in
+    copper-allowed places, the MSR-2 behind the radar skin, the mic under its sound tube."""
+    print("ring board (D-50)")
+    import ring, bilresa
+    rp = ring.parts()
+    for k in ("ring", "spacers", "cn2", "msr", "j1", "sht45", "passives", "micb", "mic"):
+        for on, o in (("insert", ins), ("trim", tr)):
+            if k == "ring" and on == "insert":
+                continue                                    # the crush ribs bite into it: ring_mount()
+            r = rp[k] & o
             v = r.volume if r is not None else 0.0
-            check(v < 0.01, f"{pn} clears the {on} ({v:.3f} mm3)")
+            check(v < 0.01, f"{k} clears the {on} ({v:.3f} mm3)")
+    band = RING_HALF_W - 0.2 - (BOX_W / 2 + RING_KEEP - RING_T)
+    need = 4 * 0.15 + 3 * 0.15
+    check(band >= need, f"side rails: {band:.2f} mm of front-layer copper beyond {RING_KEEP} mm from the box opening "
+                        f"(SDA, SCL, 3.3 V, GND at 0.15 / 0.15 need {need:.2f})")
+    k_front = RING_KEEP - RING_T
 
-
-def jumper_checks(ins, tr):
-    """5 V flex jumper (D-27, R9): threads through the pass-through, spare length for plugging it in
-    with the board beside the insert, clear of everything else."""
-    print("5 V flex jumper")
-    import jumper, sensor_flex as sf, bilresa, post, assembly
-    from math import hypot
-    diag = hypot(JUMPER_END[0], JUMPER_END[2])
-    check(diag <= PASS_D - 0.5, f"jumper's connector end ({JUMPER_END[0]} x {JUMPER_END[2]}, diagonal {diag:.2f}) "
-                                f"threads through the {PASS_D} mm pass-through")
-    pts = jumper.path()
-    direct = sum(hypot(*(b[i] - a[i] for i in range(3))) for a, b in zip([pts[0]] + pts[5:], pts[5:]))
-    spare = jumper.length() - direct
-    check(spare >= JUMPER_SERVICE - 1e-6, f"jumper {jumper.length():.0f} mm long, {spare:.0f} mm spare folded between "
-                                          f"board and insert (plug in with the board beside the insert)")
-    jmp = jumper.build()["jumper"]
-    fp = sf.parts()
-    msr = Pos(0, MSR_Y, MSR_BACK_Z + MSR[2] / 2) * Box(*MSR)
-    others = {"insert": ins, "trim": tr, "wiring board": assembly.wiring_board(), "board posts": post.placed(),
-              "flex": fp["flex"], "spring fingers": fp["fingers"], "microphone": fp["mic"], "MSR-2 envelope": msr,
-              "remote": bilresa.build()}
-    for on, o in others.items():
-        if on == "wiring board":
-            continue                                       # its end sits in J2 (checked against the board slab below)
-        r = jmp & o
-        v = r.volume if r is not None else 0.0
-        check(v < 0.05, f"jumper clears the {on} ({v:.3f} mm3)")
-    slab_ = Pos(0, WB_Y, WB_FRONT_Z - WB[2] / 2) * Box(*WB)
-    r = jmp & slab_
-    check(r is None or r.volume < 0.01, "jumper clears the wiring board's slab")
-
-
-def mic_checks(ins, tr):
-    """Microphone (D-29): clear of the insert flange, port sealed to the skin, sound hole open on the flat face."""
-    print("microphone (D-29)")
-    import sensor_flex as sf
+    def allowed(x, y, r):
+        """Front-layer copper disc at (x, y), radius r, at least k_front (plan) from the box opening's rectangle."""
+        dx, dy = max(abs(x) - BOX_W / 2, 0.0), max(abs(y) - BOX_H / 2, 0.0)
+        return (dx * dx + dy * dy) ** 0.5 - r
+    for name, (x, y), r in [("J1", RING_J1, max(FH12[:2]) / 2 + 0.5), ("SHT45", SHT_AT, 1.5),
+                            ("mic carrier", MIC_AT, max(MIC_CARRIER[:2]) / 2 + 0.3),
+                            ("CN2 mate", (MSR_CN2_X, MSR_Y), max(B2B) / 2 + 0.5)] + \
+                           [(k, p, max(d[:2]) / 2 + 0.3) for k, (p, d) in RING_SMALL.items()] + \
+                           [(f"spacer {i + 1}", p, RING_NUT_PAD / 2) for i, p in enumerate(MSR_SPACERS)]:
+        d = allowed(x, y, r)
+        check(d >= k_front, f"{name} copper {d:.1f} mm from the box opening (front layer >= {k_front:.1f})")
+    gap = (PT - RADAR_WALL) - (MSR_BACK_Z + MSR[2])
+    check(abs(gap - MSR_SKIN_GAP) < 1e-6, f"MSR-2 on CN2, its front {gap:.2f} mm under the {RADAR_WALL} mm radar skin "
+                                         f"(D-66; MSR[2] MEASURE)")
+    od, bore, gasket = MIC_TUBE
+    t = __import__("trim").mic_tube().bounding_box()
+    top = RING_T + MIC_CARRIER[2]
+    check(abs(t.min.Z - top - gasket) < 1e-6 and od <= min(MIC_CARRIER[:2]) - 1.0,
+          f"sound tube {od} OD stands {gasket} mm over the mic carrier (gasket), bore {bore}, "
+          f"{SKIN_Z - top - gasket:.1f} mm long")
+    check(min(bore, MIC_SKIN_HOLE_D) >= MIN_PRINT_HOLE and (od - bore) / 2 >= 0.8,
+          f"sound tube bore {bore} and face hole {MIC_SKIN_HOLE_D} >= {MIN_PRINT_HOLE} mm (print open); "
+          f"tube wall {(od - bore) / 2:.1f} mm (two lines)")
+    on_board = {k: rp[k] for k in ("passives", "micb", "j1", "spacers", "cn2", "sht45")}
+    for a in on_board:
+        for b in on_board:
+            if a < b:
+                r = on_board[a] & on_board[b]
+                check(r is None or r.volume < 1e-6, f"ring board parts: {a} clear of {b}")
+    mb = rp["mic"].bounding_box()
+    check(mb.min.Z >= 0.2, f"mic hangs {MIC[2]} mm into the ring board's window, {mb.min.Z:.1f} mm clear of the wall")
+    r = rp["mic"] & rp["ring"]
+    check(r is None or r.volume < 1e-6, f"mic body clear of the window's walls ({MIC_WIN} mm)")
+    port_y = MIC_BODY_Y - (MIC[1] / 2 - MIC_PORT_IN)          # port end down
+    check(abs(port_y - MIC_AT[1]) < 1e-6, f"mic port under the carrier's hole at {MIC_AT}")
     from build123d import Cylinder
-    sec = sf.mic_section().bounding_box()
-    body = Pos(MIC_X, MIC_Y, FLEX_HI_Z - MIC[2] / 2) * Box(MIC[0] + 2 * MIC_CLR, MIC[1] + 2 * MIC_CLR, MIC[2])
-    zc = (FLEX_HI_Z - MIC[2] + FLEX_HI_Z + SFLEX_T) / 2           # mic underside up to the flex top
-    zone = Pos(sec.center().X, sec.center().Y, zc) * Box(sec.size.X + 2 * MIC_CLR, sec.size.Y + 2 * MIC_CLR,
-                                                         MIC[2] + SFLEX_T)
-    for name, z in (("widened flex section", zone), ("mic body", body)):
-        r = z & ins
-        v = r.volume if r is not None else 0.0
-        check(v < 0.01, f"{name} keeps {MIC_CLR} mm from the insert ({v:.3f} mm3)")
-    fold = SHT_Y + FLEX_RUN_W / 2
-    check(MIC_SEC_Y[1] <= -FLEX_Y_CLIMB - 1.0 and MIC_SEC_Y[0] >= fold + 0.5,
-          f"widened section y {MIC_SEC_Y[0]}..{MIC_SEC_Y[1]} on the flat run between the band ({-FLEX_Y_CLIMB:.2f}) and "
-          f"the bottom fold ({fold:.2f})")
-    my0, my1 = MIC_Y - MIC[1] / 2, MIC_Y + MIC[1] / 2
-    check(MIC_SEC_Y[0] <= my0 - 0.5 and MIC_SEC_Y[1] >= my1 + 0.5 and MIC_SEC_IN <= MIC_X - MIC[0] / 2 - 0.5,
-          "mic body footprint inside the widened section")
-    z0 = FLEX_HI_Z + SFLEX_T + STIFF_T
-    check(SKIN_Z - z0 >= 0.1, f"gasket {SKIN_Z - z0:.2f} mm between the mic stiffener and the face skin")
-    check(MIC_SKIN_HOLE_D < MIC_GASKET_D - 1.0, f"gasket ring {(MIC_GASKET_D - MIC_SKIN_HOLE_D) / 2:.2f} mm wide")
     probe = Pos(*MIC_PORT, (SKIN_Z + PT) / 2) * Cylinder(MIC_SKIN_HOLE_D / 2 - 0.05, SKIN - 0.1)
     r = probe & tr
-    v = r.volume if r is not None else 0.0
-    check(v < 0.001, f"sound hole open through the face skin ({v:.4f} mm3 of trim in it)")
-    ix = ISLAND[0] / 2 + SPLIT_CLR
-    iy = ISLAND[1] / 2 + SPLIT_CLR
-    r_hole = MIC_SKIN_HOLE_D / 2
-    gap_island = max(abs(MIC_PORT[0]) - ix, abs(MIC_PORT[1]) - iy) - r_hole
-    gap_edge = (PW / 2 - FACE_CHAMFER) - MIC_PORT[0] - r_hole
-    check(gap_island >= 1.0 and gap_edge >= 1.0,
-          f"sound hole on the flat face: {gap_island:.2f} mm from the insert window, {gap_edge:.2f} mm from the chamfer")
+    check(r is None or r.volume < 0.001, "sound hole open through the face skin")
+    r = rp["ring"] & bilresa.build()
+    check(r is None or r.volume < 0.001, "ring board clears the remote")
+
+
+def ffc_checks(ins, tr):
+    """5 V FFC (D-50, D-62, D-68): stock 6-way cable through the pass-through, out of the flange onto the ring board,
+    its spare folded flat beside J1, clear of everything else."""
+    print("5 V FFC")
+    import jumper, ring, bilresa, standoff, assembly
+    from math import hypot
+    diag = hypot(JUMPER_END[0], JUMPER_END[2])
+    check(diag <= PASS_D - 0.5 and JUMPER_END[0] <= PASS_SLOT[0] - 0.5 and JUMPER_END[2] <= PASS_SLOT[1] - 0.3,
+          f"FFC contact end ({JUMPER_END[0]} x {JUMPER_END[2]}) threads the {PASS_D} mm pass-through and its "
+          f"{PASS_SLOT[0]} x {PASS_SLOT[1]} slot")
+    need = jumper.length() + 2 * JUMPER_END[1]
+    slack = JUMPER_STOCK_L - need
+    check(JUMPER_SLACK[0] <= slack <= JUMPER_SLACK[1],
+          f"FFC route {jumper.length():.0f} mm + {JUMPER_END[1]} mm into each connector leaves {slack:.1f} mm of the "
+          f"{JUMPER_STOCK_L:.0f} mm stock cable to bow in the free span ({JUMPER_SLACK[0]}..{JUMPER_SLACK[1]}); no loop")
+    fold = jumper_fold()
+    lo_y, hi_y = JUMPER_FOLD_Y - JUMPER_W / 2, JUMPER_FOLD_Y + JUMPER_W / 2
+    check(fold > 2.0 and lo_y >= FLANGE_OUT[1] / 2 + 0.2 - 1e-6 and hi_y <= RING_J1[1] - FH12[1] / 2 - 0.2 + 1e-6,
+          f"spare length folded flat in four {fold:.1f} mm layers on the ring board (y {lo_y:.2f}..{hi_y:.2f}: beyond "
+          f"the flange, short of J1's body)")
+    xl = RING_J1[0] - fold - JUMPER_W / 2
+    check(xl >= BOSS_R + 1.0, f"fold ends at x {xl:.1f}, clear of the #6 screw boss (r {BOSS_R})")
+    # the straight bore (D-74): walls to the remote pocket and the standoffs' tapped holes, the mouth inside the plug,
+    # the groove where it opens through the corner taper, threading (one bend, into the slot)
+    from build123d import Cylinder
+    from common import rod
+    m, e, f = pass_points()
+    r = PASS_D / 2
+    bore = rod(pass_at(Z_BOT - 4.0), e, PASS_D)
+    pocket = slab(stadium(*POCKET_IN), SEAT_Z, PT + 5)
+    d = bore.distance_to(pocket)
+    check(d >= BARRIER_MIN - 1e-6, f"bore {d:.2f} mm from the remote pocket (>= {BARRIER_MIN})")
+    tap = min(bore.distance_to(insert.mount_hole(x, y, t)) for (x, y), t in zip(MOUNT_HOLES, MOUNT_THREAD_L))
+    check(tap >= 1.2, f"bore {tap:.2f} mm from the nearest standoff's tapped hole (>= 1.2)")
+    bosses = insert.mount_bosses()
+    d = bore.distance_to(bosses)
+    check(d >= MOUNT_PASS_GAP - 1e-6 or tap >= 1.2, f"bore clears the standoff bosses' tapped holes ({d:.2f} mm to a boss "
+                                                     f"face, inside the boss: {tap:.2f} mm to the hole)")
+    edge = min(BOX_W / 2 - abs(m[0]), BOX_H / 2 - abs(m[1]))
+    check(edge >= 6.0, f"bore's axis at the underside plane ({m[0]:.1f}, {m[1]:.1f}), {edge:.1f} mm in from the box wall")
+    from math import atan2, degrees
+    run = hypot(e[0] - m[0], e[1] - m[1])
+    ang = degrees(atan2(e[2] - m[2], run))
+    print(f"       bore {hypot(run, e[2] - m[2]):.1f} mm long, {ang:.0f} deg from horizontal; one bend, into the slot")
+    env = insert.outline_solid()
+    below = Pos(0, 0, -50 + Z_BOT + 0.05) * Box(200, 200, 100)
+    groove = (bore - env) - below
+    top = groove.bounding_box().max.Z if groove is not None and groove.volume > 1e-3 else Z_BOT
+    check(top <= -3.0, f"bore closed above z {top:.1f}: the groove below opens through the corner taper, at least 3 mm "
+                       f"under the wall plane")
+    probe = Pos(m[0], m[1], Z_BOT - 0.5) * Cylinder(r - 0.3, 1.0)
+    r_ = probe & ins
+    check(r_ is None or r_.volume < 0.01, "bore's mouth open on the underside")
+    jmp = jumper.build()["jumper"]
+    rp = ring.parts()
+    others = {"insert": ins, "trim": tr, "board standoffs": standoff.placed(), "remote": bilresa.build(),
+              "riser": rp["riser"], "spacer posts": rp["posts"] + rp["sleeves"], "MSR-2": rp["msr"]}
+    for on, o in others.items():
+        r = jmp & o
+        v = r.volume if r is not None else 0.0
+        check(v < 0.05, f"FFC clears the {on} ({v:.3f} mm3)")
+    slab_ = Pos(0, WB_Y, WB_FRONT_Z - WB[2] / 2) * Box(*WB)
+    r = jmp & slab_
+    check(r is None or r.volume < 0.01, "FFC clears the wiring board's slab")
 
 
 def separation(ins, tr):
-    """R9: the face plate (trim) and the insert are joined electrically only by the spring
-    fingers on the 5 V jumper's pads: no wire or part belongs to both."""
-    print("face plate / insert separation (R9)")
-    import sensor_flex as sf, jumper, assembly
-    fp = sf.parts()
-    msr = Pos(0, MSR_Y, MSR_BACK_Z + MSR[2] / 2) * Box(*MSR)
-    face = {"MSR-2": msr, "flex": fp["flex"], "CN2 plug": fp["plug"], "SHT45": fp["sht45"], "microphone": fp["mic"],
-            "spring fingers": fp["fingers"]}
-    box_side = {"jumper pad end": fp["target"], "flex jumper": jumper.build()["jumper"],
-                "wiring board": assembly.wiring_board()}
-    _separation(face, box_side, {("spring fingers", "jumper pad end")})
+    """R9 / D-50: the face plate carries no electronics: it is clear of every electrical part."""
+    print("face plate: no electrical parts (D-50)")
+    import ring, jumper, assembly
+    rp = ring.parts()
+    parts = {k: rp[k] for k in ("ring", "spacers", "cn2", "msr", "j1", "sht45", "passives", "micb", "mic", "riser", "pins",
+                                "posts")}
+    parts["FFC"] = jumper.build()["jumper"]
+    parts["wiring board"] = assembly.wiring_board()
+    for name, p in parts.items():
+        if name == "msr":                                   # the face plate's posts rest on the MSR-2's board
+            r = tr & p
+            v = r.volume if r is not None else 0.0
+            check(v < 0.01, f"face plate posts rest on the MSR-2's board, no overlap ({v:.3f} mm3)")
+            continue
+        d = tr.distance_to(p)
+        check(d >= 0.05, f"face plate not touching the {name} (gap {d:.2f} mm)")
 
 
 def _separation(face, box_side, contacts, touch=0.05):
@@ -362,10 +535,11 @@ def barrier(ins):
     print("barrier")
     room = slab(rr(PW + 20, PH + 20, 5), 0, PT + 10)
     box = slab(Rectangle(BOX_W, BOX_H), -BOX_D, 0)
-    # plug the two openings that are closed by something else when installed:
-    # the 5 V pass-through (flex jumper + sleeve) and the rocker cutout (the certified rocker body)
+    # plug the openings that are closed by something else when installed: the 5 V pass-through (FFC), the rocker
+    # cutout (the certified rocker body) and the two spring pins' holes in the pocket floor (the pins, D-50)
     rocker = Pos(0, SW_Y, 0) * slab(Rectangle(*SW_CUT), PANEL_BOT_Z - 1, WELL_FLOOR_Z + 1)
-    air = (room + box) - ins - insert.pass_through() - rocker
+    import ring
+    air = (room + box) - ins - insert.pass_through() - rocker - ring.pin_holes()   # pins fill their holes (D-50)
     parts = air.solids()
     mains = [s for s in parts if s.is_inside(Vector(0, 0, -BOX_D + 1))]
     check(len(mains) == 1, "found the mains air volume")
@@ -373,7 +547,8 @@ def barrier(ins):
     for name, p in [("room in front of the face", (0, 0, PT + 5)),
                     ("remote pocket", (0, 0, SEAT_Z + 1)),
                     ("trim hollow (low-voltage)", (28.0, 60.0, 5)),
-                    ("MSR-2 bay", (0, MSR_Y, 5))]:
+                    ("MSR-2 bay", (0, MSR_Y, 5)),
+                    ("ring board space under the flat back", (-30.0, 0.0, RING_T / 2))]:
         check(not m.is_inside(Vector(*p)), f"mains air does not reach the {name}")
     check(m.bounding_box().max.Z <= 0.01, f"mains air stays behind the wall plane (max z {m.bounding_box().max.Z:.2f})")
 
@@ -388,15 +563,16 @@ def _face_poly(f):
     return shapely.Polygon(outer, holes).buffer(0)
 
 
-def overhangs(name, part, limit=3.0, angle=50.0, hole_r=2.5, small=0.0):
+def overhangs(name, part, limit=3.0, angle=50.0, hole_r=2.5, small=0.0, supported=(), bridges=()):
     """Downward faces steeper than `angle` from vertical that are not on the bed.
     Planar faces: width = 2 x max inscribed circle (bridges and short ledges up to
     `limit` mm are accepted). Curved faces: small bores (r <= hole_r) and features whose
     bounding box diagonal is <= `small` mm are accepted (listed), anything else steeper
-    than `angle` fails."""
+    than `angle` fails. Planar faces at a z in `supported` print on supports (listed).
+    `bridges`: (z, span) pairs; a planar face at z over a closed recess bridges up to span mm (listed)."""
     import shapely
     zmin = part.bounding_box().min.Z
-    worst, bad = 0.0, []
+    worst, bad, sup = 0.0, [], []
     lim = -np.sin(np.radians(angle))  # normal.z of a face `angle` deg from vertical
     for f in part.faces():
         if f.bounding_box().max.Z < zmin + 0.05:
@@ -407,8 +583,18 @@ def overhangs(name, part, limit=3.0, angle=50.0, hole_r=2.5, small=0.0):
             if n.Z >= lim:
                 continue
             w = 2 * shapely.maximum_inscribed_circle(_face_poly(f)).length
-            worst = max(worst, w)
             bb = f.bounding_box()
+            if any(abs(bb.min.Z - z) < 0.05 and bb.size.Z < 0.05 for z in supported):
+                if w > limit:
+                    sup.append(f.area)
+                continue
+            span = [s for z, s in bridges if abs(bb.min.Z - z) < 0.05 and bb.size.Z < 0.05]
+            if span and w > limit:
+                ok = w <= span[0]
+                print(f"         bridge z={bb.min.Z:.1f} width {w:.1f} (<= {span[0]}){'' if ok else ' TOO WIDE'}")
+                if ok:
+                    continue
+            worst = max(worst, w)
             if w > limit:
                 bad.append(f"plane z={bb.min.Z:.1f} width {w:.1f} at x {bb.min.X:.0f}..{bb.max.X:.0f} y {bb.min.Y:.0f}..{bb.max.Y:.0f}")
             continue
@@ -419,11 +605,20 @@ def overhangs(name, part, limit=3.0, angle=50.0, hole_r=2.5, small=0.0):
             a, b, c3 = verts[t[0]], verts[t[1]], verts[t[2]]
             try:
                 nz = f.normal_at((a + b + c3) / 3).Z
-            except Exception:                               # point not projectable: the triangle's own normal
-                n = (b - a).cross(c3 - a)
-                if n.length < 1e-9:
-                    continue
-                nz = n.normalized().Z
+            except Exception:                               # centre not projectable: the surface normal at the corners,
+                ns = []                                     # else the triangle's own (coarse on curved faces)
+                for v in (a, b, c3):
+                    try:
+                        ns.append(f.normal_at(v).Z)
+                    except Exception:
+                        pass
+                if ns:
+                    nz = sum(ns) / len(ns)
+                else:
+                    n = (b - a).cross(c3 - a)
+                    if n.length < 1e-9:
+                        continue
+                    nz = n.normalized().Z
             if nz < lim:
                 steep = True
                 break
@@ -437,6 +632,8 @@ def overhangs(name, part, limit=3.0, angle=50.0, hole_r=2.5, small=0.0):
             print(f"         accepted small {gt.lower()} overhang, {bb.diagonal:.1f} mm across, z {bb.min.Z:.1f}..{bb.max.Z:.1f}")
             continue
         bad.append(f"{gt.lower()} area {f.area:.0f} at x {bb.min.X:.0f}..{bb.max.X:.0f} y {bb.min.Y:.0f}..{bb.max.Y:.0f} z {bb.min.Z:.1f}..{bb.max.Z:.1f}")
+    if sup:
+        print(f"         on supports: {len(sup)} faces, {sum(sup):.0f} mm2")
     for r in bad[:10]:
         print("         " + r)
     check(not bad, f"{name}: no unsupported overhangs (widest flat ledge/bridge {worst:.1f} mm <= {limit} mm)")
@@ -451,25 +648,24 @@ def _small_bore(f, r):
 
 
 def cover_checks():
-    """Replacement back cover (D-35): fingers at working height inside their range, windows, flex
-    clear of the body, contact pads on the cell axes clear of the remote's PCB strip, steel plate."""
+    """Replacement back cover (D-35, D-50): pads over the spring pin windows, flex clear of the body, end contacts on
+    the cell axes clear of the remote's PCB strip, steel plate."""
     print("replacement back cover (D-35)")
     from build123d import Cylinder, Rot
     import backcover as bc
     ps = bc.cover_parts()
     c = ps["cover"]
     check(c.is_valid and len(c.solids()) == 1, f"cover: one valid solid ({c.volume / 1000:.2f} cm3)")
-    lo, hi = BC_FLEX_Z - FINGER_TOL, BC_FLEX_Z + FINGER_TOL
-    check(lo >= FINGER_WH_MIN and hi < FINGER_FREE, f"fingers at {BC_FLEX_Z} +- {FINGER_TOL} mm on the flush floor "
-                                                    f"pads, inside {FINGER_WH_MIN}..{FINGER_FREE} (S7081-42R)")
-    check(FINGER_FREE - BC_FLEX_Z > 0.1, f"free finger dome {FINGER_FREE - BC_FLEX_Z:.2f} mm below the back")
-    for k in ("flex", "stiffener", "steel", "fingers", "contacts", "regulator"):
+    check(abs(BC_WALL - BC_SIDE_WALL - 0.1) < 1e-6 and BC_SIDE_WALL >= 1.2,
+          f"side wall {BC_SIDE_WALL:.1f} mm (back {BC_WALL}): {B_W - 2 * BC_SIDE_WALL:.1f} x {B_H - 2 * BC_SIDE_WALL:.1f} "
+          f"inside at the rim, 0.1 more all round for the remote's housing (D-75)")
+    win = PIN_BARREL[0] / 2 + BC_WIN_CLR
+    check(win - PIN_BARREL[0] / 2 >= 0.2 and BC_PAD_D / 2 >= win + 0.2,
+          f"spring pin windows r {win:.2f} round the {PIN_BARREL[0]} barrel, pads r {BC_PAD_D / 2} over them (D-50)")
+    for k in ("flex", "stiffener", "steel", "pin_pads", "contacts", "regulator"):
         r = ps[k] & c
         v = r.volume if r is not None else 0.0
         check(v < 0.01, f"{k} clears the cover body ({v:.3f} mm3)")
-    ff = bc.fingers(FINGER_FREE)
-    r = ff & c
-    check(r is None or r.volume < 0.01, "free fingers pass through their windows")
     xi = BC_PCB_W / 2 + BC_PCB_CLR
     pw, ph = FINGER_PAD[0], FINGER_PAD[1]                    # contact finger pad on the end section (x, z): vertical
     check(BC_CELL_X - pw / 2 >= xi + 0.5, f"contact finger pads clear of the remote's PCB strip "
@@ -478,7 +674,8 @@ def cover_checks():
     check(BC_CELL_Z - ph / 2 - lane >= 0.3, f"+3V3 lane across the band {BC_CELL_Z - ph / 2 - lane:.2f} "
                                             f"mm below the contact finger pads")
     check(BC_FLEX_Z + BC_END_H >= BC_CELL_Z + ph / 2 + 0.5, "contact finger pads within the end section")
-    check(BC_CONTACT_W / 2 - pw / 2 >= 0.5, f"contact finger pads {BC_CONTACT_W / 2 - pw / 2:.2f} mm inside the end section")
+    edge = BC_END_XO - (BC_CELL_X + pw / 2)
+    check(edge >= 0.5, f"contact finger pads {edge:.2f} mm inside the end section's outer edges")
     plate = BC_CELL_END_Y + BC_TERM_Y * BC_TERM_SETBACK
     dome = bc.end_fingers(FINGER_WH).bounding_box()
     tip = dome.min.Y if BC_TERM_Y < 0 else dome.max.Y
@@ -492,8 +689,8 @@ def cover_checks():
     print(f"       GND contact: finger dome on the remote's leaf spring, which stands proud of the cell end plane "
           f"(its travel MEASURE): finger and leaf share the compression")
     for x, y in BC_FINGERS:
-        check(BC_STRIP[0] + 0.2 <= x - FINGER[0] / 2 - BC_WIN_CLR + 1e-6 and x + FINGER[0] / 2 + BC_WIN_CLR <= BC_STRIP[1] - 0.2 + 1e-6,
-              f"finger window at ({x}, {y}) inside the flex strip")
+        check(BC_STRIP[0] + 0.2 <= x - BC_PAD_D / 2 and x + BC_PAD_D / 2 <= BC_STRIP[1] - 0.2,
+              f"pad at ({x}, {y}) inside the flex strip")
     check(BC_STEEL_FLOOR >= BC_WALL - 1e-6 and BC_REG_FLOOR >= 0.4 - 1e-6,
           f"{BC_STEEL_FLOOR} mm of cover wall under the plate (full shell), {BC_REG_FLOOR} under the regulator")
     rb = bc.steel_ridge().bounding_box()
@@ -508,12 +705,11 @@ def cover_checks():
     w, t, lip, clr = BC_FLEX_SNAP
     snaps = bc.flex_snaps()
     n = len(snaps.solids())
-    check(n == 2 * len(bc.flex_snap_spots()), f"{n} snap hooks on the flex section's long edges (beside each finger "
-                                              f"and the regulator)")
+    check(n == len(bc.flex_snap_spots()), f"{n} snap hooks on the flex section's long edges (beside each finger and "
+                                          f"the regulator, none where the jog leaves the GND pad's inner edge)")
     check(lip - clr >= 0.15 and BC_FLEX_SNAP_GAP <= 0.1, f"snap lips {lip - clr:.2f} mm over the stiffener's edges, "
-                                                         f"{BC_FLEX_SNAP_GAP} mm above it (finger travel "
-                                                         f"{FINGER_FREE - FINGER_WH:.1f})")
-    for k in ("flex", "pad_stiffener", "fingers", "regulator", "steel"):
+                                                         f"{BC_FLEX_SNAP_GAP} mm above it")
+    for k in ("flex", "pad_stiffener", "pin_pads", "regulator", "steel"):
         r = snaps & ps[k]
         check(r is None or r.volume < 0.001, f"snap hooks clear the {k}")
     zl = BC_FLEX_Z + FLEX_T + BC_PAD_STIFF_T + BC_FLEX_SNAP_GAP
@@ -537,32 +733,56 @@ def cover_checks():
         check(v < 0.01, f"{k} above the rim inside the cells' outline (r {BC_END_R}, rounded tops; {v:.3f} mm3 out)")
     t, h, gap = BC_END_LIP
     check(t >= 1.2 and h >= 0.8, f"end section held by a {t} x {h} mm lip at its foot")
+    wall, sclr, reach, lt, sgap = BC_END_SLOT
+    check(reach >= 0.4 and BC_END_XO - reach >= BC_CELL_X + pw / 2 + 0.3,
+          f"slot lips {reach} mm over the section's outer edges, clear of the finger pads "
+          f"({BC_END_XO - reach - BC_CELL_X - pw / 2:.2f} mm)")
+    check(lt + sgap <= FINGER_WH - 0.5, f"slot lips {lt + sgap:.2f} mm in front of the copper (contacts at {FINGER_WH})")
+    slots = bc.end_slots()
+    sb = slots.bounding_box()
+    check(sb.max.X <= BC_BLOCK_XO + 1e-6 and sb.min.X >= -BC_BLOCK_XO - 1e-6,
+          f"slots inside the blocks' outline (|x| <= {BC_BLOCK_XO:.2f})")
+    for k in ("flex", "stiffener", "contacts"):
+        r = slots & ps[k]
+        check(r is None or r.volume < 0.001, f"slots clear the {k}")
+    lip_z = (slots & Pos(BC_END_XO - reach / 2, 0, 0) * Box(0.1, 200, 200)).bounding_box()
+    check(lip_z.max.Z - BC_FLEX_Z >= 5.0, f"slot lips hold the section's outer edges from the ledge to z {lip_z.max.Z:.1f}")
+    ye = (bc.copper_y() + bc.stiffener_y()) / 2          # the upright end section slides in from above: swept up,
+    sect = (ps["flex"] + ps["stiffener"]) & Pos(0, ye, 52.3) * Box(200, 1.5, 100)    # it meets nothing (the strip
+                                                         # on the ledge, z < 2.3, is pressed down past its hooks)
+    hit = 0.0
+    for dz in (0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 12.0):
+        r = Pos(0, 0, dz) * sect & ps["cover"]
+        hit = max(hit, r.volume if r is not None else 0.0)
+    check(hit < 0.01, f"end section slides straight down into the slots and the foot slot ({hit:.3f} mm3 in the way)")
     nb = bc.run_notch().bounding_box()
-    nw = nb.size.X
-    check(nw <= 3.0 and BC_END_T >= 0.4, f"run drops into a {nw:.2f} mm notch through the GND block from above (no "
-                                         f"threading); the {BC_END_T} mm stiffener spans it behind the finger")
+    f0, f1 = BC_CELL_X - FINGER_PAD[1] / 2, BC_CELL_X + FINGER_PAD[1] / 2     # GND finger's pad across x
+    over = max(0.0, min(nb.max.X, f1) - max(nb.min.X, f0))
+    check(over <= 3.0 and BC_END_T >= 0.4, f"run drops into a notch along the GND block's inner face from above (no "
+                                           f"threading); the {BC_END_T} mm stiffener spans {over:.2f} mm of the "
+                                           f"finger's pad over it (<= 3.0)")
+    a, b, _, z1 = bc.end_blocks()[1]
+    yb = bc.stiffener_y() - BC_TERM_Y * BC_BLOCK_T / 2
+    post = (Pos((a + b) / 2, yb, (BC_WALL + z1) / 2) * Box(b - a, BC_BLOCK_T, z1 - BC_WALL)) & ps["cover"]
+    sol = post.solids() if post is not None else []
+    big = max((q.volume for q in sol), default=0.0)
+    check(len([q for q in sol if q.volume > 1.0]) == 1, f"GND contact post one piece ({big:.0f} mm3): the run notch "
+                                                        f"on its inner face, the pads and their hooks above it (D-79)")
     r = bc.run_notch() & ps["flex"]
     check(r is not None and r.volume > 0.01, "the run lies in the notch")
-    es = bc.end_snaps()
-    check(len(es.solids()) == 2, f"{len(es.solids())} snap hooks beside the contact blocks")
-    for k in ("flex", "stiffener", "contacts"):
-        r = es & ps[k]
-        check(r is None or r.volume < 0.001, f"end snap hooks clear the {k}")
-    st, reach, sclr, lt, sgap = BC_END_SNAP
-    over = reach
-    z0, z1 = BC_END_SNAP_Z
-    check(over >= 0.3 and z1 <= B_SEAM_Z - 0.5, f"end snap lips {over} mm over the section's outer edges, z {z0}..{z1} "
-                                                f"(below the rim, clear of the housing's contact slots)")
-    xo = bc.end_blocks()[1][1]
-    inner = xo - reach
-    check(inner >= BC_CELL_X + BC_CONTACT_W / 2 + 0.1, f"end snap lips start at |x| {inner:.2f}, outside the battery "
-                                                       f"contacts (to {BC_CELL_X + BC_CONTACT_W / 2:.2f})")
-    check(lt + sgap <= FINGER_WH - 0.5, f"end snap lips {lt + sgap:.2f} mm in front of the copper (contacts at "
-                                        f"{FINGER_WH})")
-    arm = (z0 + z1) / 2 - BC_FLEX_SNAP_ROOT
-    strain = 1.5 * st * (reach + sclr) / arm ** 2
-    check(strain <= 0.03, f"end snap posts {st} thick, {arm:.1f} mm free: strain {strain * 100:.1f} % as the section "
-                          f"folds in (design target <= 3 %, PETG)")
+    holder = None                                        # outboard of each cell above its axis: the holder shell
+    for sx in (-1, 1):
+        h = Pos(sx * (BC_CELL_X + 50), 0, BC_CELL_Z + 50) * Box(100, 200, 100)
+        h -= Pos(sx * BC_CELL_X, 0, BC_CELL_Z) * Rot(90, 0, 0) * Cylinder(BC_END_R, 200)
+        holder = h if holder is None else holder + h
+    end = Pos(0, bc.stiffener_y() - BC_TERM_Y * BC_BLOCK_T / 2, B_SEAM_Z / 2) * Box(200, BC_BLOCK_T + 6.0, B_SEAM_Z)
+    inside = {"cover (less its shell)": ps["cover"] - bc.shell(), "flex": ps["flex"], "stiffener": ps["stiffener"]}
+    for k, part in inside.items():
+        r = part & end
+        r = r & holder if r is not None and r.volume > 0 else None
+        v = r.volume if r is not None else 0.0
+        check(v < 0.01, f"{k} at the terminal end inside the cells' outline outboard above the axes (holder shell; "
+                        f"{v:.3f} mm3 out)")
     clips = bc.steel_clips()
     r = clips & ps["steel"]
     check(r is None or r.volume < 0.001, "steel plate clips clear the plate")
@@ -598,77 +818,101 @@ def cover_checks():
         inside = x0 + 0.1 <= x - w / 2 and x + w / 2 <= x1 - 0.1 and y0 + 0.1 <= y - h / 2 and y + h / 2 <= y1 - 0.1
         check(inside and BC_FLEX_Z - t >= BC_REG_FLOOR + 0.1, f"regulator part {ref} inside its recess "
                                                                  f"({BC_FLEX_Z - t - BC_REG_FLOOR:.2f} mm above the floor)")
-    pad, jog = bc.strip_boxes()[:2]                           # the pad section continues above the regulator section
-    check(x0 >= max(pad[0], jog[0]) and x1 <= min(pad[1], jog[1]) and y0 >= jog[2] and y1 <= pad[3],
-          "regulator recess under the flex (regulator and pad sections)")
+    pad, reg = bc.strip_boxes()[:2]                           # the regulator section above the pad section
+    check(x0 >= reg[0] and x1 <= reg[1] and y0 >= reg[2] and y1 <= reg[3],
+          "regulator recess under the flex's regulator section")
+    wins = min(y for _, y in BC_FINGERS), max(y for _, y in BC_FINGERS)
+    check(y0 >= wins[1] + PIN_BARREL[0] / 2 + BC_WIN_CLR + 0.5, f"regulator recess {y0 - wins[1] - PIN_BARREL[0] / 2 - BC_WIN_CLR:.2f} "
+                                                        f"mm above the upper pin window")
     print(f"       contacts on the cell axes at z {BC_CELL_Z} (MEASURE), cell end y {BC_CELL_END_Y:.2f} (REF), "
           f"end section copper y {bc.copper_y():.2f}")
 
 
 def battery_free_checks(ins, tr):
-    """Battery-free remote, NA (D-41, D-49): the sensor flex's tongue under the trim's tab and strip, the floor insert
-    hanging from the strip's foot, the replacement back cover seated on it; nothing of the tongue on the insert."""
-    print("battery-free remote, NA (D-41, D-49)")
-    from build123d import Pos
+    """Battery-free remote, NA (D-50): two spring pins from the wiring board's 5 V area through the pocket floor onto
+    the back cover flex's pads; riser in a pocket under the floor; posts on the board's 5 V area."""
+    print("battery-free remote, NA (D-50)")
+    from build123d import Cylinder
     import backcover as bc
-    import floor_na
-    import jumper
-    import sensor_flex as sf
-    import insert, trim
-    ch = insert.tongue_channel().bounding_box()
-    check(ch.min.Z >= 0.3, f"insert's notch and arc groove above the wall plane (lowest z {ch.min.Z:.2f}): "
-                           f"low-voltage to low-voltage")
-    sfp = sf.parts()
-    t = sf.tongue()
-    strip = trim.tongue_tab()
-    sb = strip.bounding_box()
-    check(abs(sb.max.Z - PT) < 1e-6, "trim tab fills the island notch flush with the face")
-    fl = floor_na.parts()
-    lift = SEAT_Z + BC_FLOOR_T
-    cov = {k: Pos(0, 0, lift) * v for k, v in bc.cover_parts().items()}
-    rem = Pos(0, 0, lift) * bc.remote_front()
-
-    def vol(a, b):
-        r = a & b
-        return 0.0 if r is None else r.volume
-    for name, other in (("insert", ins), ("trim", tr), ("fingers", sfp["fingers"]), ("jumper pad end", sfp["target"]),
-                        ("5 V jumper", jumper.build()["jumper"]), ("floor insert", fl["floor"])):
-        v = vol(t, other)
-        check(v < 0.01, f"tongue clears the {name} ({v:.3f} mm3)")
-    for k in ("floor", "floor_flex", "floor_pads"):
-        v = vol(fl[k], ins) + vol(fl[k], tr)
-        check(v < 0.01, f"{k} clears the insert and the trim ({v:.3f} mm3)")
+    import ring, assembly
+    rp = ring.parts()
+    barrel = PIN_BARREL[0]
+    lo, hi = PIN_WORK - PIN_TOL, PIN_WORK + PIN_TOL
+    check(lo >= PIN_WH[0] - 1e-6 and hi <= PIN_WH[2] + 1e-6,
+          f"pins at {PIN_WORK:.2f} mm working height, +-{PIN_TOL} -> {lo:.2f}..{hi:.2f} inside {PIN_WH[0]}..{PIN_WH[2]} "
+          f"(Harwin P70-2200045; posts {POST_STACK[0]} + {POST_STACK[1]} mm)")
+    print(f"       with the remote out the pins stand {RISER_TOP + PIN_FREE - SEAT_Z:.1f} mm above the pocket floor")
+    gap = PIN_WH[0] - PIN_BARREL[1]
+    check(gap >= 0.15, f"barrels stand {RISER_TOP + PIN_BARREL[1] - SEAT_Z:.2f} mm above the pocket floor inside the "
+                       f"cover's windows; at the shortest working height the barrel top stays {gap:.2f} mm under the pad")
+    peg = RISER_TOP - PIN_PEG[1]
+    check(peg - WB_FRONT_Z >= 5.0, f"pegs {PIN_PEG[1] - RISER[2]:.1f} mm below the {RISER[2]} mm riser, "
+                                   f"{peg - WB_FRONT_Z:.1f} above the wiring board")
+    flange_top = RISER_TOP + PIN_FLANGE[1] + PIN_RADIAL
+    check(SEAT_Z - flange_top >= BARRIER_MIN, f"pocket floor {SEAT_Z - flange_top:.1f} mm over the pins' flange "
+                                              f"recesses >= {BARRIER_MIN}")
+    cov = {k: Pos(0, 0, SEAT_Z) * v for k, v in bc.cover_parts().items()}
     for k, c in cov.items():
-        v = vol(c, ins) + vol(c, tr) + vol(c, t) + vol(c, fl["floor"]) + vol(c, fl["floor_flex"])
-        check(v < 0.01, f"back cover {k} clears the insert, trim strip, tongue and floor ({v:.3f} mm3)")
-    v = vol(rem, ins) + vol(rem, t) + vol(rem, strip) + vol(rem, fl["floor"])
-    check(v < 0.01, f"remote on the floor insert clears the insert, the trim's strip, the floor's tab and the tongue "
-                    f"({v:.3f} mm3)")
-    import bilresa
-    v = vol(bilresa.build(BC_FLOOR_T), strip) + vol(bilresa.build(BC_FLOOR_T), t)
-    check(v < 0.01, f"remote with its own battery cover on the floor insert clears the strip and the tongue ({v:.3f} "
-                    f"mm3; the floor insert comes with the face plate, so a battery remote sits on it too)")
-    reach, hh, (w0, w1) = BC_NA_FOOT_HOOK
-    over = reach - 0.05
-    arm = DECK_Z - (lift + w1)
-    strain = 1.5 * BC_NA_STRIP[1] * over / arm ** 2
-    check(over >= 0.3 and strain <= 0.03, f"floor insert hangs from the strip's foot: hook {over:.2f} mm into the "
-                                          f"tab's window, strip {arm:.1f} mm free, strain {strain * 100:.1f} % (PETG)")
-    xd, wd, y_pad = BC_NA_DOWN
+        if k == "pin_pads":
+            continue
+        r = rp["pins"] & c
+        check(r is None or r.volume < 0.001, f"pins clear the back cover's {k}")
+    d = rp["pins"].distance_to(cov["pin_pads"])
+    check(d < 0.02, f"pin tips on the pads (gap {d:.3f} mm)")
+    for name, o in (("insert", ins), ("trim", tr)):
+        for k in ("pins", "riser", "posts", "sleeves", "screws"):
+            r = rp[k] & o
+            v = r.volume if r is not None else 0.0
+            check(v < 0.01, f"{k} clear the {name} ({v:.3f} mm3)")
+    floor = SEAT_Z - (RISER_TOP + RISER_CLR)
+    mag = SEAT_Z - MAGNET[2] - MAGNET_SETBACK
+    check(floor >= BARRIER_MIN and mag - (RISER_TOP + RISER_CLR) >= BARRIER_MIN,
+          f"pocket floor {floor:.1f} mm over the riser's pocket ({mag - RISER_TOP - RISER_CLR:.1f} under the magnet "
+          f"recess) >= {BARRIER_MIN}")
+    head = SEAT_Z - (RISER_TOP + M2_HEAD[1] + RISER_CLR)
+    check(head >= BARRIER_MIN, f"pocket floor {head:.1f} mm over the riser screws' head recesses >= {BARRIER_MIN}")
     for x, y in BC_FINGERS:
-        check(abs(x - BC_FINGERS[0][0]) < 1e-6 and y + BC_FLOOR_PAD[1] / 2 <= y_pad - 0.3,
-              f"floor pad under the finger at ({x}, {y}) on the pad strip")
-    well_x, well_y0 = WELL_IN[0] / 2 + BC_FLOOR_CLR, SW_Y - WELL_IN[1] / 2 - BC_FLOOR_CLR
-    hw = BC_NA_NECK_W / 2
-    web = xd - hw - 0.15 - well_x
-    check(web >= 0.5, f"tongue channel and slot clear of the switch well's opening by {web:.2f} mm")
-    check(BC_FINGERS[0][0] - BC_TONGUE_W / 2 - 0.15 >= well_x or y_pad + 0.3 <= well_y0,
-          "pad strip clear of the switch well's opening")
+        dw = SW_Y - WELL_IN[1] / 2 - y - barrel / 2
+        dm = min(abs(x) - (MAGNET[0] / 2 + MAGNET_CLR), y - (MAGNET_REC_Y + MAGNET[1] / 2 + MAGNET_CLR)) - barrel / 2
+        check(dw >= BARRIER_MIN or abs(x) - WELL_IN[0] / 2 - barrel / 2 >= BARRIER_MIN,
+              f"pin at ({x}, {y}) clear of the switch well")
+        check(abs(x) - (MAGNET[0] / 2 + MAGNET_CLR) - barrel / 2 >= BARRIER_MIN, f"pin at ({x}, {y}) clear of the "
+                                                                                  f"magnet recess")
+    board = assembly.wiring_board()
+    for k in ("posts", "sleeves"):
+        r = rp[k] & board
+        v = r.volume if r is not None else 0.0
+        check(v < 0.05, f"spacer {k} clear of the wiring board's parts ({v:.2f} mm3)")
+    import kicad_board
+    zone = None
+    try:
+        from importlib import util
+        spec = util.spec_from_file_location("parts", str(kicad_board.ROOT / "pcb" / "tools" / "parts.py"))
+        m = util.module_from_spec(spec)
+        spec.loader.exec_module(m)
+        zone = m.SELV_ZONE
+    except Exception as e:                                  # pragma: no cover - reported, not fatal
+        print(f"       no SELV zone from pcb/tools/parts.py ({e})")
+    check(POST_SPIGOT[1] < WB[2], f"spacer posts surface-mounted: the {POST_SPIGOT[1]} mm spigot ends "
+                                  f"{WB[2] - POST_SPIGOT[1]:.1f} mm inside the {WB[2]} mm board, nothing reaches the "
+                                  f"back (the PSU under them)")
+    check(POST_THREAD[0] < POST_STACK[0], f"standoff's male thread {POST_THREAD[0]} mm ends inside the "
+                                          f"{POST_STACK[0]} mm SMT spacer, short of the board and the PSU behind it")
+    check(RISER[2] < RISER_SCREW_L <= RISER[2] + POST_THREAD[1],
+          f"riser screw M2 x {RISER_SCREW_L}: {RISER_SCREW_L - RISER[2]:.1f} mm in the standoff's "
+          f"{POST_THREAD[1]} mm thread")
+    if zone:
+        pads = sorted(tuple(v["pcb"][:2]) for k, v in m.PARTS.items() if v.get("mpn") == "9774070243R")
+        check(pads == sorted(POSTS), f"spacer posts {sorted(POSTS)} match the wiring board's P1 / P2 {pads}")
+        xs, ys = [p[0] for p in zone], [p[1] for p in zone]
+        for x, y in POSTS:
+            r = POST_SP[0] / 2 + 0.5
+            ok = min(xs) + r <= x <= max(xs) - r and min(ys) + r <= y - WB_Y <= max(ys) - r
+            check(ok, f"spacer post at ({x}, {y}) inside the wiring board's 5 V area")
     s0, s1 = BC_STEEL_Y - BC_STEEL[1] / 2, BC_STEEL_Y + BC_STEEL[1] / 2
     m0, m1 = MAGNET_REC_Y - MAGNET[1] / 2, MAGNET_REC_Y + MAGNET[1] / 2
     share = max(0.0, min(s1, m1) - max(s0, m0)) / MAGNET[1]
-    print(f"       magnet over the cover's steel plate: {share * 100:.0f} % of its height; remote face "
-          f"{B_PROUD + BC_FLOOR_T:.1f} mm proud on the floor insert (pull test: MEASUREMENTS)")
+    print(f"       magnet over the cover's steel plate: {share * 100:.0f} % of its height (pull test: MEASUREMENTS)")
 
 
 def msr_hook_checks(hooks, others, back_z, board_x, y):
@@ -684,6 +928,30 @@ def msr_hook_checks(hooks, others, back_z, board_x, y):
         check(r is None or r.volume < 0.001, f"MSR-2 snap hooks clear the {name}")
 
 
+def jig_checks():
+    """Steel plate cutting jigs (D-52): the plate fits the pocket, the cut falls at the piece length, printable."""
+    print("steel plate cutting jigs (D-52)")
+    import plate_jig as pj
+    plate = pj.plate()
+    for name, j in (("saw guide", pj.saw_guide()), ("marker gauge", pj.marker_gauge())):
+        r = j & plate
+        check(r is None or r.volume < 1e-6, f"{name}: plate fits the pocket ({JIG_CLR} mm round it)")
+        check(len(j.solids()) == 1, f"{name}: one solid")
+        overhangs(f"{name} (floor down)", j)
+    from build123d import Box
+    slot, below, above = JIG_SAW
+    j = pj.saw_guide()
+    probe = Pos(0, MAGNET[1], JIG_FLOOR - below / 2) * Box(MAGNET[0], slot - 0.1, below - 0.05)
+    r = j & probe
+    check(r is None or r.volume < 1e-6, f"saw slot {slot} mm at {MAGNET[1]} mm from the round end, {below} mm into "
+                                        f"the floor: the blade cuts right through")
+    fl, fh, gap = JIG_FENCE
+    over = Pos(0, MAGNET_FULL[1] / 2, JIG_FLOOR + MAGNET[2] + gap + fh / 2) * Box(MAGNET[0] - 1.0, MAGNET_FULL[1], fh)
+    fb = (pj.marker_gauge() & over).bounding_box()
+    check(abs(fb.min.Y - MAGNET[1]) < 1e-6 and gap > 0, f"marker fence face at {fb.min.Y:.2f} mm from the round end "
+                                                         f"(piece {MAGNET[1]}), {gap} mm over the plate")
+
+
 def main():
     dims()
     terminal_entry()
@@ -692,27 +960,27 @@ def main():
     solids(ins, tr)
     board_fit(ins)
     mounting(ins)
-    sensor_flex_checks(ins, tr)
-    jumper_checks(ins, tr)
-    mic_checks(ins, tr)
+    msr2_model()
+    msr_spacers(ins)
+    ring_mount(ins)
+    ring_checks(ins, tr)
+    scd_vent_checks(tr, MSR_Y, MSR_BACK_Z, PT)
+    msr_posts(tr, MSR_Y, MSR_BACK_Z, PT)
+    ffc_checks(ins, tr)
     separation(ins, tr)
     barrier(ins)
     cover_checks()
     battery_free_checks(ins, tr)
-    import trim as trim_mod
-    import sensor_flex
-    sfp = sensor_flex.parts()
-    print("MSR-2 retention (D-45)")
-    msr_hook_checks(trim_mod.msr_hooks()[0], {"sensor flex": sfp["flex"], "CN2 plug": sfp["plug"]}, MSR_BACK_Z,
-                    MSR_BOARD[0], MSR_Y)
     from export import PRINT_ORIENT
-    print("printability (no supports)")
-    overhangs("insert", PRINT_ORIENT["insert"](ins))
+    print("printability")
+    overhangs("insert (supports only under the seal lip and in the riser pocket, D-68)", PRINT_ORIENT["insert"](ins),
+              supported=(0.0, RISER_TOP + RISER_CLR, RISER_TOP + M2_HEAD[1] + RISER_CLR))   # seal lip on the wall
     overhangs("trim", PRINT_ORIENT["trim"](tr), limit=3.5)  # vent windows bridge 3 mm
+    import coupons
+    overhangs("crush rib coupon (as modelled)", coupons.ribs())
     import backcover
     overhangs("back cover", backcover.cover())                 # printed back down
-    import floor_na
-    overhangs("NA floor insert", Pos(0, 0, -SEAT_Z) * floor_na.parts()["floor"])   # printed flat
+    jig_checks()
     print("FAILED: " + "; ".join(FAILS) if FAILS else "all checks passed")
     return 1 if FAILS else 0
 

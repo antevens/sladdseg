@@ -2,17 +2,21 @@
 
   coupon_pocket_well  top of the insert: switch well + panel, magnet recess, upper pocket end, key pin,
                       5 V pass-through, top screw boss. Rocker snap-in + remote fit.
-  coupon_msr          top of the trim: MSR-2 bay, radar skin, light-sensor hole, vents.
+  coupon_msr          top of the trim: MSR-2 bay, radar skin, CO2 and light sensor grille, vents.
   coupon_rocker       panel-thickness ladder for the C1300 snap-in (SW_PANEL_T is MEASURE):
                       one notch per step on the frame edge = 1.0, 1.5, 2.0, 2.5, 3.0 mm.
+  coupon_ribs         a straight piece of the collar with the flange's land and taper and three crush ribs at
+                      RIB_STEPS interference (1, 2, 3 notches): press the ring board's window edge (or a 1.6 mm FR4
+                      offcut with a routed edge) on, pick the rib that holds without cracking (D-68).
 """
-from build123d import Box, Pos, Rectangle
+from build123d import Box, Pos, Rectangle, Rot
 from params import *
 from common import slab, rr
 import insert
 import trim
 
 PANEL_STEPS = (1.0, 1.5, 2.0, 2.5, 3.0)
+RIB_STEPS = (0.10, 0.15, 0.20)                     # crush rib interference into the board's edge
 
 
 def pocket_well(ins=None):
@@ -43,7 +47,27 @@ def rocker_ladder():
     return parts
 
 
+def ribs():
+    """Collar piece: the collar face at x 0, the board side at x > 0 (the wall plane z 0, as in the insert), the land
+    at RING_T then 45 deg up; one rib per step, its lead-in as in insert.ribs()."""
+    from common import radial_prism
+    length, top, back, base = 12.0 * len(RIB_STEPS), 6.0, 8.0, 3.0
+    land = RING_WIN_CLR + RING_LAND
+    prof = [(-back, -base), (0.0, -base), (0.0, RING_T), (land, RING_T), (land + top - RING_T, top), (-back, top)]
+    c = radial_prism((0.0, length / 2), (1.0, 0.0), prof, length)
+    w = RING_RIB[0]
+    for i, interf in enumerate(RIB_STEPS):
+        y = 6.0 + 12.0 * i
+        d = RING_WIN_CLR + interf
+        r = Pos(d / 2, y, RING_T / 2) * Box(d, w, RING_T)
+        r -= Pos(d, y, 0) * Rot(0, 45, 0) * Box(d * 2 ** 0.5, w + 1, d * 2 ** 0.5)
+        c += r
+        for k in range(i + 1):                                                  # step marker notches on the top
+            c -= Pos(-back / 2, y - 2.0 + 1.6 * k, top) * Box(back - 2, 0.8, 1.2)
+    return c
+
+
 if __name__ == "__main__":
-    for name, p in (("pocket_well", pocket_well()), ("msr", msr()), ("rocker", rocker_ladder())):
+    for name, p in (("pocket_well", pocket_well()), ("msr", msr()), ("rocker", rocker_ladder()), ("ribs", ribs())):
         bb = p.bounding_box()
         print(f"coupon_{name}: {bb.size.X:.0f} x {bb.size.Y:.0f} x {bb.size.Z:.0f} mm, {p.volume/1000:.1f} cm3, valid={p.is_valid}, solids={len(p.solids())}")

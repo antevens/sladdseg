@@ -9,37 +9,63 @@ B = ROOT / "build"
 R = ROOT / "docs" / "renders"
 
 
+def stl(part, name, tol=0.02):
+    export_stl(part, str(B / f"{name}.stl"), tolerance=tol)
+    return B / f"{name}.stl"
+
+
 def main():
     R.mkdir(parents=True, exist_ok=True)
-    import bilresa
-    export_stl(assembly.wiring_board(), str(B / "wiring_board_placed.stl"), tolerance=0.05)
-    export_stl(bilresa.build(), str(B / "bilresa_placed.stl"), tolerance=0.05)
-    import post
-    export_stl(post.placed(), str(B / "posts_placed.stl"), tolerance=0.02)
+    import insert, trim, ring, jumper, standoff
+    import backcover as bc
+    from build123d import Pos
+    from params import SW_Y, PASS_E, MSR_Y, SHT_AT, RING_T, WB_FRONT_Z, WB, BC_FINGERS, SEAT_Z, PT
+    rp = ring.parts()
+    cov = bc.cover_parts()
+    seated = lambda part: Pos(0, 0, SEAT_Z) * part
+    parts = [(insert.build(), "insert_placed", "tab:red", "insert (UL94 V-0)"),
+             (trim.build(), "trim_placed", "tab:blue", "face plate (trim)"),
+             (assembly.wiring_board(), "wiring_board_placed", "tab:green", "wiring board"),
+             (rp["ring"], "ring_placed", "darkgreen", "ring board"),
+             (rp["msr"], "msr_placed", "dimgray", "MSR-2 with CO2 add-on (model)"),
+             (rp["cn2"] + rp["j1"] + rp["sht45"] + rp["passives"] + rp["micb"] + rp["mic"] + rp["spacers"],
+              "ring_parts_placed", "gold", "ring board parts (CN2, J1, SHT45, mic, spacers)"),
+             (rp["riser"] + rp["pins"] + rp["posts"] + rp["screws"], "riser_placed", "darkorange",
+              "riser, spring pins, spacer posts"),
+             (jumper.build()["jumper"], "ffc_placed", "cyan", "5 V FFC"),
+             (seated(bc.remote_front()), "remote_front_placed", "lightgray", "BILRESA (front half)"),
+             (seated(cov["cover"]), "cover_placed", "tan", "replacement back cover"),
+             (seated(cov["flex"] + cov["pin_pads"] + cov["stiffener"] + cov["pad_stiffener"]), "cover_flex_placed",
+              "peru", "back cover flex, pads, stiffeners"),
+             (standoff.placed(), "standoffs_placed", "sienna", "board standoffs + screws (nylon, D-57)")]
+    args = [f"{stl(part, name)}:{col}|{label}" for part, name, col, label in parts]
+    x5, y5 = BC_FINGERS[0]
+    cuts = [f"x=0#long section: MSR-2 on CN2, remote, rocker well, SHT45, wiring board",
+            f"x={x5}#spring pins: riser on its posts, pocket floor, back cover pads, CN2",
+            f"y={MSR_Y}@-38,38,-6,18#MSR-2 on CN2 on the ring board, 0.6 mm radar skin",
+            f"y={SW_Y}#rocker well, wiring board, WAGO block",
+            f"y={y5}@-8,32,-30,16#+5V spring pin from the riser through the pocket floor",
+            f"y={PASS_E[1]}#5 V FFC through the pass-through",
+            f"y={SHT_AT[1]}@-38,38,-6,18#SHT45 on the ring board under its vents",
+            f"z={RING_T / 2}#ring board on the insert's collar, crush ribs at its window",
+            f"z={WB_FRONT_Z - WB[2] / 2}#wiring board: posts, spacer posts, J2"]
     tool = [sys.executable, str(ROOT / "cad" / "tools" / "sections.py")]
-    parts = [f"{B/'insert.stl'}:tab:red", f"{B/'trim.stl'}:tab:blue", f"{B/'wiring_board_placed.stl'}:tab:green",
-             f"{B/'bilresa_placed.stl'}:tab:gray", f"{B/'posts_placed.stl'}:tab:orange"]
-    from params import WB_Y, WAGO_Y, WB_FRONT_Z, WB, SW_Y, PASS_Y, MSR_Y, MOUNT_HOLES
-    subprocess.run(tool + [str(R / "v0.3_sections.png")] + parts +
-                   ["--title", "v0.3: insert (red, UL94 V-0), trim (blue), wiring board (green), board posts (orange), "
-                    "BILRESA (grey); dashed = wall",
-                    "--cut", "x=0", "--cut", f"x={MOUNT_HOLES[0][0]}", "--cut", f"y={WB_Y + WAGO_Y}", "--cut", f"y={SW_Y}",
-                    "--cut", f"y={PASS_Y}", "--cut", "z=12", "--cut", f"z={WB_FRONT_Z - WB[2] / 2}"], check=True)
-    print("wrote", R / "v0.3_sections.png")
-    # microphone (D-29): sound hole, gasket, stiffener, flex and mic body, zoomed
-    import sensor_flex
-    from params import MIC_X, MIC_PORT
-    fp = sensor_flex.parts()
-    export_stl(fp["flex"], str(B / "flex_placed.stl"), tolerance=0.01)
-    export_stl(fp["mic"], str(B / "mic_placed.stl"), tolerance=0.01)
-    x, y = MIC_X, MIC_PORT[1]
-    subprocess.run(tool + [str(R / "v0.3_mic_section.png"), f"{B/'insert.stl'}:tab:red", f"{B/'trim.stl'}:tab:blue",
-                           f"{B/'flex_placed.stl'}:tab:orange", f"{B/'mic_placed.stl'}:tab:purple",
-                           "--title", "microphone (D-29): trim skin + sound hole (blue), gasket + mic (purple), "
-                           "flex + stiffener (orange), insert (red)",
-                           "--cut", f"y={y:.2f}@{x - 7:.1f},{x + 7:.1f},7,14",
-                           "--cut", f"x={x:.2f}@{y - 5:.1f},{y + 9:.1f},7,14", "--dpi", "110"], check=True)
-    print("wrote", R / "v0.3_mic_section.png")
+    subprocess.run(tool + [str(R / "v0.4_sections.png")] + args +
+                   ["--title", "v0.4 sections (dashed red = wall surface, z 0)", "--dpi", "90"] +
+                   [a for c in cuts for a in ("--cut", c)], check=True)
+    print("wrote", R / "v0.4_sections.png")
+    # microphone (D-29, D-50): mic under its carrier on the ring board, sound tube to the hole, zoomed
+    from params import MIC_AT
+    export_stl(rp["ring"] + rp["micb"], str(B / "ring_mic_placed.stl"), tolerance=0.01)
+    export_stl(rp["mic"], str(B / "mic_placed.stl"), tolerance=0.01)
+    x, y = MIC_AT
+    subprocess.run(tool + [str(R / "v0.4_mic_section.png"), f"{B/'insert_placed.stl'}:tab:red", f"{B/'trim_placed.stl'}:tab:blue",
+                           f"{B/'ring_mic_placed.stl'}:tab:green", f"{B/'mic_placed.stl'}:tab:purple",
+                           "--title", "microphone (D-50): face skin, sound hole and tube (blue), mic (purple) under its "
+                           "carrier on the ring board (green), insert (red)",
+                           "--cut", f"y={y:.2f}@{x - 7:.1f},{x + 7:.1f},0,16",
+                           "--cut", f"x={x:.2f}@{y - 7:.1f},{y + 7:.1f},0,16", "--dpi", "110"], check=True)
+    print("wrote", R / "v0.4_mic_section.png")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 """EU bought-in parts and boards as envelopes (D-30, D-36), for clearance checks and renders only:
-the BILRESA model, the supplied magnet under the floor, the emergency rocker, the mains board
+the BILRESA model, the supplied steel piece in the pocket floor's recess, the emergency rocker, the mains board
 (rocker, WAGO blocks, fuse, MOV, PSU over its relief slot, header on the 5 V island) and the 5 V
 board (socket, capacitor, spring pins up through the cap to the flex, R9).
 """
@@ -9,13 +9,13 @@ import params as na
 
 
 def remote(lift=0.0):
-    """BILRESA model (bilresa.py seats it at the NA SEAT_Z) moved onto the pocket-floor insert."""
+    """BILRESA model (bilresa.py seats it at the NA SEAT_Z) moved onto the cap."""
     import bilresa
     return Pos(0, 0, SEAT_Z - na.SEAT_Z + lift) * bilresa.build()
 
 
 def magnet():
-    """The cut magnet piece under the floor: round end down (-y), the cut edge up towards the switch cup."""
+    """The cut steel piece in the pocket floor's recess: round end down (-y), the cut edge up towards the switch cup."""
     t, r = MAGNET[2] - 0.01, MAGNET_END_R
     z = (MAGNET_Z[0] + MAGNET_Z[1]) / 2 - 0.005
     y0, y1 = EU_MAGNET_Y - MAGNET[1] / 2, EU_MAGNET_Y + MAGNET[1] / 2
@@ -88,14 +88,22 @@ def domes():
 
 
 def pins():
-    """Spring pins on the 5 V board's front at their design working height: flange, barrel, plunger."""
+    """Sensor spring pins (P70-2200045) on the 5 V board's front at the design working height, tips on the cap board's
+    pads."""
+    from common import pogo
     out = None
     for x, y in PINS:
-        fl = Pos(x, y, WB_FRONT + PIN_FLANGE[1] / 2) * Cylinder(PIN_FLANGE[0] / 2, PIN_FLANGE[1])
-        top = WB_FRONT + PIN_DESIGN_WH
-        body = Pos(x, y, (WB_FRONT + PIN_FLANGE[1] + top - 0.6) / 2) * Cylinder(PIN_BARREL_D / 2, top - 0.6 - WB_FRONT - PIN_FLANGE[1])
-        tip = Pos(x, y, top - 0.3) * Cylinder(PIN_PLUNGER_D / 2, 0.6)
-        p = fl + body + tip
+        p = pogo(x, y, WB_FRONT, CB_PAD_Z, PIN_FLANGE, PIN_BARREL, PIN_PLUNGER_D)
+        out = p if out is None else out + p
+    return out
+
+
+def bf_pins():
+    """Battery-free spring pins (P70-2200045) on the 5 V board's front, tips on the back cover's pads (D-54, D-59)."""
+    from common import pogo
+    out = None
+    for x, y in BC_FINGERS:
+        p = pogo(x, y, WB_FRONT, BF_TIP_Z, PIN_FLANGE, PIN_BARREL, PIN_PLUNGER_D)
         out = p if out is None else out + p
     return out
 
@@ -167,4 +175,4 @@ def socket():
 def parts():
     return {"board": board(), "mains_board": mains_board(), "psu": psu(), "wago": wago(), "switch": switch(),
             "magnet": magnet(), "front": front_parts(), "mains_front": mains_front_parts(), "header": header(),
-            "socket": socket(), "pins": pins()}
+            "socket": socket(), "pins": pins(), "bf_pins": bf_pins()}

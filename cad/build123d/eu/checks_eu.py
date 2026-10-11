@@ -5,7 +5,7 @@ wall) - cap, with the rocker cutout (closed by the rocker body) and the two spri
 (pin barrels) plugged. The air touching the back of the box (mains) must stay behind the wall plane.
 """
 import sys
-from math import hypot
+from math import cos, hypot, radians, sin, sqrt
 from build123d import Box, Cylinder, Pos, Rectangle, Rot, Vector
 from params_eu import *
 from common import rr, slab
@@ -13,7 +13,7 @@ import checks as base
 import cap_eu
 import trim_eu
 import boards_eu
-import sensor_eu
+import capboard_eu
 
 check = base.check
 
@@ -50,8 +50,6 @@ def layout():
                                     (0, -SCREW_HEAD_D / 2)))
         cup = abs(y - SW_Y) - CUP_OUT[1] / 2 - SCREW_HEAD_D / 2
         check(inside and cup >= 1.0, f"cap screw head in the pocket floor under the remote, {cup:.1f} mm from the cup")
-    r = hypot(TRIM_SCREW_X, TRIM_SCREW_Y) + TRIM_BOSS_D / 2
-    check(r <= lim, f"trim screw bosses inside the box (r {r:.2f})")
     for x, y in PINS:
         r = hypot(x, y) + PIN_PAD_D / 2
         check(r <= WB_R - 0.25, f"spring pin pad at ({x}, {y}) on the 5 V board (r {r:.2f} <= {WB_R - 0.25:.2f})")
@@ -59,13 +57,19 @@ def layout():
               f"spring pin hole at ({x}, {y}) outside the pocket walls (opens into the trim's right channel)")
         d = min(hypot(x - dx, y - dy) for dx, dy in DOMES) - DOME_NOTCH_R - PIN_PAD_D / 2
         check(d >= 0.0, f"spring pin pad {d:.2f} mm clear of the board's dome notches")
-    r = _rmax(0, EU_MAGNET_Y, MAGNET[0], MAGNET[1])
-    check(r <= lim and EU_MAGNET_Y + MAGNET[1] / 2 <= SW_Y - CUP_OUT[1] / 2 - 0.5,
-          f"magnet under the floor inside the box, clear of the switch cup (corner r {r:.2f})")
+    g = BARRIER_MIN + MAGNET_CLR
+    r = _rmax(0, EU_MAGNET_Y, MAGNET[0] + 2 * g, MAGNET[1] + 2 * g)
+    check(r <= lim, f"steel piece's cup inside the box (corner r {r:.2f} <= {lim:.2f}, D-72)")
+    wall = (SW_Y - CUP_IN[1] / 2) - (EU_MAGNET_Y + MAGNET[1] / 2 + MAGNET_CLR)
+    check(wall >= BARRIER_MIN - 1e-6, f"steel piece's recess {wall:.2f} mm from the switch cup (>= {BARRIER_MIN})")
+    check(abs(MAGNET_Z[1] - (SEAT_Z - MAGNET_SETBACK)) < 1e-6 and MAGNET_Z[0] - MAG_CUP_BOT >= BARRIER_MIN - 1e-6,
+          f"steel piece {MAGNET_SETBACK} mm below the seat, cup floor {MAGNET_Z[0] - MAG_CUP_BOT:.1f} mm under it")
+    gap = MAG_CUP_BOT - WB_FRONT
+    check(gap >= 0.5, f"cup {gap:.2f} mm over the 5 V board's front (>= 0.5)")
     s0, s1 = BC_STEEL_Y - BC_STEEL[1] / 2, BC_STEEL_Y + BC_STEEL[1] / 2
     m0, m1 = EU_MAGNET_Y - MAGNET[1] / 2, EU_MAGNET_Y + MAGNET[1] / 2
     share = max(0.0, min(s1, m1) - max(s0, m0)) / MAGNET[1]
-    check(share >= 0.75, f"magnet piece ({m0:.1f}..{m1:.1f}) {share * 100:.0f} % under the back cover's steel plate "
+    check(share >= 0.75, f"steel piece ({m0:.1f}..{m1:.1f}) {share * 100:.0f} % under the back cover's magnet "
                          f"({s0:.1f}..{s1:.1f})")
     top = PANEL_TOP_Z + SW_ROCKER_H + SW_ROCKER_TOL
     check(top <= SEAT_Z - SW_ROCKER_CLR + 1e-6, f"rocker top {top:.2f} under the remote's back ({SEAT_Z:.2f}) at max tolerance")
@@ -103,7 +107,7 @@ def layout():
         cup = max(abs(x) - CUP_OUT[0] / 2, abs(y - SW_Y) - CUP_OUT[1] / 2) - MB_BOSS_D / 2
         check(cup >= 0.3, f"long boss at ({x}, {y}) {cup:.2f} mm from the switch cup")
         for name, (c, (w, h)) in rects.items():
-            gap = hypot(max(abs(x - c[0]) - w / 2, 0), max(abs(y - c[1]) - h / 2, 0)) - TRIM_HEAD_D / 2
+            gap = hypot(max(abs(x - c[0]) - w / 2, 0), max(abs(y - c[1]) - h / 2, 0)) - M2_HEAD[0] / 2
             check(gap >= 0.3, f"mains board screw at ({x}, {y}) head {gap:.2f} mm from the {name}")
     check(HDR_ENGAGE >= 2.5, f"header posts {HDR_ENGAGE:.2f} mm into the 5 V board's socket ({HDR_GAP:.1f} mm between "
                             f"the boards; MEASURE with the parts)")
@@ -157,107 +161,270 @@ def solids(cap, tr):
 
 
 def sensors(cap, tr):
-    print("sensor flex, microphone, spring-pin contact")
-    stack = FLEX_T + B2B_STACK
-    check(FLEX_LO_Z >= 0.5 + 1e-6, f"flex plug end {FLEX_LO_Z:.2f} mm above the wall (CN2 stack {stack:.2f}, MEASURE)")
-    top = FLEX_HI_Z + FLEX_T + STIFF_T
-    check(top <= SKIN_Z - 0.1, f"stiffened flex top {top:.2f} mm under the face skin ({SKIN_Z})")
-    lo, hi = FLEX_X - FLEX_W / 2, FLEX_X + 4.4
-    wall = POCKET_OUT[0] / 2
-    check(lo - wall >= 0.5 and (PW / 2 - SKIN) - hi >= 0.5 and FLEX_PAD_SEC[0] - (wall - WALL_RECESS) >= 0.25,
-          f"flex x {lo:.1f}..{hi:.1f} (mic on the skin side) inside the right channel ({wall:.1f}..{PW / 2 - SKIN:.2f}); "
-          f"pad section from {FLEX_PAD_SEC[0]} in the pocket wall's foot recess")
-    probe = Pos(*MIC_PORT, (SKIN_Z + PT) / 2) * Cylinder(MIC_SKIN_HOLE_D / 2 - 0.05, SKIN - 0.1)
+    """Cap board, carrier, MSR-2, microphone, SHT45 (D-56, D-70): pin heights, stack, clearances."""
+    print("cap board, MSR-2, microphone, SHT45 (D-56, D-59, D-70)")
+    lo, hi = EU_PIN_WH - PIN_TOL, EU_PIN_WH + PIN_TOL
+    check(lo >= PIN_WH[0] - 1e-6 and hi <= PIN_WH[2] + 1e-6,
+          f"all four spring pins at {EU_PIN_WH} mm working height, +-{PIN_TOL} -> {lo:.1f}..{hi:.1f} inside "
+          f"{PIN_WH[0]}..{PIN_WH[2]} (Harwin P70-2200045)")
+    for name, tip in (("sensor pins (cap board pads)", CB_PAD_Z), ("battery-free pins (back cover pads)", BF_TIP_Z)):
+        check(abs(tip - WB_FRONT - EU_PIN_WH) < 1e-6, f"{name}: tips {tip - WB_FRONT:.2f} mm above the 5 V board")
+    gap = PIN_WH[0] - PIN_BARREL[1]
+    check(gap >= 0.15, f"at the shortest working height the barrel tops stay {gap:.2f} mm under the pads")
+    check(PIN_CAP_HOLE_D - PIN_BARREL[0] <= 0.4, f"cap / carrier hole {PIN_CAP_HOLE_D} round the {PIN_BARREL[0]} mm pin "
+                                                  f"barrel ({(PIN_CAP_HOLE_D - PIN_BARREL[0]) / 2:.2f} mm radial gap)")
+    proud = SEAT_Z + B_D - PT
+    check(abs(proud - B_PROUD) < 1e-6, f"remote {proud:.1f} mm proud of the face (face plate {PT:.1f} mm, D-70)")
+    gap = (PT - RADAR_WALL) - (MSR_BACK_Z + MSR[2])
+    check(gap >= MSR_SKIN_GAP - 1e-6, f"MSR-2 straight on the cap board's CN2 mate: front {gap:.2f} mm under the radar "
+                                      f"skin (>= {MSR_SKIN_GAP})")
+    check(abs(RING_NUT[1] - B2B_STACK) < 1e-6, f"cap board spacers {RING_NUT[1]} mm = the CN2 stack {B2B_STACK} mm")
+    pocket_x = POCKET_OUT[0] / 2 + CB_POCKET_CLR
+    for x, y in PINS:
+        check(x - CB_PAD_D / 2 - pocket_x >= 0.3 - 1e-6, f"pad at ({x}, {y}) {x - CB_PAD_D / 2 - pocket_x:.2f} mm inside the "
+                                                  f"cap board's edge at the pocket")
+    probe = Pos(*MIC_AT, (SKIN_Z + PT) / 2) * Cylinder(MIC_HOLE_EU[0] / 2 - 0.05, SKIN - 0.1)
     r = probe & tr
     check(r is None or r.volume < 0.001, "microphone sound hole open through the face skin")
-    import sensor_eu
-    import trim_eu
-    flex = sensor_eu.flex()
-    for q in trim_eu.flex_ramps().solids():
-        gap = q.distance_to(flex)
-        check(0.06 <= gap <= 0.15, f"flex slope at y {q.center().Y:.1f} {gap:.2f} mm under the trim's ramp: taped to it")
-    wh = FLEX_PIN_Z - WB_FRONT
-    check(PIN_WH_MIN <= wh - PIN_TOL and wh + PIN_TOL <= PIN_WH_MAX,
-          f"spring pins at {wh:.2f} +- {PIN_TOL} mm working height, inside {PIN_WH_MIN}..{PIN_WH_MAX} (P70-2200045)")
-    span = min(min(x - FLEX_PAD_SEC[0], FLEX_PAD_SEC[1] - x) for x, _ in PINS) - FLEX_PAD_D / 2
-    check(span >= 0.3, f"flex pads {span:.2f} mm inside the flex's pad section")
-    check(PIN_CAP_HOLE_D - PIN_BARREL_D <= 0.4, f"cap hole {PIN_CAP_HOLE_D} round the {PIN_BARREL_D} mm pin barrel "
-                                                 f"({(PIN_CAP_HOLE_D - PIN_BARREL_D) / 2:.2f} mm radial gap)")
-    msr = Pos(0, MSR_Y, MSR_BACK_Z + MSR[2] / 2) * Box(*MSR)
-    others = {"cap": cap, "trim": tr, "remote": boards_eu.remote(), "MSR-2 envelope": msr, "box domes": boards_eu.domes(),
-              **boards_eu.parts()}
-    sens = sensor_eu.parts()
-    mated = {("plug", "MSR-2 envelope"), ("pads", "pins")}
-    for pn, p in sens.items():
-        for on, o in others.items():
-            if (pn, on) in mated:
+    check(min(MIC_HOLE_EU[0], MIC_TUBE[1]) >= MIN_PRINT_HOLE, f"sound hole {MIC_HOLE_EU[0]} and tube bore {MIC_TUBE[1]} "
+                                                               f">= {MIN_PRINT_HOLE} mm (print open)")
+    cp = capboard_eu.parts()
+    d = cp["cn2"].distance_to(cp["msr"]) + cp["cn2"].distance_to(cp["capboard"])
+    check(d < 0.01, "CN2 mate between the cap board and the MSR-2's back")
+    d = cp["spacers"].distance_to(cp["msr"]) + cp["spacers"].distance_to(cp["capboard"])
+    check(d < 0.01, "spacers between the cap board and the MSR-2's board")
+    import msr2
+    mb = msr2.placed_parts(0, MSR_Y, MSR_BACK_Z)["board"]
+    for i, (x, y) in enumerate(MSR_SPACERS):
+        disc = Pos(x, y, MSR_BACK_Z + 0.05) * Cylinder(RING_NUT[0] / 2 - 0.05, 0.1)
+        r = disc & mb
+        a = (r.volume if r else 0.0) / disc.volume
+        check(a >= 0.9, f"spacer {i + 1} {a * 100:.0f} % under solid MSR-2 board, under a face plate post")
+    b = boards_eu.parts()
+    others = {"cap": cap, "trim": tr, "remote": boards_eu.remote(), "box domes": boards_eu.domes(),
+              "seated back cover": Pos(0, 0, SEAT_Z) * __import__("backcover").cover(), **b}
+    mates = {("carrier", "capboard"), ("capboard", "cn2"), ("cn2", "msr"), ("capboard", "spacers"), ("spacers", "msr"),
+             ("capboard", "micb"), ("micb", "mic"), ("capboard", "sht45"), ("capboard", "cb_pads")}
+    names = [k for k in cp if k != "cb_screws"]
+    for i, pn in enumerate(names):
+        for qn in names[i + 1:]:
+            if (pn, qn) in mates or (qn, pn) in mates:
                 continue
-            r = p & o
+            r = cp[pn] & cp[qn]
+            v = r.volume if r is not None else 0.0
+            check(v < 0.05, f"{pn} clears the {qn} ({v:.3f} mm3)")
+        for on, o in others.items():
+            r = cp[pn] & o
             v = r.volume if r is not None else 0.0
             check(v < 0.05, f"{pn} clears the {on} ({v:.3f} mm3)")
+    for on in ("trim", "remote", "msr", "spacers", "cn2", "sht45"):
+        o = others.get(on, cp.get(on))
+        r = cp["cb_screws"] & o
+        v = r.volume if r is not None else 0.0
+        check(v < 0.05, f"cap board screws clear the {on} ({v:.3f} mm3)")
 
 
-def floor_checks(cap, tr):
-    """Pocket-floor insert (D-35): fits the pocket, keeps the rocker reachable, pads under the
-    back cover's fingers at any position of the remote in the pocket."""
-    print("pocket-floor insert (D-35)")
-    import floor_eu
-    fl = floor_eu.parts()
-    check(fl["floor"].is_valid and len(fl["floor"].solids()) == 1, f"floor insert: one valid solid "
-                                                                     f"({fl['floor'].volume / 1000:.2f} cm3)")
-    b = boards_eu.parts()
-    for fn in ("floor", "floor_flex"):
-        for on, o in (("cap", cap), ("trim", tr), ("rocker", b["switch"]), ("remote", boards_eu.remote())):
-            r = fl[fn] & o
-            v = r.volume if r is not None else 0.0
-            check(v < 0.05, f"{fn.replace('_', ' ')} clears the {on} ({v:.3f} mm3)")
-    cup = Pos(0, SW_Y, CAP_T + BC_FLOOR_T / 2) * Box(CUP_IN[0], CUP_IN[1], BC_FLOOR_T)
-    r = fl["floor"] & cup
-    check(r is None or r.volume < 0.001, "switch cup open through the floor insert")
-    top = fl["floor_pads"].bounding_box().max.Z
-    check(abs(top - SEAT_Z) < 0.02, f"floor pads flush with the remote's seat (z {top:.2f} vs {SEAT_Z:.2f})")
-    play = CLR
-    for (x, y), (x0, x1, y0, y1) in zip(BC_FINGERS, floor_eu.pads()):
-        mx = min(x - x0, x1 - x) - play                     # dome contact point to the pad edge, remote at its limit
-        my = min(y - y0, y1 - y) - play - abs(BC_DOME_DY)
-        check(min(mx, my) >= 0.3, f"finger dome at ({x}, {y}) stays {min(mx, my):.2f} mm inside its pad with the "
-                                  f"remote's {play} mm play")
-    cut_x = CUP_IN[0] / 2 + BC_FLOOR_CLR
-    cut_y0 = SW_Y - CUP_IN[1] / 2 - BC_FLOOR_CLR
-    strip = [b for b in floor_eu.tongue_path() if b[3] > cut_y0]
-    gap = min(b[0] for b in strip) - 0.15 - cut_x
-    check(gap >= 0.2, f"tongue and floor pads clear of the switch cup's opening ({gap:.2f} mm)")
-    lo, hi = sorted(y for _, y in PINS)
-    room = (hi - lo - PIN_PAD_D) / 2 - EU_TONGUE_W / 2
-    check(room >= 0.3, f"tongue between the spring-pin pads ({room:.2f} mm each side)")
+def bf_checks(cap, tr):
+    """Battery-free spring pins (D-54, D-59): from the 5 V board through the cap onto the back cover's pads."""
+    print("battery-free spring pins (D-54, D-59)")
     import backcover
-    cov = Pos(0, 0, SEAT_Z) * backcover.cover()
-    for on, o in (("trim (tabs, walls)", tr), ("floor insert", fl["floor"]), ("tongue", fl["floor_flex"]),
-                  ("rocker", b["switch"]), ("cap", cap)):
-        r = cov & o
+    b = boards_eu.parts()
+    bf = b["bf_pins"]
+    print(f"       with the remote out the pins stand {WB_FRONT + PIN_FREE - SEAT_Z:.1f} mm above the pocket floor; "
+          f"barrels {WB_FRONT + PIN_BARREL[1] - SEAT_Z:.2f} mm above it, inside the cover's windows")
+    cov = {k: Pos(0, 0, SEAT_Z) * v for k, v in backcover.cover_parts().items()}
+    for k, c in cov.items():
+        if k == "pin_pads":
+            continue
+        r = bf & c
+        check(r is None or r.volume < 0.001, f"pins clear the back cover's {k}")
+    d = bf.distance_to(cov["pin_pads"])
+    check(d < 0.02, f"pin tips on the pads (gap {d:.3f} mm)")
+    for on, o in (("cap", cap), ("trim", tr), ("rocker", b["switch"]), ("5 V board front parts", b["front"]),
+                  ("sensor pins", b["pins"]), ("socket", b["socket"]), ("header", b["header"])):
+        r = bf & o
+        v = r.volume if r is not None else 0.0
+        check(v < 0.01, f"battery-free pins clear the {on} ({v:.3f} mm3)")
+    for x, y in BC_FINGERS:
+        for mx, my in WB_MOUNT:
+            g = hypot(x - mx, y - my) - WB_BOSS_D / 2 - PIN_FLANGE[0] / 2 - PIN_RADIAL
+            check(g >= 0.5, f"pin at ({x}, {y}) clear of the board boss at ({mx}, {my}) ({g:.2f} mm)")
+        for px, py in PINS:
+            g = hypot(x - px, y - py) - PIN_PAD_D
+            check(g >= 0.5, f"pin at ({x}, {y}) clear of the sensor pin pad at ({px}, {py}) ({g:.2f} mm)")
+    seated = Pos(0, 0, SEAT_Z) * backcover.cover()
+    for on, o in (("trim (tabs, walls)", tr), ("rocker", b["switch"]), ("cap", cap)):
+        r = seated & o
         v = r.volume if r is not None else 0.0
         check(v < 0.05, f"seated back cover clears the {on} ({v:.3f} mm3)")
-    gap = SEAT_Z + BC_STEEL_FLOOR
-    print(f"       magnet face to steel plate {gap:.1f} mm (cap {CAP_T} + floor {BC_FLOOR_T} + cover {BC_STEEL_FLOOR}); "
+    print(f"       steel piece to the cover's magnet {MAGNET_SETBACK + BC_STEEL_FLOOR:.1f} mm (setback {MAGNET_SETBACK} + "
+          f"cover {BC_STEEL_FLOOR}); "
           f"hold vs. 2 fingers >= 2 x 1.2 N: MEASURE")
 
 
-def separation():
-    """R9: the face plate (trim) and the cap side are joined electrically only by the spring
-    pins pressing on the flex's pads: no wire or part belongs to both."""
-    print("face plate / cap separation (R9)")
-    sens, b = sensor_eu.parts(), boards_eu.parts()
-    msr = Pos(0, MSR_Y, MSR_BACK_Z + MSR[2] / 2) * Box(*MSR)
-    face = {"MSR-2": msr, "flex": sens["flex"], "CN2 plug": sens["plug"], "SHT45": sens["sht45"],
-            "microphone": sens["mic"], "flex pads": sens["pads"]}
-    import floor_eu
-    face.update({k.replace("_", " "): v for k, v in floor_eu.parts().items()})
-    box_side = {"spring pins": b["pins"], "5 V board": b["board"], "socket": b["socket"], "mains board": b["mains_board"],
-                "header": b["header"], "PSU": b["psu"], "WAGO blocks": b["wago"], "5 V board front parts": b["front"],
-                "mains board front parts": b["mains_front"], "rocker": b["switch"]}
-    flex_only = {"flex": sens["flex"]}
-    base._separation({k: v for k, v in face.items() if k != "flex"}, box_side, {("flex pads", "spring pins")})
-    base._separation(flex_only, {k: v for k, v in box_side.items() if k != "spring pins"}, set())
+def separation(tr):
+    """R9 / D-56: the face plate carries no electronics: it is clear of every electrical part; only its posts rest on
+    the MSR-2's board (D-67)."""
+    print("face plate: no electrical parts (R9)")
+    cp, b = capboard_eu.parts(), boards_eu.parts()
+    parts = {k: cp[k] for k in ("capboard", "cb_pads", "cn2", "spacers", "micb", "mic", "sht45")}
+    parts.update({k: b[k] for k in ("board", "pins", "bf_pins", "front", "socket", "mains_board", "header")})
+    r = tr & cp["msr"]
+    check(r is None or r.volume < 0.01, f"face plate posts rest on the MSR-2's board, no overlap "
+                                        f"({r.volume if r else 0.0:.3f} mm3)")
+    for name, p in parts.items():
+        d = tr.distance_to(p)
+        check(d >= 0.05, f"face plate not touching the {name} (gap {d:.2f} mm)")
+
+
+def snaps(cap, tr):
+    """Face plate snaps (D-70, D-77): four fingers from the face skin into closed windows in the cap board and the
+    carrier, keyed, the bump in the carrier's groove when the pocket walls sit on the cap, room inside each finger to
+    bend in; the carrier's inner edge whole; fingers clear of the cap, the carrier and the cap board."""
+    print("face plate snaps (D-70, D-77)")
+    from math import cos, radians, sin
+    import trim_eu
+    f = trim_eu.snaps()
+    r = f & tr
+    check(len(f.solids()) == 4 and r is not None and abs(r.volume - f.volume) < 0.01,
+          f"{len(f.solids())} snap fingers, part of the face plate")
+    check(SNAP_KEY_W > SNAP[0] + 2 * SNAP_CLR + 0.5, f"keyed: one finger and window {SNAP_KEY_W} wide, the others "
+                                                     f"{SNAP[0]}: the plate fits one way only")
+    t, d = SNAP[1], SNAP[2] - SNAP_BUMP_CLR
+    length = DECK_Z - SNAP_TIP_Z
+    strain = 1.5 * t * d / length ** 2
+    check(strain <= 0.02, f"fingers {SNAP[0]} x {t} mm, {length:.1f} mm long: {strain * 100:.2f} % strain as the bump "
+                          f"passes into the carrier's window (PETG <= 2 %)")
+    z0, z1 = SNAP_GROOVE
+    zm = (z0 + z1) / 2
+    check(z0 < zm - d and zm + d < z1 and SNAP_TIP_Z >= 0.1, f"bump {zm - d:.1f}..{zm + d:.1f} inside the groove "
+                                                             f"{z0}..{z1} with the pocket walls on the cap; tips "
+                                                             f"{SNAP_TIP_Z} over the wall")
+    reach = SNAP_R + t + d - SNAP_WALL_R
+    check(reach >= 0.3, f"bump reaches {reach:.2f} mm past the window's outer wall into the groove")
+    room = SNAP_R - SNAP_WIN_R
+    check(room >= d + 0.05, f"{room:.2f} mm inside each finger to bend in as the bump passes (bump {d:.2f})")
+    web = SNAP_WIN_R - (CAP_R + CARRIER_CAP_CLR)
+    check(web >= SNAP_WEB - 1e-6, f"carrier {web:.1f} mm between its bore and each window: the inner edge stays whole")
+    c = capboard_eu.carrier()
+    for a, w in SNAPS:
+        u = (cos(radians(a)), sin(radians(a)))
+        rp = CAP_R + CARRIER_CAP_CLR + web / 2
+        probe = Pos(u[0] * rp, u[1] * rp, (LIP_T + CB_PAD_Z) / 2) * Box(0.2, 0.2, CB_PAD_Z - LIP_T - 0.1)
+        r = probe & c
+        check(r is not None and r.volume > 0.99 * probe.volume, f"window at {a:.0f} deg ({w} wide) closed towards the bore")
+    r = f & cap
+    check(r is None or r.volume < 0.001, f"fingers clear of the cap ({r.volume if r else 0.0:.3f} mm3)")
+    cp = capboard_eu.parts()
+    for k in ("carrier", "capboard", "cb_screws", "msr"):
+        r = f & cp[k]
+        check(r is None or r.volume < 0.001, f"fingers clear of the {k} ({r.volume if r else 0.0:.3f} mm3)")
+    from params import M2_HEAD
+    for x, y in CB_SCREWS:
+        h = Pos(x, y, (CB_PAD_Z + CB_TOP) / 2) * Cylinder(M2_HEAD[0] / 2, CB_T)
+        g = h.distance_to(capboard_eu.snap_windows(CB_PAD_Z, CB_TOP, SNAP_WALL_R + SNAP[2]))
+        check(g >= 1.0, f"cap board screw at ({x:.0f}, {y:.0f}): head {g:.2f} mm from a snap window")
+
+
+def finger_scoops(tr):
+    """Finger scoops (D-73): open at the face both sides of the pocket, into the pocket, solid round them."""
+    print("finger scoops (D-73)")
+    u, a, b = trim_eu.scoop_sections()[-1]
+    bottom = PT + SCOOP_RISE - u
+    import params as na
+    k = sqrt(1 - ((na.SCOOP_ZC - na.PT) / na.SCOOP[2]) ** 2)
+    _, fa, fb = trim_eu.scoop_sections()[2]                     # section at the face
+    print(f"       scoops {2 * fa:.1f} x {2 * fb:.1f} mm at the face (NA {2 * na.SCOOP[0] * k:.1f} x "
+          f"{2 * na.SCOOP[1] * k:.1f}), {PT - bottom:.1f} mm deep, flat bottom {2 * a:.1f} x {2 * b:.1f}")
+    for sx in (-1, 1):
+        probe = Pos(sx * SCOOP_X_EU, 0, PT - 0.5) * Box(0.4, 0.4, 0.4)
+        r = probe & tr
+        check(r is None or r.volume < 1e-6, f"scoop {'left' if sx < 0 else 'right'} open at the face")
+        edge = Pos(sx * (POCKET_IN[0] / 2 + 0.3), 0, PT - 1.0) * Box(0.4, 4.0, 0.4)
+        r = edge & tr
+        check(r is None or r.volume < 1e-6, f"scoop {'left' if sx < 0 else 'right'} cuts through the pocket wall")
+    gap = bottom - SCOOP_WALL - (CB_TOP + MIC_CARRIER[2])
+    check(gap >= 1.0, f"scoop blocks {gap:.1f} mm over the cap board's parts (>= 1.0)")
+
+
+def carrier_clamp(cap):
+    """Carrier clamp (D-71): the lip under the cap's edge, outside the seal band, pinned to the wall; the cap goes in
+    from the front; the cap's teeth in the lip's gaps stop it turning, keyed."""
+    print("carrier clamp (D-71)")
+    from math import degrees
+    c = capboard_eu.carrier()
+    check(REBATE_R >= SEAL_R + 0.5 - 1e-6, f"cap's rebate from r {REBATE_R:.2f}, outside the seal band (r {SEAL_R})")
+    check(CAP_T - LIP_T >= 0.8 - 1e-6, f"cap {CAP_T - LIP_T:.1f} mm over the lip (>= 0.8)")
+    check(CAP_R - LIP_R >= 1.0, f"lip {CAP_R - LIP_R:.2f} mm under the cap's edge (>= 1.0)")
+    bb = c.bounding_box()
+    d = c.distance_to(cap)
+    r = c & cap
+    v = r.volume if r is not None else 0.0
+    check(abs(bb.min.Z) < 1e-6 and d < 0.01 and v < 0.05, f"carrier on the wall (z {bb.min.Z:.2f}), its lip against the "
+                                                         f"cap's rebate (gap {d:.3f}, overlap {v:.3f} mm3)")
+    probe = Pos(0, 0, (LIP_T + CB_TOP + 1) / 2) * Cylinder(CAP_R, CB_TOP + 1 - LIP_T)
+    r = c & probe
+    check(r is None or r.volume < 0.001, "carrier clear of the cap disc's outline above the lip: the cap goes in from the "
+                                         "front")
+    side = PW / 2 - SKIN - CB_EDGE - (CAP_R + CARRIER_CAP_CLR)
+    probe = Pos(PW / 2 - SKIN - CB_EDGE - side / 2, 0, CB_PAD_Z / 2) * Box(0.2, 0.2, CB_PAD_Z - 0.1)
+    r = c & probe
+    check(side >= CARRIER_SIDE - 1e-6 and r is not None and r.volume > 0.99 * probe.volume,
+          f"carrier {side:.1f} mm outside its bore at the sides, full height: top and bottom halves joined (D-78)")
+    play = degrees(LIP_CLR / REBATE_R)
+    check(play <= 0.5, f"teeth in the lip's gaps: the carrier turns <= {play:.2f} deg")
+    key = TEETH[0][1]
+    others = max(w for _, w in TEETH[1:]) + 2 * LIP_CLR
+    check(key > others + 0.5, f"key tooth {key:.1f} wide, other gaps {others:.1f}: the carrier fits one way only")
+    for a, w in TEETH:
+        u = (cos(radians(a)), sin(radians(a)))
+        rp = (REBATE_R + CAP_R) / 2
+        probe = Pos(u[0] * rp, u[1] * rp, LIP_T / 2) * Box(0.2, 0.2, 0.2)
+        r = probe & cap
+        check(r is not None and r.volume > 0.0079, f"tooth at {a:.0f} deg ({w:.1f} wide) full thickness to the wall")
+
+
+def test_socket(cap):
+    """Test socket (D-76): the flush box's sizes and domes, the markers, the plate under the face plate, the stack
+    inside it."""
+    print("test socket (D-76)")
+    import testbox_eu as tb
+    bx, pl = tb.box(), tb.plate()
+    for name, p in (("box", bx), ("plate", pl)):
+        check(p.is_valid and len(p.solids()) == 1, f"{name}: one valid solid")
+    bb = bx.bounding_box()
+    probe = Pos(0, 0, -TB_DEPTH + 0.05) * Cylinder(1.0, 0.1)
+    floor = Pos(0, 0, -TB_DEPTH - 0.05) * Cylinder(1.0, 0.1)
+    r1, r2 = probe & bx, floor & bx
+    check((r1 is None or r1.volume < 1e-6) and r2 is not None and r2.volume > 0.15 and abs(bb.max.Z) < 1e-6,
+          f"inside depth {TB_DEPTH} mm from the rim (wall plane) to the floor; Ø{BOX_DIA} inside, Ø{BOX_HOLE} outside")
+    for x, y in DOMES:
+        q = Pos(x, y, -1.0) * Cylinder(TB_PILOT_D / 2 - 0.1, 1.0)
+        w = Pos(x + (DOME_D / 2 - 0.3) * (-x / BOX_R), y + (DOME_D / 2 - 0.3) * (-y / BOX_R), -10) * Box(0.2, 0.2, 0.2)
+        r_q, r_w = q & bx, w & bx
+        check((r_q is None or r_q.volume < 1e-6) and r_w is not None and r_w.volume > 0.0079,
+              f"dome at ({x:.0f}, {y:.0f}) with a Ø{TB_PILOT_D} pilot for the cap's screws")
+    for d in TB_MARKS:
+        a = radians(22.5)                               # between two domes
+        p_in = Pos((BOX_R + TB_GROOVE / 2) * cos(a), (BOX_R + TB_GROOVE / 2) * sin(a), -d) * Box(0.1, 0.1, 0.1)
+        p_out = Pos((BOX_HOLE / 2 - TB_GROOVE / 2) * cos(a), (BOX_HOLE / 2 - TB_GROOVE / 2) * sin(a), -d) * Box(0.1, 0.1, 0.1)
+        r = (p_in + p_out) & bx
+        check(r is None or r.volume < 1e-6, f"marker groove at {d:.0f} mm, {TB_GROOVE} deep inside and outside")
+    gap = (TB_DEPTH + DEEPEST) if DEEPEST < 0 else TB_DEPTH
+    print(f"       deepest part of the stack at {-DEEPEST:.1f} mm: {TB_DEPTH + DEEPEST:.1f} mm above the floor")
+    check(gap > 0, f"stack inside the {TB_DEPTH} mm socket")
+    stack = {"cap": cap, **{k: v for k, v in boards_eu.parts().items() if k not in ("magnet",)}}
+    for k, v in stack.items():
+        r = v & bx
+        check(r is None or r.volume < 0.05, f"socket clears the {k} ({r.volume if r else 0.0:.3f} mm3)")
+    m = TB_PLATE_MARGIN
+    plb = pl.bounding_box()
+    check(abs(plb.max.Z) < 1e-6 and plb.size.X >= PW + 2 * m - 0.01 and plb.size.Y >= PH + 2 * m - 0.01,
+          f"plate {plb.size.X:.1f} x {plb.size.Y:.1f}, face at the wall plane, {m} mm beyond the face plate")
+    r = bx & pl
+    check(r is None or r.volume < 0.01, "plate on the box's shoulder, the box's rim flush with its face")
+    base.overhangs("test socket box (floor down)", bx, small=5.0)
+    base.overhangs("test socket plate", pl)
 
 
 def barrier(cap):
@@ -299,19 +466,20 @@ def main():
     cap, tr = cap_eu.build(), trim_eu.build()
     solids(cap, tr)
     sensors(cap, tr)
-    floor_checks(cap, tr)
-    from common import board_hooks
-    hooks = board_hooks(MSR_Y, MSR_BOARD[0], MSR_BACK_Z, PT - RADAR_WALL, MSR[0] / 2 + CLR, MSR_HOOK)[0]
-    sens = sensor_eu.parts()
-    print("MSR-2 retention (D-45)")
-    base.msr_hook_checks(hooks, {"sensor flex": sens["flex"], "CN2 plug": sens["plug"]}, MSR_BACK_Z, MSR_BOARD[0], MSR_Y)
-    separation()
+    bf_checks(cap, tr)
+    separation(tr)
+    base.scd_vent_checks(tr, MSR_Y, MSR_BACK_Z, PT)
+    base.msr_posts(tr, MSR_Y, MSR_BACK_Z, PT)
+    snaps(cap, tr)
+    finger_scoops(tr)
+    carrier_clamp(cap)
+    test_socket(cap)
     barrier(cap)
     print("printability (no supports)")
-    base.overhangs("cap", Rot(180, 0, 0) * cap)
+    base.overhangs("cap", Rot(180, 0, 0) * cap, bridges=((-MAGNET_Z[0], MAG_BRIDGE),))   # floor over the steel recess
     base.overhangs("trim", Rot(180, 0, 0) * tr, limit=3.5)
-    import floor_eu
-    base.overhangs("floor insert", Pos(0, 0, -CAP_T) * floor_eu.parts()["floor"])
+    cp = capboard_eu.parts()
+    base.overhangs("cap board carrier (bottom down)", cp["carrier"])
     print("FAILED: " + "; ".join(base.FAILS) if base.FAILS else "all checks passed")
     return 1 if base.FAILS else 0
 

@@ -37,32 +37,38 @@ def stiffener_y():
     return copper_y() - BC_TERM_Y * (FLEX_T + BC_END_T)
 
 
-def end_blocks():
-    """End section outline in the (x, z) plane: two pad blocks and the band under the PCB strip."""
+def end_blocks(xo=BC_BLOCK_XO):
+    """Contact block outlines in the (x, z) plane (the end section's pad parts with xo=BC_END_XO) and the band under
+    the PCB strip."""
     z0, z1 = BC_FLEX_Z, BC_FLEX_Z + BC_END_H
     xi = BC_PCB_W / 2 + BC_PCB_CLR
-    xo = BC_CELL_X + BC_CONTACT_W / 2 + 0.5
     return [(-xo, -xi, z0, z1), (xi, xo, z0, z1), (-xi, xi, z0, z0 + BC_BRIDGE_H)]
 
 
+def end_section():
+    """End section outline in the (x, z) plane: two pad parts and the band under the PCB strip."""
+    return end_blocks(BC_END_XO)
+
+
 def strip_top():
-    return max(y for _, y in BC_FINGERS) + FINGER[1] / 2 + BC_PAD_END
+    """Upper end of the pad section; the regulator section continues above it for BC_JOG."""
+    return max(y for _, y in BC_FINGERS) + BC_PAD_D / 2 + BC_PAD_END
 
 
 def strip_bottom():
-    """Lower end of the pad section; the run continues to the terminal end after BC_JOG."""
-    return min(y for _, y in BC_FINGERS) - FINGER[1] / 2 - 1.0
+    """Lower end of the pad section; the run continues from here to the terminal end."""
+    return min(y for _, y in BC_FINGERS) - BC_PAD_D / 2 - BC_PAD_LOW
 
 
 def strip_boxes(clr=0.0):
-    """Flex path on the ledge as (x0, x1, y0, y1): pad section, jog, run to the terminal end."""
+    """Flex path on the ledge as (x0, x1, y0, y1): pad section, regulator section above it, run to the terminal end,
+    the jog from the pad section's inner edge across to the run (D-79)."""
     yc = copper_y()
     yt, yb = strip_top(), strip_bottom()
-    yj = yb - BC_JOG
     xs0, xs1 = BC_STRIP
     xr0, xr1 = BC_RUN
-    return [(xs0 - clr, xs1 + clr, yb, yt), (min(xs0, xr0) - clr, max(xs1, xr1) + clr, yj, yb),
-            (xr0 - clr, xr1 + clr, min(yc, yj), max(yc, yj))]
+    return [(xs0 - clr, xs1 + clr, yb, yt), (xs0 - clr, xs1 + clr, yt, yt + BC_JOG),
+            (xr0 - clr, xr1 + clr, min(yc, yb), max(yc, yb)), (xr0 - clr, xs0 + clr, yb - clr, yb + BC_RUN_JOG + clr)]
 
 
 def back_shape(inset=0.0, lift=0.0):
@@ -88,8 +94,8 @@ def outer():
 
 
 def shell():
-    """Cover shell: back_shape hollowed by BC_WALL (inset sideways and raised), open at the seam."""
-    return outer() - back_shape(BC_WALL, BC_WALL)
+    """Cover shell: back_shape hollowed by BC_SIDE_WALL sideways and BC_WALL at the back, open at the seam."""
+    return outer() - back_shape(BC_SIDE_WALL, BC_WALL)
 
 
 def corner_cuts():
@@ -97,8 +103,7 @@ def corner_cuts():
     out = None
     yc = copper_y()
     for sx in (-1, 1):
-        xo = BC_CELL_X + BC_CONTACT_W / 2 + 0.5
-        c = Pos(sx * xo, yc, BC_FLEX_Z) * Rot(0, 45, 0) * Box(BC_END_CORNER * sqrt(2), 10, BC_END_CORNER * sqrt(2))
+        c = Pos(sx * BC_END_XO, yc, BC_FLEX_Z) * Rot(0, 45, 0) * Box(BC_END_CORNER * sqrt(2), 10, BC_END_CORNER * sqrt(2))
         out = c if out is None else out + c
     return out
 
@@ -138,7 +143,7 @@ def side_tabs():
 
 
 def cover():
-    """Printed cover: shell, flex ledge, contact blocks, finger windows, steel-plate pocket, snap ears, side tabs."""
+    """Printed cover: shell, flex ledge, contact blocks, spring pin windows, steel-plate pocket, snap ears, side tabs."""
     body = shell()
     yc, ys = copper_y(), stiffener_y()
     for x0, x1, y0, y1 in strip_boxes():
@@ -148,8 +153,7 @@ def cover():
         yb = ys - BC_TERM_Y * BC_BLOCK_T / 2
         body += Pos((a + b) / 2, yb, (BC_WALL + z1) / 2 - 0.25) * Box(b - a, BC_BLOCK_T, z1 - BC_WALL + 0.5) & end_round()
     body += end_retainers()
-    body -= end_snap_reliefs()
-    body += end_snaps()
+    body += end_slots()
     body -= run_notch()
     for x0, x1, y0, y1 in strip_boxes(0.1):               # relief over the flex where the 45 deg fill reaches it
         body -= Pos((x0 + x1) / 2, (y0 + y1) / 2, BC_FLEX_Z + (FLEX_T + 0.3) / 2) * Box(x1 - x0, y1 - y0, FLEX_T + 0.3)
@@ -158,8 +162,8 @@ def cover():
     body += latches() + side_tabs()
     w, d = BC_PRY                                       # flat-blade screwdriver notch in the rim at the bottom end
     body -= Pos(0, -B_H / 2, B_SEAM_Z - d / 2 + 0.01) * Box(w, 2 * (BC_WALL + 1.0), d + 0.02)
-    for x, y in BC_FINGERS:
-        body -= Pos(x, y, BC_FLEX_Z / 2) * Box(FINGER[0] + 2 * BC_WIN_CLR, FINGER[1] + 2 * BC_WIN_CLR, BC_FLEX_Z + 1.0)
+    for x, y in BC_FINGERS:                             # windows for the spring pins onto the pads (D-50)
+        body -= Pos(x, y, BC_FLEX_Z / 2) * Cylinder(PIN_BARREL[0] / 2 + BC_WIN_CLR, BC_FLEX_Z + 1.0)
     c = 2 * BC_STEEL_CLR                                # plate's seat: flat floor, the plate plus clearance
     body -= Pos(0, BC_STEEL_Y, BC_STEEL_FLOOR + 5.0) * Box(BC_STEEL[0] + c, BC_STEEL[1] + c, 10.0)
     body += steel_ridge()
@@ -178,10 +182,12 @@ def cover():
 
 
 def flex_snap_spots():
-    """Snap hook sites (x of the section's two long edges, y): beside each finger and the regulator."""
+    """Snap hook sites (x of the edge, side: -1 inner / +1 outer, y): both long edges beside each pad and the regulator,
+    less the inner edge beside the GND pad, where the jog leaves for the run (D-79)."""
     xs0, xs1 = BC_STRIP
-    yb, yj = strip_bottom(), strip_bottom() - BC_JOG
-    return [(xs0, xs1, y) for _, y in BC_FINGERS] + [(min(xs0, BC_RUN[0]), max(xs1, BC_RUN[1]), (yb + yj) / 2)]
+    yg = min(y for _, y in BC_FINGERS)
+    ys = [y for _, y in BC_FINGERS] + [strip_top() + BC_JOG / 2]
+    return [(xe, s, y) for y in ys for xe, s in ((xs1, 1), (xs0, -1)) if not (s < 0 and abs(y - yg) < 1e-6)]
 
 
 def flex_snaps():
@@ -191,13 +197,12 @@ def flex_snaps():
     w, t, lip, clr = BC_FLEX_SNAP
     zl = BC_FLEX_Z + FLEX_T + BC_PAD_STIFF_T + BC_FLEX_SNAP_GAP          # lip underside
     out = None
-    for xl, xr, y in flex_snap_spots():
-        for xe, s in ((xr, 1), (xl, -1)):
-            xi, xo = xe + s * clr, xe + s * (clr + t)                     # post faces (inner, outer)
-            pts = [(xi, 0.0), (xo, 0.0), (xo, zl + 2 * lip), (xi - s * lip, zl + lip), (xi - s * lip, zl), (xi, zl),
-                   (xi, 0.0)]
-            prof = Pos(0, y, 0) * extrude(Plane.XZ * make_face(Polyline(*pts)), w / 2, both=True)
-            out = prof if out is None else out + prof
+    for xe, s, y in flex_snap_spots():
+        xi, xo = xe + s * clr, xe + s * (clr + t)                         # post faces (inner, outer)
+        pts = [(xi, 0.0), (xo, 0.0), (xo, zl + 2 * lip), (xi - s * lip, zl + lip), (xi - s * lip, zl), (xi, zl),
+               (xi, 0.0)]
+        prof = Pos(0, y, 0) * extrude(Plane.XZ * make_face(Polyline(*pts)), w / 2, both=True)
+        out = prof if out is None else out + prof
     return out & back_shape(0.0, 0.0)
 
 
@@ -206,11 +211,10 @@ def flex_snap_reliefs():
     w, t, lip, clr = BC_FLEX_SNAP
     r = BC_FLEX_SNAP_RELIEF
     out = None
-    for xl, xr, y in flex_snap_spots():
-        for xe, s in ((xr, 1), (xl, -1)):
-            x0, x1 = xe + s * 0.05, xe + s * (clr + t + r)
-            p = Pos((x0 + x1) / 2, y, 5.0) * Box(abs(x1 - x0), w + 2 * r, 10.0)
-            out = p if out is None else out + p
+    for xe, s, y in flex_snap_spots():
+        x0, x1 = xe + s * 0.05, xe + s * (clr + t + r)
+        p = Pos((x0 + x1) / 2, y, 5.0) * Box(abs(x1 - x0), w + 2 * r, 10.0)
+        out = p if out is None else out + p
     return out & back_shape(BC_FLEX_SNAP_ROOT, BC_FLEX_SNAP_ROOT)
 
 
@@ -225,9 +229,11 @@ def pad_stiffener():
 
 
 def end_round():
-    """Room for the blocks and the end section: everything below the rim, above it the circle BC_END_R round each
-    cell axis (the cell's room in the housing)."""
-    out = Pos(0, 0, B_SEAM_Z - 50) * Box(200, 200, 100)
+    """Room for the blocks and the end section: the circle BC_END_R round each cell axis (the cell's room in the
+    housing), plus everything below the cell axes, plus everything below the rim between the axes. Outboard of the
+    cells above their axes the battery holder shell wraps the cells."""
+    out = Pos(0, 0, BC_CELL_Z - 50) * Box(200, 200, 100)
+    out += Pos(0, 0, B_SEAM_Z - 50) * Box(2 * BC_CELL_X, 200, 100)
     for sx in (-1, 1):
         out += Pos(sx * BC_CELL_X, 0, BC_CELL_Z) * Rot(90, 0, 0) * Cylinder(BC_END_R, 200)
     return out
@@ -249,56 +255,34 @@ def end_retainers():
     return out
 
 
+def end_slots():
+    """A slot along each contact block's outer face, inside the block's outline: a side wall beyond the end
+    section's outer edge and a lip over the edge on the copper side, from the ledge to the block's top. The section
+    slides down the two slots from above into the slot behind the foot lips."""
+    wall, clr, reach, lt, gap = BC_END_SLOT
+    sy = -BC_TERM_Y                                      # +1: cells side (blocks) is +y
+    yc, ys = copper_y(), stiffener_y()
+    y_l, y_f = yc - sy * gap, yc - sy * (gap + lt)       # lip's back and front faces
+    z0, z1 = BC_FLEX_Z, BC_FLEX_Z + BC_END_H
+    out = None
+    for s in (-1, 1):
+        u0, u1 = BC_BLOCK_XO - wall, BC_BLOCK_XO          # side wall
+        side = Pos(s * (u0 + u1) / 2, (ys + y_f) / 2, (z0 + z1) / 2) * Box(u1 - u0, abs(y_f - ys), z1 - z0)
+        l0 = BC_END_XO - reach                             # lip, over the section's edge
+        lip = Pos(s * (l0 + u0) / 2, (y_l + y_f) / 2, (z0 + z1) / 2) * Box(u0 - l0, lt, z1 - z0)
+        part = side + lip
+        out = part if out is None else out + part
+    return out & end_round()
+
+
 def run_notch():
-    """Notch through the GND contact block, from the ledge up, for the run: it drops in from above (no threading);
-    the end section's stiffener spans the notch behind the GND finger."""
-    xr0, xr1 = BC_RUN
+    """Notch along the GND contact block's inner face, from the ledge up, for the run: it drops in from above (no
+    threading); the block stays one piece outside it, the end section's stiffener spans the notch beside the GND
+    finger (D-79)."""
+    x0, x1 = BC_PCB_W / 2 + BC_PCB_CLR - 0.1, BC_RUN[1] + 0.15
     yb = stiffener_y() - BC_TERM_Y * BC_BLOCK_T / 2
     z0 = BC_FLEX_Z
-    return Pos((xr0 + xr1) / 2, yb, z0 + 10.0) * Box(xr1 - xr0 + 0.3, BC_BLOCK_T + 1.0, 20.0)
-
-
-def end_snaps():
-    """A snap hook beside each contact block's outer side: a post rising from the bottom of its relief, beside the
-    end section's outer edge, with a lip over the section's copper face in the band BC_END_SNAP_Z and a 45 deg
-    lead-in on the lip's front (the section folds up onto the blocks and pushes the post outwards)."""
-    from build123d import Polyline, extrude, make_face
-    t, reach, clr, lt, gap = BC_END_SNAP
-    z0, z1 = BC_END_SNAP_Z
-    sy = -BC_TERM_Y                                      # +1: cells side (blocks) is +y
-    y_l = copper_y() - sy * gap                          # lip's back face, towards the copper
-    y_f = y_l - sy * lt                                  # lip's front face
-    y_b = stiffener_y() + sy * BC_END_SNAP_BACK
-    out = None
-    for a, b, _, _ in end_blocks()[:2]:
-        s = 1 if a + b > 0 else -1
-        ue = b if s > 0 else -a                          # section's outer edge, distance from x 0
-        post = [(ue + clr, y_b), (ue + clr + t, y_b), (ue + clr + t, y_f), (ue + clr, y_f)]
-        lip = [(ue + clr + t, y_l), (ue + clr + t, y_f), (ue, y_f), (ue - reach, y_f + sy * reach), (ue - reach, y_l)]
-        part = None
-        for pts, za in ((post, BC_FLEX_SNAP_ROOT), (lip, z0)):
-            f = make_face(Polyline(*[(s * u, y) for u, y in pts], (s * pts[0][0], pts[0][1])))
-            e = Pos(0, 0, za) * extrude(f, z1 - za)
-            part = e if part is None else part + e
-        out = part if out is None else out + part
-    return out & back_shape(0.0, 0.0)
-
-
-def end_snap_reliefs():
-    """Pockets round each end snap's post, down to BC_FLEX_SNAP_ROOT of shell, so the post bends from there."""
-    t, reach, clr, lt, gap = BC_END_SNAP
-    r = BC_FLEX_SNAP_RELIEF
-    sy = -BC_TERM_Y
-    y_f = copper_y() - sy * (gap + lt) - sy * r
-    y_b = stiffener_y() + sy * (BC_END_SNAP_BACK + r)
-    out = None
-    for a, b, _, _ in end_blocks()[:2]:
-        s = 1 if a + b > 0 else -1
-        ue = b if s > 0 else -a
-        u0, u1 = ue + 0.05, ue + clr + t + r
-        p = Pos(s * (u0 + u1) / 2, (y_f + y_b) / 2, 5.0) * Box(u1 - u0, abs(y_b - y_f), 10.0)
-        out = p if out is None else out + p
-    return out & back_shape(BC_FLEX_SNAP_ROOT, BC_FLEX_SNAP_ROOT)
+    return Pos((x0 + x1) / 2, yb, z0 + 10.0) * Box(x1 - x0, BC_BLOCK_T + 1.0, 20.0)
 
 
 def flex():
@@ -309,7 +293,7 @@ def flex():
     for x0, x1, y0, y1 in strip_boxes():
         b = Pos((x0 + x1) / 2, (y0 + y1) / 2, Z_BEND) * Box(x1 - x0, y1 - y0, FLEX_T)
         out = b if out is None else out + b
-    for a, b, z0, z1 in end_blocks():
+    for a, b, z0, z1 in end_section():
         out += Pos((a + b) / 2, yf, (z0 + z1) / 2) * Box(b - a, FLEX_T, z1 - z0)
     return (out - corner_cuts()) & end_round()
 
@@ -317,7 +301,7 @@ def flex():
 def stiffener():
     ys = copper_y() - BC_TERM_Y * (FLEX_T + BC_END_T / 2)
     out = None
-    for a, b, z0, z1 in end_blocks():
+    for a, b, z0, z1 in end_section():
         s = Pos((a + b) / 2, ys, (z0 + z1) / 2) * Box(b - a, BC_END_T, z1 - z0)
         out = s if out is None else out + s
     return (out - corner_cuts()) & end_round()
@@ -328,7 +312,7 @@ def pads():
     yc = copper_y()
     out = None
     for sx in (-1, 1):
-        p = Pos(sx * BC_CELL_X, yc + BC_TERM_Y * 0.01, BC_CELL_Z) * Box(FINGER_PAD[1], 0.02, FINGER_PAD[0])
+        p = Pos(sx * BC_CELL_X, yc + BC_TERM_Y * 0.01, BC_CELL_Z) * Box(FINGER_PAD[0], 0.02, FINGER_PAD[1])
         out = p if out is None else out + p
     return out
 
@@ -357,11 +341,12 @@ def finger(h):
     return foot + arm + dome
 
 
-def fingers(h=FINGER_WH):
+def pin_pads():
+    """Gold pads on the flex underside, over the windows: the spring pins from the plate press on them (D-50)."""
     out = None
     for x, y in BC_FINGERS:
-        f = Pos(x, y, BC_FLEX_Z) * finger(h)
-        out = f if out is None else out + f
+        d = Pos(x, y, BC_FLEX_Z + 0.005) * Cylinder(BC_PAD_D / 2, 0.01)
+        out = d if out is None else out + d
     return out
 
 
@@ -422,68 +407,11 @@ def steel():
 
 
 def cover_parts(free=False):
-    """The cover assembly in remote coordinates (fingers free or at working height)."""
+    """The cover assembly in remote coordinates (end fingers free or at working height)."""
     h = FINGER_FREE if free else FINGER_WH
     return {"cover": cover(), "flex": flex(), "stiffener": stiffener(), "pads": pads(),
-            "fingers": fingers(h), "contacts": end_fingers(h), "regulator": regulator(), "steel": steel(),
+            "pin_pads": pin_pads(), "contacts": end_fingers(h), "regulator": regulator(), "steel": steel(),
             "pad_stiffener": pad_stiffener()}
-
-
-def tongue_path(wall_x):
-    """Sensor-flex tongue in the floor insert: (x0, x1, y0, y1, layers) boxes. It enters along y =
-    BC_TONGUE_Y from the right channel (copper down, as the flex's pin pads), folds 45 deg under the
-    pads' column (copper up) and runs up past both pads."""
-    w = BC_TONGUE_W
-    xf = BC_FINGERS[0][0]
-    ys = [y for _, y in BC_FINGERS]
-    y_top = max(ys) + BC_FLOOR_PAD[1] / 2 + 1.0
-    run = (xf + w / 2, wall_x, BC_TONGUE_Y - w / 2, BC_TONGUE_Y + w / 2, 1)
-    fold = (xf - w / 2, xf + w / 2, BC_TONGUE_Y - w / 2, BC_TONGUE_Y + w / 2, 2)
-    up = (xf - w / 2, xf + w / 2, BC_TONGUE_Y + w / 2, y_top, 1)
-    return [run, fold, up]
-
-
-def floor_insert(pocket_in, wall_x, cutouts=(), path=None, pads=None, t=FLEX_T, notches=()):
-    """Pocket-floor insert (face plate side), z = 0 its underside: printed floor, the tongue, its flush pads.
-    cutouts: (x, y, w, h) openings (switch, trim tabs, bosses), each with BC_FLOOR_CLR all round. path: the tongue's
-    (x0, x1, y0, y1, layers[, kind]) boxes on the floor (default: tongue_path(wall_x)); kind "top" (in a recess in
-    the top, pads flush), "under" (in a channel in the underside, hidden), "channel" (the channel only, the flex
-    drawn elsewhere) or "slot" (through the floor, rising from
-    under to top). notches: (x0, x1, y0, y1) cuts from a slot to the floor's edge, so the tongue is laid in
-    sideways. pads: (x0, x1, y0, y1) of the flush pads (default: BC_FLOOR_PAD under the fingers). t: flex
-    thickness."""
-    w, h = pocket_in[0] - 2 * BC_FLOOR_CLR, pocket_in[1] - 2 * BC_FLOOR_CLR
-    plate = slab(stadium(w, h), 0, BC_FLOOR_T)
-    for x, y, cw, ch in cutouts:
-        plate -= Pos(x, y, BC_FLOOR_T / 2) * Box(cw + 2 * BC_FLOOR_CLR, ch + 2 * BC_FLOOR_CLR, BC_FLOOR_T + 1)
-    tongue = None
-    for e in (path or tongue_path(wall_x)):
-        x0, x1, y0, y1, n = e[:5]
-        kind = e[5] if len(e) > 5 else "top"
-        d = n * t
-        xc, yc = (x0 + x1) / 2, (y0 + y1) / 2
-        if kind == "top":
-            plate -= Pos(xc, yc, BC_FLOOR_T - (d + BC_RECESS_CLR) / 2 + 0.005) * \
-                Box(x1 - x0 + 0.3, y1 - y0 + 0.3 * (n == 1), d + BC_RECESS_CLR + 0.01)
-            z = BC_FLOOR_T - d / 2
-        elif kind in ("under", "channel"):
-            plate -= Pos(xc, yc, (d + BC_RECESS_CLR) / 2 - 0.005) * Box(x1 - x0 + 0.3, y1 - y0 + 0.3, d + BC_RECESS_CLR + 0.01)
-            z = d / 2
-            if kind == "channel":
-                continue
-        else:
-            plate -= Pos(xc, yc, BC_FLOOR_T / 2) * Box(x1 - x0 + 0.3, y1 - y0, BC_FLOOR_T + 1)
-            z = BC_FLOOR_T / 2
-        seg = Pos(xc, yc, z) * Box(x1 - x0, y1 - y0, d)
-        tongue = seg if tongue is None else tongue + seg
-    for x0, x1, y0, y1 in notches:
-        plate -= Pos((x0 + x1) / 2, (y0 + y1) / 2, BC_FLOOR_T / 2) * Box(x1 - x0, y1 - y0, BC_FLOOR_T + 1)
-    pd = None
-    for x0, x1, y0, y1 in (pads or [(x - BC_FLOOR_PAD[0] / 2, x + BC_FLOOR_PAD[0] / 2, y - BC_FLOOR_PAD[1] / 2,
-                                      y + BC_FLOOR_PAD[1] / 2) for x, y in BC_FINGERS]):
-        q = Pos((x0 + x1) / 2, (y0 + y1) / 2, BC_FLOOR_T + 0.005) * Box(x1 - x0, y1 - y0, 0.01)
-        pd = q if pd is None else pd + q
-    return {"floor": plate, "floor_flex": tongue, "floor_pads": pd}
 
 
 def remote_front():

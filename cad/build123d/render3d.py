@@ -1,4 +1,4 @@
-"""Shaded 3D renders for the docs: xvfb-run python render3d.py -> docs/renders/v0.3_*.png"""
+"""Shaded 3D renders for the docs: xvfb-run python render3d.py -> docs/renders/v0.4_*.png"""
 import tempfile
 from pathlib import Path
 import pyvista as pv
@@ -7,8 +7,8 @@ from params import *
 import assembly
 import bilresa
 import insert
-import post
-import sensor_flex
+import standoff
+import ring
 import jumper
 import trim
 
@@ -18,7 +18,10 @@ COL = {"trim": "#f2f1ee", "insert": "#8d949b", "remote": "#fbfaf6", "rocker": "#
        "fingers": "#e3c565", "target": "#2f7a46", "jumper": "#d99a2b", "irm": "#2b2b2b", "wago": "#c9ccd1", "small": "#c8a03a",
        "msr": "#3a3a3a", "mic": "#2c5d8f", "floor": "#7d8a96", "floor_flex": "#d99a2b", "floor_pads": "#e3c565",
        "cover": "#e9e6df", "stiffener": "#2f7a46", "pads": "#e3c565", "contacts": "#c9a227", "regulator": "#2b2b2b",
-       "steel": "#6d7075", "cflex": "#d99a2b", "front_half": "#fbfaf6", "pad_stiffener": "#2f7a46"}
+       "steel": "#6d7075", "cflex": "#d99a2b", "front_half": "#fbfaf6", "pad_stiffener": "#2f7a46",
+       "ring": "#2f7a46", "keep": "#d9534f", "spacers": "#c9ccd1", "cn2": "#222222", "j1": "#e9e6df", "micb": "#3f9a5a", "passives": "#8a6d3b",
+       "esp": "#b9bcc0", "usb": "#c9ccd1", "radar": "#1d4f91", "cn1": "#222222", "co2": "#3f9a5a", "scd": "#55585c",
+       "sw": "#e9e6df", "riser": "#2f7a46", "pins": "#c9a227", "pin_posts": "#b8860b", "sleeves": "#2b2b2b", "screws": "#9aa0a6", "pin_pads": "#c9a227"}
 BOARD_KEYS = ("board", "rocker", "irm", "wago", "small")
 
 
@@ -54,11 +57,14 @@ def mesh(part, d, name):
     return pv.read(str(f))
 
 
-def parts(lift=0.0, cut=False):
-    a = assembly
-    ps = {"trim": trim.build(), "insert": insert.build(), "remote": bilresa.build(lift),
-          "msr": Pos(0, MSR_Y, PT - RADAR_WALL - MSR[2] / 2) * Box(*MSR), "posts": post.placed(),
-          **sensor_flex.parts(), **jumper.build()}
+def parts(lift=0.0, cut=False, pins_out=0.0):
+    """Assembly parts; lift raises the remote, pins_out the spring pins (1.5 = extended with the remote out)."""
+    rp = ring.parts()
+    rp["pin_posts"] = rp.pop("posts")
+    rp.pop("keep")
+    rp["pins"] = Pos(0, 0, pins_out) * rp["pins"]
+    ps = {"trim": trim.build(), "insert": insert.build(), "remote": bilresa.build(lift), "posts": standoff.placed(),
+          **rp, **jumper.build()}
     ps.update(board_parts())
     if cut:  # keep x <= 0 for a half-section (board parts are clipped as meshes in shot())
         keep = Pos(-100, 0, 0) * Box(200, 400, 400)
@@ -68,17 +74,13 @@ def parts(lift=0.0, cut=False):
 
 
 def battery_free(lift_cover=0.0, lift_remote=0.0):
-    """NA battery-free remote (D-41, D-49): floor insert (with the tongue's floor part), replacement back cover and
-    the remote's front half on it (lifted for exploded views)."""
+    """NA battery-free remote (D-41, D-50): the replacement back cover and the remote's front half on the pocket
+    floor (lifted for exploded views); the spring pins come from the riser (ring.parts)."""
     import backcover
-    import floor_na
-    seat = SEAT_Z + BC_FLOOR_T
-    import sensor_flex
-    ps = dict(floor_na.parts())
-    ps["tongue"] = sensor_flex.tongue()
+    ps = {}
     cov = backcover.cover_parts()
-    ps.update({("cflex" if k == "flex" else k): Pos(0, 0, seat + lift_cover) * v for k, v in cov.items()})
-    ps["front_half"] = Pos(0, 0, seat + lift_remote) * backcover.remote_front()
+    ps.update({("cflex" if k == "flex" else k): Pos(0, 0, SEAT_Z + lift_cover) * v for k, v in cov.items()})
+    ps["front_half"] = Pos(0, 0, SEAT_Z + lift_remote) * backcover.remote_front()
     return ps
 
 
@@ -107,68 +109,66 @@ def shot(name, ps, cam, size=(1400, 1100), hide=(), head=0.55, alpha=None):
 
 def main():
     R.mkdir(parents=True, exist_ok=True)
-    shot("v0.3_front", parts(), [(150, -170, 260), (0, 0, 0), (0, 1, 0)], hide=BOARD_KEYS)
-    shot("v0.3_remote_out", parts(lift=45), [(210, -200, 330), (0, 0, 15), (0, 1, 0)], hide=BOARD_KEYS)
-    shot("v0.3_section", parts(cut=True), [(290, 70, 150), (0, 0, -5), (0, 1, 0)])
-    shot("v0.3_back", parts(), [(130, -120, -230), (0, -5, -10), (0, 1, 0)], hide=("trim", "msr"), head=1.0)
-    # exploded: remote, trim, insert (with rocker), wiring board pulled apart along z
+    ring_keys = ("ring", "spacers", "cn2", "msr", "j1", "sht45", "passives", "micb", "mic")
+    shot("v0.4_front", parts(), [(150, -170, 260), (0, 0, 0), (0, 1, 0)], hide=BOARD_KEYS)
+    shot("v0.4_remote_out", parts(lift=45, pins_out=1.5), [(210, -200, 330), (0, 0, 15), (0, 1, 0)], hide=BOARD_KEYS)
+    shot("v0.4_section", parts(cut=True), [(290, 70, 150), (0, 0, -5), (0, 1, 0)])
+    shot("v0.4_back", parts(), [(130, -120, -230), (0, -5, -10), (0, 1, 0)], hide=("trim",), head=1.0,
+         alpha={"insert": 0.45})
+    # exploded: remote, face plate, insert with the ring board, wiring board pulled apart along z
     ps, _ = parts()
-    off = {"remote": 95, "trim": 55, "msr": 55, "flex": 55, "plug": 55, "sht45": 55, "fingers": 55, "mic": 55,
-           "tongue": 55,
-           "target": 0,
-           "jumper": 0,
-           "insert": 0, "posts": -25,
-           **{k: -55 for k in BOARD_KEYS}}
+    off = {"remote": 95, "trim": 55, "insert": 0, "posts": -25, "jumper": 0, "riser": -25, "pins": -25,
+           "pin_posts": -25, "sleeves": -25, "screws": -25, **{k: -20 for k in ring_keys}, **{k: -55 for k in BOARD_KEYS}}
     exploded = {k: Pos(0, 0, off[k]) * v for k, v in ps.items() if k in off}
-    shot("v0.3_exploded", exploded, [(330, -260, 120), (0, 0, 15), (0, 1, 0)], size=(1400, 1300), head=0.8)
-    # face plate lifted off (trim see-through) with everything attached to it; the insert side
-    # stays: the spring fingers on the target board are the only electrical interface (R9)
-    face = ("trim", "msr", "flex", "plug", "sht45", "fingers", "mic", "tongue")
-    sep = {k: (Pos(0, 0, 35) * v if k in face else v) for k, v in ps.items()}
-    shot("v0.3_separation", sep, [(230, -150, 110), (15, 5, 5), (0, 0, 1)], size=(1400, 1200),
-         hide=("remote", "posts"), head=0.9, alpha={"trim": 0.18, "insert": 0.55})
-    # sensor flex route (trim and remote hidden): MSR-2 end, right channel, SHT45 tail
-    shot("v0.3_flex", parts(), [(170, -150, 230), (8, 0, 5), (0, 1, 0)], size=(1400, 1300),
-         hide=("trim", "remote", "posts") + BOARD_KEYS, head=0.9)
-    # power contact: spring fingers on the flex over the target board on the insert shelf
-    keep = ("insert", "flex", "fingers", "target", "plug")
-    shot("v0.3_contact", parts(), [(75, -10, 45), (35.5, 20, 8), (0, 0, 1)], size=(1200, 900),
-         hide=tuple(k for k in list(COL) if k not in keep), head=1.0)
-    # 5 V power path: insert and trim cut at the pass-through axis, seen from the right
+    shot("v0.4_exploded", exploded, [(330, -260, 120), (0, 0, 15), (0, 1, 0)], size=(1400, 1300), head=0.8)
+    # face plate lifted off: nothing comes with it but the plastic (D-50)
+    ps, _ = parts(pins_out=1.5)
+    ps.pop("remote")
+    sep = {k: (Pos(0, 0, 40) * v if k == "trim" else v) for k, v in ps.items()}
+    shot("v0.4_face_off", sep, [(230, -200, 200), (5, 5, 10), (0, 0, 1)], size=(1400, 1300),
+         hide=("posts",) + BOARD_KEYS, head=0.9, alpha={"trim": 0.3})
+    # the ring board with its parts, from the front
     ps, _ = parts()
-    keep = Pos(PASS_X - 150, 0, 0) * Box(300, 400, 400)
-    ps = {k: (v & keep if k in ("insert", "trim") else v) for k, v in ps.items()}
-    shot("v0.3_power", ps, [(230, -40, 30), (22, 5, -8), (0, 1, 0)], size=(1400, 1100),
+    rb = {k: ps[k] for k in ring_keys}
+    rb["keep"] = ring.keepout()
+    shot("v0.4_ring", rb, [(30, -60, 240), (0, 6, 0), (0, 1, 0)], size=(1200, 1600), head=0.9)
+    # 5 V cable path: insert and face plate cut at the pass-through, seen from the right
+    ps, _ = parts()
+    keep = Pos(PASS_E[0] - 150, 0, 0) * Box(300, 400, 400)
+    ps = {k: (v & keep if k in ("insert", "trim", "ring") else v) for k, v in ps.items()}
+    shot("v0.4_power", ps, [(230, -40, 30), (22, 5, -8), (0, 1, 0)], size=(1400, 1100),
          hide=("remote", "trim", "posts", "msr"), head=1.0)
-    # battery-free remote (D-41, D-49): floor insert, the sensor flex's tongue, cover and remote lifted off
-    ps, _ = parts()
+    # battery-free remote: back cover (pads) and remote lifted off the pocket, the pins extended
+    ps, _ = parts(pins_out=1.5)
     ps.pop("remote")
     bf = battery_free(lift_cover=30, lift_remote=55)
-    shot("v0.3_battery_free", {**ps, **bf}, [(260, -230, 210), (5, 0, 10), (0, 1, 0)], size=(1400, 1300),
-         hide=("trim", "msr", "posts") + BOARD_KEYS, head=0.85)
-    # tongue path: insert, floor, cover and remote cut on the tongue's plane (x), seen from -x
+    shot("v0.4_battery_free", {**ps, **bf}, [(260, -230, 210), (5, 0, 10), (0, 1, 0)], size=(1400, 1300),
+         hide=("trim", "posts") + BOARD_KEYS, head=0.85, alpha={"insert": 0.6})
+    # spring pins: cut through both pins (x), seen from +x: board, posts, riser, pins, floor, cover, remote
     ps, _ = parts()
     ps.pop("remote")
     bf = battery_free()
-    keep = Pos(tongue_arc()[2][0] + 100, 0, 0) * Box(200, 400, 300)
-    cutp = {k: (v & keep) for k, v in {**ps, **bf}.items() if k not in BOARD_KEYS and k != "tongue"}
+    x = BC_FINGERS[0][0]
+    keep = Pos(x - 100, 0, 0) * Box(200, 400, 400)
+    cutp = {k: (v & keep) for k, v in {**ps, **bf}.items() if k not in BOARD_KEYS}
     cutp = {k: v for k, v in cutp.items() if v is not None and v.volume > 1e-6}
-    cutp["tongue"] = bf["tongue"]
-    shot("v0.3_tongue", cutp, [(tongue_arc()[2][0] - 200, 30, 40), (tongue_arc()[2][0], 30, 3), (0, 0, 1)], size=(1400, 1000),
-         hide=("msr", "posts"), head=1.0, alpha={"trim": 0.35})
-    # D-49 views: remote lifted out (the pocket shows the floor insert, the trim's strip and the floor pads only),
-    # and the face plate lifted off with everything attached to it (the insert keeps only the jumper's pad end)
-    ps, _ = parts()
-    ps.pop("remote")
-    bf = battery_free()
-    pocket = {**{k: v for k, v in ps.items() if k not in BOARD_KEYS},
-              **{k: bf[k] for k in ("floor", "floor_flex", "floor_pads", "tongue")}}
-    shot("v0.3_pocket_empty", pocket, [(40, -60, 230), (0, 2, 0), (0, 1, 0)], size=(1200, 1400), hide=("posts",),
-         head=0.9)
-    face = ("trim", "msr", "flex", "plug", "sht45", "fingers", "mic", "tongue", "floor", "floor_flex", "floor_pads")
-    off = {k: (Pos(0, 0, 45) * v if k in face else v) for k, v in pocket.items()}
-    shot("v0.3_face_off", off, [(200, -220, 230), (5, 5, 15), (0, 0, 1)], size=(1400, 1300), hide=("posts",),
-         head=0.9, alpha={"trim": 0.3})
+    cutp.update({k: v for k, v in ps.items() if k in BOARD_KEYS})
+    shot("v0.4_pins", cutp, [(x + 120, -5, -5), (x, -5, -8), (0, 0, 1)], size=(1400, 1100),
+         hide=("trim", "posts", "wago"), head=1.0, alpha={"front_half": 0.35, "cover": 0.5})
+    # steel plate cutting jigs (D-52), the supplied plate in each, cut line red
+    import plate_jig as pj
+    from params import MAGNET, JIG_FLOOR, JIG_SAW
+    COL.update({"jig": "#f2a541", "steel": "#9aa0a6", "cut": "#d9534f"})
+    jigs = {"saw": Pos(-16, 0, 0) * pj.saw_guide(), "marker": Pos(16, 0, 0) * pj.marker_gauge()}
+    js = {"jig": jigs["saw"] + jigs["marker"], "steel": Pos(-16, 0, 0) * pj.plate() + Pos(16, 0, 0) * pj.plate(),
+          "cut": Pos(0, MAGNET[1], JIG_FLOOR + MAGNET[2] + JIG_SAW[2] + 0.1) * Box(70, 0.25, 0.05)}
+    shot("plate_jigs", js, [(80, -70, 95), (0, 20, 2), (0, 0, 1)], size=(1300, 950), head=0.9)
+    # MSR-2 with the CO2 add-on (msr2.py): front and back, board frame
+    import msr2
+    m2 = msr2.parts()
+    m2["cn2"] = Pos(MSR_CN2_X, 0, -B2B_STACK / 2) * Box(B2B[0], B2B[1], B2B_STACK)     # CN2 with its mate
+    shot("msr2_front", m2, [(22, -42, 52), (0, 0, 4), (0, 1, 0)], size=(1200, 900), head=0.9)
+    shot("msr2_back", m2, [(-20, -38, -52), (0, 0, 2), (0, 1, 0)], size=(1200, 900), head=1.0)
     shot("bilresa_model", {"remote": bilresa.build()}, [(70, -90, 120), (0, 0, 0), (0, 1, 0)], size=(900, 900))
     shot("bilresa_back", {"remote": bilresa.build()}, [(95, -60, -110), (0, 0, SEAT_Z + B_D / 2), (0, 1, 0)], size=(900, 900), head=1.0)
 

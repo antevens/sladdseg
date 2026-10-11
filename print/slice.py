@@ -32,28 +32,30 @@ BARRIER = {"wall_loops": "6", "top_shell_layers": "6", "bottom_shell_layers": "6
 TRIM = {"wall_loops": "4", "top_shell_layers": "4", "bottom_shell_layers": "7",
         "sparse_infill_density": "20%", "sparse_infill_pattern": "gyroid",
         "enable_support": "0", "brim_type": "no_brim", "seam_position": "back"}
-COUPON = dict(BARRIER, brim_type="no_brim")
-# Board posts: small and solid, lying on their flat; the snap prongs need full infill.
-POST = dict(BARRIER, sparse_infill_density="100%", brim_type="no_brim")
+# v0.4 insert (D-50): plug down; the flat back, its skirt and the riser pocket's ceiling stand on supports from the plate.
+INSERT = dict(BARRIER, enable_support="1", support_type="normal(auto)", support_on_build_plate_only="1",
+              support_threshold_angle="40")
+COUPON = dict(INSERT, brim_type="no_brim")
 # Replacement back cover (D-35): back down, 1.2 mm walls, 0.4 mm floor under the steel plate and the regulator.
 COVER = {"wall_loops": "3", "top_shell_layers": "4", "bottom_shell_layers": "2", "sparse_infill_density": "30%",
          "sparse_infill_pattern": "gyroid", "enable_support": "0", "brim_type": "no_brim", "seam_position": "back"}
-# Pocket-floor inserts (0.6 mm): fine layers so the flex recess (0.14 / 0.26 mm deep) shows up.
-FLOOR = {"layer_height": "0.08", "initial_layer_print_height": "0.2", "wall_loops": "2", "top_shell_layers": "3",
-         "bottom_shell_layers": "3", "sparse_infill_density": "100%", "enable_support": "0", "brim_type": "no_brim"}
+# Steel plate cutting jigs (D-52): small, solid enough to take a vise and a saw.
+JIG = {"wall_loops": "4", "top_shell_layers": "4", "bottom_shell_layers": "4", "sparse_infill_density": "40%",
+       "sparse_infill_pattern": "gyroid", "enable_support": "0", "brim_type": "no_brim", "seam_position": "back"}
 
 JOBS = {
     # name: (parts, filament, process overrides)
-    "insert_PC-FR": (["insert"], "Elegoo PC-FR @ECC2", BARRIER),
-    "insert_PETG_testfit": (["insert"], "Elegoo PETG @ECC2", dict(BARRIER, brim_type="no_brim")),
+    "insert_PC-FR": (["insert"], "Elegoo PC-FR @ECC2", INSERT),
+    "insert_PETG_testfit": (["insert"], "Elegoo PETG @ECC2", dict(INSERT, brim_type="no_brim")),
     "trim_PETG": (["trim"], "Elegoo PETG @ECC2", TRIM),
-    "coupons_PETG": (["coupon_pocket_well", "coupon_msr", "coupon_rocker"], "Elegoo PETG @ECC2", COUPON),
-    "posts_PC-FR": (["post"] * 5, "Elegoo PC-FR @ECC2", POST),       # 4 + 1 spare
+    "coupons_PETG": (["coupon_pocket_well", "coupon_msr", "coupon_rocker", "coupon_ribs"], "Elegoo PETG @ECC2", COUPON),
     "backcover_PETG": (["back_cover"], "Elegoo PETG @ECC2", COVER),
-    "floor_inserts_PETG": (["floor_na", "floor_eu"], "Elegoo PETG @ECC2", FLOOR),
+    "plate_jigs_PETG": (["plate_jig_saw", "plate_jig_marker"], "Elegoo PETG @ECC2", JIG),
     "eu_cap_PC-FR": (["cap_eu"], "Elegoo PC-FR @ECC2", BARRIER),
     "eu_cap_PETG_testfit": (["cap_eu"], "Elegoo PETG @ECC2", dict(BARRIER, brim_type="no_brim")),
     "eu_trim_PETG": (["trim_eu"], "Elegoo PETG @ECC2", TRIM),
+    "eu_carrier_PETG": (["carrier_eu"], "Elegoo PETG @ECC2", JIG),   # cap board carrier (D-70)
+    "eu_testbox_PETG": (["testbox_eu", "testbox_plate_eu"], "Elegoo PETG @ECC2", JIG),   # test socket (D-76)
 }
 
 

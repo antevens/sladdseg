@@ -1,64 +1,79 @@
-"""EU TRIM PLATE (D-30): face, remote pocket walls (standing on the cap), finger notch (left), MSR-2 bay
-(radar skin) above, SHT45 bay below, microphone sound hole; the sensor flex runs in its right channel. Two M2 screws through tabs at the foot of the pocket walls
-hold it to the cap. Low-voltage side only; any filament (PETG/ASA). Print face-down, no supports.
+"""EU TRIM PLATE (D-30, D-56): a passive cover: face, remote pocket walls (standing on the cap), finger scoops both sides (D-73),
+MSR-2 bay (radar skin, vents over the CO2 sensor, posts onto the MSR-2's board) above, SHT45 bay below, the microphone's sound hole and tube. No electronics and no contacts:
+the sensors sit on the cap board (capboard_eu.py). Four snap fingers at the corners catch grooves in the carrier's
+windows (D-70, D-77). Low-voltage side only; any filament (PETG/ASA). Print face-down, no supports.
 Run:  python trim_eu.py  -> ../../../build/eu/trim.step / .stl
 """
-from build123d import Axis, Box, Circle, Cone, Cylinder, Plane, Pos, Rectangle, chamfer, extrude
+from math import sqrt
+from build123d import Axis, Box, Circle, Cylinder, Ellipse, Plane, Pos, chamfer, loft
 from params_eu import *
 from common import rr, stadium, slab, frame
+import msr2
 
 
-def tabs():
+def snaps():
+    """Snap fingers (D-70, D-77): from the face skin down into closed windows in the cap board and the carrier at the
+    corners, outside the pocket walls; the bump on each outer face catches the groove in its window's outer wall."""
+    from math import cos, radians, sin
+    from build123d import Rot
+    from common import radial_prism
+    t = SNAP[1]
+    z0, z1 = SNAP_GROOVE
+    zm, d = (z0 + z1) / 2, SNAP[2] - SNAP_BUMP_CLR        # bump just short of the groove's depth, 45 deg flanks
     out = None
-    for sx in (-1, 1):
-        x = sx * (POCKET_IN[0] / 2 - TRIM_TAB[0] / 2 + 0.01)
-        t = Pos(x, TRIM_SCREW_Y, CAP_T + TRIM_TAB[2] / 2) * Box(TRIM_TAB[0] + 0.02, TRIM_TAB[1], TRIM_TAB[2])
-        out = t if out is None else out + t
+    for a, w in SNAPS:
+        u = (cos(radians(a)), sin(radians(a)))
+        r = SNAP_R + t / 2
+        f = Pos(u[0] * r, u[1] * r, (SNAP_TIP_Z + DECK_Z + 0.01) / 2) * Rot(0, 0, a) * Box(t, w, DECK_Z + 0.01 - SNAP_TIP_Z)
+        ro = SNAP_R + t                                     # outer face: the bump catches the carrier's groove
+        f += radial_prism((u[0] * ro, u[1] * ro), u, [(-0.01, zm - d), (d, zm), (-0.01, zm + d)], w)
+        out = f if out is None else out + f
     return out
 
 
-def tab_holes():
-    out = None
-    sink = (TRIM_HEAD_D - TRIM_SCREW_D) / 2
-    for sx in (-1, 1):
-        x = sx * TRIM_SCREW_X
-        h = Pos(x, TRIM_SCREW_Y, CAP_T + TRIM_TAB[2] / 2) * Cylinder(TRIM_SCREW_D / 2 + 0.1, TRIM_TAB[2] + 1)
-        h += Pos(x, TRIM_SCREW_Y, CAP_T + TRIM_TAB[2] - sink / 2 + 0.01) * Cone(TRIM_SCREW_D / 2 + 0.1, TRIM_HEAD_D / 2, sink)
-        out = h if out is None else out + h
-    return out
+def scoop_sections():
+    """(depth below the ellipsoid's centre, x half-width, y half-width) from 1 mm above the face down to the flat bottom:
+    each half-width follows the ellipsoid while its wall is steeper than 45 deg, then shrinks at 45 deg (D-73)."""
+    a0, b0, c = SCOOP_EU
+    ua, ub = c * c / sqrt(a0 * a0 + c * c), c * c / sqrt(b0 * b0 + c * c)   # depths where the x / y walls reach 45 deg
+
+    def half(r, u45, u):
+        s = lambda v: r * sqrt(max(0.0, 1 - (v / c) ** 2))
+        return s(u) if u <= u45 else s(u45) - (u - u45)
+
+    out, u = [], SCOOP_RISE - 1.0
+    while True:
+        a, b = half(a0, ua, u), half(b0, ub, u)
+        if a <= SCOOP_FLAT / 2:
+            u_end = u - (SCOOP_FLAT / 2 - a)
+            out.append((u_end, SCOOP_FLAT / 2, b + (u - u_end)))
+            return out
+        out.append((u, a, b))
+        u += SCOOP_STEP
 
 
-def sensor_eu_pin_y():
-    import sensor_eu
-    return sensor_eu.PIN_Y
+def scoop(sx, grow=0.0):
+    """Finger scoop beside the pocket (grow > 0: the solid round it, extended `grow` below the bottom)."""
+    zc = PT + SCOOP_RISE
+    secs = scoop_sections()
+    if grow:
+        u, a, b = secs[-1]
+        secs = secs + [(u + grow, a, b)]
+    faces = [Plane.XY.offset(zc - u) * Ellipse(a + grow, b + grow) for u, a, b in secs]
+    return Pos(sx * SCOOP_X_EU, 0, 0) * loft(faces)
 
 
-def notch(sx):
-    """Finger notch beside the pocket: rectangle at the face, 45 deg sides down to NOTCH depth."""
-    face = Plane.XY.offset(PT + 0.01) * Rectangle(NOTCH[0] + 2 * NOTCH[2], NOTCH[1] + 2 * NOTCH[2])
-    cut = extrude(face, -(NOTCH[2] + 0.01), taper=45)
-    return Pos(sx * NOTCH_X, 0, 0) * cut
+def scoop_block(sx):
+    """Solid trim round a scoop, up to the face."""
+    pc = Pos(PC[0], PC[1], 0)
+    return scoop(sx, SCOOP_WALL) & (pc * slab(rr(PW, PH, PR), 0, PT))
 
 
-def notch_block(sx):
-    """Solid trim around a notch, from below the notch up to the face."""
-    w, h = NOTCH[0] + 2 * NOTCH[2] + 2 * NOTCH_BLOCK, NOTCH[1] + 2 * NOTCH[2] + 2 * NOTCH_BLOCK
-    return Pos(sx * NOTCH_X, 0, 0) * slab(Rectangle(w, h), PT - NOTCH[2] - NOTCH_BLOCK, PT)
-
-
-def flex_ramps():
-    """Ramps over the sensor flex's three slopes (the rise from CN2, down to the spring-pin pads and back up),
-    down from the skin."""
-    from common import ramp_over
-    import sensor_eu as se
-    r = se.ROUTE
-    fold = FLEX_W / 2 + 0.3
-    rise = ((r[1][0], r[1][1] - fold, r[1][2] + (r[2][2] - r[1][2]) * fold / (r[1][1] - r[2][1])), r[2])
-    out = None
-    for a, b in (rise, (r[3], r[4]), (r[5], r[6])):
-        q = ramp_over(a, b, FLEX_W + 1.0, FLEX_T, SKIN_Z + 0.01)
-        out = q if out is None else out + q
-    return out
+def mic_tube():
+    """Sound tube from the skin down to a gasket on the mic carrier (on the cap board)."""
+    od, bore, gasket = MIC_TUBE
+    z0 = CB_TOP + MIC_CARRIER[2] + gasket
+    return Pos(*MIC_AT, (z0 + SKIN_Z + 0.01) / 2) * (Cylinder(od / 2, SKIN_Z + 0.01 - z0) - Cylinder(bore / 2, PT))
 
 
 def build():
@@ -68,47 +83,32 @@ def build():
     shell -= pc * slab(rr(PW - 2 * SKIN, PH - 2 * SKIN, PR - SKIN), -1, DECK_Z)
     body = shell
     body += slab(stadium(*POCKET_OUT), CAP_T, PT)                                   # pocket walls
-    body += notch_block(-1)                                                          # left only: the right channel carries the flex
-    body += Pos(0, MSR_Y, 0) * frame(MSR[0] + 2 * CLR, MSR[1] + 2 * CLR, 1.6, 1, 0, PT)
-    body += Pos(0, SHT_Y, 0) * frame(SHT[0] + 0.8, SHT[1] + 0.8, 1.6, 0.5, 0, PT)
-    body += flex_ramps()                                                             # the flex's slopes are taped to them
+    for sx in (-1, 1):
+        body += scoop_block(sx)
+    z0 = CB_TOP + SPLIT_CLR                                                          # bay frames down to the cap board
+    body += Pos(0, MSR_Y, 0) * frame(MSR_FRAME[0], MSR_FRAME[1], MSR_FRAME[2], 1, z0, PT)
+    body += Pos(0, SHT_Y, 0) * frame(SHT[0] + 0.8, SHT[1] + 0.8, 1.6, 0.5, z0, PT)
+    body += mic_tube()
     # ---------------- cuts ----------------
     body -= slab(stadium(*POCKET_IN), CAP_T, PT + 1)                               # remote pocket
-    body += tabs()
-    body -= tab_holes()
-    body -= notch(-1)                                                                # finger notch
+    for sx in (-1, 1):                                                               # finger scoops
+        body -= scoop(sx)
     body -= slab(Circle(CAP_R + SPLIT_CLR), -1, CAP_T)                              # cap clearance
-    body -= Pos(0, MSR_Y, 0) * slab(rr(MSR[0] + 2 * CLR, MSR[1] + 2 * CLR, 1), -0.01, PT - RADAR_WALL)
-    body -= Pos(LUX_POS[0], MSR_Y + LUX_POS[1], PT - 0.5) * Cylinder(1.5, 6)
+    body += snaps()                                                                  # after the cap clearance
+    body -= Pos(0, MSR_Y, 0) * slab(rr(MSR_FRAME[0], MSR_FRAME[1], 1), -0.01, PT - RADAR_WALL)
+    body += msr2.posts(0, MSR_Y, MSR_BACK_Z, PT - RADAR_WALL)        # in the hollowed bay: clamp the MSR-2's board (D-67)
+    body -= msr2.scd_vents(0, MSR_Y, PT, RADAR_WALL)      # grille: CO2 sensor and light sensor (D-65, D-69)
     for i in range(-2, 3):                                                           # MSR-2 vents, top edge
         body -= Pos(i * 7 + 1.5, PL_Y[1] - SKIN + 2, 6) * Box(3, 6, 6)
     body -= Pos(0, SHT_Y, 0) * slab(rr(SHT[0] + 0.8, SHT[1] + 0.8, 0.5), -0.01, PT - SKIN)
-    # sensor flex through the bay frames' right walls; microphone sound hole
-    nx = MSR[0] / 2 + CLR + 0.8
-    w = 2 * flex_half_width(nx - 2.0 - MSR_CN2_X) + 0.6
-    body -= Pos(nx, MSR_Y, FLEX_LO_Z + FLEX_T / 2) * Box(4.0, w, 1.0)
-    sz0 = SKIN_Z - 0.5 - SHT_CHIP[2] - FLEX_T - 0.3
-    body -= Pos(SHT[0] / 2 + 0.4 + 0.8, SHT_Y, (sz0 + SKIN_Z) / 2) * Box(3.0, FLEX_W + 0.6, SKIN_Z - sz0 + 0.01)
-    body -= Pos(*MIC_PORT, PT - SKIN / 2) * Cylinder(MIC_SKIN_HOLE_D / 2, SKIN + 1)
-    # notch under the right pocket wall for the sensor-flex tongue to the pocket-floor insert (D-35)
-    body -= Pos((POCKET_IN[0] + POCKET_OUT[0]) / 4, EU_TONGUE_Y, CAP_T + (BC_FLOOR_T + 0.2) / 2 - 0.01) * \
-        Box((POCKET_OUT[0] - POCKET_IN[0]) / 2 + 0.2, EU_TONGUE_W + 0.6, BC_FLOOR_T + 0.2)
-    # pocket wall's foot thinned where the flex's pad section passes beside it
-    (sx0, _), (sy0, sy1) = FLEX_PAD_SEC, sensor_eu_pin_y()
-    zt = FLEX_PIN_Z + FLEX_T + STIFF_T + 0.3
-    body -= Pos(POCKET_OUT[0] / 2 - WALL_RECESS / 2 + 0.01, (sy0 + sy1) / 2, (CAP_T + zt) / 2) * Box(
-        WALL_RECESS + 0.02, sy1 - sy0 + 1.0, zt - CAP_T + 0.01)
-    # rib from the face skin down onto the flex stiffener over the spring pins (takes their force)
-    import sensor_eu
-    (x0, x1), (y0, y1) = sensor_eu.RIB
-    zb = FLEX_PIN_Z + FLEX_T + STIFF_T
-    body += Pos((x0 + x1) / 2, (y0 + y1) / 2, (zb + SKIN_Z + 0.5) / 2) * Box(x1 - x0, y1 - y0, SKIN_Z + 0.5 - zb)
+    # microphone sound hole over the tube
+    hd, web, rd = MIC_HOLE_EU                               # sound hole through a thin web, recess from the face (D-52)
+    body -= Pos(*MIC_AT, PT - SKIN / 2) * Cylinder(hd / 2, SKIN + 1)
+    body -= Pos(*MIC_AT, PT - (SKIN - web) / 2 + 0.005) * Cylinder(rd / 2, SKIN - web + 0.01)
     for i in (-1, 0, 1):                                                             # SHT45 vents: face + bottom edge
         body -= Pos(i * 4, SHT_Y, PT - 1) * Box(2, 6, 4)
         body -= Pos(i * 4, PL_Y[0] + 4, 5) * Box(2, 10, 6)
-    from common import board_hooks                                                   # MSR-2 snap hooks (D-45)
-    hooks, reliefs = board_hooks(MSR_Y, MSR_BOARD[0], MSR_BACK_Z, PT - RADAR_WALL, MSR[0] / 2 + CLR, MSR_HOOK)
-    return body - reliefs + hooks
+    return body
 
 
 if __name__ == "__main__":

@@ -9,17 +9,20 @@ from build123d import Rot, Pos, export_stl, export_step
 OUT = Path(__file__).resolve().parents[2] / "build"
 
 PRINT_ORIENT = {
-    "insert": lambda p: p,                          # floor-down: as modelled
+    "insert": lambda p: p,                          # floor-down: as modelled; supports under the seal lip and the riser pocket (D-68)
     "trim": lambda p: Rot(180, 0, 0) * p,           # face-down
     "coupon_pocket_well": lambda p: p,
     "coupon_msr": lambda p: Rot(180, 0, 0) * p,
     "coupon_rocker": lambda p: p,
-    "post": lambda p: Rot(90, 0, 0) * p,            # lying on its flat (flat faces -y -> down)
+    "coupon_ribs": lambda p: p,
     "back_cover": lambda p: p,                      # back down: as modelled (D-35)
-    "floor_na": lambda p: p,                        # flat, recess up: as modelled (D-41)
     "cap_eu": lambda p: Rot(180, 0, 0) * p,         # face-down (barrier, D-30)
     "trim_eu": lambda p: Rot(180, 0, 0) * p,        # face-down
-    "floor_eu": lambda p: p,                        # flat, recess up
+    "carrier_eu": lambda p: p,                      # bottom down: the rim up, the lip under the cap on the bed (D-71)
+    "testbox_eu": lambda p: p,                      # floor down, open side up (D-76)
+    "testbox_plate_eu": lambda p: p,                # flat
+    "plate_jig_saw": lambda p: p,                   # floor down (D-52)
+    "plate_jig_marker": lambda p: p,
 }
 
 
@@ -40,16 +43,20 @@ def mesh_of(part, tol=0.02):
 
 def parts():
     import sys
-    import insert, trim, coupons, post, backcover, floor_na
+    import insert, trim, coupons, backcover, plate_jig
     sys.path.insert(0, str(Path(__file__).resolve().parent / "eu"))
-    import cap_eu, trim_eu, floor_eu
+    import cap_eu, trim_eu, capboard_eu, testbox_eu
     ins, tr = insert.build(), trim.build()
-    return {"insert": ins, "trim": tr, "post": post.build(),
+    return {"insert": ins, "trim": tr,
             "coupon_pocket_well": coupons.pocket_well(ins),
             "coupon_msr": coupons.msr(tr),
             "coupon_rocker": coupons.rocker_ladder(),
-            "back_cover": backcover.cover(), "floor_na": floor_na.parts()["floor"],
-            "cap_eu": cap_eu.build(), "trim_eu": trim_eu.build(), "floor_eu": floor_eu.parts()["floor"]}
+            "coupon_ribs": coupons.ribs(),
+            "back_cover": backcover.cover(),
+            "cap_eu": cap_eu.build(), "trim_eu": trim_eu.build(),
+            "carrier_eu": capboard_eu.carrier(),
+            "testbox_eu": testbox_eu.box(), "testbox_plate_eu": testbox_eu.plate(),
+            "plate_jig_saw": plate_jig.saw_guide(), "plate_jig_marker": plate_jig.marker_gauge()}
 
 
 def main():

@@ -11,7 +11,8 @@ the wall, z = 0 the wall surface, z < 0 inside the box (MAINS SIDE).
   cup down to the panel of the emergency rocker (Marquardt 1802.2504, DPST, PCB pins) under the
   remote's upper half, two holes for the 5 V board's spring pins. Two countersunk screws into the
   box's top and bottom domes, in the pocket floor under the remote.
-- The supplied magnet is glued to the floor's underside (box side), under the back cover's steel plate.
+- The supplied steel piece sits in a recess in the pocket floor (front side, as on NA), under the back cover's
+  magnet; a cup under the recess keeps the barrier's floor under it (D-72).
 - Two boards (D-36). The mains board, at the rocker's PCB seat, carries the rocker, two WAGO
   2604-3102 push-in blocks (L in / switched, N in / switched; wires enter from the back of the box),
   fuse, MOV and the PSU (Traco TMPS 03-105) over a routed relief slot; the PSU's outputs land on a
@@ -27,12 +28,13 @@ from math import sqrt
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from params import (B_W, B_H, B_D, B_BACK_RUN, B_BACK_RISE, CLR, POCKET_WALL, MAGNET, MAGNET_Y, MAGNET_END_R,  # noqa: E402,F401
-                    MSR, RADAR_WALL, MSR_HOOK, LUX_POS, SHT, SKIN, FACE_CHAMFER, PR, SPLIT_CLR, BARRIER_MIN, V0_RATED_T,
+from params import (B_W, B_H, B_D, B_BACK_RUN, B_BACK_RISE, CLR, POCKET_WALL, MAGNET, MAGNET_Y, MAGNET_END_R, MAGNET_SETBACK, MAGNET_CLR,  # noqa: E402,F401
+                    MSR, RADAR_WALL, MSR_HOOK, MSR_SKIN_GAP, MSR2_POSTS, MSR2_POST_D, MSR2_POST_CLR, LUX_POS, VENT_RADAR_CLR, MSR2_SCD, MSR2_SCD_VENT, MSR2_LD, SHT, SKIN, FACE_CHAMFER, PR, SPLIT_CLR, BARRIER_MIN, V0_RATED_T,
                     PASS_D, MSR_BOARD, MSR_CN2_IN, B2B, B2B_STACK, FLEX_W, FLEX_T, STIFF_T, FLEX_SKIN_GAP,
                     FLEX_PLUG, FLEX_NECK_L, flex_half_width, SHT_CHIP, MIC, MIC_PORT_IN, MIC_FLEX_Y, MIC_FLEX_HOLE_D,
-                    MIC_GASKET_D, MIC_SKIN_HOLE_D, BC_FLOOR_T, BC_FLOOR_CLR, BC_TONGUE_W, BC_TONGUE_Y,
-                    BC_FINGERS, BC_FLOOR_PAD, BC_DOME_DY, BC_STEEL_FLOOR, BC_STEEL_Y, BC_STEEL, BC_RECESS_CLR,
+                    MIC_GASKET_D, MIC_SKIN_HOLE_D, BC_FINGERS, BC_FLEX_Z, PIN_FREE, PIN_WH, PIN_TOL, PIN_FLANGE,
+                    PIN_BARREL, PIN_PLUNGER_D, PIN_PEG, PIN_PAD_D, PIN_HOLE_D, PIN_RADIAL, MSR_BOARD_T,
+                    RING_NUT, RING_NUT_HOLE, RING_NUT_PAD, MSR2_SW, MSR2_SW_X, MSR2_SW_CLR, MIC_WIN, MIC_CARRIER, MIC_TUBE, MIN_PRINT_HOLE, M2_HEAD, BC_DOME_DY, BC_STEEL_FLOOR, BC_STEEL_Y, BC_STEEL,
                     SW_CUT, SW_PANEL_T, SW_BEZEL, SW_ROCKER_H, SW_ROCKER_TOL, SW_ROCKER_CLR, SW_BODY, SW_PIN_GRID, PAD_BODY_GAP)
 
 VARIANT = "eu"
@@ -48,7 +50,21 @@ DOME_CLR = 0.75                           # board / parts to a dome
 SCREW_D, SCREW_HEAD_D = 3.2, 6.0          # MEASURE device screws 3.2 mm, countersunk head
 PLUG_CLR = 0.75                           # cap cup / board to the box wall
 COLLAR_LIP = 1.25                         # flat seal band on the wall beyond the box hole
-WIRE_SPACE_MIN = 10.0                     # free depth wanted behind the deepest part (reported, not enforced: human
+# test socket (D-76): a printed stand-in for the flush box, BOX_DIA inside / BOX_HOLE outside, the DOMES, in a wall plate
+TB_DEPTH = 65.0                           # inside depth, wall plane to the floor
+TB_MARKS = (40.0, 43.0, 60.0, 63.0)       # depth markers below the wall plane
+TB_FLOOR = 2.0                            # floor thickness
+TB_PILOT_D, TB_PILOT_L = 2.7, 20.0        # device screw pilot hole in each dome (SCREW_D thread-forming), depth
+TB_GROOVE = 0.5                           # marker V-groove depth (45 deg flanks), inside and outside
+TB_PLATE_T = 3.0                          # wall plate thickness; the tube's rim is flush with its face
+TB_PLATE_MARGIN = 10.0                    # wall plate beyond the face plate's outline, each side
+TB_PLATE_CLR = 0.15                       # wall plate's hole round the tube
+TB_SHOULDER = 2.0                         # shoulder on the tube under the plate (45 deg underside)
+TB_KEY = (4.0, 1.5)                       # key on the tube at the top (+y) and its notch in the plate: width, radial
+TB_WINDOW = (10.0, 30.0)                  # inspection window in the wall at -45 deg: width, top below the wall plane
+TB_FIN = (2.0, 7.0)                       # label fin beside the window: thickness, radial
+TB_TEXT = (3.0, 0.4)                      # depth labels on the fin: height, engraving depth
+WIRE_SPACE_MIN = 10.0                    # free depth wanted behind the deepest part (reported, not enforced: human
                                           # decision 2026-10-08, depth to be tested in a box)
 
 # ---- emergency rocker: Marquardt 1802.2504, DPST, PCB pins (as the NA plate, D-26; values in params.py) ----
@@ -56,53 +72,54 @@ SW_Y = 12.5                               # rocker centre: cup clear of the top 
 SW_SW_DIR = -1                            # switched pins (1a / 2a) 7 mm below the in pins (1 / 2, on SW_Y)
 
 # ---- remote and plate ----
-B_PROUD = 0.0                             # remote top flush with the face
+B_PROUD = 2.6                             # remote top this far proud of the face, as on the NA plate (D-70)
 CAP_T = BARRIER_MIN                       # cap floor = barrier (V-0)
 CAP_MARGIN = 0.5                          # cap beyond the seal band and the pocket walls
-TRIM_TAB = (3.0, 8.0, 1.0)                # pocket-wall tab into the pocket (x depth, y length, thickness)
-TRIM_SCREW_Y = 9.0                        # trim screws at (+-x, y): clear of the cup and the PSU
-TRIM_SCREW_D, TRIM_HEAD_D = 2.0, 3.8      # M2 thread-forming screw, countersunk flush in the tab
-TRIM_BOSS_D, TRIM_BOSS_L = 6.0, 5.0       # boss under the cap floor (box side), clear of the 5 V board
+# face plate snaps (D-70, D-77): four fingers hang from the face skin at the corners into closed windows in the carrier
+# and the cap board (they locate the plate and stop it turning); a bump on each finger's outer face catches a groove in
+# the carrier window's outer wall. The carrier's inner edge stays whole: SNAP_WEB of it between each window and its bore
+SNAP = (6.0, 2.4, 0.6)                    # finger width (tangential), thickness (radial), groove depth (outward)
+SNAP_BUMP_CLR = 0.05                      # bump this much short of the groove's depth
+SNAP_KEY_W = 8.0                          # the top right finger and its window are wider: the plate fits one way only
+SNAP_ANGLES = (45.0, 135.0, 225.0, 315.0)  # finger positions round the cap's centre (deg from +x)
+SNAP_GROOVE = (0.2, 1.4)                  # groove in the window's outer wall: z range; 45 deg flanks, SNAP[2] deep
+SNAP_TIP_Z = 0.2                          # finger tip over the wall
+SNAP_CLR = 0.15                           # finger to its window (tangential and radial)
+SNAP_WEB = 1.6                            # carrier between its bore and each snap window
 MSR_GAP = 1.0                             # pocket walls / cap to the MSR-2 and SHT45 bay frames
 
-# ---- sensor flex (D-27 / D-29 topology): MSR-2 CN2 -> right channel -> SHT45 ----
-FLEX_X = 27.5                             # flex centre line in the right channel (pocket wall 24.6 .. skin 37.85),
-                                          # over the spring pins
-FLEX_RISE_DY = 12.0                       # run along y over which the flex rises from the plug level to under the skin
-MIC_Y = 28.0                              # mic body centre along the channel
-# power contact (R9, no wires): two spring pins on the 5 V board's front reach up through two holes in
-# the cap and press on gold pads on the flex, which dips to just above the cap there; a rib from the
-# trim's face skin backs the flex over the pins.
-# Harwin P70-2200045, SMT with peg (drawing P70-2200045 iss. 2, 2021-06-04): heights above the board
-PIN_FREE, PIN_WH, PIN_WH_MAX, PIN_WH_MIN = 8.20, 7.10, 7.20, 6.40   # DATASHEET free, normal, max, min working
-PIN_DESIGN_WH, PIN_TOL = 6.8, 0.3         # design working height (mid-range) and the stack tolerance it absorbs
-PIN_FLANGE = (2.00, 1.00)                 # DATASHEET flange diameter, height
-PIN_BARREL_D, PIN_PLUNGER_D = 1.54, 0.90  # DATASHEET barrel, plunger tip
-PIN_PAD_D, PIN_HOLE_D = 2.20, 1.20        # DATASHEET recommended solder pad, through hole for the peg
-PINS = ((25.9, -4.6), (25.9, -9.0))       # GND, +5 V (room x, y): on the 5 V board, clear of the right dome;
-                                          # GND first so the tongue's lanes need no crossing after its fold (D-41)
-PIN_CAP_HOLE_D = 1.9                      # cap hole round each pin (barrel 1.54)
-PIN_FLEX_GAP = 0.3                        # flex underside above the cap top at the pins
-FLEX_PAD_D = 2.4                          # gold pad on the flex under each pin (plunger tip 0.9)
-FLEX_DIP = 12.0                           # run along y over which the flex drops to / rises from the pins
-FLEX_PAD_SEC = (24.3, 30.2)               # flex widened over the pins (room x), into a recess in the pocket wall's foot
-# battery-free tongue (D-41): leaves the pad section's inner edge between the pins (+5V from the +5V pin pad, GND
-# from the GND pin pad, on one copper layer), under the pocket wall (trim notch), along the floor insert, 45 deg
-# fold beside the floor pads (copper up), then the pad strip clear of the switch cup's opening
-EU_TONGUE_Y = (PINS[0][1] + PINS[1][1]) / 2   # tongue centre (room y)
-EU_TONGUE_W = 1.6                         # tongue width from the pad section to the fold
-EU_FOLD_X = 17.6                          # 45 deg fold square centre (room x), beside the pads
-EU_STRIP_X0 = 13.2                        # pad strip's inner edge: clear of the switch cup's opening
-EU_RISE = (-4.0, -2.0)                    # floor slot where the neck above the fold rises onto the top (room y); the
-                                          # flex is slit from the fold up to its top end, beside the neck (D-49)
-EU_SLIT_X = (EU_FOLD_X - EU_TONGUE_W / 2 - 0.3, EU_FOLD_X - EU_TONGUE_W / 2)   # slit across (room x)
-EU_PAD_X = (13.5, 16.3)                   # floor pads (room x) under the fingers at x 14, clear of the cup opening
-WALL_RECESS = 0.6                         # trim pocket wall thinned at its foot over the pad section
+# ---- sensors (D-56, D-59, D-70): cap board in a printed carrier, the MSR-2 on its CN2 mate and three spacers ----
+# All four spring pins on the 5 V board are the NA part (params.py PIN_*, Harwin P70-2200045) at one working height:
+# two press on gold pads under the cap board (5 V for the sensors), two on the battery-free back cover's pads. The cap
+# board's underside is level with the cover's pads. Nothing electrical crosses to the face plate (R9).
+EU_PIN_WH = 6.8                           # design working height of the four pins (6.5..7.1 with PIN_TOL)
+PINS = ((26.4, -4.8), (26.4, -7.6))       # sensor pins GND, +5 V (room x, y): on the 5 V board, clear of the right dome
+PIN_CAP_HOLE_D = 1.9                      # cap / carrier hole round each pin barrel (1.54)
+CB_T = 1.6                                # cap board, FR4 (D-70)
+CB_EDGE = 0.5                             # carrier to the trim's outer walls
+CARRIER_RIM = 1.6                         # carrier's rim round the cap board, up to its top (D-70)
+CB_RIM_CLR = 0.2                          # cap board to the rim
+CB_POCKET_CLR = 0.3                       # cap board / carrier cut-out round the trim's pocket walls
+CB_PAD_D = 2.4                            # gold pad under each sensor pin (plunger 0.9)
+CB_SCREWS = ((-32.0, 48.0), (32.0, 36.0), (-32.0, -36.0), (32.0, -36.0))   # M2 x 6 thread-forming screws through the
+                                          # cap board into the carrier
+CB_SCREW_D, CB_TAP_D = 2.0, 1.6           # M2 clearance hole in the board; tap-drill hole in the carrier
+CARRIER_CAP_CLR = 0.2                     # carrier's bore round the cap disc
+CARRIER_SIDE = 2.0                        # carrier left outside its bore at the plate's sides (D-78)
+# carrier clamp (D-71): a lip on the carrier's wall face reaches under the cap's edge into a rebate in the cap's
+# underside; the cap's screws pin it to the wall. Full-thickness teeth of the cap round each snap notch sit in gaps in
+# the lip: they stop the carrier turning (the wider key tooth: one way only).
+LIP_T = 0.8                               # lip thickness = rebate depth (line-to-line)
+LIP_SEAL_CLR = 0.5                        # rebate starts this far outside the seal band
+LIP_CLR = 0.2                             # lip to the rebate's inner edge; lip gap to each tooth (each side)
+LIP_TOOTH = 1.5                           # cap's tooth at each snap angle: finger width + 2 x SNAP_CLR + this, each side
+MIC_ROW_DY = -7.0                         # microphone carrier below the MSR-2 centre, beside its bay frame
+MIC_HOLE_EU = (1.6, 0.6, 3.0)             # sound hole (D-52): diameter, skin web left, recess from the face (diameter)
 
 # ---- 5 V board (D-shaped, just under the cap, below the switch cup) ----
 WB_T = 1.6
 WB_CUT_CLR = 1.0                          # board's straight edge below the switch cup
-WB_MOUNT = ((-12.0, -22.0), (16.0, -21.0))  # board holes (M2, from pcb/eu), screwed to bosses under the cap
+WB_MOUNT = ((-12.0, -22.0), (16.8, -20.6))  # board holes (M2, from pcb/eu), screwed to bosses under the cap
 WB_MOUNT_D, WB_BOSS_D = 2.2, 5.0          # board hole; cap boss (tap-drilled for an M2 thread-forming screw)
 FRONT_PARTS = {"C1": (3.2, 1.6, 1.8)}      # 1206 capacitor on the 5 V board's front
 
@@ -126,7 +143,7 @@ MB_BOSS = ((-17.5, 19.5), (17.5, 19.5), (-20.0, -12.0))  # mains board holes (M2
 MB_BOSS_D, MB_BOSS_CLR = 6.0, 0.5         # long boss diameter; hole round it in the 5 V board (each side)
 MB_FRONT_PARTS = {"RV1": (10.2, 8.0, 4.5),  # DATASHEET TDK CU4032 body (w, h, t)
                   "F1": (10.1, 3.1, 3.3)}  # REF Schurter UMT 250 body
-HDR = (2.54, 5.08, 8.38)                  # DATASHEET Samtec TSM-102-01-L-SV (SMT): insulator 2.54 + post 5.84 above the board
+HDR = (2.54, 5.08, 10.67)                 # DATASHEET Samtec TSM-102-02-L-SV (SMT): insulator 2.54 + post 8.13 above the board
 HDR_BODY = 2.54                           # DATASHEET TSM insulator height
 SOCKET = (2.54, 5.08, 8.5)                # DATASHEET 2.54 mm pin socket 1x2, 8.5 mm (on the 5 V board's back)
 
@@ -135,7 +152,7 @@ BOX_R = BOX_DIA / 2
 SEAL_R = BOX_HOLE / 2 + COLLAR_LIP
 POCKET_IN = (B_W + 2 * CLR, B_H + 2 * CLR)
 POCKET_OUT = (POCKET_IN[0] + 2 * POCKET_WALL, POCKET_IN[1] + 2 * POCKET_WALL)
-SEAT_Z = CAP_T + BC_FLOOR_T                                # remote's back on the pocket-floor insert (D-35)
+SEAT_Z = CAP_T                                             # remote's back on the cap (D-54)
 PT = SEAT_Z + B_D - B_PROUD                                # plate face
 DECK_Z = PT - SKIN
 CAP_R = max(SEAL_R, POCKET_OUT[1] / 2) + CAP_MARGIN        # cap disc (covers seal band and pocket walls)
@@ -147,13 +164,19 @@ PANEL_BOT_Z = PANEL_TOP_Z - SW_PANEL_T
 SW_BOT_Z = PANEL_TOP_Z - SW_BODY[2]                        # rocker's PCB seat = mains board front
 DOMES = ((0.0, DOME_PITCH / 2), (DOME_PITCH / 2, 0.0), (0.0, -DOME_PITCH / 2), (-DOME_PITCH / 2, 0.0))
 SCREWS = (DOMES[0], DOMES[2])             # top and bottom domes: countersunk in the pocket floor, under the remote
-# magnet glued under the floor at the back cover's steel plate
-MAGNET_Z = (-MAGNET[2], 0.0)
-EU_MAGNET_Y = min(BC_STEEL_Y, SW_Y - CUP_OUT[1] / 2 - 0.5 - MAGNET[1] / 2)   # under the cover's steel, clear of the cup
+# supplied steel piece in a recess in the pocket floor, MAGNET_SETBACK below the seat, under the back cover's magnet;
+# a cup under the recess, BARRIER_MIN under and round it (D-72)
+MAGNET_Z = (SEAT_Z - MAGNET_SETBACK - MAGNET[2], SEAT_Z - MAGNET_SETBACK)
+EU_MAGNET_Y = min(BC_STEEL_Y, SW_Y - CUP_IN[1] / 2 - BARRIER_MIN - MAGNET_CLR - MAGNET[1] / 2)   # under the cover's
+                                                                                  # magnet, BARRIER_MIN from the switch cup
+MAG_CUP_BOT = MAGNET_Z[0] - BARRIER_MIN                     # magnet cup's underside
+MAG_BRIDGE = 20.0                         # longest bridge accepted over the recess (cap printed face down)
 # 5 V board: circle less clearance, cut below the cup
 WB_R = BOX_R - PLUG_CLR
-FLEX_PIN_Z = CAP_T + PIN_FLEX_GAP                          # flex underside over the pins
-WB_FRONT = FLEX_PIN_Z - PIN_DESIGN_WH                      # board front: pins at their design working height
+BF_TIP_Z = SEAT_Z + BC_FLEX_Z                              # battery-free pins' tips on the cover's pads
+CB_PAD_Z = BF_TIP_Z                                        # cap board underside (pads): level with the cover's pads
+CB_TOP = CB_PAD_Z + CB_T
+WB_FRONT = CB_PAD_Z - EU_PIN_WH                            # board front: all four pins at their design working height
 WB_BACK = WB_FRONT - WB_T
 WB_CUT_Y = SW_Y - CUP_OUT[1] / 2 - WB_CUT_CLR
 MB_FRONT = SW_BOT_Z
@@ -162,28 +185,38 @@ DEEPEST = min(MB_BACK - PSU[2], MB_BACK - WAGO_EU[2])
 HDR_GAP = WB_BACK - MB_FRONT                               # mains board front to the 5 V board's back
 HDR_ENGAGE = (MB_FRONT + HDR[2]) - (WB_BACK - SOCKET[2])   # header post inside the socket
 DOME_NOTCH_R = DOME_D / 2 + DOME_CLR      # board notch round a dome
-# trim: finger notch left of the pocket (the right channel carries the flex), 45 deg sides so the
-# face-down print needs no support
-NOTCH = (6.0, 26.0, 5.0)                  # width (x, at the face), length (y, at the face), depth
-NOTCH_X = POCKET_IN[0] / 2 + 0.5           # notch centre line: cuts into the pocket wall
-NOTCH_BLOCK = 1.6                          # solid trim around the notch
-TRIM_SCREW_X = POCKET_IN[0] / 2 - TRIM_HEAD_D / 2 - 0.2    # head clear of the pocket wall above the tab
+# trim: finger scoops both sides of the pocket (D-73), the NA ellipsoid (params.py SCOOP) wider; below the depth where
+# a wall reaches 45 deg it carries on at 45 deg to a flat bottom (face-down print, no supports)
+SCOOP_EU = (7.5, 16.0, 9.0)               # ellipsoid radii x, y, z (NA 6.0, 16.0, 9.0)
+SCOOP_RISE = 2.5                          # ellipsoid centre above the face (as NA)
+SCOOP_X_EU = POCKET_IN[0] / 2 + 0.6       # scoop centre line (as NA): cuts into the pocket wall
+SCOOP_FLAT = 2.0                          # flat bottom width (x)
+SCOOP_WALL = 1.6                          # solid trim round each scoop
+SCOOP_STEP = 0.5                          # loft section spacing (depth)
 MSR_Y = POCKET_OUT[1] / 2 + MSR_GAP + 1.6 + MSR[1] / 2 + CLR
 SHT_Y = -(POCKET_OUT[1] / 2 + MSR_GAP + 1.6 + SHT[1] / 2 + 0.4)
-PW = 2 * (CAP_R + SPLIT_CLR + SKIN)
+PW = 2 * (CAP_R + CARRIER_CAP_CLR + CARRIER_SIDE + CB_EDGE + SKIN)   # face plate width: the carrier whole at the sides
 PL_Y = (SHT_Y - SHT[1] / 2 - 0.4 - 1.6 - SKIN - 1.0, MSR_Y + MSR[1] / 2 + CLR + 1.6 + SKIN + 1.0)
 PH = PL_Y[1] - PL_Y[0]
 PC = (0.0, (PL_Y[0] + PL_Y[1]) / 2)                        # plate centre relative to the box centre
 
-# sensor flex, derived
-MSR_BACK_Z = PT - RADAR_WALL - MSR[2]
+# sensors, derived
+MSR_BACK_Z = CB_TOP + B2B_STACK                            # MSR-2's back on CN2 and the spacers on the cap board
 MSR_CN2_X = MSR_BOARD[0] / 2 - MSR_CN2_IN
+MSR_SPACERS = [(x, MSR_Y + y) for x, y in MSR2_POSTS]      # cap board's SMT spacers under the MSR-2, below its posts
 SKIN_Z = PT - SKIN
-FLEX_HI_Z = SKIN_Z - FLEX_SKIN_GAP - STIFF_T - FLEX_T     # flex underside in the channel
-FLEX_LO_Z = MSR_BACK_Z - B2B_STACK - FLEX_T               # flex underside at the plug
-EU_MIC_FLEX_Y = 2.5                                        # mic centre outwards of the flex centre line (room x)
-MIC_X = FLEX_X + EU_MIC_FLEX_Y                             # mic on the outer side of the flex
-EU_MIC_SEC = (5.7, MIC[1] + 8.0)                           # flex widened outwards over the mic: width from the
-                                                           # centre line, length along the channel
-MIC_PORT = (MIC_X, MIC_Y - (MIC[1] / 2 - MIC_PORT_IN))
-SHT_ENTRY = SHT[0] / 2 + 0.4 + 1.6 + 1.0
+MSR_FRAME = (MSR[0] + 2 * CLR, MSR[1] + 2 * CLR, 1.6)      # trim's MSR-2 bay frame: inside w, h, wall
+MIC_AT = (MSR_FRAME[0] / 2 + MSR_FRAME[2] + 0.3 + MIC_CARRIER[0] / 2, MSR_Y + MIC_ROW_DY)   # mic carrier, on the cap board
+CARRIER_TOP = CB_PAD_Z
+CB_INSET = CB_EDGE + CARRIER_RIM + CB_RIM_CLR              # cap board edge in from the trim's outer walls' inside
+SNAPS = [(a, SNAP_KEY_W if a == SNAP_ANGLES[0] else SNAP[0]) for a in SNAP_ANGLES]   # angle, width
+SNAP_WIN_R = CAP_R + CARRIER_CAP_CLR + SNAP_WEB                 # snap windows' inner wall (radius)
+SNAP_R = SNAP_WIN_R + SNAP[2] + SNAP_CLR                         # finger's inner face: room inside it to bend in
+SNAP_WALL_R = SNAP_R + SNAP[1] + SNAP_CLR                         # carrier window's outer wall, with the groove
+REBATE_R = SEAL_R + LIP_SEAL_CLR                            # cap's rebate for the carrier's lip, from here out
+LIP_R = REBATE_R + LIP_CLR                                  # lip's inner edge
+TEETH = [(a, w + 2 * SNAP_CLR + 2 * LIP_TOOTH) for a, w in SNAPS]   # cap's teeth at the snap angles: angle, width
+CB_TOP_Y = PL_Y[1] - SKIN - CB_INSET                       # cap board's top edge
+# the MSR-2's back switches stand deeper than CN2's stack: notches in the cap board's top edge (as the NA ring board)
+EU_SW_CUTS = [(x - MSR2_SW[0] / 2 - MSR2_SW_CLR, x + MSR2_SW[0] / 2 + MSR2_SW_CLR,
+               MSR_Y + MSR_BOARD[1] / 2 - MSR2_SW[1] - MSR2_SW_CLR) for x in MSR2_SW_X]   # x0, x1, y0

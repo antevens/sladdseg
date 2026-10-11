@@ -14,8 +14,8 @@ from common import stadium, slab
 import insert
 import trim
 import bilresa
-import post
-import sensor_flex
+import standoff
+import ring
 import jumper
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -50,18 +50,19 @@ def build_assembly():
     sw_top = Pos(0, SW_Y, WELL_FLOOR_Z + SW_ROCKER_H / 2) * Box(SW_BEZEL[0], SW_BEZEL[1], SW_ROCKER_H)
     sw_body = Pos(0, SW_Y, WELL_FLOOR_Z - SW_BODY[2] / 2) * Box(*SW_BODY)
     switch = env(Compound([sw_top, sw_body]), "marquardt_1802_envelope", (0.7, 0.13, 0.13))
-    msr = env(Pos(0, MSR_Y, PT - RADAR_WALL - MSR[2] / 2) * Box(*MSR), "msr2_envelope", (0.2, 0.2, 0.2))
-    fp = sensor_flex.parts()
-    sht = env(fp["sht45"], "sht45_on_flex", (0.48, 0.12, 0.64))
-    flex = env(fp["flex"], "sensor_flex", (0.85, 0.6, 0.1))
-    plug = env(fp["plug"] + fp["fingers"] + fp["target"], "cn2_plug_fingers_jumper_pad_end", (0.8, 0.7, 0.3))
-    lead5 = env(jumper.build()["jumper"], "flex_jumper_5v", (0.85, 0.6, 0.1))
+    rp = ring.parts()
+    msr = env(rp["msr"], "msr2_envelope", (0.2, 0.2, 0.2))
+    rb = env(rp["ring"], "ring_board", (0.12, 0.42, 0.23))
+    small = env(rp["cn2"] + rp["j1"] + rp["sht45"] + rp["passives"] + rp["micb"] + rp["mic"] + rp["spacers"], "ring_board_parts",
+                (0.8, 0.7, 0.3))
+    pins = env(rp["riser"] + rp["pins"] + rp["posts"] + rp["screws"], "riser_pins_posts", (0.8, 0.7, 0.3))
+    lead5 = env(jumper.build()["jumper"], "ffc_5v", (0.85, 0.85, 0.85))
     box = Pos(0, 0, -BOX_D / 2) * (Box(BOX_W + 3, BOX_H + 3, BOX_D) - Pos(0, 0, 1.5) * Box(BOX_W, BOX_H, BOX_D))
     box = env(box, "device_box_ref", (0.55, 0.6, 0.65))
-    posts = env(post.placed(), "board_posts", (0.85, 0.5, 0.17))
+    posts = env(standoff.placed(), "board_standoffs", (0.95, 0.95, 0.9))
     rest = [] if WB_STEP.exists() else [switch]          # the board STEP carries the rocker model
-    return Compound(label="wallplate_assembly", children=[ins, tr, remote, *rest, posts, wiring_board(), msr, sht,
-                                                           flex, plug, lead5, box])
+    return Compound(label="wallplate_assembly", children=[ins, tr, remote, *rest, posts, wiring_board(), msr, rb,
+                                                           small, pins, lead5, box])
 
 
 if __name__ == "__main__":
