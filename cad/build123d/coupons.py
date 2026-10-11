@@ -8,8 +8,12 @@
   coupon_ribs         a straight piece of the collar with the flange's land and taper and three crush ribs at
                       RIB_STEPS interference (1, 2, 3 notches): press the ring board's window edge (or a 1.6 mm FR4
                       offcut with a routed edge) on, pick the rib that holds without cracking (D-68).
+  coupon_back_gauges  five flat profile gauges for the inside of the remote's original back cover, side to side: the
+                      modelled back (flat, quarter-ellipse round-over B_BACK_RUN x B_BACK_RISE) with the round-over
+                      changed by GAUGE_DR (engraved: its run), a line at the rim (D-87).
 """
-from build123d import Box, Pos, Rectangle, Rot
+from math import cos, pi, sin
+from build123d import Box, Pos, Rectangle, Rot, Polyline, Text, extrude, make_face
 from params import *
 from common import slab, rr
 import insert
@@ -17,6 +21,9 @@ import trim
 
 PANEL_STEPS = (1.0, 1.5, 2.0, 2.5, 3.0)
 RIB_STEPS = (0.10, 0.15, 0.20)                     # crush rib interference into the board's edge
+GAUGE_DR = (-0.5, -0.25, 0.0, 0.25, 0.5)          # back gauges: change of the round-over's run and rise
+GAUGE_T = 2.0                                      # gauge thickness
+GAUGE_GRIP = 8.0                                   # gauge above the cover's rim
 
 
 def pocket_well(ins=None):
@@ -67,7 +74,46 @@ def ribs():
     return c
 
 
+def back_gauge(dr):
+    """Flat gauge (x across the remote, y up from the original cover's inside floor), printed flat: the inside of
+    the original cover side to side as modelled (B_W less BC_WALL each side, the back's round-over B_BACK_RUN x
+    B_BACK_RISE) with the round-over's run and rise changed by dr, up to the rim (B_SEAM_Z less BC_WALL), then
+    straight up; a line at the rim."""
+    a = B_W / 2 - BC_WALL
+    run, rise = B_BACK_RUN + dr, B_BACK_RISE + dr
+    depth = B_SEAM_Z - BC_WALL
+    n = 48
+    side = []
+    for i in range(n + 1):
+        t = (pi / 2) * i / n
+        x, y = a - run * (1 - sin(t)), rise * (1 - cos(t))
+        if y >= depth:
+            x0, y0 = side[-1]
+            x = x0 + (x - x0) * (depth - y0) / (y - y0)
+            side.append((x, depth))
+            break
+        side.append((x, y))
+    top = depth + GAUGE_GRIP
+    xr = side[-1][0]
+    pts = [(-x, y) for x, y in reversed(side)] + side + [(xr, top), (-xr, top)]
+    g = extrude(make_face(Polyline(*pts, pts[0])), GAUGE_T)
+    g -= Pos(0, depth, GAUGE_T) * Box(2 * a + 1, 0.4, 0.8)        # rim line
+    g -= Pos(0, depth + GAUGE_GRIP / 2 + 0.3, GAUGE_T - 0.2) * extrude(Text(f"R{run:.2f}", 4.5), 0.6)
+    return g
+
+
+def back_gauges():
+    """The GAUGE_DR gauges side by side along y, the smallest round-over at the bottom."""
+    h = B_SEAM_Z - BC_WALL + GAUGE_GRIP + 4.0
+    out = None
+    for i, dr in enumerate(GAUGE_DR):
+        g = Pos(0, i * h, 0) * back_gauge(dr)
+        out = g if out is None else out + g
+    return out
+
+
 if __name__ == "__main__":
-    for name, p in (("pocket_well", pocket_well()), ("msr", msr()), ("rocker", rocker_ladder()), ("ribs", ribs())):
+    for name, p in (("pocket_well", pocket_well()), ("msr", msr()), ("rocker", rocker_ladder()), ("ribs", ribs()),
+                    ("back_gauges", back_gauges())):
         bb = p.bounding_box()
         print(f"coupon_{name}: {bb.size.X:.0f} x {bb.size.Y:.0f} x {bb.size.Z:.0f} mm, {p.volume/1000:.1f} cm3, valid={p.is_valid}, solids={len(p.solids())}")

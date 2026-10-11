@@ -19,7 +19,7 @@ COL = {"trim": "#f2f1ee", "insert": "#8d949b", "remote": "#fbfaf6", "rocker": "#
        "msr": "#3a3a3a", "mic": "#2c5d8f", "floor": "#7d8a96", "floor_flex": "#d99a2b", "floor_pads": "#e3c565",
        "cover": "#e9e6df", "stiffener": "#2f7a46", "pads": "#e3c565", "contacts": "#c9a227", "regulator": "#2b2b2b",
        "steel": "#6d7075", "cflex": "#d99a2b", "front_half": "#fbfaf6", "pad_stiffener": "#2f7a46",
-       "ring": "#2f7a46", "keep": "#d9534f", "spacers": "#c9ccd1", "cn2": "#222222", "j1": "#e9e6df", "micb": "#3f9a5a", "passives": "#8a6d3b",
+       "ring": "#2f7a46", "keep": "#d9534f", "spacers": "#c9ccd1", "cn2": "#222222", "j1": "#e9e6df", "passives": "#8a6d3b",
        "esp": "#b9bcc0", "usb": "#c9ccd1", "radar": "#1d4f91", "cn1": "#222222", "co2": "#3f9a5a", "scd": "#55585c",
        "sw": "#e9e6df", "riser": "#2f7a46", "pins": "#c9a227", "pin_posts": "#b8860b", "sleeves": "#2b2b2b", "screws": "#9aa0a6", "pin_pads": "#c9a227"}
 BOARD_KEYS = ("board", "rocker", "irm", "wago", "small")
@@ -109,7 +109,7 @@ def shot(name, ps, cam, size=(1400, 1100), hide=(), head=0.55, alpha=None):
 
 def main():
     R.mkdir(parents=True, exist_ok=True)
-    ring_keys = ("ring", "spacers", "cn2", "msr", "j1", "sht45", "passives", "micb", "mic")
+    ring_keys = ("ring", "spacers", "cn2", "msr", "j1", "sht45", "passives", "mic")
     shot("v0.4_front", parts(), [(150, -170, 260), (0, 0, 0), (0, 1, 0)], hide=BOARD_KEYS)
     shot("v0.4_remote_out", parts(lift=45, pins_out=1.5), [(210, -200, 330), (0, 0, 15), (0, 1, 0)], hide=BOARD_KEYS)
     shot("v0.4_section", parts(cut=True), [(290, 70, 150), (0, 0, -5), (0, 1, 0)])

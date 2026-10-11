@@ -28,7 +28,7 @@ def main():
              (assembly.wiring_board(), "wiring_board_placed", "tab:green", "wiring board"),
              (rp["ring"], "ring_placed", "darkgreen", "ring board"),
              (rp["msr"], "msr_placed", "dimgray", "MSR-2 with CO2 add-on (model)"),
-             (rp["cn2"] + rp["j1"] + rp["sht45"] + rp["passives"] + rp["micb"] + rp["mic"] + rp["spacers"],
+             (rp["cn2"] + rp["j1"] + rp["sht45"] + rp["passives"] + rp["mic"] + rp["spacers"],
               "ring_parts_placed", "gold", "ring board parts (CN2, J1, SHT45, mic, spacers)"),
              (rp["riser"] + rp["pins"] + rp["posts"] + rp["screws"], "riser_placed", "darkorange",
               "riser, spring pins, spacer posts"),
@@ -54,15 +54,15 @@ def main():
                    ["--title", "v0.4 sections (dashed red = wall surface, z 0)", "--dpi", "90"] +
                    [a for c in cuts for a in ("--cut", c)], check=True)
     print("wrote", R / "v0.4_sections.png")
-    # microphone (D-29, D-50): mic under its carrier on the ring board, sound tube to the hole, zoomed
+    # microphone (D-29, D-83): mic and ADAU7002 on the ring board, the sound column over them to the hole, zoomed
     from params import MIC_AT
-    export_stl(rp["ring"] + rp["micb"], str(B / "ring_mic_placed.stl"), tolerance=0.01)
+    export_stl(rp["ring"] + rp["passives"], str(B / "ring_mic_placed.stl"), tolerance=0.01)
     export_stl(rp["mic"], str(B / "mic_placed.stl"), tolerance=0.01)
     x, y = MIC_AT
     subprocess.run(tool + [str(R / "v0.4_mic_section.png"), f"{B/'insert_placed.stl'}:tab:red", f"{B/'trim_placed.stl'}:tab:blue",
                            f"{B/'ring_mic_placed.stl'}:tab:green", f"{B/'mic_placed.stl'}:tab:purple",
-                           "--title", "microphone (D-50): face skin, sound hole and tube (blue), mic (purple) under its "
-                           "carrier on the ring board (green), insert (red)",
+                           "--title", "microphone (D-83): face skin, sound hole and column (blue) on its gasket round "
+                           "the mic (purple), ring board and ADAU7002 (green), insert (red)",
                            "--cut", f"y={y:.2f}@{x - 7:.1f},{x + 7:.1f},0,16",
                            "--cut", f"x={x:.2f}@{y - 7:.1f},{y + 7:.1f},0,16", "--dpi", "110"], check=True)
     print("wrote", R / "v0.4_mic_section.png")

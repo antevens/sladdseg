@@ -88,9 +88,10 @@ def layout():
             check(gap >= DOME_CLR - 1e-6, f"{name} {gap:.2f} mm from the dome at ({dx:.0f}, {dy:.0f})")
         for sx in (-1, 1):
             for sy in (0, SW_SW_DIR):
-                px, py = sx * SW_PIN_GRID[0] / 2, SW_Y + sy * SW_PIN_GRID[1]
-                gap = hypot(max(abs(px - c[0]) - w / 2, 0), max(abs(py - c[1]) - h / 2, 0)) - 1.2
-                check(gap >= 0.3, f"{name} {gap:.2f} mm clear of the rocker pin at ({px:.1f}, {py:.1f})")
+                px, py = sx * SW_PIN_GRID[0] / 2, SW_Y + sy * SW_SLOT_DY
+                gap = max(abs(px - c[0]) - (w + SW_PAD[0]) / 2, abs(py - c[1]) - (h + SW_PAD[1]) / 2)
+                need = S1_WAGO_BODY_GAP if name.startswith("WAGO") else 0.3
+                check(gap >= need - 1e-6, f"{name} {gap:.2f} mm clear of the rocker slot at ({px:.1f}, {py:.1f}) (>= {need})")
     names = list(rects)
     for a in range(len(names)):
         for b in range(a + 1, len(names)):
@@ -193,9 +194,8 @@ def sensors(cap, tr):
     probe = Pos(*MIC_AT, (SKIN_Z + PT) / 2) * Cylinder(MIC_HOLE_EU[0] / 2 - 0.05, SKIN - 0.1)
     r = probe & tr
     check(r is None or r.volume < 0.001, "microphone sound hole open through the face skin")
-    check(min(MIC_HOLE_EU[0], MIC_TUBE[1]) >= MIN_PRINT_HOLE, f"sound hole {MIC_HOLE_EU[0]} and tube bore {MIC_TUBE[1]} "
-                                                               f">= {MIN_PRINT_HOLE} mm (print open)")
     cp = capboard_eu.parts()
+    base.mic_column(trim_eu.mic_tube(), cp["mic"], cp["passives"], CB_TOP, MIC_AT, MIC_HOLE_EU[0])
     d = cp["cn2"].distance_to(cp["msr"]) + cp["cn2"].distance_to(cp["capboard"])
     check(d < 0.01, "CN2 mate between the cap board and the MSR-2's back")
     d = cp["spacers"].distance_to(cp["msr"]) + cp["spacers"].distance_to(cp["capboard"])
@@ -211,7 +211,7 @@ def sensors(cap, tr):
     others = {"cap": cap, "trim": tr, "remote": boards_eu.remote(), "box domes": boards_eu.domes(),
               "seated back cover": Pos(0, 0, SEAT_Z) * __import__("backcover").cover(), **b}
     mates = {("carrier", "capboard"), ("capboard", "cn2"), ("cn2", "msr"), ("capboard", "spacers"), ("spacers", "msr"),
-             ("capboard", "micb"), ("micb", "mic"), ("capboard", "sht45"), ("capboard", "cb_pads")}
+             ("capboard", "passives"), ("capboard", "mic"), ("capboard", "sht45"), ("capboard", "cb_pads")}
     names = [k for k in cp if k != "cb_screws"]
     for i, pn in enumerate(names):
         for qn in names[i + 1:]:
@@ -274,7 +274,7 @@ def separation(tr):
     the MSR-2's board (D-67)."""
     print("face plate: no electrical parts (R9)")
     cp, b = capboard_eu.parts(), boards_eu.parts()
-    parts = {k: cp[k] for k in ("capboard", "cb_pads", "cn2", "spacers", "micb", "mic", "sht45")}
+    parts = {k: cp[k] for k in ("capboard", "cb_pads", "cn2", "spacers", "passives", "mic", "sht45")}
     parts.update({k: b[k] for k in ("board", "pins", "bf_pins", "front", "socket", "mains_board", "header")})
     r = tr & cp["msr"]
     check(r is None or r.volume < 0.01, f"face plate posts rest on the MSR-2's board, no overlap "
@@ -350,7 +350,7 @@ def finger_scoops(tr):
         edge = Pos(sx * (POCKET_IN[0] / 2 + 0.3), 0, PT - 1.0) * Box(0.4, 4.0, 0.4)
         r = edge & tr
         check(r is None or r.volume < 1e-6, f"scoop {'left' if sx < 0 else 'right'} cuts through the pocket wall")
-    gap = bottom - SCOOP_WALL - (CB_TOP + MIC_CARRIER[2])
+    gap = bottom - SCOOP_WALL - (CB_TOP + MIC[2])
     check(gap >= 1.0, f"scoop blocks {gap:.1f} mm over the cap board's parts (>= 1.0)")
 
 
@@ -462,9 +462,22 @@ def board_checks():
         if not path.exists():
             print(f"       {name}: no KiCad board (run make pcb)")
             continue
-        gap, pad, body = min(kicad_board.Board(path).pad_body_gaps())
+        b = kicad_board.Board(path)
+        s1_wago = lambda pad, body: pad.startswith("S1.") and body in ("J1", "J2")
+        gaps = b.pad_body_gaps()
+        gap, pad, body = min(g for g in gaps if not s1_wago(g[1], g[2]))
         check(gap >= PAD_BODY_GAP - 1e-6, f"{name}: through-hole pads clear of the bodies on the other side "
               f"(closest {pad} to {body}: {gap:.2f} mm >= {PAD_BODY_GAP})")
+        if "S1" not in b.fps:
+            continue
+        gap, pad, body = min(g for g in gaps if s1_wago(g[1], g[2]))
+        check(gap >= S1_WAGO_BODY_GAP - 1e-6, f"{name}: rocker slot pads clear of the WAGO bodies "
+              f"(closest {pad} to {body}: {gap:.2f} mm >= {S1_WAGO_BODY_GAP}, D-88)")
+        pin = min((hypot(max(abs(x - wx) - SW_PAD[0] / 2, 0), max(abs(y - wy) - SW_PAD[1] / 2, 0)) - wr,
+                   f"S1.{n} to {ref}.{wn}") for n, x, y, _ in b.tht_pads("S1") for ref in ("J1", "J2")
+                  for wn, wx, wy, wr in b.tht_pads(ref))
+        check(pin[0] >= S1_WAGO_PIN_GAP - 1e-6, f"{name}: rocker slot pads {pin[0]:.2f} mm from the WAGO pins "
+              f"(closest {pin[1]}, >= {S1_WAGO_PIN_GAP})")
 
 
 def main():

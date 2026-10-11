@@ -29,7 +29,9 @@ before ordering. Spacing values are design targets, not a compliance claim.
 
 - Front (F): F1, RV1, J2, P1, P2 (SMD, reflow; P1 / P2 are Würth WA-SMSI M2 spacers on a Ø5.3 ring over a Ø3.0 unplated hole). Back (B): J1, PS1 (THT).
 - **S1 is not fitted by PCBWay.** The rocker snaps into the printed insert from the front
-  first, then the board goes onto its pins from behind and S1 is soldered by hand.
+  first, then the board goes onto its pins from behind. **Solder S1 by hand only after the board is
+  screwed down on its four standoffs**: its holes are 5.2 mm plated slots (D-88), so the panel cutout,
+  not the board, locates the rocker.
 - PS1 sits flush on the back. IRM-03 soldering limits per its datasheet: wave 265 °C 5 s,
   hand 390 °C 3 s.
 - J1 wire entries face the board's top edge (towards S1), away from PS1.
@@ -48,6 +50,8 @@ before ordering. Spacing values are design targets, not a compliance claim.
       the copper weight.
 - [ ] J1 pin rows (8.2 mm apart, from WAGO's 3D model, D-37) checked on a part.
 - [ ] S1 pin numbering checked with a meter on a sample (D-26).
+- [ ] Second-source rocker E-Switch RA412C1100 (D-88): its tab rows on a sample, tabs soldered into the
+      slots outside the maker's listed terminations (D-86), its 10(4) A ENEC rating accepted.
 - [ ] Approvals of S1, J1, F1 and RV1 adequate for the BC homeowner permit and inspector.
 - [ ] Gerbers opened in a viewer (PCBWay's online viewer is fine): the slot is present.
 

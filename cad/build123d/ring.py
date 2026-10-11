@@ -1,7 +1,8 @@
 """RING BOARD (D-50, D-68): one FR4 board round the insert's collar, against the wall, under the face plate.
 
-It carries the MSR-2 on CN2 and three SMT spacers under its board, the SHT45 in its vented bay, the microphone carrier (the bottom-port I2S mic under a
-small carrier soldered flat by its castellated edge pads, hanging into a window in the board) and J1, where the 5 V FFC from the wiring board latches. Front-layer
+It carries the MSR-2 on CN2 and three SMT spacers under its board, the SHT45 in its vented bay, the top-port PDM
+microphone with the ADAU7002 that turns its PDM into I2S for the MSR-2 (D-83), and J1, where the 5 V FFC from the wiring
+board latches. Front-layer
 copper keeps RING_KEEP along the wall plus the board's edge from the box opening; back-layer copper RING_KEEP.
 Held on the insert by crush ribs on the collar's outside; in the box the flange's land clamps its inner edge.
 
@@ -21,7 +22,6 @@ def board():
         out -= Pos(0, s * SCREW_PITCH / 2, RING_T / 2) * Cylinder(BOSS_R + 0.3, RING_T + 1)
     for x, y in MSR_SPACERS:
         out -= Pos(x, y, RING_T / 2) * Cylinder(RING_NUT_HOLE / 2, RING_T + 1)
-    out -= Pos(MIC_AT[0], MIC_BODY_Y, RING_T / 2) * Box(MIC[0] + 2 * MIC_WIN, MIC[1] + 2 * MIC_WIN, RING_T + 1)
     for x0, x1, y0 in MSR_SW_CUTS:                          # notches under the MSR-2's back switches
         y1 = RING_Y[1] + 1
         out -= Pos((x0 + x1) / 2, (y0 + y1) / 2, RING_T / 2) * Box(x1 - x0, y1 - y0, RING_T + 1)
@@ -75,13 +75,8 @@ def sht45():
 
 
 def mic():
-    """Carrier flat on the ring board (castellated edge pads), the mic under it hanging into the board's window,
-    port through the carrier towards the face."""
-    w, h, t = MIC_CARRIER
-    carrier = Pos(*MIC_AT, RING_T + t / 2) * Box(w, h, t)
-    carrier -= Pos(*MIC_AT, RING_T + t / 2) * Cylinder(MIC_FLEX_HOLE_D / 2, t + 1)
-    body = Pos(MIC_AT[0], MIC_BODY_Y, RING_T - MIC[2] / 2) * Box(MIC[0], MIC[1], MIC[2])
-    return carrier, body
+    """Top-port microphone on the ring board's front, port end up, port under MIC_AT (D-83)."""
+    return Pos(MIC_AT[0], MIC_BODY_Y, RING_T + MIC[2] / 2) * Box(*MIC)
 
 
 def riser():
@@ -139,10 +134,9 @@ def riser_pocket():
 
 
 def parts():
-    carrier, mic_body = mic()
     brd, pins, posts, sleeves, screws = riser()
     return {"ring": board(), "keep": keepout(), "spacers": spacers(), "cn2": cn2(), "msr": msr(), "j1": j1(),
-            "sht45": sht45(), "passives": small(), "micb": carrier, "mic": mic_body, "riser": brd, "pins": pins, "posts": posts,
+            "sht45": sht45(), "passives": small(), "mic": mic(), "riser": brd, "pins": pins, "posts": posts,
             "sleeves": sleeves, "screws": screws}
 
 

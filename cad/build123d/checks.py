@@ -37,8 +37,10 @@ def dims():
     check(SW_BEZEL[0] <= WELL_IN[0] and SW_BEZEL[1] <= WELL_IN[1], "rocker flange fits the switch well")
     m = _well_margin()
     check(m >= 0.5, f"switch well inside the pocket footprint (corner margin {m:.1f} mm, no undercut)")
-    pin_y = min(SW_Y, SW_Y + SW_SW_DIR * SW_PIN_GRID[1]) - 1.2
-    check(pin_y >= WB_Y + WAGO_Y + WAGO6[1] / 2, f"rocker pins (pad edge y {pin_y:.1f}) clear of the terminal block")
+    alt = SEAT_Z - (WELL_FLOOR_Z + SW_ALT_ROCKER_H)
+    print(f"       second-source rocker (E-Switch RA4, D-88): top {alt:.1f} mm under the remote's back (nominal)")
+    pin_y = min(SW_Y, SW_Y + SW_SW_DIR * SW_SLOT_DY) - SW_PAD[1] / 2
+    check(pin_y >= WB_Y + WAGO_Y + WAGO6[1] / 2, f"rocker slots (pad edge y {pin_y:.1f}) clear of the terminal block")
     check(PASS_E[0] * J2_POS[0] > 0, "5 V pass-through is on the same side as the 5 V connector")
     stack = RING_T + B2B_STACK + MSR[2] + MSR_SKIN_GAP + RADAR_WALL
     check(abs(PT - stack) < 1e-6, f"plate {PT} mm = ring board {RING_T} + CN2 stack {B2B_STACK} + MSR-2 {MSR[2]} + gap "
@@ -325,13 +327,42 @@ def mounting(ins):
               f"KiCad J2 at ({k[0]:.2f}, {k[1]:.2f}) matches params J2_POS")
 
 
+def mic_column(col, mic, passives, board_top, port, hole_d):
+    """Sound column over the top-port mic (D-83), NA and EU: foot on the gasket round the mic, cavity clear of the mic,
+    bore over the port, no part under the gasket, bore and face hole within Knowles' advice and printable."""
+    from build123d import Cylinder
+    bore, gasket = MIC_TUBE
+    clr, wall, gap = MIC_BOOT
+    bb = col.bounding_box()
+    check(abs(bb.min.Z - board_top - gasket) < 1e-6, f"sound column's foot {gasket} mm over the board (gasket round "
+                                                     f"the mic)")
+    d = col.distance_to(mic)
+    check(d >= min(clr, gap) - 1e-6, f"sound column's cavity {d:.2f} mm clear of the mic (boot {clr} round, {gap} over)")
+    mb = mic.bounding_box()
+    port_y = mb.max.Y - MIC_PORT_IN                           # port end up
+    check(abs(port_y - port[1]) < 1e-6 and abs((mb.min.X + mb.max.X) / 2 - port[0]) < 1e-6,
+          f"mic port under the column's bore at ({port[0]:.1f}, {port[1]:.1f})")
+    zc = board_top + MIC[2] + gap                              # cavity top
+    probe = Pos(*port, (zc + bb.max.Z) / 2) * Cylinder(bore / 2 - 0.05, bb.max.Z - zc - 0.1)
+    r = probe & col
+    check(r is None or r.volume < 0.001, f"bore {bore} open from the cavity to the skin")
+    ring_w = (MIC[0] + 2 * (clr + wall), MIC[1] + 2 * (clr + wall))
+    pad = Pos(port[0], (mb.min.Y + mb.max.Y) / 2, 0) * slab(rr(*ring_w, wall), board_top, board_top + gasket)
+    r = pad & passives
+    check(r is None or r.volume < 1e-6, f"no part under the gasket ({ring_w[0]:.1f} x {ring_w[1]:.1f} round the mic)")
+    check(bore >= 1.0 and 1.0 <= MIN_PRINT_HOLE <= hole_d,
+          f"bore {bore} >= 1.0 (Knowles: gasket cavity); face hole {hole_d} prints open (>= {MIN_PRINT_HOLE}; "
+          f"Knowles: case hole 1.0-1.5)")
+    check(wall >= 0.8, f"column wall {wall} mm round the cavity (two lines)")
+
+
 def ring_checks(ins, tr):
     """Ring board (D-50, D-68): inside the face plate, copper keep-out from the box opening, the parts on it in
-    copper-allowed places, the MSR-2 behind the radar skin, the mic under its sound tube."""
+    copper-allowed places, the MSR-2 behind the radar skin, the mic under its sound column."""
     print("ring board (D-50)")
     import ring, bilresa
     rp = ring.parts()
-    for k in ("ring", "spacers", "cn2", "msr", "j1", "sht45", "passives", "micb", "mic"):
+    for k in ("ring", "spacers", "cn2", "msr", "j1", "sht45", "passives", "mic"):
         for on, o in (("insert", ins), ("trim", tr)):
             if k == "ring" and on == "insert":
                 continue                                    # the crush ribs bite into it: ring_mount()
@@ -349,7 +380,7 @@ def ring_checks(ins, tr):
         dx, dy = max(abs(x) - BOX_W / 2, 0.0), max(abs(y) - BOX_H / 2, 0.0)
         return (dx * dx + dy * dy) ** 0.5 - r
     for name, (x, y), r in [("J1", RING_J1, max(FH12[:2]) / 2 + 0.5), ("SHT45", SHT_AT, 1.5),
-                            ("mic carrier", MIC_AT, max(MIC_CARRIER[:2]) / 2 + 0.3),
+                            ("microphone", (MIC_AT[0], MIC_BODY_Y), max(MIC[:2]) / 2 + 0.3),
                             ("CN2 mate", (MSR_CN2_X, MSR_Y), max(B2B) / 2 + 0.5)] + \
                            [(k, p, max(d[:2]) / 2 + 0.3) for k, (p, d) in RING_SMALL.items()] + \
                            [(f"spacer {i + 1}", p, RING_NUT_PAD / 2) for i, p in enumerate(MSR_SPACERS)]:
@@ -358,27 +389,13 @@ def ring_checks(ins, tr):
     gap = (PT - RADAR_WALL) - (MSR_BACK_Z + MSR[2])
     check(abs(gap - MSR_SKIN_GAP) < 1e-6, f"MSR-2 on CN2, its front {gap:.2f} mm under the {RADAR_WALL} mm radar skin "
                                          f"(D-66; MSR[2] MEASURE)")
-    od, bore, gasket = MIC_TUBE
-    t = __import__("trim").mic_tube().bounding_box()
-    top = RING_T + MIC_CARRIER[2]
-    check(abs(t.min.Z - top - gasket) < 1e-6 and od <= min(MIC_CARRIER[:2]) - 1.0,
-          f"sound tube {od} OD stands {gasket} mm over the mic carrier (gasket), bore {bore}, "
-          f"{SKIN_Z - top - gasket:.1f} mm long")
-    check(min(bore, MIC_SKIN_HOLE_D) >= MIN_PRINT_HOLE and (od - bore) / 2 >= 0.8,
-          f"sound tube bore {bore} and face hole {MIC_SKIN_HOLE_D} >= {MIN_PRINT_HOLE} mm (print open); "
-          f"tube wall {(od - bore) / 2:.1f} mm (two lines)")
-    on_board = {k: rp[k] for k in ("passives", "micb", "j1", "spacers", "cn2", "sht45")}
+    mic_column(__import__("trim").mic_tube(), rp["mic"], rp["passives"], RING_T, MIC_AT, MIC_SKIN_HOLE_D)
+    on_board = {k: rp[k] for k in ("passives", "mic", "j1", "spacers", "cn2", "sht45")}
     for a in on_board:
         for b in on_board:
             if a < b:
                 r = on_board[a] & on_board[b]
                 check(r is None or r.volume < 1e-6, f"ring board parts: {a} clear of {b}")
-    mb = rp["mic"].bounding_box()
-    check(mb.min.Z >= 0.2, f"mic hangs {MIC[2]} mm into the ring board's window, {mb.min.Z:.1f} mm clear of the wall")
-    r = rp["mic"] & rp["ring"]
-    check(r is None or r.volume < 1e-6, f"mic body clear of the window's walls ({MIC_WIN} mm)")
-    port_y = MIC_BODY_Y - (MIC[1] / 2 - MIC_PORT_IN)          # port end down
-    check(abs(port_y - MIC_AT[1]) < 1e-6, f"mic port under the carrier's hole at {MIC_AT}")
     from build123d import Cylinder
     probe = Pos(*MIC_AT, (SKIN_Z + PT) / 2) * Cylinder(MIC_SKIN_HOLE_D / 2 - 0.05, SKIN - 0.1)
     r = probe & tr
@@ -457,7 +474,7 @@ def separation(ins, tr):
     print("face plate: no electrical parts (D-50)")
     import ring, jumper, assembly
     rp = ring.parts()
-    parts = {k: rp[k] for k in ("ring", "spacers", "cn2", "msr", "j1", "sht45", "passives", "micb", "mic", "riser", "pins",
+    parts = {k: rp[k] for k in ("ring", "spacers", "cn2", "msr", "j1", "sht45", "passives", "mic", "riser", "pins",
                                 "posts")}
     parts["FFC"] = jumper.build()["jumper"]
     parts["wiring board"] = assembly.wiring_board()
@@ -790,6 +807,20 @@ def cover_checks():
     check(abs(gap - BC_SIDE_TAB_GAP) < 0.01 and abs(B_SEAM_Z - tab.max.Z - BC_SIDE_TAB_RIM_GAP) < 0.01,
           f"side ribs {gap:.1f} mm apart inside ({(B_W - gap) / 2:.1f} in from the outside), {BC_SIDE_TAB[1]} thick, "
           f"top {B_SEAM_Z - tab.max.Z:.1f} mm below the rim (measured)")
+    gi, go, top, h, prot = BC_TAB
+    tb = bc.tabs()
+    ys = sorted(round(abs(v), 2) for t in tb.solids() for v in (t.bounding_box().min.Y, t.bounding_box().max.Y))
+    xin = min(abs(t.bounding_box().min.X) if t.bounding_box().min.X > 0 else abs(t.bounding_box().max.X)
+              for t in tb.solids())
+    zs = (round(B_SEAM_Z - max(t.bounding_box().max.Z for t in tb.solids()), 2),
+          round(B_SEAM_Z - min(t.bounding_box().min.Z for t in tb.solids()), 2))
+    check(len(tb.solids()) == 4 and ys[0] >= gi / 2 + BC_TAB_CLR - 1e-3 and ys[-1] <= go / 2 - BC_TAB_CLR + 1e-3
+          and abs(bc.inner_x(B_SEAM_Z - top - h / 2) - xin - prot) < 1e-3 and zs == (top, top + h),
+          f"tabs inside both long side walls: y {ys[0]:.2f}..{ys[-1]:.2f} either side of mid-length ({BC_TAB_CLR} clear "
+          f"of the housing's slots {gi / 2}..{go / 2}), {zs[0]}..{zs[1]} below the rim, {prot} in from the wall (D-90)")
+    for name, part in (("snap clips", bc.latches()), ("side ribs", bc.side_tabs())):
+        r = part & tb
+        check(r is None or r.volume < 0.001, f"tabs clear of the {name}")
     for k in ("flex", "stiffener", "contacts", "regulator"):
         r = bc.latches() & ps[k]
         check(r is None or r.volume < 0.001, f"snap clips clear the {k}")

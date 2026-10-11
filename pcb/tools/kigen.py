@@ -1,4 +1,4 @@
-"""Shared generators for the small KiCad projects (ring board, mic carrier, riser, cover flex, EU boards).
+"""Shared generators for the small KiCad projects (ring board, riser, cover flex, EU boards).
 
 Lib holds a project's library context: project directory, library name, a stable uuid
 function and its power nets. Sheet writes a flat schematic, Board builds a board through pcbnew.
@@ -466,6 +466,21 @@ class Board:
         t.SetTextAngleDegrees(rot)
         t.SetMirrored(layer in (P.B_SilkS, P.B_Fab, P.B_Cu))  # back-side text reads from the back
         self.b.Add(t)
+
+    def branding(self, logos, url, text):
+        """Silkscreen logos [(footprint, (x, y), side, rot)] and the project URL text at url = (x, y, side)."""
+        for i, (name, (x, y), side, rot) in enumerate(logos, 1):
+            fp = P.FootprintLoad(str(self.lib.prj / f"{self.lib.name}.pretty"), name)
+            fp.SetFPID(P.LIB_ID(self.lib.name, name))
+            fp.SetReference(f"LOGO{i}")
+            fp.SetPosition(V(x, y))
+            fp.SetOrientationDegrees(rot)
+            fp.Reference().SetVisible(False)
+            fp.Value().SetVisible(False)
+            self.b.Add(fp)
+            if side == "B":
+                fp.Flip(fp.GetPosition(), P.FLIP_DIRECTION_LEFT_RIGHT)
+        self.text(text, url[0], url[1], P.F_SilkS if url[2] == "F" else P.B_SilkS, 0.8)
 
     def place(self, ref, p, show_ref):
         """Footprint p["fp"] at p["pos"] = (x, y, rot) on p["side"] ("F" default, "B" flipped)."""

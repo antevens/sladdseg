@@ -50,7 +50,10 @@ def fp_wago():
         for y in (y1, y1 + ep.WAGO_ROW):
             shape = "rect" if i == 0 and y == y1 else "circle"
             items.append(gl.tht(str(i + 1), x, y, shape, *ep.WAGO_PAD, ep.WAGO_DRILL))
-    items += gl.body(ep.WAGO_EU[0], ep.WAGO_EU[1])
+    items += gl.body(ep.WAGO_EU[0], ep.WAGO_EU[1], silk=False)
+    x1, y1 = ep.WAGO_EU[0] / 2 + 0.12, ep.WAGO_EU[1] / 2 + 0.12
+    items += [gl.line(-x1, y1, -x1, -y1, "F.SilkS", 0.12), gl.line(-x1, -y1, x1, -y1, "F.SilkS", 0.12),
+              gl.line(x1, -y1, x1, y1, "F.SilkS", 0.12)]                # open on the lever side (the rocker's slots)
     items.append(gl.model3d(ep.FP_WAGO))
     return gl._fp(ep.FP_WAGO, f"WAGO 2604-3102 PCB terminal block, push-in, lever, 2-pole, P5.00 mm, 4 mm2, "
                   f"entry 90 deg to the PCB, 400 V III/2, {ep.WAGO_DS}; pin rows {ep.WAGO_ROW} mm apart and body "
@@ -89,8 +92,9 @@ def build_libs():
     for name, lib in {**STOCK_FP, **STOCK_EXTRA}.items():
         fp = gl.localize_models(loads((gl.FP_DIR / f"{lib}.pretty" / f"{name}.kicad_mod").read_text()), PRJ)
         (d / f"{name}.kicad_mod").write_text(dumps(fp) + "\n")
-    for fp in (gl.fp_mov(), fp_psu(), fp_wago(), gl.fp_rocker(),
-               gl.fp_p70(ep.FP_PIN, ep.PIN_PAD_D, ep.PIN_HOLE_D, ep.PIN_FLANGE[0], ep.PIN_DS)):
+    for fp in (gl.fp_mov(), fp_psu(), fp_wago(), gl.fp_rocker(ep.FP_ROCKER),
+               gl.fp_p70(ep.FP_PIN, ep.PIN_PAD_D, ep.PIN_HOLE_D, ep.PIN_FLANGE[0], ep.PIN_DS),
+               gl.fp_ant_logo(), gl.fp_kicad_logo()):
         (d / f"{fp[1]}.kicad_mod").write_text(dumps(fp) + "\n")
     gl.write_lib_tables(PRJ, ep.LIB, "EU board")
 
@@ -262,15 +266,16 @@ def build_mains():
     v5, gnd = xy("PS1", "5"), xy("PS1", "4")
     bd.track("+5V", w_s, [v5, (v5[0], h5[1]), h5], P.F_Cu)    # +5V output and GND output on either side
     bd.track("GND", w_s, [gnd, (gnd[0], hg[1]), hg], P.F_Cu)
-    # installer side (back): what goes where
+    # installer side (back): what goes where, between the rocker's upper and lower slots beside each block
+    sy = sorted({round(y, 3) for n in ("1", "1a") for _, y in pads_of(bd, "S1", n)})
+    band = (sy[0] + ep.SW_PAD[1] / 2, sy[-1] - ep.SW_PAD[1] / 2)
     for ref, side in (("J1", "L"), ("J2", "N")):
-        nets = ep.MAINS_PARTS[ref]["nets"]
-        y1, y2 = (pads_of(bd, ref, next(n for n, v in nets.items() if v.endswith(e)))[0][1] for e in ("_IN", "_SW"))
         x = ep.MAINS_PARTS[ref]["pos"][0]
-        xo = x - (ep.WAGO_EU[1] / 2 + 1.3) * (1 if x > 0 else -1)          # on the lever side, towards the centre
-        bd.text(f"{side} IN", xo, y1, P.B_SilkS, 0.8, 90)
-        bd.text(f"{side} LOAD", xo, y2, P.B_SilkS, 0.8, 90)
+        xo = ep.SW_PIN_GRID[0] / 2 * (1 if x > 0 else -1)                   # on the rocker's pole beside the block
+        bd.text(f"{side} IN", xo, band[1] - 0.9, P.B_SilkS, 0.8)
+        bd.text(f"{side} LOAD", xo, band[0] + 0.9, P.B_SilkS, 0.8)
     bd.text("MAINS 230 VAC", 0.0, -27.0 + 2.5, P.B_SilkS, 0.9)
+    bd.branding(*ep.BRAND["eu_mains_board"], ep.URL)
     bd.save()
     hx = ep.MAINS_PARTS["J3"]["pos"][0]                       # SMT header: posts on the footprint's centre line
     return {n: (hx, xy("J3", n)[1]) for n in ("1", "2")}
@@ -298,6 +303,7 @@ def build_lv(header):
     bd.track("GND", w, [c_g, (p2[0] - 1.5, p2[1]), p2], P.F_Cu)
     bd.track("GND", w, [sg, (sg[0] + 3.0, sg[1]), (sg[0] + 3.0, p2[1] + 2.0), (p2[0] - 2.0, p2[1] + 2.0), p2], P.B_Cu)
     bd.text(f"EU 5V {ep.REV}", -12.0, -17.0, P.F_SilkS, 0.9)
+    bd.branding(*ep.BRAND["eu_5v_board"], ep.URL)
     bd.save()
 
 

@@ -10,7 +10,7 @@ ORCA_URL = https://github.com/OrcaSlicer/OrcaSlicer/releases/download/v$(ORCA_VE
 ORCA_APPIMAGE = .tools/OrcaSlicer_$(ORCA_VERSION).AppImage
 SLICER ?= $(abspath $(ORCA_APPIMAGE))
 
-.PHONY: setup system-deps slicer cad check print pcb renders check-renders eu order all clean
+.PHONY: setup system-deps slicer cad check print pcb renders check-renders eu order stock order-push all clean
 system-deps:    ## apt packages: KiCad 9, python venv, headless libs for OrcaSlicer (Ubuntu 24.04, sudo)
 	tools/install-system-deps.sh
 
@@ -35,7 +35,7 @@ check:          ## geometry, barrier, wiring-board fit and printability checks, 
 print: $(if $(filter $(abspath $(ORCA_APPIMAGE)),$(SLICER)),$(ORCA_APPIMAGE))  ## OrcaSlicer projects (print/*.3mf) + G-code (build/print/gcode)
 	SLICER="$(SLICER)" $(PY) print/slice.py
 
-pcb:            ## KiCad: wiring board (pcb/), ring board, mic carrier, riser, cover flex, EU cap board (pcb/sensor/), EU boards (pcb/eu/): ERC + DRC, fab packs
+pcb:            ## KiCad: wiring board (pcb/), ring board, riser, cover flex, EU cap board (pcb/sensor/), EU boards (pcb/eu/): ERC + DRC, fab packs
 	pcb/tools/build.sh
 	pcb/sensor/tools/build.sh
 	pcb/eu/tools/build.sh
@@ -53,7 +53,7 @@ CAD_SRC = $(wildcard $(CAD)/*.py) cad/tools/sections.py
 EU_SRC = $(CAD_SRC) $(wildcard $(CAD)/eu/*.py)
 XVFB = $(if $(DISPLAY),,xvfb-run -a)
 BARE = python3 pcb/tools/render_bare.py
-BOARD_RENDERS = $(STAMP)/wiring_board $(STAMP)/ring_board $(STAMP)/mic_carrier $(STAMP)/riser_board \
+BOARD_RENDERS = $(STAMP)/wiring_board $(STAMP)/ring_board $(STAMP)/riser_board \
                 $(STAMP)/cover_flex $(STAMP)/eu_cap_board \
                 $(STAMP)/eu_mains_board $(STAMP)/eu_5v_board
 RENDER_STAMPS = $(STAMP)/sections $(STAMP)/views $(STAMP)/backcover $(STAMP)/eu $(BOARD_RENDERS)
@@ -97,7 +97,7 @@ $(STAMP)/ring_board: $(RING_PCB) pcb/tools/render_bare.py | $(STAMP)
 	$(BARE) $< ring_board --copper-only
 	touch $@
 
-$(STAMP)/mic_carrier $(STAMP)/riser_board $(STAMP)/cover_flex $(STAMP)/eu_cap_board: $(STAMP)/%: pcb/sensor/kicad/%.kicad_pcb pcb/tools/render_bare.py | $(STAMP)
+$(STAMP)/riser_board $(STAMP)/cover_flex $(STAMP)/eu_cap_board: $(STAMP)/%: pcb/sensor/kicad/%.kicad_pcb pcb/tools/render_bare.py | $(STAMP)
 	$(BARE) $< $* --copper-only
 	touch $@
 
@@ -113,6 +113,15 @@ KICAD_PYTHON ?= python3
 order:          ## DigiKey / Mouser lists for the test plates and PCBWay order packs (pcb/order/), NA_PLATES / EU_PLATES
 	python3 pcb/tools/order_bom.py $(NA_PLATES) $(EU_PLATES)
 	$(KICAD_PYTHON) pcb/tools/order_pcbway.py $(NA_PLATES) $(EU_PLATES)
+	@if [ -n "$$DIGIKEY_CLIENT_ID$$MOUSER_SEARCH_KEY" ]; then python3 pcb/tools/distributors.py stock; \
+	else echo "stock not checked: no DigiKey / Mouser keys in the environment (pcb/order/README.md)"; fi
+
+PRIMARY ?= digikey
+stock:          ## live DigiKey / Mouser stock and lifecycle of every listed part (build/stock.md); fails on the parts rule (D-84)
+	python3 pcb/tools/distributors.py stock
+
+order-push:     ## send the lists: DigiKey myLists link + Mouser cart (PRIMARY=digikey|mouser, NA_PLATES / EU_PLATES)
+	python3 pcb/tools/distributors.py push $(NA_PLATES) $(EU_PLATES) --primary=$(PRIMARY)
 
 eu:             ## EU variant (D-30, cad/build123d/eu/): STEP/STL to build/eu, checks, its renders (docs/renders/eu_*.png)
 	cd $(CAD)/eu && $(PY) cap_eu.py && $(PY) trim_eu.py && $(PY) checks_eu.py

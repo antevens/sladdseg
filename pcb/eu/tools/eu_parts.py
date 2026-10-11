@@ -25,10 +25,16 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "cad" / "build123d" / "eu"))
 from params_eu import (WB_R, WB_CUT_Y, PSU, WAGO_EU, WAGO_PITCH, WAGO_ROW, WAGO_ROW_OFF, MB_PSU_C,  # noqa: E402
                        MB_WAGO_C, MB_SLOT, MB_HDR, MB_BOSS, MB_BOSS_D, MB_BOSS_CLR, SW_Y,
-                       WB_MOUNT, DOMES, DOME_NOTCH_R, PINS, PIN_PAD_D, PIN_HOLE_D, PIN_FLANGE, BC_FINGERS)
+                       WB_MOUNT, DOMES, DOME_NOTCH_R, PINS, PIN_PAD_D, PIN_HOLE_D, PIN_FLANGE, BC_FINGERS,
+                       SW_PIN_GRID, SW_PAD)
 
 LIB = "eu"
 MAINS, LV = "eu_mains_board", "eu_5v_board"
+# silkscreen logos and the project URL: footprint, (x, y), side, rotation; URL (x, y, side)
+FP_ANT, FP_KICAD = "Ant_Logo_8mm_SilkScreen", "KiCad-Logo2_5mm_SilkScreen"
+URL = "github.com/antevens/smart-wallplate"
+BRAND = {"eu_mains_board": ([(FP_ANT, (-6.9, -10.1), "F", 0), (FP_KICAD, (8.9, -12.1), "F", 0)], (-0.4, 23.7, "B")),
+         "eu_5v_board": ([(FP_ANT, (-9.9, -6.7), "B", 0), (FP_KICAD, (2.4, -5.7), "B", 0)], (-2.1, -12.6, "B"))}
 REV = "v0.4"
 REV_DATE = "2026-10-11"                    # title blocks
 NS = uuid.UUID("8d2f4a8e-0b3c-4e7a-9f1d-6c5b2a1e3d40")
@@ -49,7 +55,7 @@ FP_FUSE = "Fuse_Schurter_UMT250"
 FP_MOV = "Varistor_TDK_CU4032"
 FP_C1 = "C_1206_3216Metric"
 FP_MH = "MountingHole_2.2mm_M2"
-FP_ROCKER = "Marquardt_1802.2504_DPST_PCB"
+FP_ROCKER = "Rocker_DPST_Marquardt_1802.2504_E-Switch_RA412C1100"
 FP_HDR = "PinHeader_1x02_P2.54mm_Vertical_SMD_Pin1Left"   # KiCad stock, Samtec TSM -SV pad layout
 FP_SOCKET = "PinSocket_1x02_P2.54mm_Vertical"
 ROCKER_DS = "Marquardt drawing 1802.2504 rev g, 2003-09-16 (K-drawing 18022504.03)"
@@ -142,7 +148,7 @@ MAINS_PARTS = {
                desc="PCB terminal block, push-in, 2-pole, 4 mm2, entry 90 deg to the PCB, 400 V III/2: house neutral in, "
                     "switched neutral to the load", ds=WAGO_DS),
     "F1": dict(label="Schurter UMT250 T1A", sym="Fuse", fp=FP_FUSE, value="T1A 250V", nets={"1": "L_SW", "2": "L_F"},
-               pos=(14.0, -3.0, 0), side="F", mfr="Schurter", mpn="3404.2416.22",
+               pos=(14.0, -3.0, 0), side="F", mfr="Schurter", mpn="3403.0166.11",
                desc="SMD fuse UMT 250, time-lag 1 A 250 VAC (TMPS 03 recommended input fuse T1.0 A / 250 V)",
                ds=UMT_DS),
     "RV1": dict(label="TDK CU4032K275G2", sym="Varistor", fp=FP_MOV, value="CU4032K275G2", nets={"1": "L_F", "2": "N_SW"},

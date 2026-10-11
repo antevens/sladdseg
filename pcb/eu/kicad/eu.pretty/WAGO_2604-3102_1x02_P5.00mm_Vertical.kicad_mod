@@ -70,14 +70,31 @@
 		(fill no)
 		(layer "F.CrtYd")
 	)
-	(fp_rect
+	(fp_line
+		(start -6.42 8.47)
+		(end -6.42 -8.47)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
 		(start -6.42 -8.47)
+		(end 6.42 -8.47)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
+		(start 6.42 -8.47)
 		(end 6.42 8.47)
 		(stroke
 			(width 0.12)
 			(type solid)
 		)
-		(fill no)
 		(layer "F.SilkS")
 	)
 	(model "${KIPRJMOD}/3d/WAGO_2604-3102_1x02_P5.00mm_Vertical.step"

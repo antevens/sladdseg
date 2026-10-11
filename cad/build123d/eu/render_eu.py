@@ -11,7 +11,7 @@ r3.COL.update({"cap": "#8d949b", "switch": "#b23a32", "magnet": "#4a4a4a", "box"
                "pads": "#e3c565", "bf_pins": "#c9a227", "wago": "#9aa0a6", "psu": "#2b2b2b",
                "front": "#c8a03a", "mains_board": "#2f7a46", "mains_front": "#c8a03a", "header": "#2b2b2b",
                "socket": "#2b2b2b", "carrier": "#c9a86a", "capboard": "#2c6fbb", "cb_pads": "#e3c565",
-               "cn2": "#e9e6df", "spacers": "#c9ccd1", "micb": "#2f9e5b", "mic": "#d9534f", "sht45": "#5b2a86",
+               "cn2": "#e9e6df", "spacers": "#c9ccd1", "passives": "#2f9e5b", "mic": "#d9534f", "sht45": "#5b2a86",
                "cb_screws": "#5a6068", "snaps": "#e07b1f"})
 
 
@@ -37,7 +37,7 @@ def main():
     cut = {k: v & keep for k, v in ps.items()}
     cut = {k: v for k, v in cut.items() if v is not None and v.volume > 1e-6}
     r3.shot("eu_section", cut, [(230, 40, 60), (0, 5, -8), (0, 0, 1)])
-    off = {"remote": 70, "trim": 45, "msr": 26, "cn2": 14, "spacers": 14, "micb": 8, "mic": 8,
+    off = {"remote": 70, "trim": 45, "msr": 26, "cn2": 14, "spacers": 14, "passives": 8, "mic": 8,
            "capboard": 8, "cb_pads": 8, "sht45": 8, "cb_screws": 14, "carrier": 4,
            "cap": 0, "magnet": -8,
            "board": -18, "front": -18, "pins": -18, "bf_pins": -18, "socket": -18, "switch": -30,

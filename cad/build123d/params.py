@@ -43,8 +43,9 @@ SCREW_CSK = 82.0                          # countersink included angle
 # B_W/B_H: IKEA UK product size 45 x 70 mm, matched by a third-party mount pocket
 # (45.4 x 70.4). Reference values, confirm with calipers (docs/MEASUREMENTS.md).
 B_W, B_H, B_D = 45.0, 70.0, 20.0          # REF outline (label drawing 1:1: 45.1 x 70.1) + depth (IKEA UK: 20 mm)
-B_BACK_RUN = 9.1                          # ESTIMATE flat back inset from the outline (label drawing: flat 51.8 x 26.7)
-B_BACK_RISE = 9.0                         # ESTIMATE height where the curved back meets the straight side
+B_BACK_RUN = 8.1                          # MEASURED round-over across: gauge R8.1 fits the original cover best (human,
+                                          # 2026-10-11; gauge burr 0.1-0.2, D-87)
+B_BACK_RISE = 8.0                         # MEASURED round-over up, the same gauge
 B_FRONT_R = 0.8                           # ESTIMATE front edge round-over (FCC external photo)
 B_WHEEL_D = 41.5                          # ESTIMATE scroll wheel diameter (FCC photos)
 B_WHEEL_Y = 12.5                          # ESTIMATE wheel centre above the remote centre (concentric with the end arc)
@@ -87,6 +88,10 @@ SW_ROCKER_CLR = 0.5                       # rocker top to the remote's back at m
 SW_BODY = (22.0, 18.6, 16.2)              # DATASHEET body 18.6 x 22; depth = PCB seat below the panel's FRONT face
 SW_PIN_GRID = (10.2, 7.0)                 # DATASHEET hole grid: poles 10.2 apart (x); pins 1 / 2 on the body's centre
                                           # line, 1a / 2a 7 off it (y)
+SW_PAD = (6.2, 2.3)                       # plated slot pads (x, y) for the 1802.2504's pins and the E-Switch RA412C1100's
+                                          # 4.8 x 0.8 tabs (D-88)
+SW_SLOT_DY = 7.05                         # 1a / 2a slots off the centre line (1802.2504 pins 7.0, RA4 tabs 7.1)
+SW_ALT_ROCKER_H = 6.0                     # DATASHEET E-Switch RA4: rocker top above the panel (second source, D-88)
 SW_SW_DIR = 1                             # switched pins (1a / 2a) above (+1) or below (-1) the in pins (1 / 2)
 SW_Y = 19.5                               # rocker centre (front-view y; from pcb/)
 PAD_BODY_GAP = 1.0                        # through-hole pad edge to a part body on the other side of the board
@@ -220,9 +225,11 @@ RING_J1 = (27.0, 48.2)                    # FH12 on the ring board (room x, y), 
 MSR_BOARD = (38.0, 21.5)                  # REF bare MSR-2 board, from Apollo's case cavity 38.08 x 21.67 (Printables 932026)
 MSR_BOARD_T = 1.6                         # MEASURE MSR-2 board thickness (the MSR envelope's x / y apply above it)
 MSR_CN2_IN = 6.4                          # MEASURE REF CN2 centre from the board's end (Apollo wiki photo); CN2 at the right end here
-B2B = (7.6, 3.0)                          # MEASURE REF CN2 housing (photo); 0.4 mm pitch, 2 rows, ~26-30 contacts (D-27)
-B2B_STACK = 1.5                           # MEASURE mated height of CN2 + plug (1.5 if P4S-like)
-MSR2_CN1_STACK = B2B_STACK                # ESTIMATE CN1 + the add-on's plug: CN2's family assumed
+B2B = (7.9, 3.4)                          # DATASHEET CN2 + plug, the larger of the pair: 51338-2474 7.9 x 3.4 with tails
+                                          # (Molex SD-51338-003 rev K); 55909-2474 6.8 x 3.13 (SD-55909-003 rev J); D-82, D-89
+B2B_STACK = 1.5                           # REF Molex 55909 plug on a 51338 receptacle: 1.5 mm mated (500913: 1.8); the
+                                          # MSR-2's CN2 assumed 51338-2474, the more common one (human, D-82)
+MSR2_CN1_STACK = B2B_STACK                # CN1 + the add-on's 55909 plug: the same receptacle assumed (D-82)
 MSR2_FRONT = max(MSR_BOARD_T + MSR2_CN1_STACK + MSR2_CO2_BOARD[2] + MSR2_SCD[2],
                  MSR2_LD_BACK + MSR2_LD_T + max(MSR2_LD_PARTS, MSR2_LD_PINS[3]))   # front above the board's back
 MSR = (40.0, 24.0, MSR2_FRONT)            # envelope (x, y from Apollo's case outside, height from the model)
@@ -234,19 +241,26 @@ FINGER_PAD = (3.60, 6.65)                 # DATASHEET recommended pad layout
 FINGER_FREE = 2.30                        # DATASHEET free height
 FINGER_WH = 2.0                           # design working height (datasheet recommends 2.10)
 
-# ---- microphone (D-29, D-50): PUI Audio DMM-4026-B-I2S-R, bottom port, I2S ----
-# No top-port I2S part is in production (2026-10); the bottom-port part sits upside down under a small carrier
-# soldered on the ring board by its edge pads; a tube on the face plate seals from the carrier to the sound hole.
-MIC = (3.00, 4.00, 1.00)                  # DATASHEET body w x l x h (DMM-4026-B-I2S-R rev A)
-MIC_PORT_IN = 1.00                        # DATASHEET port centre from the body's port end
-MIC_FLEX_HOLE_D = 0.5                     # port hole through flex / carrier
+# ---- microphone (D-29, D-83): Knowles SPK0641HT4H-1 top-port PDM mic + ADAU7002 PDM-to-I2S, on the board ----
+# The ESP32-C3 has no PDM receiver: the ADAU7002 beside the mic turns its PDM into I2S on CN2's I2S lines. The face
+# plate's sound column stands on a gasket on the board round the mic, hollow over it, its bore over the port
+# (Knowles: gasket cavity >= 1.0, case hole 1.0-1.5).
+MIC = (3.00, 4.00, 1.00)                  # DATASHEET SPK0641HT4H-1 rev A body w x l x h (+-0.10)
+MIC_PORT_IN = 1.03                        # DATASHEET port centre from the body's port end (top face)
 MIC_SKIN_HOLE_D = 1.6                     # sound hole through the face skin (1.0 closed up on the print, D-61)
 MIN_PRINT_HOLE = 1.5                      # smallest open vertical hole the 0.4 mm nozzle prints reliably (D-61)
-MIC_AT = (28.5, 63.0)                     # NA: carrier and port centre (room x, y), top right beside the MSR-2
-MIC_CARRIER = (7.0, 6.0, 0.8)             # carrier w, h, FR4 t: flat on the ring board on castellated edge pads
-MIC_WIN = 0.3                             # ring board window round the mic body (the mic hangs into it)
-MIC_BODY_Y = MIC_AT[1] + (MIC[1] / 2 - MIC_PORT_IN)   # mic body centre (port end down, port under MIC_AT)
-MIC_TUBE = (3.2, 1.6, 0.3)                # face plate's sound tube: OD, bore, gasket under its foot
+MIC_AT = (28.5, 63.0)                     # NA: port centre (room x, y), top right beside the MSR-2
+MIC_BODY_Y = MIC_AT[1] - (MIC[1] / 2 - MIC_PORT_IN)   # mic body centre (port end up)
+MIC_TUBE = (1.6, 0.3)                     # face plate's sound column: bore, gasket under its foot
+MIC_BOOT = (0.2, 0.8, 0.3)                # boot over the mic: clearance round the body, wall, gap over its top
+ADAU = (0.76, 1.56, 0.56)                 # DATASHEET ADAU7002 WLCSP CB-8-6 (rev C): w x l nominal, max height
+# parts round the port: offset from the port (room x, y), body w, h, max height (C4 0402, 0.5 +-0.05 high; C3 1206 C0G,
+# KEMET C1003_C0G 2/20/2025: 3.20 x 1.60 +-0.20, thickness code EH 1.60 +-0.20)
+MIC_PARTS = {"U2": ((-4.1, -0.2), ADAU),                  # ADAU7002, ball A1 top left
+             "C4": ((-5.2, -1.08), (0.5, 1.0, 0.55)),     # ADAU7002 100 nF on IOVDD
+             "R1": ((-7.5, -0.6), (1.0, 0.5, 0.40)),      # I2S SD pull-down 100 k (ADAU7002 tristates SDATA)
+             "C3": ((3.5, -2.525), (1.6, 3.2, 1.8))}      # microphone 100 nF C0G, outside the column's foot, pin 1 on the bus
+MIC_SPAN = (9.6, 4.5)                     # board room the mic and its parts and lanes take left / right of the port
 
 # ---- ring board (D-50, D-68): FR4 round the insert's collar, against the wall, under the face plate ----
 RING_T = 1.6
@@ -266,8 +280,7 @@ RING_NUT_HOLE, RING_NUT_PAD = 3.0, 5.3    # DATASHEET 9774015243R: unplated hole
 # small parts on the ring board: centre (room x, y), body w, h, max height
 RING_SMALL = {"C1": ((21.0, 50.6), (1.6, 3.2, 1.8)),     # 22 uF 10 V 1206 at J1 (Samsung CL31A226KPHNNNE, 1.6 +-0.2)
               "C2": ((2.6, -51.3), (0.5, 1.0, 0.55)),    # SHT45 100 nF 0402 (0.5 +-0.05)
-              "C3": ((32.4, 58.8), (0.5, 1.0, 0.55)),    # microphone 100 nF 0402
-              "R1": ((21.0, 62.4), (1.0, 0.5, 0.40))}   # I2S SD pull-down 100 k 0402 (0.35 +-0.05)
+              **{k: ((MIC_AT[0] + dx, MIC_AT[1] + dy), s) for k, ((dx, dy), s) in MIC_PARTS.items()}}
 
 # ---- battery-free remote (D-50): two spring pins from the wiring board's 5 V area to the back cover's pads ----
 # Harwin P70-2200045 SMT spring pin with peg (drawing P70-2200045 iss. 2, 2021-06-04). They stand on a riser board in
@@ -324,6 +337,12 @@ BC_LATCH_TOPS = (4.7 + 0.2, B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
 # 2026-10-09), top end measured 2.8 on the original; both plus the deeper hooks. Where reach - hook - thickness
 # < BC_WALL the clip's back merges into the end wall.
 BC_LATCH_REACH = (2.9 + BC_LATCH_HOOK[0], 2.8 + 0.2)
+# small tabs inside both long side walls, two per side either side of mid-length, into slots in the housing's long
+# sides (human, 2026-10-11, D-90): the slots' inside / outside spacing along y, tab top below the rim, tab height,
+# tab protrusion from the wall
+BC_TAB = (18.0, 25.0, 1.0, 0.8, 0.25)     # MEASURED (slots corrected 2026-10-11: 18 / 25, was 23 / 25); protrusion
+                                          # the human's figure, halved from 0.5
+BC_TAB_CLR = 0.15                         # tab ends clear of the slots' ends (along y)
 # side ribs at mid-length (y 0), free-standing on the shell's curved floor, against flex (human, 2026-10-09)
 BC_SIDE_TAB = (6.0, 0.8)                  # length along y (ESTIMATE, photos), thickness (human, 2026-10-09)
 BC_SIDE_TAB_GAP = 36.2                    # MEASURED inside spacing between the ribs
@@ -370,7 +389,7 @@ BC_PAD_LOW = 0.6                          # flex below the lower pad (the pad se
 # 3.3 V regulator on the cover flex (D-41), copper down in a recess in the cover: TI TLV75533PDBVR + 1 uF in / out
 BC_REG = {"U1": (13.6, -3.3), "C3": (15.0, -5.7), "C4": (13.2, -0.7)}    # part centres (remote x, y)
 BC_REG_BODY = (3.0, 3.0, 1.45)            # DATASHEET TLV755P DBV (SOT-23-5): body + leads <= 3.0 x 3.0, 1.45 max high
-BC_CAP0402 = (1.0, 0.5, 0.55)             # DATASHEET 0402 capacitor (CL05A105KP5NNNC): 1.0 x 0.5, 0.55 max high
+BC_CAP0402 = (1.0, 0.5, 0.55)             # DATASHEET 0402 capacitor (CL05A105KO5NNNC): 1.0 x 0.5, 0.55 max high
 BC_REG_RECESS = (11.4, 16.4, -6.5, -0.3) # recess under the regulator section (x0, x1, y0, y1), down to BC_REG_FLOOR
 BC_END_T = 0.4                            # FR4 stiffener behind the flex's end section
 BC_END_H = 8.8                            # flex end section height above the flex plane: the contact pads plus 0.5

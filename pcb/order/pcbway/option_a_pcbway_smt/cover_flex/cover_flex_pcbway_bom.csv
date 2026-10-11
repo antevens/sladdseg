@@ -1,0 +1,4 @@
+Item #,Designator,Qty,Manufacturer,Mfg Part #,Description / Value,Package/Footprint,Type,Your Instructions / Notes
+1,"J3,J4",2,Harwin,S7081-42R,"S7081-42R VBAT - SMT spring finger, gold, 4 A, working height 2.0 mm",Harwin_S7081-42R,SMD,Source this MPN exactly
+2,U1,1,Texas Instruments,TLV75533PDBVR,"TLV75533PDBVR - LDO 3.3 V 500 mA, 1.45-5.5 V in, SOT-23-5",SOT-23-5,SMD,Source this MPN exactly
+3,"C3,C4",2,Samsung Electro-Mechanics,CL05A105KO5NNNC,"1uF - LDO input capacitor, 1 uF 16 V X5R 0402",C_0402_1005Metric,SMD,Source this MPN exactly

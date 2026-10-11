@@ -1,20 +1,23 @@
 Mouser Part Number,Mfr Part Number,Manufacturer,Quantity,Customer Part Number,Description
-,1802.2504,Marquardt,4,WP NA S1,"Rocker switch DPST, ENEC 12(4) A 250 V~, UL/CSA 15 A 125-250 VAC, PCB pins, emergency off (1/plate NA; NA wiring board S1)"
+979-1802.2504,1802.2504,Marquardt,4,WP NA S1,"Rocker switch DPST, ENEC 12(4) A 250 V~, UL/CSA 15 A 125-250 VAC, PCB pins, emergency off (1/plate NA; NA wiring board S1)"
 ,2604-1106,WAGO,4,WP NA J1,"PCB terminal block, push-in, lever, 6-pole, 5 mm pitch, 4 mm2 / 12 AWG, entry parallel to (1/plate NA; NA wiring board J1)"
 ,IRM-03-5,Mean Well,4,WP NA PS1,"AC-DC module 85-305 VAC in, 5 V 600 mA, 37x24x15 mm (1/plate NA; NA wiring board PS1)"
-,3404.2416.22,Schurter,5,WP NA F1,"SMD fuse UMT 250, time-lag 1 A 250 VAC (1/plate NA; NA wiring board F1)"
+,3403.0166.11,Schurter,5,WP NA F1,"SMD fuse UMT 250, time-lag 1 A 250 VAC (1/plate NA; NA wiring board F1)"
 ,B72660M0271K093,TDK,5,WP NA RV1,"SMD varistor SIOV-CU4032K275G2K1, 275 VAC (1/plate NA; NA wiring board RV1)"
 ,9774070243R,Wurth Elektronik,9,WP NA P1,"SMT steel spacer, internal thread M2, 7 mm, tin (2/plate NA; NA wiring board P1; NA wiring board P2)"
 ,FH12-6S-0.5SH(55),Hirose,9,WP NA J2,"FPC connector 0.5 mm, 6 contacts, slide lock (2/plate NA; NA wiring board J2; NA ring board J1)"
 ,CL31A226KPHNNNE,Samsung Electro-Mechanics,5,WP NA C1,Ceramic 22 uF 10 V X5R 1206 at J1 (1/plate NA; NA ring board C1)
+,55909-2474,Molex,4,WP NA J2,"SlimStack plug 24 contacts, 0.4 mm, 2 rows, mating the MSR-2's CN2 (1/plate NA; NA ring board J2)"
 ,SHT45-AD1B-R2,Sensirion,5,WP NA U1,"Humidity and temperature sensor, I2C 0x44 (1/plate NA; NA ring board U1)"
-,GRM155R71C104KA88D,Murata,10,WP NA C2,Ceramic 100 nF 16 V X7R 0402 (2/plate NA; NA ring board C2; NA ring board C3)
+,GRM155R71C104KA88D,Murata,10,WP NA C2,Ceramic 100 nF 16 V X7R 0402 (2/plate NA; NA ring board C2; NA ring board C4)
+,SPK0641HT4H-1,Knowles,5,WP NA MK1,"PDM MEMS microphone, top port, 1.6-3.6 V; SELECT low (1/plate NA; NA ring board MK1)"
+,ADAU7002ACBZ-R7,Analog Devices,5,WP NA U2,"Stereo PDM to I2S converter, WLCSP-8 0.4 mm; CONFIG high = I2S (1/plate NA; NA ring board U2)"
 ,RC0402FR-07100KL,Yageo,10,WP NA R1,Resistor 100 kOhm 1 % 0402 (1/plate NA; NA ring board R1)
+,C1206C104J3GACTU,KEMET,5,WP NA C3,"Microphone decoupling, C0G 25 V 1206 (1/plate NA; NA ring board C3)"
 ,9774015243R,Wurth Elektronik,14,WP NA H1,"SMT steel spacer M2, 1.5 mm, tin (3/plate NA; NA ring board H1; NA ring board H2; NA ring board H3)"
-,DMM-4026-B-I2S-R,PUI Audio,5,WP NA MK1,"I2S MEMS microphone, bottom port, 1.62-3.63 V; LR low = left channel (1/plate NA; NA mic carrier MK1)"
 ,S7081-42R,Harwin,9,WP NA J3,"SMT spring finger, gold, 4 A, working height 2.0 mm (2/plate NA; NA cover flex J3; NA cover flex J4)"
 ,TLV75533PDBVR,Texas Instruments,5,WP NA U1,"LDO 3.3 V 500 mA, 1.45-5.5 V in, SOT-23-5 (1/plate NA; NA cover flex U1)"
-,CL05A105KP5NNNC,Samsung Electro-Mechanics,10,WP NA C3,"LDO input capacitor, 1 uF 10 V X5R 0402 (2/plate NA; NA cover flex C3; NA cover flex C4)"
+,CL05A105KO5NNNC,Samsung Electro-Mechanics,10,WP NA C3,"LDO input capacitor, 1 uF 16 V X5R 0402 (2/plate NA; NA cover flex C3; NA cover flex C4)"
 ,971100244,Wurth Elektronik,9,WP NA ST1,"Brass spacer stud M2 male-female, 10 mm, 4 mm hex (2/plate NA; NA mechanical ST1; NA mechanical ST2)"
 ,25503,Keystone,13,WP NA SO1,"Nylon M3 male-female hex standoff, 15 mm, 5.0 mm hex (4/plate NA; NA mechanical SO1; NA mechanical SO2; NA mechanical SO3; NA mechanical SO4)"
 ,687606152002,Wurth Elektronik,4,WP NA W1,"FFC 0.5 mm, 6 contacts, 152 mm, Type 1 (1/plate NA; NA mechanical W1)"

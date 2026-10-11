@@ -2,7 +2,7 @@
 	(version 20241209)
 	(generator "gen_sensor")
 	(generator_version "9.0")
-	(symbol "Conn_02x15_Odd_Even"
+	(symbol "Conn_02x12_Odd_Even"
 		(pin_names
 			(offset 1.016)
 			(hide yes)
@@ -11,15 +11,15 @@
 		(in_bom yes)
 		(on_board yes)
 		(property "Reference" "J"
-			(at 1.27 20.32 0)
+			(at 1.27 15.24 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "Conn_02x15_Odd_Even"
-			(at 1.27 -20.32 0)
+		(property "Value" "Conn_02x12_Odd_Even"
+			(at 1.27 -17.78 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -44,7 +44,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Generic connector, double row, 02x15, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"
+		(property "Description" "Generic connector, double row, 02x12, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"
 			(at 0 0 0)
 			(effects
 				(font
@@ -71,38 +71,16 @@
 				(hide yes)
 			)
 		)
-		(symbol "Conn_02x15_Odd_Even_1_1"
+		(symbol "Conn_02x12_Odd_Even_1_1"
 			(rectangle
-				(start -1.27 19.05)
-				(end 3.81 -19.05)
+				(start -1.27 13.97)
+				(end 3.81 -16.51)
 				(stroke
 					(width 0.254)
 					(type default)
 				)
 				(fill
 					(type background)
-				)
-			)
-			(rectangle
-				(start -1.27 17.907)
-				(end 0 17.653)
-				(stroke
-					(width 0.1524)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(rectangle
-				(start -1.27 15.367)
-				(end 0 15.113)
-				(stroke
-					(width 0.1524)
-					(type default)
-				)
-				(fill
-					(type none)
 				)
 			)
 			(rectangle
@@ -229,39 +207,6 @@
 			(rectangle
 				(start -1.27 -15.113)
 				(end 0 -15.367)
-				(stroke
-					(width 0.1524)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(rectangle
-				(start -1.27 -17.653)
-				(end 0 -17.907)
-				(stroke
-					(width 0.1524)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(rectangle
-				(start 3.81 17.907)
-				(end 2.54 17.653)
-				(stroke
-					(width 0.1524)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(rectangle
-				(start 3.81 15.367)
-				(end 2.54 15.113)
 				(stroke
 					(width 0.1524)
 					(type default)
@@ -402,19 +347,8 @@
 					(type none)
 				)
 			)
-			(rectangle
-				(start 3.81 -17.653)
-				(end 2.54 -17.907)
-				(stroke
-					(width 0.1524)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
 			(pin passive line
-				(at -5.08 17.78 0)
+				(at -5.08 12.7 0)
 				(length 3.81)
 				(name "Pin_1"
 					(effects
@@ -432,7 +366,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 15.24 0)
+				(at -5.08 10.16 0)
 				(length 3.81)
 				(name "Pin_3"
 					(effects
@@ -450,7 +384,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 12.7 0)
+				(at -5.08 7.62 0)
 				(length 3.81)
 				(name "Pin_5"
 					(effects
@@ -468,7 +402,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 10.16 0)
+				(at -5.08 5.08 0)
 				(length 3.81)
 				(name "Pin_7"
 					(effects
@@ -486,7 +420,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 7.62 0)
+				(at -5.08 2.54 0)
 				(length 3.81)
 				(name "Pin_9"
 					(effects
@@ -504,7 +438,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 5.08 0)
+				(at -5.08 0 0)
 				(length 3.81)
 				(name "Pin_11"
 					(effects
@@ -522,7 +456,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 2.54 0)
+				(at -5.08 -2.54 0)
 				(length 3.81)
 				(name "Pin_13"
 					(effects
@@ -540,7 +474,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 0 0)
+				(at -5.08 -5.08 0)
 				(length 3.81)
 				(name "Pin_15"
 					(effects
@@ -558,7 +492,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 -2.54 0)
+				(at -5.08 -7.62 0)
 				(length 3.81)
 				(name "Pin_17"
 					(effects
@@ -576,7 +510,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 -5.08 0)
+				(at -5.08 -10.16 0)
 				(length 3.81)
 				(name "Pin_19"
 					(effects
@@ -594,7 +528,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 -7.62 0)
+				(at -5.08 -12.7 0)
 				(length 3.81)
 				(name "Pin_21"
 					(effects
@@ -612,7 +546,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 -10.16 0)
+				(at -5.08 -15.24 0)
 				(length 3.81)
 				(name "Pin_23"
 					(effects
@@ -630,61 +564,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 -12.7 0)
-				(length 3.81)
-				(name "Pin_25"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "25"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at -5.08 -15.24 0)
-				(length 3.81)
-				(name "Pin_27"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "27"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at -5.08 -17.78 0)
-				(length 3.81)
-				(name "Pin_29"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "29"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at 7.62 17.78 180)
+				(at 7.62 12.7 180)
 				(length 3.81)
 				(name "Pin_2"
 					(effects
@@ -702,7 +582,7 @@
 				)
 			)
 			(pin passive line
-				(at 7.62 15.24 180)
+				(at 7.62 10.16 180)
 				(length 3.81)
 				(name "Pin_4"
 					(effects
@@ -720,7 +600,7 @@
 				)
 			)
 			(pin passive line
-				(at 7.62 12.7 180)
+				(at 7.62 7.62 180)
 				(length 3.81)
 				(name "Pin_6"
 					(effects
@@ -738,7 +618,7 @@
 				)
 			)
 			(pin passive line
-				(at 7.62 10.16 180)
+				(at 7.62 5.08 180)
 				(length 3.81)
 				(name "Pin_8"
 					(effects
@@ -756,7 +636,7 @@
 				)
 			)
 			(pin passive line
-				(at 7.62 7.62 180)
+				(at 7.62 2.54 180)
 				(length 3.81)
 				(name "Pin_10"
 					(effects
@@ -774,7 +654,7 @@
 				)
 			)
 			(pin passive line
-				(at 7.62 5.08 180)
+				(at 7.62 0 180)
 				(length 3.81)
 				(name "Pin_12"
 					(effects
@@ -792,7 +672,7 @@
 				)
 			)
 			(pin passive line
-				(at 7.62 2.54 180)
+				(at 7.62 -2.54 180)
 				(length 3.81)
 				(name "Pin_14"
 					(effects
@@ -810,7 +690,7 @@
 				)
 			)
 			(pin passive line
-				(at 7.62 0 180)
+				(at 7.62 -5.08 180)
 				(length 3.81)
 				(name "Pin_16"
 					(effects
@@ -828,7 +708,7 @@
 				)
 			)
 			(pin passive line
-				(at 7.62 -2.54 180)
+				(at 7.62 -7.62 180)
 				(length 3.81)
 				(name "Pin_18"
 					(effects
@@ -846,7 +726,7 @@
 				)
 			)
 			(pin passive line
-				(at 7.62 -5.08 180)
+				(at 7.62 -10.16 180)
 				(length 3.81)
 				(name "Pin_20"
 					(effects
@@ -864,7 +744,7 @@
 				)
 			)
 			(pin passive line
-				(at 7.62 -7.62 180)
+				(at 7.62 -12.7 180)
 				(length 3.81)
 				(name "Pin_22"
 					(effects
@@ -882,7 +762,7 @@
 				)
 			)
 			(pin passive line
-				(at 7.62 -10.16 180)
+				(at 7.62 -15.24 180)
 				(length 3.81)
 				(name "Pin_24"
 					(effects
@@ -892,60 +772,6 @@
 					)
 				)
 				(number "24"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at 7.62 -12.7 180)
-				(length 3.81)
-				(name "Pin_26"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "26"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at 7.62 -15.24 180)
-				(length 3.81)
-				(name "Pin_28"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "28"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at 7.62 -17.78 180)
-				(length 3.81)
-				(name "Pin_30"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "30"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2584,29 +2410,27 @@
 		)
 		(embedded_fonts no)
 	)
-	(symbol "DMM-4026-B-I2S"
+	(symbol "SPK0641HT4H-1"
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(property "Reference" "MK"
-			(at -7.62 6.35 0)
+			(at 5.08 6.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
-		(property "Value" "DMM-4026-B-I2S"
-			(at 1.27 6.35 0)
+		(property "Value" "SPK0641HT4H-1"
+			(at 8.89 -6.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:PUI_DMM-4026-B-I2S_4x3mm"
+		(property "Footprint" "sensor:Knowles_SPK0641HT4H-1_3x4mm"
 			(at 0 0 0)
 			(effects
 				(font
@@ -2615,7 +2439,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://api.puiaudio.com/filename/DMM-4026-B-I2S-R.pdf"
+		(property "Datasheet" "https://www.knowles.com/docs/default-source/model-downloads/spk0641ht4h-1-rev-a.pdf"
 			(at 0 0 0)
 			(effects
 				(font
@@ -2624,7 +2448,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "PUI Audio I2S MEMS microphone, bottom port, LGA-7"
+		(property "Description" "Knowles PDM MEMS microphone, top port, LGA-8"
 			(at 0 0 0)
 			(effects
 				(font
@@ -2633,7 +2457,7 @@
 				(hide yes)
 			)
 		)
-		(property "ki_keywords" "microphone MEMS I2S"
+		(property "ki_keywords" "microphone MEMS PDM"
 			(at 0 0 0)
 			(effects
 				(font
@@ -2642,7 +2466,7 @@
 				(hide yes)
 			)
 		)
-		(property "ki_fp_filters" "PUI*DMM*4026*"
+		(property "ki_fp_filters" "Knowles*SPK0641*"
 			(at 0 0 0)
 			(effects
 				(font
@@ -2651,7 +2475,7 @@
 				(hide yes)
 			)
 		)
-		(symbol "DMM-4026-B-I2S_1_1"
+		(symbol "SPK0641HT4H-1_1_1"
 			(rectangle
 				(start -7.62 5.08)
 				(end 7.62 -5.08)
@@ -2687,24 +2511,6 @@
 					(type none)
 				)
 			)
-			(pin input line
-				(at -10.16 2.54 0)
-				(length 2.54)
-				(name "LR"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
 			(pin power_in line
 				(at 0 7.62 270)
 				(length 2.54)
@@ -2715,7 +2521,7 @@
 						)
 					)
 				)
-				(number "3"
+				(number "4"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2733,7 +2539,7 @@
 						)
 					)
 				)
-				(number "4"
+				(number "5"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2744,14 +2550,14 @@
 			(pin input line
 				(at 10.16 2.54 180)
 				(length 2.54)
-				(name "WS"
+				(name "SEL"
 					(effects
 						(font
 							(size 1.27 1.27)
 						)
 					)
 				)
-				(number "5"
+				(number "3"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2762,7 +2568,43 @@
 			(pin input line
 				(at 10.16 0 180)
 				(length 2.54)
-				(name "SCK"
+				(name "CLOCK"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin output line
+				(at 10.16 -2.54 180)
+				(length 2.54)
+				(name "DATA"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 0 -7.62 90)
+				(length 2.54)
+				(name "GND"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2777,10 +2619,10 @@
 					)
 				)
 			)
-			(pin output line
-				(at 10.16 -2.54 180)
+			(pin passive line
+				(at 0 -7.62 90)
 				(length 2.54)
-				(name "SD"
+				(name "GND"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2788,6 +2630,133 @@
 					)
 				)
 				(number "7"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 0 -7.62 90)
+				(length 2.54)
+				(name "GND"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "8"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+	(symbol "ADAU7002"
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(property "Reference" "U"
+			(at 0 6.35 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "ADAU7002"
+			(at 0 -6.35 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "sensor:Analog_WLCSP-8_0.76x1.56mm_P0.4mm"
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/ADAU7002.pdf"
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Stereo PDM to I2S / TDM converter, 1.62-3.6 V, WLCSP-8"
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "ki_keywords" "PDM I2S decimator microphone"
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(symbol "ADAU7002_0_1"
+			(rectangle
+				(start -7.62 5.08)
+				(end 7.62 -5.08)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type background)
+				)
+			)
+		)
+		(symbol "ADAU7002_1_1"
+			(pin input line
+				(at -10.16 2.54 0)
+				(length 2.54)
+				(name "PDM_DAT"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "A1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin output line
+				(at -10.16 0 0)
+				(length 2.54)
+				(name "PDM_CLK"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "A2"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2805,7 +2774,97 @@
 						)
 					)
 				)
-				(number "2"
+				(number "D2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin output line
+				(at 10.16 2.54 180)
+				(length 2.54)
+				(name "SDATA"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "B1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at 10.16 0 180)
+				(length 2.54)
+				(name "BCLK"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "B2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at 10.16 -2.54 180)
+				(length 2.54)
+				(name "LRCLK"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin power_in line
+				(at 0 7.62 270)
+				(length 2.54)
+				(name "IOVDD"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "D1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin power_in line
+				(at 0 -7.62 90)
+				(length 2.54)
+				(name "GND"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C1"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2814,6 +2873,5 @@
 				)
 			)
 		)
-		(embedded_fonts no)
 	)
 )

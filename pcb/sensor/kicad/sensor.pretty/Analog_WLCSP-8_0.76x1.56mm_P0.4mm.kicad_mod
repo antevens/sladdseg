@@ -1,0 +1,110 @@
+(footprint "Analog_WLCSP-8_0.76x1.56mm_P0.4mm"
+	(version 20241229)
+	(generator "gen_libs")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Analog Devices ADAU7002 WLCSP-8 0.76 x 1.56, 0.4 mm pitch, 0.2 mm NSMD lands, https://www.analog.com/media/en/technical-documentation/data-sheets/ADAU7002.pdf")
+	(tags "WLCSP BGA ADAU7002")
+	(property "Reference" "REF**"
+		(at 0 0 0)
+		(layer "F.SilkS")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "Analog_WLCSP-8_0.76x1.56mm_P0.4mm"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(pad "A1" smd circle
+		(at -0.2 -0.6)
+		(size 0.2 0.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+	)
+	(pad "A2" smd circle
+		(at 0.2 -0.6)
+		(size 0.2 0.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+	)
+	(pad "B1" smd circle
+		(at -0.2 -0.2)
+		(size 0.2 0.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+	)
+	(pad "B2" smd circle
+		(at 0.2 -0.2)
+		(size 0.2 0.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+	)
+	(pad "C1" smd circle
+		(at -0.2 0.2)
+		(size 0.2 0.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+	)
+	(pad "C2" smd circle
+		(at 0.2 0.2)
+		(size 0.2 0.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+	)
+	(pad "D1" smd circle
+		(at -0.2 0.6)
+		(size 0.2 0.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+	)
+	(pad "D2" smd circle
+		(at 0.2 0.6)
+		(size 0.2 0.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+	)
+	(fp_rect
+		(start -0.38 -0.78)
+		(end 0.38 0.78)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+	)
+	(fp_line
+		(start -0.38 -0.53)
+		(end -0.13 -0.78)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.Fab")
+	)
+	(fp_rect
+		(start -0.63 -1.03)
+		(end 0.63 1.03)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+	)
+	(model "${KIPRJMOD}/3d/Analog_WLCSP-8_0.76x1.56mm_P0.4mm.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+	(embedded_fonts no)
+)

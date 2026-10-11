@@ -29,11 +29,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from params import (B_W, B_H, B_D, CLR, POCKET_WALL, MAGNET, MAGNET_END_R, MAGNET_SETBACK, MAGNET_CLR, MSR,  # noqa: E402,F401
                     RADAR_WALL, MSR_SKIN_GAP, MSR2_POSTS, SHT, SKIN, FACE_CHAMFER, PR, SPLIT_CLR, BARRIER_MIN,
-                    V0_RATED_T, MSR_BOARD, MSR_CN2_IN, B2B, B2B_STACK, SHT_CHIP, MIC, MIC_PORT_IN, MIC_FLEX_HOLE_D,
+                    V0_RATED_T, MSR_BOARD, MSR_CN2_IN, B2B, B2B_STACK, SHT_CHIP, MIC, MIC_PORT_IN, MIC_BOOT, MIC_PARTS,
                     BC_FINGERS, BC_FLEX_Z, PIN_FREE, PIN_WH, PIN_TOL, PIN_FLANGE, PIN_BARREL, PIN_PLUNGER_D,
                     PIN_PAD_D, PIN_HOLE_D, PIN_RADIAL, RING_NUT, RING_NUT_HOLE, MSR2_SW, MSR2_SW_X, MSR2_SW_CLR,
-                    MIC_WIN, MIC_CARRIER, MIC_TUBE, MIN_PRINT_HOLE, M2_HEAD, BC_STEEL_FLOOR, BC_STEEL_Y, BC_STEEL,
-                    SW_CUT, SW_PANEL_T, SW_BEZEL, SW_ROCKER_H, SW_ROCKER_TOL, SW_ROCKER_CLR, SW_BODY, SW_PIN_GRID,
+                    MIC_SPAN, MIC_TUBE, MIN_PRINT_HOLE, M2_HEAD, BC_STEEL_FLOOR, BC_STEEL_Y, BC_STEEL,
+                    SW_CUT, SW_PANEL_T, SW_BEZEL, SW_ROCKER_H, SW_ROCKER_TOL, SW_ROCKER_CLR, SW_BODY, SW_PIN_GRID, SW_PAD, SW_SLOT_DY,
                     PAD_BODY_GAP, BAY_WALL, MSR_BAY_R, SHT_BAY_CLR, SHT_BAY_R, MSR_VENTS, SHT_VENTS)
 
 # ---- EU flush box: DIN 49073, Ø68 hole saw ----
@@ -112,7 +112,7 @@ LIP_T = 0.8                               # lip thickness = rebate depth (line-t
 LIP_SEAL_CLR = 0.5                        # rebate starts this far outside the seal band
 LIP_CLR = 0.2                             # lip to the rebate's inner edge; lip gap to each tooth (each side)
 LIP_TOOTH = 1.5                           # cap's tooth at each snap angle: finger width + 2 x SNAP_CLR + this, each side
-MIC_ROW_DY = -7.0                         # microphone carrier below the MSR-2 centre, beside its bay frame
+MIC_ROW_DY = -7.0                         # microphone port below the MSR-2 centre, beside its bay frame
 MIC_HOLE_EU = (1.6, 0.6, 3.0)             # sound hole (D-52): diameter, skin web left, recess from the face (diameter)
 
 # ---- 5 V board (D-shaped, just under the cap, below the switch cup) ----
@@ -132,6 +132,8 @@ WAGO_PITCH = 5.0                          # DATASHEET pin spacing (poles)
 WAGO_ROW = 8.2                            # DATASHEET (WAGO 3D model 2604-3102): distance of the two solder-pin rows
 WAGO_ROW_OFF = 0.65                       # DATASHEET (WAGO 3D model): rows' centre from the body centre, towards the
                                           # entry side (body 3.6 past the first row, 4.9 past the second, lever side)
+S1_WAGO_BODY_GAP = 0.0                    # S1's slot pads (back) may come up to the WAGO bodies, kept off their pins (D-88)
+S1_WAGO_PIN_GAP = 3.5                     # S1's slot pads to any WAGO pad, copper edge to edge (D-24 L-N target)
 MB_WAGO_C = ((16.6, 7.5), (-16.6, 7.5))   # L block (right), N block (left), body centres on the back; poles
                                           # along y, upper pole in, lower pole switched (as the rocker's poles);
                                           # levers towards the board centre
@@ -206,7 +208,8 @@ MSR_CN2_X = MSR_BOARD[0] / 2 - MSR_CN2_IN
 MSR_SPACERS = [(x, MSR_Y + y) for x, y in MSR2_POSTS]      # cap board's SMT spacers under the MSR-2, below its posts
 SKIN_Z = PT - SKIN
 MSR_FRAME = (MSR[0] + 2 * CLR, MSR[1] + 2 * CLR, BAY_WALL)      # trim's MSR-2 bay frame: inside w, h, wall
-MIC_AT = (MSR_FRAME[0] / 2 + MSR_FRAME[2] + 0.3 + MIC_CARRIER[0] / 2, MSR_Y + MIC_ROW_DY)   # mic carrier, on the cap board
+MIC_AT = (MSR_FRAME[0] / 2 + MSR_FRAME[2] + 0.3 + MIC_SPAN[0], MSR_Y + MIC_ROW_DY)   # mic port; its parts and lanes
+                                          # between it and the bay frame (D-83)
 CB_INSET = CB_EDGE + CARRIER_RIM + CB_RIM_CLR              # cap board edge in from the trim's outer walls' inside
 SNAPS = [(a, SNAP_KEY_W if a == SNAP_ANGLES[0] else SNAP[0]) for a in SNAP_ANGLES]   # angle, width
 SNAP_WIN_R = CAP_R + CARRIER_CAP_CLR + SNAP_WEB                 # snap windows' inner wall (radius)

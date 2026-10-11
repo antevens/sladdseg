@@ -269,6 +269,222 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "sensor:ADAU7002"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "ADAU7002"
+				(at 0 -6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "sensor:Analog_WLCSP-8_0.76x1.56mm_P0.4mm"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/ADAU7002.pdf"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Stereo PDM to I2S / TDM converter, 1.62-3.6 V, WLCSP-8"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "PDM I2S decimator microphone"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "ADAU7002_0_1"
+				(rectangle
+					(start -7.62 5.08)
+					(end 7.62 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "ADAU7002_1_1"
+				(pin input line
+					(at -10.16 2.54 0)
+					(length 2.54)
+					(name "PDM_DAT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at -10.16 0 0)
+					(length 2.54)
+					(name "PDM_CLK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -10.16 -2.54 0)
+					(length 2.54)
+					(name "CONFIG"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "D2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 10.16 2.54 180)
+					(length 2.54)
+					(name "SDATA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 10.16 0 180)
+					(length 2.54)
+					(name "BCLK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 10.16 -2.54 180)
+					(length 2.54)
+					(name "LRCLK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "C2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 7.62 270)
+					(length 2.54)
+					(name "IOVDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "D1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "C1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
 		(symbol "sensor:C"
 			(pin_numbers
 				(hide yes)
@@ -781,7 +997,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "sensor:Conn_02x15_Odd_Even"
+		(symbol "sensor:Conn_02x12_Odd_Even"
 			(pin_names
 				(offset 1.016)
 				(hide yes)
@@ -790,15 +1006,15 @@
 			(in_bom yes)
 			(on_board yes)
 			(property "Reference" "J"
-				(at 1.27 20.32 0)
+				(at 1.27 15.24 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
 				)
 			)
-			(property "Value" "Conn_02x15_Odd_Even"
-				(at 1.27 -20.32 0)
+			(property "Value" "Conn_02x12_Odd_Even"
+				(at 1.27 -17.78 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -823,7 +1039,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "Generic connector, double row, 02x15, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(property "Description" "Generic connector, double row, 02x12, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"
 				(at 0 0 0)
 				(effects
 					(font
@@ -850,38 +1066,16 @@
 					(hide yes)
 				)
 			)
-			(symbol "Conn_02x15_Odd_Even_1_1"
+			(symbol "Conn_02x12_Odd_Even_1_1"
 				(rectangle
-					(start -1.27 19.05)
-					(end 3.81 -19.05)
+					(start -1.27 13.97)
+					(end 3.81 -16.51)
 					(stroke
 						(width 0.254)
 						(type default)
 					)
 					(fill
 						(type background)
-					)
-				)
-				(rectangle
-					(start -1.27 17.907)
-					(end 0 17.653)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 15.367)
-					(end 0 15.113)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
 					)
 				)
 				(rectangle
@@ -1008,39 +1202,6 @@
 				(rectangle
 					(start -1.27 -15.113)
 					(end 0 -15.367)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 -17.653)
-					(end 0 -17.907)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 17.907)
-					(end 2.54 17.653)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 15.367)
-					(end 2.54 15.113)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -1181,19 +1342,8 @@
 						(type none)
 					)
 				)
-				(rectangle
-					(start 3.81 -17.653)
-					(end 2.54 -17.907)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
 				(pin passive line
-					(at -5.08 17.78 0)
+					(at -5.08 12.7 0)
 					(length 3.81)
 					(name "Pin_1"
 						(effects
@@ -1211,7 +1361,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 15.24 0)
+					(at -5.08 10.16 0)
 					(length 3.81)
 					(name "Pin_3"
 						(effects
@@ -1229,7 +1379,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 12.7 0)
+					(at -5.08 7.62 0)
 					(length 3.81)
 					(name "Pin_5"
 						(effects
@@ -1247,7 +1397,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 10.16 0)
+					(at -5.08 5.08 0)
 					(length 3.81)
 					(name "Pin_7"
 						(effects
@@ -1265,7 +1415,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 7.62 0)
+					(at -5.08 2.54 0)
 					(length 3.81)
 					(name "Pin_9"
 						(effects
@@ -1283,7 +1433,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 5.08 0)
+					(at -5.08 0 0)
 					(length 3.81)
 					(name "Pin_11"
 						(effects
@@ -1301,7 +1451,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 2.54 0)
+					(at -5.08 -2.54 0)
 					(length 3.81)
 					(name "Pin_13"
 						(effects
@@ -1319,7 +1469,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 0 0)
+					(at -5.08 -5.08 0)
 					(length 3.81)
 					(name "Pin_15"
 						(effects
@@ -1337,7 +1487,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -2.54 0)
+					(at -5.08 -7.62 0)
 					(length 3.81)
 					(name "Pin_17"
 						(effects
@@ -1355,7 +1505,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -5.08 0)
+					(at -5.08 -10.16 0)
 					(length 3.81)
 					(name "Pin_19"
 						(effects
@@ -1373,7 +1523,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -7.62 0)
+					(at -5.08 -12.7 0)
 					(length 3.81)
 					(name "Pin_21"
 						(effects
@@ -1391,7 +1541,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -10.16 0)
+					(at -5.08 -15.24 0)
 					(length 3.81)
 					(name "Pin_23"
 						(effects
@@ -1409,61 +1559,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -12.7 0)
-					(length 3.81)
-					(name "Pin_25"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "25"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -15.24 0)
-					(length 3.81)
-					(name "Pin_27"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "27"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -17.78 0)
-					(length 3.81)
-					(name "Pin_29"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "29"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 17.78 180)
+					(at 7.62 12.7 180)
 					(length 3.81)
 					(name "Pin_2"
 						(effects
@@ -1481,7 +1577,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 15.24 180)
+					(at 7.62 10.16 180)
 					(length 3.81)
 					(name "Pin_4"
 						(effects
@@ -1499,7 +1595,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 12.7 180)
+					(at 7.62 7.62 180)
 					(length 3.81)
 					(name "Pin_6"
 						(effects
@@ -1517,7 +1613,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 10.16 180)
+					(at 7.62 5.08 180)
 					(length 3.81)
 					(name "Pin_8"
 						(effects
@@ -1535,7 +1631,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 7.62 180)
+					(at 7.62 2.54 180)
 					(length 3.81)
 					(name "Pin_10"
 						(effects
@@ -1553,7 +1649,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 5.08 180)
+					(at 7.62 0 180)
 					(length 3.81)
 					(name "Pin_12"
 						(effects
@@ -1571,7 +1667,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 2.54 180)
+					(at 7.62 -2.54 180)
 					(length 3.81)
 					(name "Pin_14"
 						(effects
@@ -1589,7 +1685,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 0 180)
+					(at 7.62 -5.08 180)
 					(length 3.81)
 					(name "Pin_16"
 						(effects
@@ -1607,7 +1703,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 -2.54 180)
+					(at 7.62 -7.62 180)
 					(length 3.81)
 					(name "Pin_18"
 						(effects
@@ -1625,7 +1721,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 -5.08 180)
+					(at 7.62 -10.16 180)
 					(length 3.81)
 					(name "Pin_20"
 						(effects
@@ -1643,7 +1739,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 -7.62 180)
+					(at 7.62 -12.7 180)
 					(length 3.81)
 					(name "Pin_22"
 						(effects
@@ -1661,7 +1757,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 -10.16 180)
+					(at 7.62 -15.24 180)
 					(length 3.81)
 					(name "Pin_24"
 						(effects
@@ -1671,60 +1767,6 @@
 						)
 					)
 					(number "24"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 -12.7 180)
-					(length 3.81)
-					(name "Pin_26"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "26"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 -15.24 180)
-					(length 3.81)
-					(name "Pin_28"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "28"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 -17.78 180)
-					(length 3.81)
-					(name "Pin_30"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "30"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2217,6 +2259,254 @@
 						)
 					)
 					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "sensor:SPK0641HT4H-1"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "MK"
+				(at 5.08 6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "SPK0641HT4H-1"
+				(at 8.89 -6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "sensor:Knowles_SPK0641HT4H-1_3x4mm"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://www.knowles.com/docs/default-source/model-downloads/spk0641ht4h-1-rev-a.pdf"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Knowles PDM MEMS microphone, top port, LGA-8"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "microphone MEMS PDM"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Knowles*SPK0641*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "SPK0641HT4H-1_1_1"
+				(rectangle
+					(start -7.62 5.08)
+					(end 7.62 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -5.08 1.27)
+						(xy -5.08 -1.27)
+					)
+					(stroke
+						(width 0.381)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center -3.81 0)
+					(radius 1.27)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin power_in line
+					(at 0 7.62 270)
+					(length 2.54)
+					(name "VDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 10.16 2.54 180)
+					(length 2.54)
+					(name "SEL"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 10.16 0 180)
+					(length 2.54)
+					(name "CLOCK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 10.16 -2.54 180)
+					(length 2.54)
+					(name "DATA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2951,7 +3241,7 @@
 		)
 	)
 	(symbol
-		(lib_id "sensor:Conn_02x15_Odd_Even")
+		(lib_id "sensor:Conn_02x12_Odd_Even")
 		(at 116.84 91.44 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -2968,7 +3258,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "CN2 mate (TBD)"
+		(property "Value" "55909-2474"
 			(at 119.84 99.94 0)
 			(effects
 				(font
@@ -2977,7 +3267,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:B2B_0.4mm_2x15_PLACEHOLDER"
+		(property "Footprint" "sensor:Molex_SlimStack_55909-2474_2x12_P0.40mm_Vertical"
 			(at 116.84 91.44 0)
 			(effects
 				(font
@@ -2986,7 +3276,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.molex.com/en-us/products/part-detail/559092474"
 			(at 116.84 91.44 0)
 			(effects
 				(font
@@ -2995,7 +3285,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Board-to-board plug mating the MSR-2's rear connector CN2, 0.4 mm, 2 rows (part and contact map unconfirmed)"
+		(property "Description" "SlimStack plug 24 contacts, 0.4 mm, 2 rows, mating the MSR-2's CN2 (assumed Molex 51338-2474, 1.5 mm mated; land pattern and contact map placeholders, D-82)"
 			(at 116.84 91.44 0)
 			(effects
 				(font
@@ -3004,7 +3294,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "TBD"
+		(property "Manufacturer" "Molex"
 			(at 116.84 91.44 0)
 			(effects
 				(font
@@ -3013,7 +3303,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "TBD"
+		(property "MPN" "55909-2474"
 			(at 116.84 91.44 0)
 			(effects
 				(font
@@ -3058,15 +3348,6 @@
 		(pin "23"
 			(uuid "e9b7109c-6a7e-5053-9a04-e467caa2c94e")
 		)
-		(pin "25"
-			(uuid "7c584443-5ff3-5b37-a73b-09255d41ce90")
-		)
-		(pin "27"
-			(uuid "4b481382-fb2b-59db-a4f5-e427cf789f26")
-		)
-		(pin "29"
-			(uuid "09886990-4b7f-53fc-80be-8dc2708f5308")
-		)
 		(pin "2"
 			(uuid "e8f6bf85-4bc4-5e25-8e10-a9f1384e7d31")
 		)
@@ -3103,15 +3384,6 @@
 		(pin "24"
 			(uuid "64e0a967-8b25-5e05-8b14-868e94a44f6f")
 		)
-		(pin "26"
-			(uuid "fdd21638-f5be-50ae-87b4-74d2ea6fad88")
-		)
-		(pin "28"
-			(uuid "aefdeb3e-3a5c-560f-9644-a6bcdb4a68ec")
-		)
-		(pin "30"
-			(uuid "d2557496-16be-5044-adcd-53999d04daf5")
-		)
 		(instances
 			(project "ring_board"
 				(path "/0e7919e5-f374-531e-adff-e904971db49a"
@@ -3120,14 +3392,6 @@
 				)
 			)
 		)
-	)
-	(no_connect
-		(at 111.76 73.66)
-		(uuid "ddd34b1b-5637-5f8c-9978-2fb0425c1dfa")
-	)
-	(no_connect
-		(at 111.76 76.2)
-		(uuid "ecc4e916-9192-5c4e-a96b-bba71961d02e")
 	)
 	(no_connect
 		(at 111.76 78.74)
@@ -3153,13 +3417,9 @@
 		(at 111.76 91.44)
 		(uuid "3669a230-1992-51b3-b2df-39eef6aa2483")
 	)
-	(no_connect
-		(at 111.76 93.98)
-		(uuid "20311e52-bcca-5d44-82bd-6e4ac070d1ea")
-	)
 	(symbol
 		(lib_id "sensor:+5V")
-		(at 111.76 96.52 0)
+		(at 111.76 93.98 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -3167,7 +3427,7 @@
 		(dnp no)
 		(uuid "9c6ff028-2e1f-5a8f-8cd5-d7982167d59a")
 		(property "Reference" "#PWR009"
-			(at 114.76 88.52 0)
+			(at 114.76 85.98 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3177,6 +3437,73 @@
 			)
 		)
 		(property "Value" "+5V"
+			(at 114.76 102.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 111.76 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 111.76 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 111.76 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6fece2f4-622f-522c-8e34-2b30d3058209")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR009")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 111.76 96.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "5438acf7-ce44-5344-86c4-fef4ac6907a9")
+		(property "Reference" "#PWR010"
+			(at 114.76 88.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
 			(at 114.76 105.02 0)
 			(effects
 				(font
@@ -3213,73 +3540,6 @@
 			)
 		)
 		(pin "1"
-			(uuid "6fece2f4-622f-522c-8e34-2b30d3058209")
-		)
-		(instances
-			(project "ring_board"
-				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "#PWR009")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 111.76 99.06 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "5438acf7-ce44-5344-86c4-fef4ac6907a9")
-		(property "Reference" "#PWR010"
-			(at 114.76 91.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 114.76 107.56 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 111.76 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 111.76 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 111.76 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
 			(uuid "f4294b86-df52-5144-a052-a452be974443")
 		)
 		(instances
@@ -3292,6 +3552,17 @@
 		)
 	)
 	(label "I2S_SD"
+		(at 111.76 99.06 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "4c5193ed-adc6-5f4b-b1e9-b9e0e222d7fc")
+	)
+	(label "I2S_WS"
 		(at 111.76 101.6 180)
 		(fields_autoplaced yes)
 		(effects
@@ -3300,7 +3571,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "fd355947-e9b9-555e-b905-0cd0d3cf25d1")
+		(uuid "e746e78b-69e9-50f0-b423-8dcbdb5ff1d2")
 	)
 	(label "I2S_SCK"
 		(at 111.76 104.14 180)
@@ -3313,28 +3584,9 @@
 		)
 		(uuid "e8dd53a5-6ef6-5f3f-b915-058d175972f0")
 	)
-	(label "I2S_WS"
-		(at 111.76 106.68 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "c12bb46e-0977-5d61-bfa7-d3a13c10d6f5")
-	)
 	(no_connect
-		(at 111.76 109.22)
-		(uuid "2fd8bded-5be4-5bbf-9a6e-43bf8bf17002")
-	)
-	(no_connect
-		(at 124.46 73.66)
-		(uuid "eef67aa8-693d-5315-8fe8-b77abaed3c22")
-	)
-	(no_connect
-		(at 124.46 76.2)
-		(uuid "b65bc098-4a72-5799-92e1-a30c905faab1")
+		(at 111.76 106.68)
+		(uuid "79660349-fa1f-5b85-9f08-a4154faa7321")
 	)
 	(no_connect
 		(at 124.46 78.74)
@@ -3368,11 +3620,18 @@
 		(at 124.46 96.52)
 		(uuid "d8cf182d-2d3f-5487-9833-4b6f488329ec")
 	)
-	(no_connect
-		(at 124.46 99.06)
-		(uuid "e23a3b71-dd1c-5b4c-af9d-6224c6bc46ca")
-	)
 	(label "SCL"
+		(at 124.46 99.06 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6d596ea1-3aec-5fec-bacb-62c0605035c7")
+	)
+	(label "SDA"
 		(at 124.46 101.6 0)
 		(fields_autoplaced yes)
 		(effects
@@ -3381,22 +3640,11 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "8f1d856a-5aff-5718-8487-78815d46e050")
-	)
-	(label "SDA"
-		(at 124.46 104.14 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "518d61ee-27fa-59b1-828d-03b941fb9989")
+		(uuid "bdde0afe-808b-5f90-8356-9354fab89d46")
 	)
 	(symbol
 		(lib_id "sensor:+3V3")
-		(at 124.46 106.68 0)
+		(at 124.46 104.14 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -3404,7 +3652,7 @@
 		(dnp no)
 		(uuid "b73613b5-3516-582e-90db-1d9099757272")
 		(property "Reference" "#PWR011"
-			(at 127.46 98.68 0)
+			(at 127.46 96.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3414,6 +3662,73 @@
 			)
 		)
 		(property "Value" "+3V3"
+			(at 127.46 112.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 124.46 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 124.46 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 124.46 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "2204c500-8ba2-5b4c-8f41-8bc1442fe9f0")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR011")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 124.46 106.68 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "22b8dbcf-c75a-5d97-a3c7-9fa4de2ca236")
+		(property "Reference" "#PWR012"
+			(at 127.46 98.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
 			(at 127.46 115.18 0)
 			(effects
 				(font
@@ -3442,73 +3757,6 @@
 		)
 		(property "Description" ""
 			(at 124.46 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "2204c500-8ba2-5b4c-8f41-8bc1442fe9f0")
-		)
-		(instances
-			(project "ring_board"
-				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "#PWR011")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 124.46 109.22 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "22b8dbcf-c75a-5d97-a3c7-9fa4de2ca236")
-		(property "Reference" "#PWR012"
-			(at 127.46 101.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 127.46 117.72 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 124.46 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 124.46 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 124.46 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3999,15 +4247,15 @@
 		)
 	)
 	(symbol
-		(lib_id "sensor:C")
+		(lib_id "sensor:SPK0641HT4H-1")
 		(at 238.76 91.44 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "89c71a03-59bd-5026-a54c-565a4026311b")
-		(property "Reference" "C3"
+		(uuid "80bf8ccb-5669-503e-86be-647f46a7fff5")
+		(property "Reference" "MK1"
 			(at 241.76 83.44 0)
 			(effects
 				(font
@@ -4016,7 +4264,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100nF"
+		(property "Value" "SPK0641HT4H-1"
 			(at 241.76 99.94 0)
 			(effects
 				(font
@@ -4025,8 +4273,114 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:C_0402_1005Metric"
+		(property "Footprint" "sensor:Knowles_SPK0641HT4H-1_3x4mm"
 			(at 238.76 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.knowles.com/docs/default-source/model-downloads/spk0641ht4h-1-rev-a.pdf"
+			(at 238.76 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "PDM MEMS microphone, top port, 1.6-3.6 V; SELECT low"
+			(at 238.76 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Knowles"
+			(at 238.76 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "SPK0641HT4H-1"
+			(at 238.76 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "4"
+			(uuid "4d172d26-91f8-52a8-b308-b0cca3142746")
+		)
+		(pin "5"
+			(uuid "40c9d96a-2c7c-514a-a79a-b6e6130cdee3")
+		)
+		(pin "3"
+			(uuid "123d5440-0bf5-58f1-a2e1-041113a88549")
+		)
+		(pin "2"
+			(uuid "5d1ce1bd-6be4-593f-a27c-93a405ef7039")
+		)
+		(pin "1"
+			(uuid "1050f7e7-a8f1-52e1-aba4-487e74ff7a80")
+		)
+		(pin "6"
+			(uuid "354b3c11-506f-59a5-aed2-a8d402d6d1db")
+		)
+		(pin "7"
+			(uuid "f8e0fa14-88d3-5c51-9e9c-6ec4a922c07b")
+		)
+		(pin "8"
+			(uuid "2ab969ac-3656-5ac4-a599-431cc452867f")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "MK1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:+3V3")
+		(at 238.76 83.82 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "a0196b4b-939c-5def-95e9-ddef88453181")
+		(property "Reference" "#PWR017"
+			(at 241.76 75.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 241.76 92.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 238.76 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4035,7 +4389,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 238.76 91.44 0)
+			(at 238.76 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4043,8 +4397,792 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Microphone decoupling"
-			(at 238.76 91.44 0)
+		(property "Description" ""
+			(at 238.76 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "63211b44-0d72-5da4-9122-1f817274e13b")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR017")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 238.76 99.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "5e37a71d-43d1-553f-8c44-0f6518186ec9")
+		(property "Reference" "#PWR018"
+			(at 241.76 91.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 241.76 107.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "118d889d-3bdf-57d9-ae70-0be52e894c6a")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR018")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 248.92 88.9 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "e08ff9d1-d482-54f4-9e1a-b93c488e9c56")
+		(property "Reference" "#PWR019"
+			(at 251.92 80.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 251.92 97.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 248.92 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 248.92 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 248.92 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "c40f48e5-7ed8-55ec-948c-24af6a8cc695")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR019")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "PDM_CLK"
+		(at 248.92 91.44 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1ce27db8-9ab9-55ff-9b12-007e2122d354")
+	)
+	(label "PDM_DAT"
+		(at 248.92 93.98 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ee77c3fb-ab11-5afd-ae3f-a4b1fe50b076")
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 238.76 99.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "29bc7b0a-cb74-5278-92f0-4a2c57a68559")
+		(property "Reference" "#PWR020"
+			(at 241.76 91.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 241.76 107.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "de7d2fb0-6dbd-552b-ad24-b91c40b95c62")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR020")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 238.76 99.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "99cddd91-62f9-517e-839e-6b8342e247d7")
+		(property "Reference" "#PWR021"
+			(at 241.76 91.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 241.76 107.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e2a2d41d-9d3f-5fbc-b0e5-bd8da66b101b")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR021")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 238.76 99.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "abb4d07c-d233-5472-86fc-fcb9cf44163b")
+		(property "Reference" "#PWR022"
+			(at 241.76 91.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 241.76 107.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "19669a82-5def-5d63-a8d6-dffd50b03797")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR022")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:ADAU7002")
+		(at 35.56 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a52cd0a6-4cb3-5eaa-8899-3c23b57aaf6d")
+		(property "Reference" "U2"
+			(at 38.56 149.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "ADAU7002"
+			(at 38.56 165.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "sensor:Analog_WLCSP-8_0.76x1.56mm_P0.4mm"
+			(at 35.56 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/ADAU7002.pdf"
+			(at 35.56 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Stereo PDM to I2S converter, WLCSP-8 0.4 mm; CONFIG high = I2S"
+			(at 35.56 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Analog Devices"
+			(at 35.56 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "ADAU7002ACBZ-R7"
+			(at 35.56 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "A1"
+			(uuid "6ab1c6a0-9cc3-5878-8663-f9784fe91d23")
+		)
+		(pin "A2"
+			(uuid "8437d455-3403-54ab-9a5d-357175c45ae7")
+		)
+		(pin "D2"
+			(uuid "8d9851b4-044e-5dd3-bcf0-1c56634ac9d6")
+		)
+		(pin "B1"
+			(uuid "7b1a262c-6a94-5b39-9310-94382bf91f68")
+		)
+		(pin "B2"
+			(uuid "37f52068-173e-5798-9343-c007cb0ebd88")
+		)
+		(pin "C2"
+			(uuid "7c957a87-08ca-50f2-8af9-ae59e159214c")
+		)
+		(pin "D1"
+			(uuid "75de2c67-3139-5dcd-a42d-99a5e0030e7b")
+		)
+		(pin "C1"
+			(uuid "817a32d8-1c0c-54c7-8a5b-908283c778a0")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "U2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "PDM_DAT"
+		(at 25.4 154.94 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "5116feaa-2992-5b00-9288-b60625ce3f25")
+	)
+	(label "PDM_CLK"
+		(at 25.4 157.48 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "f51645f3-5e72-5737-8607-b53a4b42deda")
+	)
+	(symbol
+		(lib_id "sensor:+3V3")
+		(at 25.4 160.02 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "6f369af2-47c7-59f5-b6f9-ece936952f7f")
+		(property "Reference" "#PWR023"
+			(at 28.4 152.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 28.4 168.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 25.4 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 25.4 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 25.4 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f6b0f36f-8174-53a4-ba23-2b96a65349ca")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR023")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "I2S_SD"
+		(at 45.72 154.94 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "32985806-1fe6-5adf-ba0c-2172c31373c2")
+	)
+	(label "I2S_SCK"
+		(at 45.72 157.48 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1b4e96f9-d681-57e7-a553-51c5de88c884")
+	)
+	(label "I2S_WS"
+		(at 45.72 160.02 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d9029348-0b4c-538b-8da6-ff95a09e3a29")
+	)
+	(symbol
+		(lib_id "sensor:+3V3")
+		(at 35.56 149.86 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "6a01d93b-4e34-51c6-a330-d7ba07920f70")
+		(property "Reference" "#PWR024"
+			(at 38.56 141.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 38.56 158.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 35.56 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 35.56 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 35.56 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5ae6495b-f7d5-5968-942d-4ca685b66a48")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR024")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 35.56 165.1 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "9ede6cf6-008d-5768-ae07-13372f70ecb3")
+		(property "Reference" "#PWR025"
+			(at 38.56 157.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 38.56 173.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 35.56 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 35.56 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 35.56 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "3ad61e21-0d6e-5c1a-aefc-d3766ffd7997")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR025")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:C")
+		(at 76.2 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7fad8971-fe7e-51ec-8651-1b9fe0dc8772")
+		(property "Reference" "C4"
+			(at 79.2 149.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 79.2 165.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "sensor:C_0402_1005Metric"
+			(at 76.2 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 76.2 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "ADAU7002 IOVDD decoupling"
+			(at 76.2 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4053,7 +5191,7 @@
 			)
 		)
 		(property "Manufacturer" "any"
-			(at 238.76 91.44 0)
+			(at 76.2 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4062,7 +5200,393 @@
 			)
 		)
 		(property "MPN" "0402 X7R 100 nF 16 V"
-			(at 238.76 91.44 0)
+			(at 76.2 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "67fffcc3-52b8-5289-be91-092c02cd47e3")
+		)
+		(pin "2"
+			(uuid "8ae2d13b-c246-5b77-b9f7-2b9d9a685b57")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "C4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:+3V3")
+		(at 76.2 153.67 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "c3c8f038-9800-5055-8796-0a0b37944a80")
+		(property "Reference" "#PWR026"
+			(at 79.2 145.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 79.2 162.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 76.2 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 76.2 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 76.2 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e37be63c-b0e7-5b45-aa1b-0a057ec85c2a")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR026")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 76.2 161.29 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "a8df38e9-7886-51f8-8057-c3ff5348c91c")
+		(property "Reference" "#PWR027"
+			(at 79.2 153.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 79.2 169.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 76.2 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 76.2 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 76.2 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "470acd6c-fb7d-54ac-9115-162b08003937")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR027")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:R")
+		(at 116.84 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "31042d36-fef7-5886-bad3-a46fe9fe86e1")
+		(property "Reference" "R1"
+			(at 119.84 149.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100k"
+			(at 119.84 165.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "sensor:R_0402_1005Metric"
+			(at 116.84 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 116.84 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "I2S SD pull-down (ADAU7002 tristates SDATA)"
+			(at 116.84 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "any"
+			(at 116.84 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "0402 1% 100 kOhm"
+			(at 116.84 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b55edf6b-cf40-5ec2-afdb-b03beaef0161")
+		)
+		(pin "2"
+			(uuid "88ede46a-0eb3-5bda-a805-7e6e930f692b")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "R1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "I2S_SD"
+		(at 116.84 153.67 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e178de29-5202-5b49-b357-9a49900da6cf")
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 116.84 161.29 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "403e8622-0365-5a0b-b1e7-67e987a84ee7")
+		(property "Reference" "#PWR028"
+			(at 119.84 153.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 119.84 169.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 116.84 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 116.84 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 116.84 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6d4e9311-1120-5db9-8fa8-6ffcf4b57a44")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR028")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:C")
+		(at 157.48 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "89c71a03-59bd-5026-a54c-565a4026311b")
+		(property "Reference" "C3"
+			(at 160.48 149.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF C0G"
+			(at 160.48 165.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "sensor:C_1206_3216Metric"
+			(at 157.48 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://content.kemet.com/datasheets/KEM_C1003_C0G_SMD.pdf"
+			(at 157.48 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Microphone decoupling, C0G 25 V 1206"
+			(at 157.48 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "KEMET"
+			(at 157.48 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C1206C104J3GACTU"
+			(at 157.48 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4087,15 +5611,15 @@
 	)
 	(symbol
 		(lib_id "sensor:+3V3")
-		(at 238.76 87.63 0)
+		(at 157.48 153.67 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "a0196b4b-939c-5def-95e9-ddef88453181")
-		(property "Reference" "#PWR017"
-			(at 241.76 79.63 0)
+		(uuid "3bd4a7ca-81a2-54ad-918f-4a569b399c0c")
+		(property "Reference" "#PWR029"
+			(at 160.48 145.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4105,7 +5629,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 241.76 96.13 0)
+			(at 160.48 162.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4114,7 +5638,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 238.76 87.63 0)
+			(at 157.48 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4123,7 +5647,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 238.76 87.63 0)
+			(at 157.48 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4132,7 +5656,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 238.76 87.63 0)
+			(at 157.48 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4141,12 +5665,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "63211b44-0d72-5da4-9122-1f817274e13b")
+			(uuid "c7339beb-92f7-5d69-870f-11304f5da45e")
 		)
 		(instances
 			(project "ring_board"
 				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "#PWR017")
+					(reference "#PWR029")
 					(unit 1)
 				)
 			)
@@ -4154,15 +5678,15 @@
 	)
 	(symbol
 		(lib_id "sensor:GND")
-		(at 238.76 95.25 0)
+		(at 157.48 161.29 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "5e37a71d-43d1-553f-8c44-0f6518186ec9")
-		(property "Reference" "#PWR018"
-			(at 241.76 87.25 0)
+		(uuid "61c84967-64db-5be6-8c9c-8e1f6c393218")
+		(property "Reference" "#PWR030"
+			(at 160.48 153.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4172,7 +5696,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 241.76 103.75 0)
+			(at 160.48 169.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4181,7 +5705,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 238.76 95.25 0)
+			(at 157.48 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4190,7 +5714,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 238.76 95.25 0)
+			(at 157.48 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4199,7 +5723,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 238.76 95.25 0)
+			(at 157.48 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4208,812 +5732,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "118d889d-3bdf-57d9-ae70-0be52e894c6a")
+			(uuid "80305124-b4b8-5205-8dbb-274b41fa4b54")
 		)
 		(instances
 			(project "ring_board"
 				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "#PWR018")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:R")
-		(at 35.56 157.48 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "31042d36-fef7-5886-bad3-a46fe9fe86e1")
-		(property "Reference" "R1"
-			(at 38.56 149.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "100k"
-			(at 38.56 165.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "sensor:R_0402_1005Metric"
-			(at 35.56 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 35.56 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "I2S SD pull-down (microphone datasheet)"
-			(at 35.56 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Manufacturer" "any"
-			(at 35.56 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "0402 1% 100 kOhm"
-			(at 35.56 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "b55edf6b-cf40-5ec2-afdb-b03beaef0161")
-		)
-		(pin "2"
-			(uuid "88ede46a-0eb3-5bda-a805-7e6e930f692b")
-		)
-		(instances
-			(project "ring_board"
-				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "R1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(label "I2S_SD"
-		(at 35.56 153.67 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "37153462-e3dc-5235-a26e-4e1d0a822264")
-	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 35.56 161.29 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "e08ff9d1-d482-54f4-9e1a-b93c488e9c56")
-		(property "Reference" "#PWR019"
-			(at 38.56 153.29 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 38.56 169.79 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 35.56 161.29 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 35.56 161.29 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 35.56 161.29 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "c40f48e5-7ed8-55ec-948c-24af6a8cc695")
-		)
-		(instances
-			(project "ring_board"
-				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "#PWR019")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:Conn_01x06")
-		(at 76.2 157.48 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "e2e4a1ee-f8be-5b69-8d1a-e42ea6c22dfd")
-		(property "Reference" "J3"
-			(at 79.2 149.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "mic carrier"
-			(at 79.2 165.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "sensor:Mic_Carrier_Land_2x3"
-			(at 76.2 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 76.2 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Land for the microphone carrier's castellated pads; window under the microphone"
-			(at 76.2 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Manufacturer" ""
-			(at 76.2 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" ""
-			(at 76.2 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "b4af8029-8bb7-5ce0-958c-713202cbbfd7")
-		)
-		(pin "2"
-			(uuid "86d12458-a06f-5e37-aa9d-2190b9e74d73")
-		)
-		(pin "3"
-			(uuid "b9253e72-1ac3-52e1-8c43-cb7195917713")
-		)
-		(pin "4"
-			(uuid "cb453789-8f0d-5dd4-a498-e6eae6c8900f")
-		)
-		(pin "5"
-			(uuid "67e4530e-8e8a-5d6c-9bc3-5059bcf10948")
-		)
-		(pin "6"
-			(uuid "a3446571-420e-5edf-ab0a-1db663dff24a")
-		)
-		(instances
-			(project "ring_board"
-				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "J3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(label "I2S_SD"
-		(at 71.12 152.4 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "64ee2741-905a-5d19-8a74-63362db6e016")
-	)
-	(label "I2S_SCK"
-		(at 71.12 154.94 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "68908b4b-8736-5078-8372-77289b5f14d0")
-	)
-	(label "I2S_WS"
-		(at 71.12 157.48 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "aecaa44f-8a5d-55a4-ac77-2cd1513cce17")
-	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 71.12 160.02 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "29bc7b0a-cb74-5278-92f0-4a2c57a68559")
-		(property "Reference" "#PWR020"
-			(at 74.12 152.02 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 74.12 168.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 71.12 160.02 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 71.12 160.02 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 71.12 160.02 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "de7d2fb0-6dbd-552b-ad24-b91c40b95c62")
-		)
-		(instances
-			(project "ring_board"
-				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "#PWR020")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 71.12 162.56 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "99cddd91-62f9-517e-839e-6b8342e247d7")
-		(property "Reference" "#PWR021"
-			(at 74.12 154.56 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 74.12 171.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 71.12 162.56 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 71.12 162.56 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 71.12 162.56 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "e2a2d41d-9d3f-5fbc-b0e5-bd8da66b101b")
-		)
-		(instances
-			(project "ring_board"
-				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "#PWR021")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:+3V3")
-		(at 71.12 165.1 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "abb4d07c-d233-5472-86fc-fcb9cf44163b")
-		(property "Reference" "#PWR022"
-			(at 74.12 157.1 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 74.12 173.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 71.12 165.1 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 71.12 165.1 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 71.12 165.1 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "19669a82-5def-5d63-a8d6-dffd50b03797")
-		)
-		(instances
-			(project "ring_board"
-				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "#PWR022")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:Conn_01x01")
-		(at 116.84 157.48 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "26224649-aeb7-50f8-82e3-1df9ca2d39b2")
-		(property "Reference" "H1"
-			(at 119.84 149.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "spacer 1.5"
-			(at 119.84 165.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "sensor:Wurth_WA-SMSI_M2_SMT_Spacer_L1.5mm"
-			(at 116.84 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://www.we-online.com/catalog/datasheet/9774015243R.pdf"
-			(at 116.84 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "SMT steel spacer M2, 1.5 mm, tin: the MSR-2's board rests on it under the face plate's posts (D-68)"
-			(at 116.84 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Manufacturer" "Wurth Elektronik"
-			(at 116.84 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "9774015243R"
-			(at 116.84 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "104568e0-3e10-597b-9cd1-ec7579d31418")
-		)
-		(instances
-			(project "ring_board"
-				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "H1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 111.76 157.48 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "6f369af2-47c7-59f5-b6f9-ece936952f7f")
-		(property "Reference" "#PWR023"
-			(at 114.76 149.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 114.76 165.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 111.76 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 111.76 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 111.76 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "f6b0f36f-8174-53a4-ba23-2b96a65349ca")
-		)
-		(instances
-			(project "ring_board"
-				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "#PWR023")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:Conn_01x01")
-		(at 157.48 157.48 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "eede6eee-ecaf-5285-b6b9-3cda15f76590")
-		(property "Reference" "H2"
-			(at 160.48 149.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "spacer 1.5"
-			(at 160.48 165.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "sensor:Wurth_WA-SMSI_M2_SMT_Spacer_L1.5mm"
-			(at 157.48 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://www.we-online.com/catalog/datasheet/9774015243R.pdf"
-			(at 157.48 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "SMT steel spacer M2, 1.5 mm, tin: the MSR-2's board rests on it under the face plate's posts (D-68)"
-			(at 157.48 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Manufacturer" "Wurth Elektronik"
-			(at 157.48 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "9774015243R"
-			(at 157.48 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "b1f11036-675a-5d85-90a7-8cdbb554095d")
-		)
-		(instances
-			(project "ring_board"
-				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "H2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 152.4 157.48 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "6a01d93b-4e34-51c6-a330-d7ba07920f70")
-		(property "Reference" "#PWR024"
-			(at 155.4 149.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 155.4 165.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 152.4 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 152.4 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 152.4 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "5ae6495b-f7d5-5968-942d-4ca685b66a48")
-		)
-		(instances
-			(project "ring_board"
-				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "#PWR024")
+					(reference "#PWR030")
 					(unit 1)
 				)
 			)
@@ -5027,8 +5751,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "77d6da88-70e7-556e-b254-27f757b3b3d4")
-		(property "Reference" "H3"
+		(uuid "26224649-aeb7-50f8-82e3-1df9ca2d39b2")
+		(property "Reference" "H1"
 			(at 201.12 149.48 0)
 			(effects
 				(font
@@ -5092,12 +5816,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "3603103d-9325-57df-ae20-298912fa2dda")
+			(uuid "104568e0-3e10-597b-9cd1-ec7579d31418")
 		)
 		(instances
 			(project "ring_board"
 				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "H3")
+					(reference "H1")
 					(unit 1)
 				)
 			)
@@ -5111,8 +5835,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "9ede6cf6-008d-5768-ae07-13372f70ecb3")
-		(property "Reference" "#PWR025"
+		(uuid "50ebdf94-0af1-59b4-bb57-1f21a85195fe")
+		(property "Reference" "#PWR031"
 			(at 196.04 149.48 0)
 			(effects
 				(font
@@ -5159,12 +5883,314 @@
 			)
 		)
 		(pin "1"
-			(uuid "3ad61e21-0d6e-5c1a-aefc-d3766ffd7997")
+			(uuid "bb9fbc1c-c3b7-5e5f-a67b-13aea21d9aba")
 		)
 		(instances
 			(project "ring_board"
 				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "#PWR025")
+					(reference "#PWR031")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:Conn_01x01")
+		(at 238.76 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "eede6eee-ecaf-5285-b6b9-3cda15f76590")
+		(property "Reference" "H2"
+			(at 241.76 149.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "spacer 1.5"
+			(at 241.76 165.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "sensor:Wurth_WA-SMSI_M2_SMT_Spacer_L1.5mm"
+			(at 238.76 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.we-online.com/catalog/datasheet/9774015243R.pdf"
+			(at 238.76 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "SMT steel spacer M2, 1.5 mm, tin: the MSR-2's board rests on it under the face plate's posts (D-68)"
+			(at 238.76 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Wurth Elektronik"
+			(at 238.76 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "9774015243R"
+			(at 238.76 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b1f11036-675a-5d85-90a7-8cdbb554095d")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "H2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 233.68 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "7d6dccf0-c62d-5bb9-bf1c-2d3522731de8")
+		(property "Reference" "#PWR032"
+			(at 236.68 149.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 236.68 165.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 233.68 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 233.68 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 233.68 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "331b76d2-d5f9-5d44-aada-1b4e009e794e")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR032")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:Conn_01x01")
+		(at 35.56 223.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "77d6da88-70e7-556e-b254-27f757b3b3d4")
+		(property "Reference" "H3"
+			(at 38.56 215.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "spacer 1.5"
+			(at 38.56 232.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "sensor:Wurth_WA-SMSI_M2_SMT_Spacer_L1.5mm"
+			(at 35.56 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.we-online.com/catalog/datasheet/9774015243R.pdf"
+			(at 35.56 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "SMT steel spacer M2, 1.5 mm, tin: the MSR-2's board rests on it under the face plate's posts (D-68)"
+			(at 35.56 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Wurth Elektronik"
+			(at 35.56 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "9774015243R"
+			(at 35.56 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "3603103d-9325-57df-ae20-298912fa2dda")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "H3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 30.48 223.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "8e914b6c-cebe-5fbe-a071-670b6e617b67")
+		(property "Reference" "#PWR033"
+			(at 33.48 215.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 33.48 232.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 30.48 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 30.48 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 30.48 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "320ea046-82a9-5eee-a085-eee281eb941a")
+		)
+		(instances
+			(project "ring_board"
+				(path "/0e7919e5-f374-531e-adff-e904971db49a"
+					(reference "#PWR033")
 					(unit 1)
 				)
 			)
@@ -5245,8 +6271,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "c3c8f038-9800-5055-8796-0a0b37944a80")
-		(property "Reference" "#PWR026"
+		(uuid "d57ea9e3-6cbd-5175-b94a-bfc65ee17773")
+		(property "Reference" "#PWR034"
 			(at 38.56 42.8 0)
 			(effects
 				(font
@@ -5293,12 +6319,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "e37be63c-b0e7-5b45-aa1b-0a057ec85c2a")
+			(uuid "9828d28e-1d04-5c80-a781-b2711f64fefe")
 		)
 		(instances
 			(project "ring_board"
 				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "#PWR026")
+					(reference "#PWR034")
 					(unit 1)
 				)
 			)
@@ -5379,8 +6405,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "a8df38e9-7886-51f8-8057-c3ff5348c91c")
-		(property "Reference" "#PWR027"
+		(uuid "026825dd-b879-53b2-b136-8712fcdebcbc")
+		(property "Reference" "#PWR035"
 			(at 69.04 42.8 0)
 			(effects
 				(font
@@ -5427,12 +6453,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "470acd6c-fb7d-54ac-9115-162b08003937")
+			(uuid "cc97373d-0ca2-5590-8f54-9b271b865bc5")
 		)
 		(instances
 			(project "ring_board"
 				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "#PWR027")
+					(reference "#PWR035")
 					(unit 1)
 				)
 			)
@@ -5513,8 +6539,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "403e8622-0365-5a0b-b1e7-67e987a84ee7")
-		(property "Reference" "#PWR028"
+		(uuid "a1d12bec-be73-5260-9c01-6a6a69adb2d6")
+		(property "Reference" "#PWR036"
 			(at 99.52 42.8 0)
 			(effects
 				(font
@@ -5561,18 +6587,18 @@
 			)
 		)
 		(pin "1"
-			(uuid "6d4e9311-1120-5db9-8fa8-6ffcf4b57a44")
+			(uuid "de3aebb2-c75d-5547-94c4-e400661dd02d")
 		)
 		(instances
 			(project "ring_board"
 				(path "/0e7919e5-f374-531e-adff-e904971db49a"
-					(reference "#PWR028")
+					(reference "#PWR036")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(text "Ring board (docs/DESIGN.md D-50): FR4 1.6 mm round the insert's plug, against the wall.\nJ1: 5 V from the wiring board's J2 over a 6-way 0.5 mm FFC (pinout mirror-symmetric).\nJ2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin).\nU1: SHT45, I2C on the MSR-2 bus (SDA = IO1, SCL = IO0).\nJ3: land for the mic carrier (I2S microphone, D-29): SCK = IO4, WS = IO6, SD = IO7.\nH1-H3: SMT spacers under the MSR-2's board. Copper keeps 8 mm from the box opening."
+	(text "Ring board (docs/DESIGN.md D-50): FR4 1.6 mm round the insert's plug, against the wall.\nJ1: 5 V from the wiring board's J2 over a 6-way 0.5 mm FFC (pinout mirror-symmetric).\nJ2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin).\nU1: SHT45, I2C on the MSR-2 bus (SDA = IO1, SCL = IO0).\nMK1: top-port PDM microphone, SELECT low; U2: ADAU7002 PDM to I2S, CONFIG high = I2S (D-83).\nI2S to the MSR-2: SCK = IO4, WS = IO6, SD = IO7. Sample rate >= 16 kHz (PDM clock 64 x fs >= 1 MHz).\nH1-H3: SMT spacers under the MSR-2's board. Copper keeps 8 mm from the box opening."
 		(exclude_from_sim no)
 		(at 25 180 0)
 		(effects

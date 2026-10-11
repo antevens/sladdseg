@@ -5,12 +5,12 @@ plates; change with `make order NA_PLATES=4 EU_PLATES=1`.
 
 | File | Contents |
 | --- | --- |
-| `na_digikey.csv`, `na_mouser.csv` | NA plate: wiring board, ring board, mic carrier, riser, back cover flex; spacer studs, standoffs, FFC |
-| `eu_digikey.csv`, `eu_mouser.csv` | EU plate: mains board, 5 V board, EU cap board, mic carrier, back cover flex |
+| `na_digikey.csv`, `na_mouser.csv` | NA plate: wiring board, ring board, riser, back cover flex; spacer studs, standoffs, FFC |
+| `eu_digikey.csv`, `eu_mouser.csv` | EU plate: mains board, 5 V board, EU cap board, back cover flex |
 | `all_digikey.csv`, `all_mouser.csv` | Both variants merged by part number |
 | `<name>_digikey_rest_mouser.csv` | Parts DigiKey does not carry (Marquardt 1802.2504): order these from Mouser with a DigiKey order |
 | `<name>_mouser_rest_digikey.csv` | Parts Mouser does not carry (WAGO 2604-3102, Harwin P70-2200045): order these from DigiKey with a Mouser order |
-| `pcbway/` | PCBWay order packs for the boards ready to order: option A (PCBWay fits the SMD parts) and option B (bare boards); see `pcbway/README.md` |
+| `pcbway/` | PCBWay order packs for every board (ring board, EU cap board and cover flex as fit-test prototypes): option A (PCBWay fits the SMD parts) and option B (bare boards); see `pcbway/README.md` |
 
 ## Importing
 
@@ -23,14 +23,34 @@ plates; change with `make order NA_PLATES=4 EU_PLATES=1`.
   (Mouser Part Number, Mfr Part Number, Manufacturer, Quantity, Customer Part Number). The Mouser part
   number is filled in where Mouser's import does not match the MPN (`MOUSER` in `pcb/tools/order_bom.py`).
 
+## Live stock and upload (`make stock`, `make order-push`)
+
+`pcb/tools/distributors.py` uses the distributors' APIs. Keys come from the environment only, never the repo:
+
+| Variable | For |
+| --- | --- |
+| `DIGIKEY_CLIENT_ID`, `DIGIKEY_CLIENT_SECRET` | DigiKey Product Information v4 (an app at developer.digikey.com, client credentials): stock, status, lead time |
+| `MOUSER_SEARCH_KEY` | Mouser Search API (My Mouser, APIs): stock, lifecycle, Mouser part numbers |
+| `MOUSER_CART_KEY` | Mouser Cart API: the cart upload |
+| `DIGIKEY_SITE`, `DIGIKEY_CURRENCY`, `MOUSER_COUNTRY`, `MOUSER_CURRENCY` | optional, default CA / CAD |
+
+- `make stock` (also run by `make order` when keys are set): every part in the lists at both distributors (stock, status, lead time, distributor part number),
+  written to `build/stock.md`. It fails when a part breaks the parts rule (D-84: active and in stock or normally
+  stocked at one of them); "review" marks a part listed active with none in stock. A distributor without keys is
+  skipped.
+- `make order-push` (`PRIMARY=digikey` default, or `mouser`; `NA_PLATES`, `EU_PLATES`): the "all" list. The
+  primary distributor gets every part it carries, the other one the rest (as the `_rest_` files). DigiKey: the
+  list goes to myLists' third-party endpoint (no key) and comes back as a single-use link that opens it as a
+  cart or a myLists list. Mouser: a cart (Search key for the part numbers, Cart key for the cart); the cart key
+  is printed, the cart is in My Mouser. `python3 pcb/tools/distributors.py push 3 2 --dry-run` shows the
+  payloads without sending.
+
 ## Quantities
 
 Per-plate count times the plates, plus spares: half again (at least 2) for the small hand-soldered parts
-(0402 passives rounded up to tens), one for the rest. Stock and pricing are not checked: some parts
-(the Marquardt rocker in particular) may not be stocked by both distributors.
+(0402 passives rounded up to tens), one for the rest. Pricing is not checked; stock with `make stock`.
 
 ## Not in the lists
 
-- The CN2 plug on the ring board and the EU cap board (part and contact map open).
 - The PCBs and flexes (PCBWay), the IKEA BILRESA remotes, the Apollo MSR-2 and its GPIO add-on, the #6-32
   box screws, the NA M2 × 5 and nylon M3 × 8 screws and heatshrink, the EU's M2 thread-forming screws, filament.

@@ -269,6 +269,222 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "sensor:ADAU7002"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "ADAU7002"
+				(at 0 -6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "sensor:Analog_WLCSP-8_0.76x1.56mm_P0.4mm"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/ADAU7002.pdf"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Stereo PDM to I2S / TDM converter, 1.62-3.6 V, WLCSP-8"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "PDM I2S decimator microphone"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "ADAU7002_0_1"
+				(rectangle
+					(start -7.62 5.08)
+					(end 7.62 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "ADAU7002_1_1"
+				(pin input line
+					(at -10.16 2.54 0)
+					(length 2.54)
+					(name "PDM_DAT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at -10.16 0 0)
+					(length 2.54)
+					(name "PDM_CLK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -10.16 -2.54 0)
+					(length 2.54)
+					(name "CONFIG"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "D2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 10.16 2.54 180)
+					(length 2.54)
+					(name "SDATA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 10.16 0 180)
+					(length 2.54)
+					(name "BCLK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 10.16 -2.54 180)
+					(length 2.54)
+					(name "LRCLK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "C2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 7.62 270)
+					(length 2.54)
+					(name "IOVDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "D1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "C1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
 		(symbol "sensor:C"
 			(pin_numbers
 				(hide yes)
@@ -523,7 +739,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "sensor:Conn_01x06"
+		(symbol "sensor:Conn_02x12_Odd_Even"
 			(pin_names
 				(offset 1.016)
 				(hide yes)
@@ -532,15 +748,15 @@
 			(in_bom yes)
 			(on_board yes)
 			(property "Reference" "J"
-				(at 0 7.62 0)
+				(at 1.27 15.24 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
 				)
 			)
-			(property "Value" "Conn_01x06"
-				(at 0 -10.16 0)
+			(property "Value" "Conn_02x12_Odd_Even"
+				(at 1.27 -17.78 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -565,265 +781,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "connector"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "Connector*:*_1x??_*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "Conn_01x06_1_1"
-				(rectangle
-					(start -1.27 6.35)
-					(end 1.27 -8.89)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-				(rectangle
-					(start -1.27 5.207)
-					(end 0 4.953)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 2.667)
-					(end 0 2.413)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 0.127)
-					(end 0 -0.127)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 -2.413)
-					(end 0 -2.667)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 -4.953)
-					(end 0 -5.207)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 -7.493)
-					(end 0 -7.747)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(pin passive line
-					(at -5.08 5.08 0)
-					(length 3.81)
-					(name "Pin_1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 2.54 0)
-					(length 3.81)
-					(name "Pin_2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 0 0)
-					(length 3.81)
-					(name "Pin_3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -2.54 0)
-					(length 3.81)
-					(name "Pin_4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -5.08 0)
-					(length 3.81)
-					(name "Pin_5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -7.62 0)
-					(length 3.81)
-					(name "Pin_6"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "6"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "sensor:Conn_02x15_Odd_Even"
-			(pin_names
-				(offset 1.016)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "J"
-				(at 1.27 20.32 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "Conn_02x15_Odd_Even"
-				(at 1.27 -20.32 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Generic connector, double row, 02x15, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(property "Description" "Generic connector, double row, 02x12, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"
 				(at 0 0 0)
 				(effects
 					(font
@@ -850,38 +808,16 @@
 					(hide yes)
 				)
 			)
-			(symbol "Conn_02x15_Odd_Even_1_1"
+			(symbol "Conn_02x12_Odd_Even_1_1"
 				(rectangle
-					(start -1.27 19.05)
-					(end 3.81 -19.05)
+					(start -1.27 13.97)
+					(end 3.81 -16.51)
 					(stroke
 						(width 0.254)
 						(type default)
 					)
 					(fill
 						(type background)
-					)
-				)
-				(rectangle
-					(start -1.27 17.907)
-					(end 0 17.653)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 15.367)
-					(end 0 15.113)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
 					)
 				)
 				(rectangle
@@ -1008,39 +944,6 @@
 				(rectangle
 					(start -1.27 -15.113)
 					(end 0 -15.367)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 -17.653)
-					(end 0 -17.907)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 17.907)
-					(end 2.54 17.653)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 15.367)
-					(end 2.54 15.113)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -1181,19 +1084,8 @@
 						(type none)
 					)
 				)
-				(rectangle
-					(start 3.81 -17.653)
-					(end 2.54 -17.907)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
 				(pin passive line
-					(at -5.08 17.78 0)
+					(at -5.08 12.7 0)
 					(length 3.81)
 					(name "Pin_1"
 						(effects
@@ -1211,7 +1103,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 15.24 0)
+					(at -5.08 10.16 0)
 					(length 3.81)
 					(name "Pin_3"
 						(effects
@@ -1229,7 +1121,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 12.7 0)
+					(at -5.08 7.62 0)
 					(length 3.81)
 					(name "Pin_5"
 						(effects
@@ -1247,7 +1139,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 10.16 0)
+					(at -5.08 5.08 0)
 					(length 3.81)
 					(name "Pin_7"
 						(effects
@@ -1265,7 +1157,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 7.62 0)
+					(at -5.08 2.54 0)
 					(length 3.81)
 					(name "Pin_9"
 						(effects
@@ -1283,7 +1175,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 5.08 0)
+					(at -5.08 0 0)
 					(length 3.81)
 					(name "Pin_11"
 						(effects
@@ -1301,7 +1193,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 2.54 0)
+					(at -5.08 -2.54 0)
 					(length 3.81)
 					(name "Pin_13"
 						(effects
@@ -1319,7 +1211,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 0 0)
+					(at -5.08 -5.08 0)
 					(length 3.81)
 					(name "Pin_15"
 						(effects
@@ -1337,7 +1229,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -2.54 0)
+					(at -5.08 -7.62 0)
 					(length 3.81)
 					(name "Pin_17"
 						(effects
@@ -1355,7 +1247,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -5.08 0)
+					(at -5.08 -10.16 0)
 					(length 3.81)
 					(name "Pin_19"
 						(effects
@@ -1373,7 +1265,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -7.62 0)
+					(at -5.08 -12.7 0)
 					(length 3.81)
 					(name "Pin_21"
 						(effects
@@ -1391,7 +1283,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -10.16 0)
+					(at -5.08 -15.24 0)
 					(length 3.81)
 					(name "Pin_23"
 						(effects
@@ -1409,61 +1301,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -12.7 0)
-					(length 3.81)
-					(name "Pin_25"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "25"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -15.24 0)
-					(length 3.81)
-					(name "Pin_27"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "27"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -17.78 0)
-					(length 3.81)
-					(name "Pin_29"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "29"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 17.78 180)
+					(at 7.62 12.7 180)
 					(length 3.81)
 					(name "Pin_2"
 						(effects
@@ -1481,7 +1319,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 15.24 180)
+					(at 7.62 10.16 180)
 					(length 3.81)
 					(name "Pin_4"
 						(effects
@@ -1499,7 +1337,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 12.7 180)
+					(at 7.62 7.62 180)
 					(length 3.81)
 					(name "Pin_6"
 						(effects
@@ -1517,7 +1355,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 10.16 180)
+					(at 7.62 5.08 180)
 					(length 3.81)
 					(name "Pin_8"
 						(effects
@@ -1535,7 +1373,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 7.62 180)
+					(at 7.62 2.54 180)
 					(length 3.81)
 					(name "Pin_10"
 						(effects
@@ -1553,7 +1391,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 5.08 180)
+					(at 7.62 0 180)
 					(length 3.81)
 					(name "Pin_12"
 						(effects
@@ -1571,7 +1409,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 2.54 180)
+					(at 7.62 -2.54 180)
 					(length 3.81)
 					(name "Pin_14"
 						(effects
@@ -1589,7 +1427,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 0 180)
+					(at 7.62 -5.08 180)
 					(length 3.81)
 					(name "Pin_16"
 						(effects
@@ -1607,7 +1445,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 -2.54 180)
+					(at 7.62 -7.62 180)
 					(length 3.81)
 					(name "Pin_18"
 						(effects
@@ -1625,7 +1463,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 -5.08 180)
+					(at 7.62 -10.16 180)
 					(length 3.81)
 					(name "Pin_20"
 						(effects
@@ -1643,7 +1481,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 -7.62 180)
+					(at 7.62 -12.7 180)
 					(length 3.81)
 					(name "Pin_22"
 						(effects
@@ -1661,7 +1499,7 @@
 					)
 				)
 				(pin passive line
-					(at 7.62 -10.16 180)
+					(at 7.62 -15.24 180)
 					(length 3.81)
 					(name "Pin_24"
 						(effects
@@ -1671,60 +1509,6 @@
 						)
 					)
 					(number "24"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 -12.7 180)
-					(length 3.81)
-					(name "Pin_26"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "26"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 -15.24 180)
-					(length 3.81)
-					(name "Pin_28"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "28"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 -17.78 180)
-					(length 3.81)
-					(name "Pin_30"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "30"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2300,6 +2084,254 @@
 						)
 					)
 					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "sensor:SPK0641HT4H-1"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "MK"
+				(at 5.08 6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "SPK0641HT4H-1"
+				(at 8.89 -6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "sensor:Knowles_SPK0641HT4H-1_3x4mm"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://www.knowles.com/docs/default-source/model-downloads/spk0641ht4h-1-rev-a.pdf"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Knowles PDM MEMS microphone, top port, LGA-8"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "microphone MEMS PDM"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Knowles*SPK0641*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "SPK0641HT4H-1_1_1"
+				(rectangle
+					(start -7.62 5.08)
+					(end 7.62 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -5.08 1.27)
+						(xy -5.08 -1.27)
+					)
+					(stroke
+						(width 0.381)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center -3.81 0)
+					(radius 1.27)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin power_in line
+					(at 0 7.62 270)
+					(length 2.54)
+					(name "VDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 10.16 2.54 180)
+					(length 2.54)
+					(name "SEL"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 10.16 0 180)
+					(length 2.54)
+					(name "CLOCK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 10.16 -2.54 180)
+					(length 2.54)
+					(name "DATA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2942,7 +2974,7 @@
 		)
 	)
 	(symbol
-		(lib_id "sensor:Conn_02x15_Odd_Even")
+		(lib_id "sensor:Conn_02x12_Odd_Even")
 		(at 157.48 91.44 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -2959,7 +2991,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "CN2 mate (TBD)"
+		(property "Value" "55909-2474"
 			(at 160.48 99.94 0)
 			(effects
 				(font
@@ -2968,7 +3000,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:B2B_0.4mm_2x15_PLACEHOLDER"
+		(property "Footprint" "sensor:Molex_SlimStack_55909-2474_2x12_P0.40mm_Vertical"
 			(at 157.48 91.44 0)
 			(effects
 				(font
@@ -2977,7 +3009,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.molex.com/en-us/products/part-detail/559092474"
 			(at 157.48 91.44 0)
 			(effects
 				(font
@@ -2986,7 +3018,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Board-to-board plug mating the MSR-2's rear connector CN2, 0.4 mm, 2 rows (part and contact map unconfirmed)"
+		(property "Description" "SlimStack plug 24 contacts, 0.4 mm, 2 rows, mating the MSR-2's CN2 (assumed Molex 51338-2474, 1.5 mm mated; land pattern and contact map placeholders, D-82)"
 			(at 157.48 91.44 0)
 			(effects
 				(font
@@ -2995,7 +3027,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "TBD"
+		(property "Manufacturer" "Molex"
 			(at 157.48 91.44 0)
 			(effects
 				(font
@@ -3004,7 +3036,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "TBD"
+		(property "MPN" "55909-2474"
 			(at 157.48 91.44 0)
 			(effects
 				(font
@@ -3049,15 +3081,6 @@
 		(pin "23"
 			(uuid "3048295b-fdd4-56ae-9151-75322a7cfdbe")
 		)
-		(pin "25"
-			(uuid "d6f3cf05-1046-5c4a-b20d-a86f6b7e90ff")
-		)
-		(pin "27"
-			(uuid "171df57f-ebbb-55b6-93c1-a53e756e2aa3")
-		)
-		(pin "29"
-			(uuid "09a0c2ff-da3f-5563-a836-9ba8c54d108e")
-		)
 		(pin "2"
 			(uuid "01d420f1-c092-5312-8020-06c3d69756a2")
 		)
@@ -3094,15 +3117,6 @@
 		(pin "24"
 			(uuid "aa5bcf3a-82a9-5692-adf0-1b63c053638c")
 		)
-		(pin "26"
-			(uuid "96f59128-d311-5b5e-9539-3440d96eb24e")
-		)
-		(pin "28"
-			(uuid "409d4b6e-877f-5a35-a0e8-85f21468cb4a")
-		)
-		(pin "30"
-			(uuid "90b783aa-c1f4-56df-be5b-60e2a1c1e9ac")
-		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
@@ -3111,14 +3125,6 @@
 				)
 			)
 		)
-	)
-	(no_connect
-		(at 152.4 73.66)
-		(uuid "a45379f9-36af-5295-b755-3696d0435867")
-	)
-	(no_connect
-		(at 152.4 76.2)
-		(uuid "1877b528-ef57-5df6-942f-6cb73b3e9182")
 	)
 	(no_connect
 		(at 152.4 78.74)
@@ -3144,13 +3150,9 @@
 		(at 152.4 91.44)
 		(uuid "fa67eecd-7acb-5dd9-a221-e98d9b43c536")
 	)
-	(no_connect
-		(at 152.4 93.98)
-		(uuid "1677ccec-521e-55a4-9c0d-4cf162d6eed6")
-	)
 	(symbol
 		(lib_id "sensor:+5V")
-		(at 152.4 96.52 0)
+		(at 152.4 93.98 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -3158,7 +3160,7 @@
 		(dnp no)
 		(uuid "e9700373-b2ed-5e35-a267-13808412ff6a")
 		(property "Reference" "#PWR005"
-			(at 155.4 88.52 0)
+			(at 155.4 85.98 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3168,6 +3170,73 @@
 			)
 		)
 		(property "Value" "+5V"
+			(at 155.4 102.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 152.4 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 152.4 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 152.4 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "46c45b07-3948-59fb-a042-c1d6b8200123")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "#PWR005")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 152.4 96.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "f0e885db-ef0a-5d76-a974-ea10ef12d079")
+		(property "Reference" "#PWR006"
+			(at 155.4 88.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
 			(at 155.4 105.02 0)
 			(effects
 				(font
@@ -3204,73 +3273,6 @@
 			)
 		)
 		(pin "1"
-			(uuid "46c45b07-3948-59fb-a042-c1d6b8200123")
-		)
-		(instances
-			(project "eu_cap_board"
-				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "#PWR005")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 152.4 99.06 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "f0e885db-ef0a-5d76-a974-ea10ef12d079")
-		(property "Reference" "#PWR006"
-			(at 155.4 91.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 155.4 107.56 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 152.4 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 152.4 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 152.4 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
 			(uuid "0a36e724-d152-51f1-852d-9bb0f7e64ac1")
 		)
 		(instances
@@ -3283,6 +3285,17 @@
 		)
 	)
 	(label "I2S_SD"
+		(at 152.4 99.06 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "1e0aa6bb-d9ed-5181-ac1c-54aa801166be")
+	)
+	(label "I2S_WS"
 		(at 152.4 101.6 180)
 		(fields_autoplaced yes)
 		(effects
@@ -3291,7 +3304,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "5572b4bf-8eeb-5afb-aa42-279f1245fe88")
+		(uuid "c1079810-7091-5f67-aa11-a16e6cd038a8")
 	)
 	(label "I2S_SCK"
 		(at 152.4 104.14 180)
@@ -3304,28 +3317,9 @@
 		)
 		(uuid "fa48b704-05fe-58af-9805-3fe58fac664a")
 	)
-	(label "I2S_WS"
-		(at 152.4 106.68 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "a5e19315-469b-5766-a55f-95c7cc4f4117")
-	)
 	(no_connect
-		(at 152.4 109.22)
-		(uuid "768f6819-45e2-5c83-abfd-faee0ab8aae0")
-	)
-	(no_connect
-		(at 165.1 73.66)
-		(uuid "cfb697d5-6039-545e-8112-f7ea28d2ece1")
-	)
-	(no_connect
-		(at 165.1 76.2)
-		(uuid "449775ff-5234-5dd4-ab68-fa4d88c53581")
+		(at 152.4 106.68)
+		(uuid "db08b072-c16c-5e9a-a37b-52a8ca290b65")
 	)
 	(no_connect
 		(at 165.1 78.74)
@@ -3359,11 +3353,18 @@
 		(at 165.1 96.52)
 		(uuid "16d3fda9-e260-534b-a28c-3b920a8fc16d")
 	)
-	(no_connect
-		(at 165.1 99.06)
-		(uuid "9d6e4f11-e3b3-5c0e-b7b0-d031287f47e6")
-	)
 	(label "SCL"
+		(at 165.1 99.06 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d724bca1-ef2d-5df1-a637-df0b0df4209f")
+	)
+	(label "SDA"
 		(at 165.1 101.6 0)
 		(fields_autoplaced yes)
 		(effects
@@ -3372,22 +3373,11 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "5be952a0-98d1-5117-b699-fb7c9f2ee259")
-	)
-	(label "SDA"
-		(at 165.1 104.14 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "3002f7fe-c519-5907-a3fe-beea001f8a5a")
+		(uuid "2e7bbe92-e91b-57fc-9c7f-aac362f3892e")
 	)
 	(symbol
 		(lib_id "sensor:+3V3")
-		(at 165.1 106.68 0)
+		(at 165.1 104.14 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -3395,7 +3385,7 @@
 		(dnp no)
 		(uuid "a0ab89f4-be43-546f-9848-3faed9a8a9a8")
 		(property "Reference" "#PWR007"
-			(at 168.1 98.68 0)
+			(at 168.1 96.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3405,6 +3395,73 @@
 			)
 		)
 		(property "Value" "+3V3"
+			(at 168.1 112.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 165.1 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 165.1 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 165.1 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "2fdc9d89-30b6-57f2-97f3-ff7d039849b2")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "#PWR007")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 165.1 106.68 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "ffb646ba-b2c3-53da-a0b0-02b8878129f1")
+		(property "Reference" "#PWR008"
+			(at 168.1 98.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
 			(at 168.1 115.18 0)
 			(effects
 				(font
@@ -3441,73 +3498,6 @@
 			)
 		)
 		(pin "1"
-			(uuid "2fdc9d89-30b6-57f2-97f3-ff7d039849b2")
-		)
-		(instances
-			(project "eu_cap_board"
-				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "#PWR007")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 165.1 109.22 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "ffb646ba-b2c3-53da-a0b0-02b8878129f1")
-		(property "Reference" "#PWR008"
-			(at 168.1 101.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 168.1 117.72 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 165.1 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 165.1 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 165.1 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
 			(uuid "5257d657-63eb-5b0b-b964-5412fc824878")
 		)
 		(instances
@@ -3520,15 +3510,15 @@
 		)
 	)
 	(symbol
-		(lib_id "sensor:Conn_01x06")
+		(lib_id "sensor:SPK0641HT4H-1")
 		(at 198.12 91.44 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e480e497-8935-5ec7-ae8a-ebdd434df199")
-		(property "Reference" "J3"
+		(uuid "6f68db6e-2da9-554d-a862-9e20a586b209")
+		(property "Reference" "MK1"
 			(at 201.12 83.44 0)
 			(effects
 				(font
@@ -3537,7 +3527,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "mic carrier"
+		(property "Value" "SPK0641HT4H-1"
 			(at 201.12 99.94 0)
 			(effects
 				(font
@@ -3546,7 +3536,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:Mic_Carrier_Land_2x3"
+		(property "Footprint" "sensor:Knowles_SPK0641HT4H-1_3x4mm"
 			(at 198.12 91.44 0)
 			(effects
 				(font
@@ -3555,7 +3545,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.knowles.com/docs/default-source/model-downloads/spk0641ht4h-1-rev-a.pdf"
 			(at 198.12 91.44 0)
 			(effects
 				(font
@@ -3564,7 +3554,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Land for the microphone carrier's castellated pads; window under the microphone"
+		(property "Description" "PDM MEMS microphone, top port, 1.6-3.6 V; SELECT low"
 			(at 198.12 91.44 0)
 			(effects
 				(font
@@ -3573,7 +3563,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" ""
+		(property "Manufacturer" "Knowles"
 			(at 198.12 91.44 0)
 			(effects
 				(font
@@ -3582,7 +3572,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" ""
+		(property "MPN" "SPK0641HT4H-1"
 			(at 198.12 91.44 0)
 			(effects
 				(font
@@ -3590,70 +3580,43 @@
 				)
 				(hide yes)
 			)
-		)
-		(pin "1"
-			(uuid "402c7bc0-4da2-5b3d-bbf3-4b97a4bfd365")
-		)
-		(pin "2"
-			(uuid "327a35f4-1281-5c31-ac5d-1bdd844d3b14")
-		)
-		(pin "3"
-			(uuid "47c2376e-640b-52e2-8c1a-d83df80dc863")
 		)
 		(pin "4"
-			(uuid "68975417-2b49-536f-a325-f35b01168f23")
+			(uuid "72a8f12d-6331-5e30-9c6c-dfe9eaf441bb")
 		)
 		(pin "5"
-			(uuid "0ca6441f-87a0-53da-8b89-a5faa52d0de3")
+			(uuid "c58c9c07-5c66-56e5-a636-dc1b8c0d8a25")
+		)
+		(pin "3"
+			(uuid "7c79e9bd-13c4-5a82-bf7b-4732137b6240")
+		)
+		(pin "2"
+			(uuid "23748610-8551-5837-9a95-cf8f90347e52")
+		)
+		(pin "1"
+			(uuid "0105bc5f-4f92-5e50-bba0-36737521ee08")
 		)
 		(pin "6"
-			(uuid "a69c7242-1d3a-5928-8cfa-44c04416d0ee")
+			(uuid "4e5e5bdd-80f5-583d-9ce8-952b5b62ecf7")
+		)
+		(pin "7"
+			(uuid "3e86cfd3-7d19-537b-bd98-3204e0515098")
+		)
+		(pin "8"
+			(uuid "731a07d0-67ac-51aa-b23c-609e770401a8")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "J3")
+					(reference "MK1")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(label "I2S_SD"
-		(at 193.04 86.36 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "285c1c80-93c2-537d-9c81-ef704b94ea74")
-	)
-	(label "I2S_SCK"
-		(at 193.04 88.9 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "85eefeca-526f-5b01-b4fa-102c115a44d2")
-	)
-	(label "I2S_WS"
-		(at 193.04 91.44 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "e4c88ee0-443f-5920-b104-0a2bf3b47b9c")
-	)
 	(symbol
-		(lib_id "sensor:GND")
-		(at 193.04 93.98 0)
+		(lib_id "sensor:+3V3")
+		(at 198.12 83.82 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -3661,7 +3624,7 @@
 		(dnp no)
 		(uuid "f27dbea5-168c-54a9-8401-a319ef3d6e60")
 		(property "Reference" "#PWR009"
-			(at 196.04 85.98 0)
+			(at 201.12 75.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3670,8 +3633,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
-			(at 196.04 102.48 0)
+		(property "Value" "+3V3"
+			(at 201.12 92.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3680,7 +3643,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 193.04 93.98 0)
+			(at 198.12 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3689,7 +3652,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 193.04 93.98 0)
+			(at 198.12 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3698,7 +3661,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 193.04 93.98 0)
+			(at 198.12 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3720,7 +3683,7 @@
 	)
 	(symbol
 		(lib_id "sensor:GND")
-		(at 193.04 96.52 0)
+		(at 198.12 99.06 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -3728,7 +3691,7 @@
 		(dnp no)
 		(uuid "7695b37e-da77-53e1-b7cb-920449afcd0c")
 		(property "Reference" "#PWR010"
-			(at 196.04 88.52 0)
+			(at 201.12 91.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3738,7 +3701,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 196.04 105.02 0)
+			(at 201.12 107.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3747,7 +3710,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 193.04 96.52 0)
+			(at 198.12 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3756,7 +3719,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 193.04 96.52 0)
+			(at 198.12 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3765,7 +3728,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 193.04 96.52 0)
+			(at 198.12 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3786,8 +3749,8 @@
 		)
 	)
 	(symbol
-		(lib_id "sensor:+3V3")
-		(at 193.04 99.06 0)
+		(lib_id "sensor:GND")
+		(at 208.28 88.9 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -3795,7 +3758,7 @@
 		(dnp no)
 		(uuid "720deee8-26bc-5da8-810e-fdb821fa43ec")
 		(property "Reference" "#PWR011"
-			(at 196.04 91.06 0)
+			(at 211.28 80.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3804,8 +3767,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+3V3"
-			(at 196.04 107.56 0)
+		(property "Value" "GND"
+			(at 211.28 97.4 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3814,7 +3777,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 193.04 99.06 0)
+			(at 208.28 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3823,7 +3786,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 193.04 99.06 0)
+			(at 208.28 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3832,7 +3795,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 193.04 99.06 0)
+			(at 208.28 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3852,96 +3815,31 @@
 			)
 		)
 	)
-	(symbol
-		(lib_id "sensor:C")
-		(at 238.76 91.44 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "f13eda11-decd-5598-adc7-3ce7b0a047db")
-		(property "Reference" "C3"
-			(at 241.76 83.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
+	(label "PDM_CLK"
+		(at 208.28 91.44 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
 			)
+			(justify left bottom)
 		)
-		(property "Value" "100nF"
-			(at 241.76 99.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
+		(uuid "ec004857-8875-549b-b1eb-3a1cf7da412e")
+	)
+	(label "PDM_DAT"
+		(at 208.28 93.98 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
 			)
+			(justify left bottom)
 		)
-		(property "Footprint" "sensor:C_0402_1005Metric"
-			(at 238.76 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 238.76 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Microphone decoupling"
-			(at 238.76 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Manufacturer" "any"
-			(at 238.76 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "0402 X7R 100 nF 16 V"
-			(at 238.76 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "854d906a-292b-5669-98d7-8eba92c2a085")
-		)
-		(pin "2"
-			(uuid "694afd16-d4f8-531a-9a05-b8e9c5f24059")
-		)
-		(instances
-			(project "eu_cap_board"
-				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "C3")
-					(unit 1)
-				)
-			)
-		)
+		(uuid "c825c5c2-2d8a-590d-b66d-c4c12b710b48")
 	)
 	(symbol
-		(lib_id "sensor:+3V3")
-		(at 238.76 87.63 0)
+		(lib_id "sensor:GND")
+		(at 198.12 99.06 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -3949,7 +3847,7 @@
 		(dnp no)
 		(uuid "af364bad-cb56-5059-8e9c-ce8a0fdd1928")
 		(property "Reference" "#PWR012"
-			(at 241.76 79.63 0)
+			(at 201.12 91.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3958,8 +3856,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+3V3"
-			(at 241.76 96.13 0)
+		(property "Value" "GND"
+			(at 201.12 107.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3968,7 +3866,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 238.76 87.63 0)
+			(at 198.12 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3977,7 +3875,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 238.76 87.63 0)
+			(at 198.12 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3986,7 +3884,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 238.76 87.63 0)
+			(at 198.12 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4008,7 +3906,7 @@
 	)
 	(symbol
 		(lib_id "sensor:GND")
-		(at 238.76 95.25 0)
+		(at 198.12 99.06 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -4016,7 +3914,7 @@
 		(dnp no)
 		(uuid "93ebbe56-b5fb-52a9-b4cc-72b315683da9")
 		(property "Reference" "#PWR013"
-			(at 241.76 87.25 0)
+			(at 201.12 91.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4026,7 +3924,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 241.76 103.75 0)
+			(at 201.12 107.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4035,7 +3933,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 238.76 95.25 0)
+			(at 198.12 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4044,7 +3942,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 238.76 95.25 0)
+			(at 198.12 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4053,7 +3951,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 238.76 95.25 0)
+			(at 198.12 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4074,15 +3972,443 @@
 		)
 	)
 	(symbol
-		(lib_id "sensor:R")
+		(lib_id "sensor:GND")
+		(at 198.12 99.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "ed13bcf5-30fd-5258-8336-ef3f9690e07c")
+		(property "Reference" "#PWR014"
+			(at 201.12 91.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 201.12 107.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 198.12 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 198.12 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 198.12 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "3a7140f9-cf8f-5024-b51e-4f0d78d60fdf")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "#PWR014")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:ADAU7002")
+		(at 238.76 91.44 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "728baa1a-a2ea-5fab-85d0-0656b14d7d56")
+		(property "Reference" "U2"
+			(at 241.76 83.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "ADAU7002"
+			(at 241.76 99.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "sensor:Analog_WLCSP-8_0.76x1.56mm_P0.4mm"
+			(at 238.76 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/ADAU7002.pdf"
+			(at 238.76 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Stereo PDM to I2S converter, WLCSP-8 0.4 mm; CONFIG high = I2S"
+			(at 238.76 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Analog Devices"
+			(at 238.76 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "ADAU7002ACBZ-R7"
+			(at 238.76 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "A1"
+			(uuid "a9784c4b-24ac-5e24-8bcb-1c1375017cec")
+		)
+		(pin "A2"
+			(uuid "03a688cc-4517-5eea-8cde-c346a627a8c2")
+		)
+		(pin "D2"
+			(uuid "d2e5448e-ade3-59fb-aa7e-148820c7c69d")
+		)
+		(pin "B1"
+			(uuid "6bc60fbe-b1cc-50ba-99cb-94793ae69793")
+		)
+		(pin "B2"
+			(uuid "6ec0966f-e1bd-5a91-bd01-46547c90bf9e")
+		)
+		(pin "C2"
+			(uuid "472902d7-f4b9-5a62-93cd-ed80a1682319")
+		)
+		(pin "D1"
+			(uuid "3eae7194-0d62-5fa7-b73a-54760399ead1")
+		)
+		(pin "C1"
+			(uuid "58f8d751-009c-5faa-9c19-3caa6d682f03")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "U2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "PDM_DAT"
+		(at 228.6 88.9 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "e3a8c517-67e4-5a8f-b290-0989fce7c50e")
+	)
+	(label "PDM_CLK"
+		(at 228.6 91.44 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "c2de70e5-0344-57f3-8210-9073eef4cf97")
+	)
+	(symbol
+		(lib_id "sensor:+3V3")
+		(at 228.6 93.98 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "7f8adc2d-46f9-51fd-8e55-dd5fe13fe897")
+		(property "Reference" "#PWR015"
+			(at 231.6 85.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 231.6 102.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 228.6 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 228.6 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 228.6 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "821f322c-02be-5a53-8ab4-a8d4aa8a3fc5")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "#PWR015")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "I2S_SD"
+		(at 248.92 88.9 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "144e4fe0-8d89-5acb-82c9-8a3704dfb746")
+	)
+	(label "I2S_SCK"
+		(at 248.92 91.44 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c4ad144b-092f-5777-937a-575ab8f1a403")
+	)
+	(label "I2S_WS"
+		(at 248.92 93.98 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c26cb4d3-8b35-5bc1-9c9e-aca8b13aa6f8")
+	)
+	(symbol
+		(lib_id "sensor:+3V3")
+		(at 238.76 83.82 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "1b6a0118-6705-5615-976d-d38ee97bce96")
+		(property "Reference" "#PWR016"
+			(at 241.76 75.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 241.76 92.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 238.76 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 238.76 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 238.76 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "4a65590c-ca99-5874-ac94-78f203cb0daf")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "#PWR016")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 238.76 99.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "3122e45a-5fa4-5003-bb13-ee5f0a64178a")
+		(property "Reference" "#PWR017"
+			(at 241.76 91.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 241.76 107.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "bfc23682-c85a-55d4-8f1f-dac5a58ce038")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "#PWR017")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:C")
 		(at 35.56 157.48 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "d43ea883-bed1-56cc-9045-cc2260536778")
-		(property "Reference" "R1"
+		(uuid "52821bb8-23dd-532b-91ba-bc3aef0e1a9a")
+		(property "Reference" "C4"
 			(at 38.56 149.48 0)
 			(effects
 				(font
@@ -4091,7 +4417,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100k"
+		(property "Value" "100nF"
 			(at 38.56 165.98 0)
 			(effects
 				(font
@@ -4100,7 +4426,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:R_0402_1005Metric"
+		(property "Footprint" "sensor:C_0402_1005Metric"
 			(at 35.56 157.48 0)
 			(effects
 				(font
@@ -4118,7 +4444,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "I2S SD pull-down (microphone datasheet)"
+		(property "Description" "ADAU7002 IOVDD decoupling"
 			(at 35.56 157.48 0)
 			(effects
 				(font
@@ -4136,7 +4462,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0402 1% 100 kOhm"
+		(property "MPN" "0402 X7R 100 nF 16 V"
 			(at 35.56 157.48 0)
 			(effects
 				(font
@@ -4146,30 +4472,86 @@
 			)
 		)
 		(pin "1"
-			(uuid "f1d59408-f926-5de7-9422-908cab314f67")
+			(uuid "60e27028-62ba-5d57-aaa4-41dc2c43a842")
 		)
 		(pin "2"
-			(uuid "af20e2de-1968-5736-a722-c67b1cc7cadd")
+			(uuid "74d23c2d-78a0-5512-b373-2a5db150684f")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "R1")
+					(reference "C4")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(label "I2S_SD"
+	(symbol
+		(lib_id "sensor:+3V3")
 		(at 35.56 153.67 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "84383c21-a976-5ae6-a56f-b5fce6f051af")
+		(property "Reference" "#PWR018"
+			(at 38.56 145.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
 			)
-			(justify left bottom)
 		)
-		(uuid "3cc2e895-8991-5483-bad6-7f64e7a81b87")
+		(property "Value" "+3V3"
+			(at 38.56 162.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 35.56 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 35.56 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 35.56 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "33c46733-8f6c-56f8-8eac-dde51c5cc694")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "#PWR018")
+					(unit 1)
+				)
+			)
+		)
 	)
 	(symbol
 		(lib_id "sensor:GND")
@@ -4179,8 +4561,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "ed13bcf5-30fd-5258-8336-ef3f9690e07c")
-		(property "Reference" "#PWR014"
+		(uuid "c7c12e91-54bb-5f70-8861-964ac4a7e2a4")
+		(property "Reference" "#PWR019"
 			(at 38.56 153.29 0)
 			(effects
 				(font
@@ -4227,27 +4609,27 @@
 			)
 		)
 		(pin "1"
-			(uuid "3a7140f9-cf8f-5024-b51e-4f0d78d60fdf")
+			(uuid "b84c88b3-2f5a-5d99-826c-81d70b7ee03c")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "#PWR014")
+					(reference "#PWR019")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "sensor:SHT4x")
+		(lib_id "sensor:R")
 		(at 76.2 157.48 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "08e76d9a-ae97-5604-9ab2-70683fc07bbb")
-		(property "Reference" "U1"
+		(uuid "d43ea883-bed1-56cc-9045-cc2260536778")
+		(property "Reference" "R1"
 			(at 79.2 149.48 0)
 			(effects
 				(font
@@ -4256,7 +4638,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "SHT45"
+		(property "Value" "100k"
 			(at 79.2 165.98 0)
 			(effects
 				(font
@@ -4265,124 +4647,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:Sensirion_DFN-4_1.5x1.5mm_P0.8mm_SHT4x_NoCentralPad"
+		(property "Footprint" "sensor:R_0402_1005Metric"
 			(at 76.2 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://sensirion.com/media/documents/33FD6951/624C4357/Datasheet_SHT4x.pdf"
-			(at 76.2 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Humidity and temperature sensor, I2C 0x44"
-			(at 76.2 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Manufacturer" "Sensirion"
-			(at 76.2 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "SHT45-AD1B-R2"
-			(at 76.2 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "e7e561ca-ca49-5e6a-8ddd-49dbf7541ff1")
-		)
-		(pin "1"
-			(uuid "ae5cec39-ae62-575b-a44b-344c9d8fbf79")
-		)
-		(pin "3"
-			(uuid "4e22c3f1-dac5-5c6b-b4ee-ac976d07c77c")
-		)
-		(pin "4"
-			(uuid "e925c7fe-a82e-5510-aaaf-fa5251e8c1cb")
-		)
-		(instances
-			(project "eu_cap_board"
-				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "U1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(label "SCL"
-		(at 68.58 154.94 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "9d6a511e-3df4-5573-a620-f2384f58f617")
-	)
-	(label "SDA"
-		(at 68.58 160.02 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "a71a7070-11b8-5902-8c86-fdabce3cfc50")
-	)
-	(symbol
-		(lib_id "sensor:+3V3")
-		(at 78.74 149.86 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "7f8adc2d-46f9-51fd-8e55-dd5fe13fe897")
-		(property "Reference" "#PWR015"
-			(at 81.74 141.86 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 81.74 158.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 78.74 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4391,7 +4657,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 78.74 149.86 0)
+			(at 76.2 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4399,8 +4665,26 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
-			(at 78.74 149.86 0)
+		(property "Description" "I2S SD pull-down (ADAU7002 tristates SDATA)"
+			(at 76.2 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "any"
+			(at 76.2 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "0402 1% 100 kOhm"
+			(at 76.2 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4409,28 +4693,42 @@
 			)
 		)
 		(pin "1"
-			(uuid "821f322c-02be-5a53-8ab4-a8d4aa8a3fc5")
+			(uuid "f1d59408-f926-5de7-9422-908cab314f67")
+		)
+		(pin "2"
+			(uuid "af20e2de-1968-5736-a722-c67b1cc7cadd")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "#PWR015")
+					(reference "R1")
 					(unit 1)
 				)
 			)
 		)
 	)
+	(label "I2S_SD"
+		(at 76.2 153.67 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3d3c2e7d-bb7d-50b5-bb56-f49906ab9369")
+	)
 	(symbol
 		(lib_id "sensor:GND")
-		(at 78.74 165.1 0)
+		(at 76.2 161.29 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "1b6a0118-6705-5615-976d-d38ee97bce96")
-		(property "Reference" "#PWR016"
-			(at 81.74 157.1 0)
+		(uuid "81ffe280-ade6-5bb1-99a6-40ab1a035d81")
+		(property "Reference" "#PWR020"
+			(at 79.2 153.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4440,7 +4738,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 81.74 173.6 0)
+			(at 79.2 169.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4449,7 +4747,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 78.74 165.1 0)
+			(at 76.2 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4458,7 +4756,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 78.74 165.1 0)
+			(at 76.2 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4467,7 +4765,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 78.74 165.1 0)
+			(at 76.2 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4476,12 +4774,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "4a65590c-ca99-5874-ac94-78f203cb0daf")
+			(uuid "dd29755b-c26b-55dd-aa86-de7fcccff82d")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "#PWR016")
+					(reference "#PWR020")
 					(unit 1)
 				)
 			)
@@ -4495,8 +4793,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "26562f52-a3dc-50ab-9cc9-1ef1367ba859")
-		(property "Reference" "C2"
+		(uuid "f13eda11-decd-5598-adc7-3ce7b0a047db")
+		(property "Reference" "C3"
 			(at 119.84 149.48 0)
 			(effects
 				(font
@@ -4505,7 +4803,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100nF"
+		(property "Value" "100nF C0G"
 			(at 119.84 165.98 0)
 			(effects
 				(font
@@ -4514,7 +4812,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:C_0402_1005Metric"
+		(property "Footprint" "sensor:C_1206_3216Metric"
 			(at 116.84 157.48 0)
 			(effects
 				(font
@@ -4523,7 +4821,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://content.kemet.com/datasheets/KEM_C1003_C0G_SMD.pdf"
 			(at 116.84 157.48 0)
 			(effects
 				(font
@@ -4532,7 +4830,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "SHT45 decoupling"
+		(property "Description" "Microphone decoupling, C0G 25 V 1206"
 			(at 116.84 157.48 0)
 			(effects
 				(font
@@ -4541,7 +4839,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "any"
+		(property "Manufacturer" "KEMET"
 			(at 116.84 157.48 0)
 			(effects
 				(font
@@ -4550,7 +4848,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0402 X7R 100 nF 16 V"
+		(property "MPN" "C1206C104J3GACTU"
 			(at 116.84 157.48 0)
 			(effects
 				(font
@@ -4560,15 +4858,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "f139d455-7ca2-5949-b7fe-1072f6d2351e")
+			(uuid "854d906a-292b-5669-98d7-8eba92c2a085")
 		)
 		(pin "2"
-			(uuid "36e7a62c-5105-550e-b34a-e1a216f66bc7")
+			(uuid "694afd16-d4f8-531a-9a05-b8e9c5f24059")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "C2")
+					(reference "C3")
 					(unit 1)
 				)
 			)
@@ -4582,8 +4880,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "3122e45a-5fa4-5003-bb13-ee5f0a64178a")
-		(property "Reference" "#PWR017"
+		(uuid "35b404b1-38fb-569c-9e56-32ace8620a9e")
+		(property "Reference" "#PWR021"
 			(at 119.84 145.67 0)
 			(effects
 				(font
@@ -4630,12 +4928,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "bfc23682-c85a-55d4-8f1f-dac5a58ce038")
+			(uuid "f4f9606d-96b1-5b7a-93cd-05c88e00cc32")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "#PWR017")
+					(reference "#PWR021")
 					(unit 1)
 				)
 			)
@@ -4649,8 +4947,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "84383c21-a976-5ae6-a56f-b5fce6f051af")
-		(property "Reference" "#PWR018"
+		(uuid "f1d2c2e4-3986-599c-a633-8b483799d1c9")
+		(property "Reference" "#PWR022"
 			(at 119.84 153.29 0)
 			(effects
 				(font
@@ -4697,27 +4995,27 @@
 			)
 		)
 		(pin "1"
-			(uuid "33c46733-8f6c-56f8-8eac-dde51c5cc694")
+			(uuid "e416feb2-f5a6-52b8-bc0a-d0f049038823")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "#PWR018")
+					(reference "#PWR022")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "sensor:MountingHole")
+		(lib_id "sensor:SHT4x")
 		(at 157.48 157.48 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "cf720cf9-a143-5c0d-a783-d7fcabd8bd9f")
-		(property "Reference" "H1"
+		(uuid "08e76d9a-ae97-5604-9ab2-70683fc07bbb")
+		(property "Reference" "U1"
 			(at 160.48 149.48 0)
 			(effects
 				(font
@@ -4726,7 +5024,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "M2"
+		(property "Value" "SHT45"
 			(at 160.48 165.98 0)
 			(effects
 				(font
@@ -4735,8 +5033,124 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:MountingHole_2.2mm_M2"
+		(property "Footprint" "sensor:Sensirion_DFN-4_1.5x1.5mm_P0.8mm_SHT4x_NoCentralPad"
 			(at 157.48 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://sensirion.com/media/documents/33FD6951/624C4357/Datasheet_SHT4x.pdf"
+			(at 157.48 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Humidity and temperature sensor, I2C 0x44"
+			(at 157.48 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Sensirion"
+			(at 157.48 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "SHT45-AD1B-R2"
+			(at 157.48 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "e7e561ca-ca49-5e6a-8ddd-49dbf7541ff1")
+		)
+		(pin "1"
+			(uuid "ae5cec39-ae62-575b-a44b-344c9d8fbf79")
+		)
+		(pin "3"
+			(uuid "4e22c3f1-dac5-5c6b-b4ee-ac976d07c77c")
+		)
+		(pin "4"
+			(uuid "e925c7fe-a82e-5510-aaaf-fa5251e8c1cb")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "U1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "SCL"
+		(at 149.86 154.94 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "a33a8f2a-33d4-5aa0-89e5-82eeb120fbda")
+	)
+	(label "SDA"
+		(at 149.86 160.02 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "c2b6b4ea-be04-50ff-8415-afefbdb5bbb9")
+	)
+	(symbol
+		(lib_id "sensor:+3V3")
+		(at 160.02 149.86 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "c4067478-8126-5695-a08e-0b5fdc42d63d")
+		(property "Reference" "#PWR023"
+			(at 163.02 141.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 163.02 158.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 160.02 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4745,7 +5159,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 157.48 157.48 0)
+			(at 160.02 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4753,8 +5167,8 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "M2 screw into the carrier"
-			(at 157.48 157.48 0)
+		(property "Description" ""
+			(at 160.02 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4762,43 +5176,95 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" ""
-			(at 157.48 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" ""
-			(at 157.48 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
+		(pin "1"
+			(uuid "7d2d7de3-1505-5489-bd1c-7fe0cd38bd3f")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "H1")
+					(reference "#PWR023")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "sensor:MountingHole")
-		(at 198.12 157.48 0)
+		(lib_id "sensor:GND")
+		(at 160.02 165.1 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "1c24119f-5505-5247-bb5c-873e4284671f")
+		(property "Reference" "#PWR024"
+			(at 163.02 157.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 163.02 173.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 160.02 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 160.02 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 160.02 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "87e25933-a222-50a8-9ad5-98130fdb30ea")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "#PWR024")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:C")
+		(at 198.12 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "287c73b6-8635-54d2-bfd3-8c75963535e0")
-		(property "Reference" "H2"
+		(uuid "26562f52-a3dc-50ab-9cc9-1ef1367ba859")
+		(property "Reference" "C2"
 			(at 201.12 149.48 0)
 			(effects
 				(font
@@ -4807,7 +5273,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "M2"
+		(property "Value" "100nF"
 			(at 201.12 165.98 0)
 			(effects
 				(font
@@ -4816,7 +5282,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:MountingHole_2.2mm_M2"
+		(property "Footprint" "sensor:C_0402_1005Metric"
 			(at 198.12 157.48 0)
 			(effects
 				(font
@@ -4834,7 +5300,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "M2 screw into the carrier"
+		(property "Description" "SHT45 decoupling"
 			(at 198.12 157.48 0)
 			(effects
 				(font
@@ -4843,7 +5309,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" ""
+		(property "Manufacturer" "any"
 			(at 198.12 157.48 0)
 			(effects
 				(font
@@ -4852,7 +5318,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" ""
+		(property "MPN" "0402 X7R 100 nF 16 V"
 			(at 198.12 157.48 0)
 			(effects
 				(font
@@ -4860,11 +5326,151 @@
 				)
 				(hide yes)
 			)
+		)
+		(pin "1"
+			(uuid "f139d455-7ca2-5949-b7fe-1072f6d2351e")
+		)
+		(pin "2"
+			(uuid "36e7a62c-5105-550e-b34a-e1a216f66bc7")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "H2")
+					(reference "C2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:+3V3")
+		(at 198.12 153.67 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "22012ab9-371d-54e1-89f2-1ff078fd790e")
+		(property "Reference" "#PWR025"
+			(at 201.12 145.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 201.12 162.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 198.12 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 198.12 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 198.12 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "dab138f3-3793-5b0d-8b11-38273e8dda13")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "#PWR025")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 198.12 161.29 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "e2310fd9-cde2-57fe-ada9-68ed02e3ab4a")
+		(property "Reference" "#PWR026"
+			(at 201.12 153.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 201.12 169.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 198.12 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 198.12 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 198.12 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e1e78977-ade4-580c-9923-91e0559d46ac")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "#PWR026")
 					(unit 1)
 				)
 			)
@@ -4878,8 +5484,8 @@
 		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "24064d2a-acc2-5a21-b950-5c9470bd32e1")
-		(property "Reference" "H3"
+		(uuid "cf720cf9-a143-5c0d-a783-d7fcabd8bd9f")
+		(property "Reference" "H1"
 			(at 241.76 149.48 0)
 			(effects
 				(font
@@ -4945,7 +5551,7 @@
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "H3")
+					(reference "H1")
 					(unit 1)
 				)
 			)
@@ -4959,8 +5565,8 @@
 		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "a7f25ed2-8f84-5b7f-befc-4e6c8a7a7040")
-		(property "Reference" "H4"
+		(uuid "287c73b6-8635-54d2-bfd3-8c75963535e0")
+		(property "Reference" "H2"
 			(at 38.56 215.52 0)
 			(effects
 				(font
@@ -5026,22 +5632,22 @@
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "H4")
+					(reference "H2")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "sensor:Conn_01x01")
+		(lib_id "sensor:MountingHole")
 		(at 76.2 223.52 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "646c8177-7b34-5dea-8983-ee0037fa4764")
-		(property "Reference" "H5"
+		(uuid "24064d2a-acc2-5a21-b950-5c9470bd32e1")
+		(property "Reference" "H3"
 			(at 79.2 215.52 0)
 			(effects
 				(font
@@ -5050,7 +5656,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "spacer 1.5"
+		(property "Value" "M2"
 			(at 79.2 232.02 0)
 			(effects
 				(font
@@ -5059,93 +5665,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:Wurth_WA-SMSI_M2_SMT_Spacer_L1.5mm"
+		(property "Footprint" "sensor:MountingHole_2.2mm_M2"
 			(at 76.2 223.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://www.we-online.com/catalog/datasheet/9774015243R.pdf"
-			(at 76.2 223.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "SMT steel spacer M2, 1.5 mm, tin: the MSR-2's board rests on it under the face plate's posts (D-70)"
-			(at 76.2 223.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Manufacturer" "Wurth Elektronik"
-			(at 76.2 223.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "9774015243R"
-			(at 76.2 223.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "992d2100-23e9-5ab7-ba68-681ae43f62bf")
-		)
-		(instances
-			(project "eu_cap_board"
-				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "H5")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 71.12 223.52 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "c7c12e91-54bb-5f70-8861-964ac4a7e2a4")
-		(property "Reference" "#PWR019"
-			(at 74.12 215.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 74.12 232.02 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 71.12 223.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5154,7 +5675,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 71.12 223.52 0)
+			(at 76.2 223.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5162,8 +5683,8 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
-			(at 71.12 223.52 0)
+		(property "Description" "M2 screw into the carrier"
+			(at 76.2 223.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5171,28 +5692,43 @@
 				(hide yes)
 			)
 		)
-		(pin "1"
-			(uuid "b84c88b3-2f5a-5d99-826c-81d70b7ee03c")
+		(property "Manufacturer" ""
+			(at 76.2 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" ""
+			(at 76.2 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "#PWR019")
+					(reference "H3")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "sensor:Conn_01x01")
+		(lib_id "sensor:MountingHole")
 		(at 116.84 223.52 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "0455d08d-b4a6-5e9f-b1f0-ea1a1051bbf6")
-		(property "Reference" "H6"
+		(uuid "a7f25ed2-8f84-5b7f-befc-4e6c8a7a7040")
+		(property "Reference" "H4"
 			(at 119.84 215.52 0)
 			(effects
 				(font
@@ -5201,7 +5737,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "spacer 1.5"
+		(property "Value" "M2"
 			(at 119.84 232.02 0)
 			(effects
 				(font
@@ -5210,93 +5746,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:Wurth_WA-SMSI_M2_SMT_Spacer_L1.5mm"
+		(property "Footprint" "sensor:MountingHole_2.2mm_M2"
 			(at 116.84 223.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://www.we-online.com/catalog/datasheet/9774015243R.pdf"
-			(at 116.84 223.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "SMT steel spacer M2, 1.5 mm, tin: the MSR-2's board rests on it under the face plate's posts (D-70)"
-			(at 116.84 223.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Manufacturer" "Wurth Elektronik"
-			(at 116.84 223.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "9774015243R"
-			(at 116.84 223.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "79582812-b93d-52c8-a4b6-212748e4deaf")
-		)
-		(instances
-			(project "eu_cap_board"
-				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "H6")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "sensor:GND")
-		(at 111.76 223.52 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "81ffe280-ade6-5bb1-99a6-40ab1a035d81")
-		(property "Reference" "#PWR020"
-			(at 114.76 215.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 114.76 232.02 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 111.76 223.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5305,7 +5756,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 111.76 223.52 0)
+			(at 116.84 223.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5313,8 +5764,8 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
-			(at 111.76 223.52 0)
+		(property "Description" "M2 screw into the carrier"
+			(at 116.84 223.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5322,13 +5773,28 @@
 				(hide yes)
 			)
 		)
-		(pin "1"
-			(uuid "dd29755b-c26b-55dd-aa86-de7fcccff82d")
+		(property "Manufacturer" ""
+			(at 116.84 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" ""
+			(at 116.84 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "#PWR020")
+					(reference "H4")
 					(unit 1)
 				)
 			)
@@ -5342,8 +5808,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "fec412b4-458d-560f-8a60-37f9d4812910")
-		(property "Reference" "H7"
+		(uuid "646c8177-7b34-5dea-8983-ee0037fa4764")
+		(property "Reference" "H5"
 			(at 160.48 215.52 0)
 			(effects
 				(font
@@ -5407,12 +5873,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "0322fb04-8eda-52d4-8dba-0912277e4aca")
+			(uuid "992d2100-23e9-5ab7-ba68-681ae43f62bf")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "H7")
+					(reference "H5")
 					(unit 1)
 				)
 			)
@@ -5426,8 +5892,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "35b404b1-38fb-569c-9e56-32ace8620a9e")
-		(property "Reference" "#PWR021"
+		(uuid "11d4b2da-6f5e-51fe-89fd-c9e38f65ddf3")
+		(property "Reference" "#PWR027"
 			(at 155.4 215.52 0)
 			(effects
 				(font
@@ -5474,12 +5940,314 @@
 			)
 		)
 		(pin "1"
-			(uuid "f4f9606d-96b1-5b7a-93cd-05c88e00cc32")
+			(uuid "c09d3cad-99e0-5a5e-a8fa-614e708fc1aa")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "#PWR021")
+					(reference "#PWR027")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:Conn_01x01")
+		(at 198.12 223.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0455d08d-b4a6-5e9f-b1f0-ea1a1051bbf6")
+		(property "Reference" "H6"
+			(at 201.12 215.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "spacer 1.5"
+			(at 201.12 232.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "sensor:Wurth_WA-SMSI_M2_SMT_Spacer_L1.5mm"
+			(at 198.12 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.we-online.com/catalog/datasheet/9774015243R.pdf"
+			(at 198.12 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "SMT steel spacer M2, 1.5 mm, tin: the MSR-2's board rests on it under the face plate's posts (D-70)"
+			(at 198.12 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Wurth Elektronik"
+			(at 198.12 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "9774015243R"
+			(at 198.12 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "79582812-b93d-52c8-a4b6-212748e4deaf")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "H6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 193.04 223.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "94f2fc39-ba25-5a04-825b-7f6ba9dde03b")
+		(property "Reference" "#PWR028"
+			(at 196.04 215.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 196.04 232.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 193.04 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 193.04 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 193.04 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "588e6968-4982-5d86-b20a-45baea749611")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "#PWR028")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:Conn_01x01")
+		(at 238.76 223.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "fec412b4-458d-560f-8a60-37f9d4812910")
+		(property "Reference" "H7"
+			(at 241.76 215.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "spacer 1.5"
+			(at 241.76 232.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "sensor:Wurth_WA-SMSI_M2_SMT_Spacer_L1.5mm"
+			(at 238.76 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.we-online.com/catalog/datasheet/9774015243R.pdf"
+			(at 238.76 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "SMT steel spacer M2, 1.5 mm, tin: the MSR-2's board rests on it under the face plate's posts (D-70)"
+			(at 238.76 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Wurth Elektronik"
+			(at 238.76 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "9774015243R"
+			(at 238.76 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0322fb04-8eda-52d4-8dba-0912277e4aca")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "H7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 233.68 223.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "4b842c6c-6f46-5aa3-8b57-7f7940afc3ba")
+		(property "Reference" "#PWR029"
+			(at 236.68 215.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 236.68 232.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 233.68 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 233.68 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 233.68 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "730dd1e7-94d5-51db-964d-291c902136f4")
+		)
+		(instances
+			(project "eu_cap_board"
+				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
+					(reference "#PWR029")
 					(unit 1)
 				)
 			)
@@ -5560,8 +6328,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "f1d2c2e4-3986-599c-a633-8b483799d1c9")
-		(property "Reference" "#PWR022"
+		(uuid "a33fb641-ec03-58ab-80fe-65e2d6977390")
+		(property "Reference" "#PWR030"
 			(at 38.56 42.8 0)
 			(effects
 				(font
@@ -5608,12 +6376,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "e416feb2-f5a6-52b8-bc0a-d0f049038823")
+			(uuid "9778c0b2-4efb-513c-8c9a-16e1dead0efb")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "#PWR022")
+					(reference "#PWR030")
 					(unit 1)
 				)
 			)
@@ -5694,8 +6462,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "c4067478-8126-5695-a08e-0b5fdc42d63d")
-		(property "Reference" "#PWR023"
+		(uuid "b8659849-7c9b-5b92-82cf-3299b2123a93")
+		(property "Reference" "#PWR031"
 			(at 69.04 42.8 0)
 			(effects
 				(font
@@ -5742,12 +6510,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "7d2d7de3-1505-5489-bd1c-7fe0cd38bd3f")
+			(uuid "126fd6b4-1aa7-5fb5-ab03-cbf9e41087cf")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "#PWR023")
+					(reference "#PWR031")
 					(unit 1)
 				)
 			)
@@ -5828,8 +6596,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "1c24119f-5505-5247-bb5c-873e4284671f")
-		(property "Reference" "#PWR024"
+		(uuid "b516a0ce-f23d-58ef-94e8-78df4b31e275")
+		(property "Reference" "#PWR032"
 			(at 99.52 42.8 0)
 			(effects
 				(font
@@ -5876,18 +6644,18 @@
 			)
 		)
 		(pin "1"
-			(uuid "87e25933-a222-50a8-9ad5-98130fdb30ea")
+			(uuid "f669692b-fe6d-528b-b522-743c87b08631")
 		)
 		(instances
 			(project "eu_cap_board"
 				(path "/5f764a30-4dec-57c4-b2d1-c93ae2ff2774"
-					(reference "#PWR024")
+					(reference "#PWR032")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(text "EU cap board (docs/DESIGN.md D-56, D-70): FR4 1.6 mm in the cap's printed carrier.\nTP1 / TP2 on the underside: pads under the 5 V board's sensor spring pins (GND, +5 V).\nJ2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin); H5-H7 SMT spacers.\nJ3: land for the mic carrier (I2S microphone, D-29) over a window; U1: SHT45 on the MSR-2's I2C.\nH1-H4: holes for the M2 screws into the carrier."
+	(text "EU cap board (docs/DESIGN.md D-56, D-70): FR4 1.6 mm in the cap's printed carrier.\nTP1 / TP2 on the underside: pads under the 5 V board's sensor spring pins (GND, +5 V).\nJ2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin); H5-H7 SMT spacers.\nMK1: top-port PDM microphone; U2: ADAU7002 PDM to I2S (D-83); U1: SHT45 on the MSR-2's I2C.\nH1-H4: holes for the M2 screws into the carrier."
 		(exclude_from_sim no)
 		(at 25 180 0)
 		(effects

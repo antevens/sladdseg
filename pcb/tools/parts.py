@@ -25,7 +25,7 @@ SMSI_DS = "https://www.we-online.com/catalog/datasheet/9774070243R.pdf"
 ROCKER_DS = "Marquardt drawing 1802.2504 rev g, 2003-09-16 (K-drawing 18022504.03)"
 
 # Footprint names in the project library
-FP_ROCKER = "Marquardt_1802.2504_DPST_PCB"
+FP_ROCKER = "Rocker_DPST_Marquardt_1802.2504_E-Switch_RA412C1100"
 FP_WAGO = "WAGO_2604-1106_1x06_P5.00mm_Horizontal"
 FP_IRM = "Converter_ACDC_MeanWell_IRM-03-xx_THT"
 FP_FUSE = "Fuse_Schurter_UMT250"
@@ -58,7 +58,7 @@ PARTS = {
                 pcb=None, mfr="Mean Well", mpn="IRM-03-5",
                 desc="AC-DC module 85-305 VAC in, 5 V 600 mA, 37x24x15 mm", ds=IRM_DS),
     "F1": dict(label="Schurter UMT250 T1A", sym="Fuse", fp=FP_FUSE, value="T1A 250V", nets={"1": "L_SW", "2": "L_F"},
-               pcb=(-14.6, -23.0, 90, "F"), mfr="Schurter", mpn="3404.2416.22",
+               pcb=(-14.6, -23.0, 90, "F"), mfr="Schurter", mpn="3403.0166.11",
                desc="SMD fuse UMT 250, time-lag 1 A 250 VAC. Rating is a designer's choice: human review",
                ds=UMT_DS),
     "RV1": dict(label="TDK CU4032K275G2", sym="Varistor", fp=FP_MOV, value="CU4032K275G2", nets={"1": "L_F", "2": "N_SW"},

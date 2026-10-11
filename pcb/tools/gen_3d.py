@@ -14,7 +14,7 @@ from build123d import Box, Cylinder, Pos, Rot, export_step, import_step
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "cad" / "build123d"))
-from params import FINGER_FREE, MIC                            # noqa: E402
+from params import ADAU, FINGER_FREE, MIC, MIC_PORT_IN              # noqa: E402
 
 VENDOR = ROOT / "scratch" / "3d"
 PROJECTS = {"na": ROOT / "pcb" / "kicad" / "3d", "eu": ROOT / "pcb" / "eu" / "kicad" / "3d",
@@ -86,9 +86,14 @@ def s7081():
     return Rot(0, 0, 90) * Rot(180, 0, 0) * backcover.finger(FINGER_FREE)
 
 
-def dmm4026():
-    """PUI DMM-4026-B-I2S-R (datasheet rev A): body 3 x 4 x 1 (port on the board side)."""
-    return Pos(0, 0, MIC[2] / 2) * Box(MIC[0], MIC[1], MIC[2])
+def spk0641():
+    """Knowles SPK0641HT4H-1 (datasheet rev A): body 3 x 4 x 1, top port 0.25 at MIC_PORT_IN from the +y end."""
+    return Pos(0, 0, MIC[2] / 2) * Box(*MIC) - Pos(0, MIC[1] / 2 - MIC_PORT_IN, MIC[2]) * Cylinder(0.125, 0.2)
+
+
+def adau7002():
+    """Analog Devices ADAU7002 WLCSP CB-8-6 (datasheet rev C): 0.76 x 1.56, 0.56 high on its balls."""
+    return Pos(0, 0, ADAU[2] / 2) * Box(*ADAU)
 
 
 def sht4x():
@@ -118,7 +123,8 @@ MODELS = {
                                               ((90, 0, 90), (-4.8, 4.75, 0))),
     "Harwin_P70-2200045": (("eu", "sensor"), p70, None, None),
     "Harwin_S7081-42R": (("sensor",), s7081, None, None),
-    "PUI_DMM-4026-B-I2S_4x3mm": (("sensor",), dmm4026, None, None),
+    "Knowles_SPK0641HT4H-1_3x4mm": (("sensor",), spk0641, None, None),
+    "Analog_WLCSP-8_0.76x1.56mm_P0.4mm": (("sensor",), adau7002, None, None),
     "Sensirion_DFN-4_1.5x1.5mm_P0.8mm_SHT4x_NoCentralPad": (("sensor",), sht4x, None, None),
 }
 

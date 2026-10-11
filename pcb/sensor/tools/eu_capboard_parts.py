@@ -2,7 +2,7 @@
 
 FR4 1.6 mm in the cap's printed carrier, round the remote pocket. TP1 / TP2 on its underside take GND / +5V from the
 5 V board's sensor spring pins; as on the NA ring board, J2 mates the MSR-2's CN2 (the MSR-2 rests on CN2 and the three
-SMT spacers H5-H7), J3 is the land for the microphone carrier over a window, U1 the SHT45 under its vents. Windows at the
+SMT spacers H5-H7), MK1 the top-port microphone with U2, the ADAU7002, beside it (D-83), U1 the SHT45 under its vents. Windows at the
 corners let the face plate's snap fingers pass to the cap's edge; notches in the top edge clear the MSR-2's back
 switches. Coordinates: room front view (x, y) in mm, from cad/build123d/eu/params_eu.py.
 """
@@ -46,8 +46,6 @@ for _a, _b, _c in sorted(E.EU_SW_CUTS, reverse=True):          # notches under t
 CB_OUTER += [(_x0, _y1), (_x0, _y0)]
 CB_OUTER_R = [CB_R, CB_R] + [sp.RING_NOTCH_R] * 4 * len(E.EU_SW_CUTS) + [CB_R, CB_R]
 CB_POCKET = stadium(E.POCKET_OUT[0] + 2 * E.CB_POCKET_CLR, E.POCKET_OUT[1] + 2 * E.CB_POCKET_CLR)
-MIC_BODY_Y = E.MIC_AT[1] + (sp.MIC[1] / 2 - sp.MIC_PORT_IN)
-MIC_WIN = (E.MIC_AT[0], MIC_BODY_Y, sp.MIC[0] + 2 * sp.MIC_WIN, sp.MIC[1] + 2 * sp.MIC_WIN)   # window under the mic
 
 
 def snap_windows():
@@ -76,19 +74,12 @@ CAPBOARD_PARTS = {
     "C1": dict(label="22uF 10V X5R 1206", sym="C", fp=sp.FP_C1206, value="22uF 10V X5R", nets={"1": "+5V", "2": "GND"},
                pos=(31.0, -2.0, 90), mfr="Samsung Electro-Mechanics", mpn="CL31A226KPHNNNE",
                desc="Ceramic 22 uF 10 V X5R 1206 at the pin pads", ds="https://www.samsungsem.com"),
-    "J2": dict(sym="Conn_02x15_Odd_Even", fp=sp.FP_B2B, value="CN2 mate (TBD)", label="CN2 mate (TBD)",
-               nets=dict(sp.CN2_MAP), pos=(E.MSR_CN2_X, E.MSR_Y, 0), mfr="TBD", mpn="TBD",
-               desc="Board-to-board plug mating the MSR-2's rear connector CN2, 0.4 mm, 2 rows (part and "
-                    "contact map unconfirmed)", ds=""),
-    "J3": dict(sym="Conn_01x06", fp=sp.FP_CARRIER_LAND, value="mic carrier", label="mic carrier",
-               nets=dict(sp.CARRIER_NETS), pos=(*E.MIC_AT, 0), in_bom=False,
-               desc="Land for the microphone carrier's castellated pads; window under the microphone"),
-    "C3": dict(label="100nF", sym="C", fp=sp.FP_C, value="100nF", nets={"1": "+3V3", "2": "GND"},
-               pos=(E.MIC_AT[0] + 2.2, E.MIC_AT[1] - 4.6, 0), mfr="any", mpn="0402 X7R 100 nF 16 V",
-               desc="Microphone decoupling", ds=""),
-    "R1": dict(label="100k", sym="R", fp=sp.FP_R, value="100k", nets={"1": "I2S_SD", "2": "GND"},
-               pos=(E.MIC_AT[0] - 2.2, E.MIC_AT[1] + 4.6, 0), mfr="any", mpn="0402 1% 100 kOhm",
-               desc="I2S SD pull-down (microphone datasheet)", ds=""),
+    "J2": dict(sym="Conn_02x12_Odd_Even", fp=sp.FP_B2B, value="55909-2474", label="Molex 55909-2474",
+               nets=dict(sp.CN2_MAP), pos=(E.MSR_CN2_X, E.MSR_Y, 0), mfr="Molex", mpn="55909-2474",
+               desc="SlimStack plug 24 contacts, 0.4 mm, 2 rows, mating the MSR-2's CN2 (assumed Molex 51338-2474, "
+                    "1.5 mm mated; land pattern and contact map placeholders, D-82)",
+               ds="https://www.molex.com/en-us/products/part-detail/559092474"),
+    **sp.mic_parts(E.MIC_AT),
     "U1": dict(label="Sensirion SHT45", sym="SHT4x", fp=sp.FP_SHT, value="SHT45",
                nets={"1": "SDA", "2": "SCL", "3": "+3V3", "4": "GND"}, pos=(0.0, E.SHT_Y, 0), mfr="Sensirion",
                mpn="SHT45-AD1B-R2", desc="Humidity and temperature sensor, I2C 0x44", ds=sp.SHT_DS),

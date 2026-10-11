@@ -1,5 +1,5 @@
 Item #,Designator,Qty,Manufacturer,Mfg Part #,Description / Value,Package/Footprint,Type,Your Instructions / Notes
-1,F1,1,Schurter,3404.2416.22,"T1A 250V - SMD fuse UMT 250, time-lag 1 A 250 VAC",Fuse_Schurter_UMT250,SMD,Source this MPN exactly
+1,F1,1,Schurter,3403.0166.11,"T1A 250V - SMD fuse UMT 250, time-lag 1 A 250 VAC",Fuse_Schurter_UMT250,SMD,Source this MPN exactly
 2,RV1,1,TDK,B72660M0271K093,"CU4032K275G2 - SMD varistor SIOV-CU4032K275G2K1, 275 VAC",Varistor_TDK_CU4032,SMD,Source this MPN exactly
 3,"P1,P2",2,Wurth Elektronik,9774070243R,"+5V post - SMT steel spacer, internal thread M2, 7 mm, tin",Wurth_WA-SMSI_M2_SMT_Spacer_L7mm,SMD,Source this MPN exactly
 4,J2,1,Hirose,FH12-6S-0.5SH(55),"5V out (FFC to the ring board) - FPC connector 0.5 mm, 6 contacts, slide lock",Hirose_FH12-6S-0.5SH_1x06-1MP_P0.50mm_Horizontal,SMD,Source this MPN exactly

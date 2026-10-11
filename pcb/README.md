@@ -38,10 +38,10 @@ the board centre. F faces the plate, B faces the box.
 
 | Ref | Part | MPN | Side, position | Source |
 | --- | --- | --- | --- | --- |
-| S1 | Marquardt rocker, DPST, PCB pins | 1802.2504 | F, (0, 19.5), turned 90 degrees | Marquardt drawing 1802.2504 rev g (K-drawing 18022504.03) |
+| S1 | Marquardt rocker, DPST, PCB pins (second source: E-Switch RA412C1100, 4.8 mm tabs, D-88) | 1802.2504 | F, (0, 19.5), turned 90 degrees | Marquardt drawing 1802.2504 rev g (K-drawing 18022504.03); E-Switch RA4 datasheet |
 | J1 | WAGO PCB terminal block, 6-pole, 5 mm, lever | 2604-1106 | B, pin 1 at (15.5, 8.1) and (15.5, -0.1) | <https://www.wago.com/global/pcb-terminal-blocks-and-pluggable-connectors/pcb-terminal-block/p/2604-1106> |
 | PS1 | Mean Well AC-DC module, 5 V 600 mA | IRM-03-5 | B, under the slot | <https://www.meanwell.com/Upload/PDF/IRM-03/IRM-03-SPEC.PDF> |
-| F1 | Schurter UMT 250 SMD fuse, T1A 250 VAC | 3404.2416.22 | F, (-14.6, -23) | <https://us.schurter.com/bundles/snceschurter/epim/_ProdPool_/newDS/en/typ_UMT_250.pdf> |
+| F1 | Schurter UMT 250 SMD fuse, T1A 250 VAC | 3403.0166.11 | F, (-14.6, -23) | <https://us.schurter.com/bundles/snceschurter/epim/_ProdPool_/newDS/en/typ_UMT_250.pdf> |
 | RV1 | TDK SMD varistor 275 VAC | B72660M0271K093 (CU4032K275G2) | F, (-5.5, -22) | <https://www.farnell.com/datasheets/2921094.pdf> |
 | P1, P2 | Würth WA-SMSI SMT spacer M2, 7 mm (spacer posts for the riser, D-50, D-59, D-60) | 9774070243R | F, (9.85, -16.5), (16.65, -16.5) | <https://www.we-online.com/catalog/datasheet/9774070243R.pdf> |
 | J2 | Hirose FH12 FPC connector, 6 contacts, 0.5 mm, slide lock, 5 V out to the ring board's FFC | FH12-6S-0.5SH(55) | F, (13.5, -24.8), turned 90: FFC out to the right | <https://www.hirose.com/product/en/products/FH12/FH12-6S-0.5SH(55)/> |
@@ -49,7 +49,10 @@ the board centre. F faces the plate, B faces the box.
 S1 data from the drawing:
 
 - Contacts 1-1a and 2-2a.
-- Holes 1.3 (+0.1) mm (drilled 1.4 mm here) on a 10.2 x 7 mm grid as mounted.
+- Holes 1.3 (+0.1) mm on a 10.2 x 7 mm grid as mounted. Here plated slots 5.2 x 1.2 mm (pads 6.2 x 2.3) on
+  10.2 x 7.05 mm, so the same footprint takes the E-Switch RA412C1100 (D-88): 4.8 x 0.8 tabs along x, rows 7.1
+  apart, same 22 x 19.2-19.4 cutout, body 12.2 mm deep, tab tips 18.4 mm below the panel (0.6 mm through the board
+  at the 16.2 seat), rocker 6.0 mm above the panel; snapped in whichever way round puts its tabs on the slots.
 - Body 22 x 18.6 mm below the panel, flange 24 x 21 mm.
 - PCB seat 16.2 mm below the panel face; rocker 5.3 mm above it.
 - Marked ratings: ENEC 12(4) A 250 V~; UL/CSA 15 A 125-250 VAC.
@@ -68,8 +71,8 @@ S1 data from the drawing:
 | +5V | SELV | PS1.16, P1, J2.2, J2.5 (mirror-symmetric pinout: an FFC flipped either way keeps the polarity) |
 | GND | SELV | PS1.14, P2, J2.1, J2.3, J2.4, J2.6 |
 
-S1 pin positions (front view): L_IN (-5.1, 19.5), L_SW (-5.1, 26.5), N_IN (5.1, 19.5),
-N_SW (5.1, 26.5). Pins 1 / 2 lie on the body's centre line, 1a / 2a 7 mm off it (drawing
+S1 pin positions (front view): L_IN (-5.1, 19.5), L_SW (-5.1, 26.55), N_IN (5.1, 19.5),
+N_SW (5.1, 26.55) (slot centres; 1802.2504 pins at 26.5, RA4 tabs at 26.6). Pins 1 / 2 lie on the body's centre line, 1a / 2a 7 mm off it (drawing
 1802.2504 rev g), so the body is centred on the in pins.
 
 Load current path:
@@ -114,6 +117,8 @@ Open:
 
 - Meter-check the S1 pin numbering on a sample. The drawing's side view labels the
   pins 1a / 1 / 1b.
+- RA412C1100 (D-88): which two of the RA4's three tab rows (centre, ±7.1) the DPST version has, on a sample.
+  Centre and one end: fits, snapped in that way round. Both ends: the third row lands over J1 (y 12.4).
 - Check the J1 pin rows on a part. They come from WAGO's 3D model (rows y 8.1 and -0.1,
   8.2 apart, D-37).
 - Thermal review of the 15 A paths. The 3.5 mm targets to the neighbouring J1 pads (round,
@@ -154,7 +159,8 @@ from the datasheet dimensions. Vendor files stay in the git-ignored `scratch/` (
 | Marquardt 1802.2504 | vendor 1802.1108 housing (Marquardt LIB_1802.1108; same 1802 flange, rocker, body) on the 1802.2504 underside from its drawing (body to 11.7, pin stems to the 16.2 seat, 0.8 pins; pins checked against the pads) | 1802.2504 itself: on request from Marquardt |
 | Harwin P70-2200045 | envelope | <https://www.harwin.com/products/P70-2200045/> |
 | Harwin S7081-42R | envelope (shape from the drawing) | <https://www.harwin.com/products/S7081-42R/> |
-| PUI DMM-4026-B-I2S-R | envelope | <https://puiaudio.com/product/microphones/dmm-4026-b-i2s-r> |
+| Knowles SPK0641HT4H-1 | envelope (top port marked) | <https://www.knowles.com/docs/default-source/model-downloads/spk0641ht4h-1-rev-a.pdf> |
+| Analog Devices ADAU7002 (WLCSP-8) | envelope | <https://www.analog.com/en/products/adau7002.html> |
 | Sensirion SHT45 (DFN-4) | envelope | <https://sensirion.com/products/catalog/SHT45> |
 
 To use a vendor model: put its STEP in `scratch/3d/`, add the file name and its transform to the

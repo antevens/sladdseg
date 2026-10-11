@@ -55,6 +55,7 @@ JOBS = {
     "backcover_PETG": (["back_cover"], "Elegoo PETG @ECC2", COVER),   # its clips broke in PLA (D-44)
     "backcover_ABS": (["back_cover"], "Elegoo ABS @ECC2", COVER),     # test while the PETG is on its way; ABS shrinks more
     "plate_jig_PLA": (["plate_jig_saw"], TEST, JIG),
+    "back_gauges_PLA": (["coupon_back_gauges"], TEST, JIG),   # back cover profile gauges (D-87)
     "eu_cap_PC-FR": (["cap_eu"], "Elegoo PC-FR @ECC2", BARRIER),
     "eu_cap_PLA_testfit": (["cap_eu"], TEST, dict(BARRIER, brim_type="no_brim")),
     "eu_trim_PLA": (["trim_eu"], TEST, TRIM),

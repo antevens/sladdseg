@@ -17,7 +17,7 @@ hard stop sets the spring pins' working height.
 Remote coordinates: origin = remote centre, x / y as the front view, z = 0 the back's outer face.
 Sizes marked MEASURE / REF in params.py.
 """
-from math import atan2, cos, degrees, pi, sin, sqrt
+from math import acos, atan2, cos, degrees, pi, sin, sqrt
 from build123d import Axis, Box, Cylinder, Plane, Pos, Rot, chamfer, loft
 from params import *
 from common import stadium, slab
@@ -142,8 +142,35 @@ def side_tabs():
     return out
 
 
+def inner_x(z):
+    """Side wall's inside face (x) at height z: the back_shape(BC_SIDE_WALL, BC_WALL) round-over, straight above it."""
+    zr = z - BC_WALL
+    if zr >= B_BACK_RISE:
+        return B_W / 2 - BC_SIDE_WALL
+    t = acos(max(-1.0, min(1.0, 1 - zr / B_BACK_RISE)))
+    return B_W / 2 - BC_SIDE_WALL - B_BACK_RUN * (1 - sin(t))
+
+
+def tabs():
+    """Small tabs inside both long side walls (D-90), two per side either side of mid-length, into the slots in the
+    housing's long sides: BC_TAB along y less BC_TAB_CLR at each end, BC_TAB's height below the rim, standing its
+    protrusion in from the side wall's inside face at the tab's mid-height (fused into the wall)."""
+    gi, go, top, h, prot = BC_TAB
+    y0, y1 = gi / 2 + BC_TAB_CLR, go / 2 - BC_TAB_CLR
+    z0, z1 = B_SEAM_Z - top - h, B_SEAM_Z - top
+    x_in = inner_x((z0 + z1) / 2)
+    x0, x1 = x_in - prot, B_W / 2 - BC_SIDE_WALL + 0.3
+    out = None
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            t = Pos(sx * (x0 + x1) / 2, sy * (y0 + y1) / 2, (z0 + z1) / 2) * Box(x1 - x0, y1 - y0, z1 - z0)
+            out = t if out is None else out + t
+    return out
+
+
 def cover():
-    """Printed cover: shell, flex ledge, contact blocks, spring pin windows, steel-plate pocket, snap ears, side tabs."""
+    """Printed cover: shell, flex ledge, contact blocks, spring pin windows, steel-plate pocket, snap ears, side
+    ribs, the small tabs into the housing's slots."""
     body = shell()
     ys = stiffener_y()
     for x0, x1, y0, y1 in strip_boxes():
@@ -160,6 +187,7 @@ def cover():
     body &= Pos(0, 0, 50) * Box(200, 200, 100)                             # nothing below the back face
     body &= outer() + Pos(0, 0, 50 + B_SEAM_Z - 0.01) * Box(200, 200, 100)  # blocks may rise above the seam
     body += latches() + side_tabs()
+    body += tabs()                                      # into the slots in the housing's long sides (D-90)
     w, d = BC_PRY                                       # flat-blade screwdriver notch in the rim at the bottom end
     body -= Pos(0, -B_H / 2, B_SEAM_Z - d / 2 + 0.01) * Box(w, 2 * (BC_WALL + 1.0), d + 0.02)
     for x, y in BC_FINGERS:                             # windows for the spring pins onto the pads (D-50)

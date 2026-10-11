@@ -16,6 +16,7 @@ every part is single-material.
 | `print/insert_PC-FR.3mf` | NA box insert, **final**, on supports | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 2 h 18 m / 51.9 g |
 | `print/backcover_PETG.3mf` | replacement back cover for the battery-free BILRESA (D-35), back down; PETG: its clips broke in PLA (D-44) | PETG | 21 m / 8.5 g |
 | `print/backcover_ABS.3mf` | the same cover in ABS, to test before the PETG arrives (shrinks more: check the fit first) | ABS | 17 m / 7.5 g |
+| `print/back_gauges_PLA.3mf` | five flat profile gauges for the inside of the remote's original back cover, side to side: the modelled back (round-over 8.1 × 8.0, measured) with its round-over 0.5 mm smaller to 0.5 mm larger in 0.25 mm steps (engraved R7.60 … R8.60), a line at the rim (D-87); deburr the arcs before use | PLA | 18 m / 7.8 g |
 | `print/plate_jig_PLA.3mf` | steel plate hacksaw guide (D-52, D-81), floor down | PLA | 18 m / 7.8 g |
 | `print/eu_cap_PLA_testfit.3mf` | EU cap (fit check only, **not for mains**), face down | PLA | 28 m / 10.9 g |
 | `print/eu_cap_PC-FR.3mf` | EU cap, **final** (the EU barrier), face down | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 37 m / 9.8 g |
@@ -40,6 +41,10 @@ time/material lands in `build/print/gcode/`.
    drop-in/lift-out, rocker snap-in, key pin, pass-through. MSR-2 coupon → board fit,
    radar skin, the grille for the CO2 and light sensors (D-69), the three Ø1.8 posts onto the MSR-2's board (D-66).
    Crush-rib coupon → the ring board's fit on the ribs (0.10 / 0.15 / 0.20), record `RING_RIB`.
+   `back_gauges_PLA`: take the back cover off a remote, stand each gauge across the inside, in the straight part
+   where the floor is clear of the magnet plate and the side ribs; the gauge that sits on the floor and touches
+   round both curves gives the round-over (D-87). The engraved line shows where the rim should be. Record it in
+   `docs/MEASUREMENTS.md`; if it falls between two, ask for a finer set.
 2. Update `params.py` from the measurements, `make cad check print`.
 3. `insert_PLA_testfit` + `trim_PLA` → full dry fit in the box (breaker off, nothing
    connected). Check the corner taper against the box ears.

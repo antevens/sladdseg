@@ -52,7 +52,7 @@ def build_assembly():
     rp = ring.parts()
     msr = env(rp["msr"], "msr2_envelope", (0.2, 0.2, 0.2))
     rb = env(rp["ring"], "ring_board", (0.12, 0.42, 0.23))
-    small = env(rp["cn2"] + rp["j1"] + rp["sht45"] + rp["passives"] + rp["micb"] + rp["mic"] + rp["spacers"], "ring_board_parts",
+    small = env(rp["cn2"] + rp["j1"] + rp["sht45"] + rp["passives"] + rp["mic"] + rp["spacers"], "ring_board_parts",
                 (0.8, 0.7, 0.3))
     pins = env(rp["riser"] + rp["pins"] + rp["posts"] + rp["screws"], "riser_pins_posts", (0.8, 0.7, 0.3))
     lead5 = env(jumper.build()["jumper"], "ffc_5v", (0.85, 0.85, 0.85))

@@ -1,6 +1,6 @@
 """TRIM PLATE (face plate) - a plain cover (v0.4, D-50, D-51): face, thin radar skin over the MSR-2 with posts onto its
 board (D-66), SHT45 bay, vents, vents over the CO2 sensor, the microphone's sound hole and sound
-tube. No electronics and no contacts: the MSR-2, the SHT45 and the mic sit on the
+column (D-83). No electronics and no contacts: the MSR-2, the SHT45 and the mic sit on the
 ring board on the insert's collar (D-68).
 
 Low-voltage side only: it carries no barrier duty. Any filament (PETG/ASA).
@@ -10,7 +10,7 @@ Run:  python trim.py  -> ../../build/trim.step / .stl
 from math import radians, tan
 from build123d import Box, Cylinder, Cone, Pos, Axis, chamfer
 from params import *
-from common import rr, slab, frame
+from common import rr, slab, frame, sound_column
 import msr2
 
 
@@ -18,10 +18,9 @@ MSR_BAY = (MSR[0] + 2 * CLR, MSR[1] + 2 * CLR)          # round the MSR-2
 
 
 def mic_tube():
-    """Sound tube from the skin down to a gasket on the mic carrier (the face plate's screws press it on)."""
-    od, bore, gasket = MIC_TUBE
-    z0 = RING_T + MIC_CARRIER[2] + gasket
-    return Pos(*MIC_AT, (z0 + SKIN_Z + 0.01) / 2) * (Cylinder(od / 2, SKIN_Z + 0.01 - z0) - Cylinder(bore / 2, PT))
+    """Sound column from the skin down to a gasket on the ring board round the mic (the face plate's screws press it
+    on, D-83)."""
+    return sound_column(MIC_AT, MIC, MIC_PORT_IN, RING_T, SKIN_Z + 0.01, *MIC_TUBE, MIC_BOOT)
 
 
 def msr_posts():

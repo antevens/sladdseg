@@ -1,5 +1,5 @@
 """EU TRIM PLATE (D-30, D-56): a passive cover: face, remote pocket walls (standing on the cap), finger scoops both sides (D-73),
-MSR-2 bay (radar skin, vents over the CO2 sensor, posts onto the MSR-2's board) above, SHT45 bay below, the microphone's sound hole and tube. No electronics and no contacts:
+MSR-2 bay (radar skin, vents over the CO2 sensor, posts onto the MSR-2's board) above, SHT45 bay below, the microphone's sound hole and column. No electronics and no contacts:
 the sensors sit on the cap board (capboard_eu.py). Four snap fingers at the corners catch grooves in the carrier's
 windows (D-70, D-77). Low-voltage side only; any filament (PETG/ASA). Print face-down, no supports.
 Run:  python trim_eu.py  -> ../../../build/eu/trim.step / .stl
@@ -7,7 +7,7 @@ Run:  python trim_eu.py  -> ../../../build/eu/trim.step / .stl
 from math import sqrt
 from build123d import Axis, Box, Cylinder, Ellipse, Plane, Pos, chamfer, loft
 from params_eu import *
-from common import rr, stadium, slab, frame
+from common import rr, stadium, slab, frame, sound_column
 import msr2
 
 
@@ -70,10 +70,8 @@ def scoop_block(sx):
 
 
 def mic_tube():
-    """Sound tube from the skin down to a gasket on the mic carrier (on the cap board)."""
-    od, bore, gasket = MIC_TUBE
-    z0 = CB_TOP + MIC_CARRIER[2] + gasket
-    return Pos(*MIC_AT, (z0 + SKIN_Z + 0.01) / 2) * (Cylinder(od / 2, SKIN_Z + 0.01 - z0) - Cylinder(bore / 2, PT))
+    """Sound column from the skin down to a gasket on the cap board round the mic (D-83)."""
+    return sound_column(MIC_AT, MIC, MIC_PORT_IN, CB_TOP, SKIN_Z + 0.01, *MIC_TUBE, MIC_BOOT)
 
 
 def build():
@@ -103,7 +101,7 @@ def build():
     for i in range(n):                                                               # MSR-2 vents, top edge
         body -= Pos((i - (n - 1) / 2) * pitch + dx, PL_Y[1] - SKIN + d / 2 - 1, zt) * Box(w, d, h)
     body -= Pos(0, SHT_Y, 0) * slab(rr(*sb, SHT_BAY_R), -0.01, PT - SKIN)
-    # microphone sound hole over the tube
+    # microphone sound hole over the column
     hd, web, rd = MIC_HOLE_EU                               # sound hole through a thin web, recess from the face (D-52)
     body -= Pos(*MIC_AT, PT - SKIN / 2) * Cylinder(hd / 2, SKIN + 1)
     body -= Pos(*MIC_AT, PT - (SKIN - web) / 2 + 0.005) * Cylinder(rd / 2, SKIN - web + 0.01)

@@ -5,8 +5,8 @@ to the cap board round the cap disc, with a rim round the board; four M2 screws 
 on the wall first: a lip on its wall face reaches under the cap's edge, the cap's screws pin it to the wall, the cap's
 teeth in gaps in the lip stop it turning (D-71). The 5 V board's two sensor spring pins come up through the cap
 and the carrier onto gold pads under the board, level with the battery-free pins' pads on the back cover. On the board,
-as on the NA ring board: the MSR-2 on its CN2 mate and three SMT spacers under the face plate's posts, the microphone
-carrier over a window, the SHT45 under its vents. The face plate's four snap fingers drop into closed windows in the
+as on the NA ring board: the MSR-2 on its CN2 mate and three SMT spacers under the face plate's posts, the top-port
+microphone and its ADAU7002 (D-83), the SHT45 under its vents. The face plate's four snap fingers drop into closed windows in the
 board and the carrier at the corners and catch grooves in the carrier (D-77).
 Run:  python capboard_eu.py  -> ../../../build/eu/carrier.step / .stl
 """
@@ -50,7 +50,7 @@ def snap_grooves():
 
 
 def mic_body_y():
-    return MIC_AT[1] + (MIC[1] / 2 - MIC_PORT_IN)
+    return MIC_AT[1] - (MIC[1] / 2 - MIC_PORT_IN)          # port end up
 
 
 def cap_board():
@@ -61,7 +61,6 @@ def cap_board():
         b -= Pos(x, y, zc) * Cylinder(CB_SCREW_D / 2 + 0.1, h)
     for x, y in MSR_SPACERS:
         b -= Pos(x, y, zc) * Cylinder(RING_NUT_HOLE / 2, h)
-    b -= Pos(MIC_AT[0], mic_body_y(), zc) * Box(MIC[0] + 2 * MIC_WIN, MIC[1] + 2 * MIC_WIN, h)
     for x0, x1, y0 in EU_SW_CUTS:                           # notches under the MSR-2's back switches
         y1 = CB_TOP_Y + 1
         b -= Pos((x0 + x1) / 2, (y0 + y1) / 2, zc) * Box(x1 - x0, y1 - y0, h)
@@ -117,11 +116,18 @@ def msr():
 
 
 def mic():
-    """Carrier flat on the cap board, the mic under it in the board's window, port up through the carrier."""
-    w, h, t = MIC_CARRIER
-    c = Pos(*MIC_AT, CB_TOP + t / 2) * Box(w, h, t)
-    c -= Pos(*MIC_AT, CB_TOP + t / 2) * Cylinder(MIC_FLEX_HOLE_D / 2, t + 1)
-    return c, Pos(MIC_AT[0], mic_body_y(), CB_TOP - MIC[2] / 2) * Box(MIC[0], MIC[1], MIC[2])
+    """Top-port microphone on the cap board, port end up, port under MIC_AT (D-83)."""
+    return Pos(MIC_AT[0], mic_body_y(), CB_TOP + MIC[2] / 2) * Box(*MIC)
+
+
+def passives():
+    """The microphone's parts round its port (MIC_PARTS): ADAU7002, its capacitor, the SD pull-down, the mic's
+    capacitor."""
+    out = None
+    for (dx, dy), (w, h, t) in MIC_PARTS.values():
+        b = Pos(MIC_AT[0] + dx, MIC_AT[1] + dy, CB_TOP + t / 2) * Box(w, h, t)
+        out = b if out is None else out + b
+    return out
 
 
 def sht45():
@@ -138,9 +144,8 @@ def screws():
 
 
 def parts():
-    carrier_mic, mic_body = mic()
     return {"carrier": carrier(), "capboard": cap_board(), "cb_pads": pads(), "cn2": cn2(), "spacers": spacers(),
-            "msr": msr(), "micb": carrier_mic, "mic": mic_body, "sht45": sht45(), "cb_screws": screws()}
+            "msr": msr(), "passives": passives(), "mic": mic(), "sht45": sht45(), "cb_screws": screws()}
 
 
 if __name__ == "__main__":

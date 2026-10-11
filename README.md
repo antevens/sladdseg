@@ -64,7 +64,7 @@ the sensors and the automations could not control them.
 
 Shaded views of the assembly: face plate (white), box insert (grey), BILRESA remote (model), Marquardt
 1802.2504 rocker (red), wiring board (green, KiCad model), ring board (green) on the insert's collar
-with the MSR-2 (black), the mic carrier and the SHT45, nylon board standoffs. Regenerate with `make renders`.
+with the MSR-2 (black), the microphone and the SHT45, nylon board standoffs. Regenerate with `make renders`.
 
 | Front | Remote lifted out |
 | --- | --- |
@@ -79,13 +79,14 @@ posts, the four nylon board standoffs (D-57), wiring board.
 
 ![v0.4 exploded assembly](docs/renders/v0.4_exploded.png)
 
-Face plate lifted off (see-through): it carries nothing but plastic; the ring board, the MSR-2, the mic
-carrier and the SHT45 stay on the insert (D-50, D-68).
+Face plate lifted off (see-through): it carries nothing but plastic; the ring board, the MSR-2, the
+microphone and the SHT45 stay on the insert (D-50, D-68).
 
 ![v0.4 face plate lifted off](docs/renders/v0.4_face_off.png)
 
 Ring board from the front, red where copper may not go (8 mm along the wall from the box opening): the
-MSR-2 on CN2 and three SMT spacers, J1 for the FFC, the mic carrier at the top right, the SHT45 at the bottom.
+MSR-2 on CN2 and three SMT spacers, J1 for the FFC, the microphone and its ADAU7002 at the top right, the SHT45 at
+the bottom.
 
 ![v0.4 ring board](docs/renders/v0.4_ring.png)
 
@@ -104,8 +105,9 @@ wiring board's 5 V area, through the pocket floor onto the pads of the replaceme
 | --- | --- |
 | ![v0.4 battery-free](docs/renders/v0.4_battery_free.png) | ![v0.4 spring pins](docs/renders/v0.4_pins.png) |
 
-Microphone (D-29, D-50): the bottom-port I²S mic under its carrier, hanging into a window in the ring
-board, the port up through the carrier into the face plate's sound tube (gasket on the carrier).
+Microphone (D-29, D-83): the top-port PDM mic on the ring board, the ADAU7002 beside it turning its PDM into I²S for
+the MSR-2; the face plate's sound column stands on a gasket on the board round the mic, hollow over it, its bore over
+the port.
 
 ![v0.4 microphone sections](docs/renders/v0.4_mic_section.png)
 
@@ -173,7 +175,7 @@ until measured; the stack reaches 43.8 mm deep, to be tried in the printed test 
 ![EU exploded](docs/renders/eu_exploded.png)
 
 The sensors' side with the face plate and remote off: the carrier round the cap, the cap board in it with the MSR-2 on
-CN2 and its spacers, the mic carrier, the SHT45.
+CN2 and its spacers, the microphone, the SHT45.
 
 ![EU sensors](docs/renders/eu_sensors.png)
 
@@ -238,9 +240,10 @@ through the VBAT contact: the finger on the end section, its dome on the remote'
 
 ![Back cover flex, copper](docs/renders/cover_flex_copper_front.png)
 
-### Ring board, mic carrier, riser
+### Ring board, riser
 
-KiCad projects in `pcb/sensor/` (D-50). Ring board: I²S and +5V on the front, SDA, SCL and +3V3 across the
+KiCad projects in `pcb/sensor/` (D-50). Ring board: the microphone and the ADAU7002 at the top right (D-83), I²S and
++5V on the front, SDA, SCL and +3V3 across the
 top band on the back to the right rail, down the rail on the front round the box's corner keep-out to the
 SHT45; GND pours (the left rail carries GND). The CN2 mate and its map are placeholders: no fab files yet.
 
@@ -249,8 +252,8 @@ SHT45; GND pours (the left rail carries GND). The CN2 mate and its map are place
 | ![Ring board, front](docs/renders/ring_board_front.png) | ![Ring board, back](docs/renders/ring_board_back.png) |
 | ![Ring board, front copper](docs/renders/ring_board_copper_front.png) | ![Ring board, back copper](docs/renders/ring_board_copper_back.png) |
 
-Mic carrier (7 × 6 mm, castellated) and riser board (two spring pins, two M2 post pads):
+Riser board (two spring pins, two M2 post pads):
 
-| Mic carrier, front | Mic carrier, back (mic side) | Riser, front | Riser, back |
-| --- | --- | --- | --- |
-| ![Mic carrier, front copper](docs/renders/mic_carrier_copper_front.png) | ![Mic carrier, back copper](docs/renders/mic_carrier_copper_back.png) | ![Riser, front copper](docs/renders/riser_board_copper_front.png) | ![Riser, back copper](docs/renders/riser_board_copper_back.png) |
+| Riser, front | Riser, back |
+| --- | --- |
+| ![Riser, front copper](docs/renders/riser_board_copper_front.png) | ![Riser, back copper](docs/renders/riser_board_copper_back.png) |

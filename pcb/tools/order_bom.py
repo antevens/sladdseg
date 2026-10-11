@@ -27,17 +27,15 @@ SUBST = {
 DIGIKEY = {
     "1802.2504": None,
     "IRM-03-5": "1866-3020-ND",
-    "3404.2416.22": "486-3951-1-ND",
     "B72660M0271K093": "495-1467-1-ND",
     "CL31A226KPHNNNE": "1276-1287-1-ND",
     "FH12-6S-0.5SH(55)": "HFJ106CT-ND",
     "S7081-42R": "952-1734-1-ND",
     "SHT45-AD1B-R2": "1649-SHT45-AD1B-R2CT-ND",
     "GRM155R71C104KA88D": "490-3261-1-ND",
-    "DMM-4026-B-I2S-R": "668-DMM-4026-B-I2S-RCT-ND",
+    "SPK0641HT4H-1": "6017-SPK0641HT4H-1CT-ND",           # DigiKey listing, 2026-10-11
     "RC0402FR-07100KL": "311-100KLRCT-ND",
     "TLV75533PDBVR": "296-50411-1-ND",
-    "CL05A105KP5NNNC": "1276-1076-1-ND",
     "TSM-102-02-L-SV": "",                     # TODO distributor PN (imports by MPN until then)
     "SSW-102-01-G-S": "612-SSW-102-01-G-S-ND",
     "P70-2200045": "952-3124-ND",
@@ -46,11 +44,12 @@ DIGIKEY = {
 # carried by Mouser (import reported no match), those go to <name>_mouser_rest_digikey.csv
 MOUSER = {
     "TMPS 03-105": "495-TMPS03-105",
+    "1802.2504": "979-1802.2504",               # in stock 2026-10-11 (01802.2504-03: non-stocked)
     "TSM-102-02-L-SV": "",                     # TODO distributor PN (imports by MPN until then)
     "2604-3102": None,
     "P70-2200045": None,
 }
-SMALL = ("0402", "1206", "SOT-23", "DFN", "PUI_", "S7081", "P70-", "FH12", "UMT250", "CU4032", "SMD", "WA-SMSI",
+SMALL = ("0402", "1206", "SOT-23", "DFN", "SPK0641", "WLCSP", "S7081", "P70-", "FH12", "UMT250", "CU4032", "SMD", "WA-SMSI",
          "WA-SBRIE")
 # NA parts that are not on a board (D-50, D-57): the spacer posts' studs, the board standoffs and the 5 V FFC
 EXTRA_NA = {
@@ -81,11 +80,11 @@ def tables():
     na, eu = load("pcb/tools", "parts"), load("pcb/eu/tools", "eu_parts")
     sen, euc = load("pcb/sensor/tools", "sensor_parts"), load("pcb/sensor/tools", "eu_capboard_parts")
     return [("NA", "wiring board", na.PARTS), ("NA", "ring board", sen.RING_PARTS),
-            ("NA", "mic carrier", sen.CARRIER_PARTS), ("NA", "riser", sen.RISER_PARTS), ("NA", "cover flex", sen.COVER_PARTS),
+            ("NA", "riser", sen.RISER_PARTS), ("NA", "cover flex", sen.COVER_PARTS),
             ("NA", "mechanical", EXTRA_NA),
             ("EU", "mains board", eu.MAINS_PARTS), ("EU", "5 V board", eu.LV_PARTS),
             ("EU", "cap board", euc.CAPBOARD_PARTS),
-            ("EU", "mic carrier", sen.CARRIER_PARTS), ("EU", "cover flex", sen.COVER_PARTS)]
+            ("EU", "cover flex", sen.COVER_PARTS)]
 
 
 def short(desc, n=90):

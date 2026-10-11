@@ -2037,7 +2037,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "LDO input capacitor, 1 uF 10 V X5R 0402 (TLV755P: >= 1 uF)"
+		(property "Description" "LDO input capacitor, 1 uF 16 V X5R 0402 (TLV755P: >= 1 uF)"
 			(at 238.76 91.44 0)
 			(effects
 				(font
@@ -2055,7 +2055,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL05A105KP5NNNC"
+		(property "MPN" "CL05A105KO5NNNC"
 			(at 238.76 91.44 0)
 			(effects
 				(font
@@ -2258,7 +2258,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "LDO output capacitor, 1 uF 10 V X5R 0402 (TLV755P: >= 1 uF)"
+		(property "Description" "LDO output capacitor, 1 uF 16 V X5R 0402 (TLV755P: >= 1 uF)"
 			(at 35.56 157.48 0)
 			(effects
 				(font
@@ -2276,7 +2276,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL05A105KP5NNNC"
+		(property "MPN" "CL05A105KO5NNNC"
 			(at 35.56 157.48 0)
 			(effects
 				(font

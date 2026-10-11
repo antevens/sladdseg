@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Regenerate the low-voltage boards (docs/DESIGN.md D-50, D-56, D-70): ring board, mic carrier, riser board, back
-# cover flex and the EU cap board: libraries, projects, schematics and boards, then run ERC and DRC on each and
+# Regenerate the low-voltage boards (docs/DESIGN.md D-50, D-56, D-70): ring board, riser board, back cover flex
+# and the EU cap board: libraries, projects, schematics and boards, then run ERC and DRC on each and
 # write the PCBWay fab files. The ring board's and the EU cap board's fab files are withheld while the CN2 mate and
 # contact map are placeholders; the cover flex's while its positions are REF / MEASURE.
 #
@@ -20,7 +20,7 @@ readonly REPO
 readonly PRJ="${SENSOR_DIR}/kicad"
 readonly FAB="${SENSOR_DIR}/fab"
 readonly OUT="${REPO}/build"
-readonly BOARDS=(ring_board mic_carrier riser_board cover_flex eu_cap_board)
+readonly BOARDS=(ring_board riser_board cover_flex eu_cap_board)
 
 function err() {
   echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" >&2
@@ -85,7 +85,6 @@ function main() {
     err "ERC or DRC reported violations; see ${OUT}/<board>_erc.rpt and <board>_drc.rpt"
     exit 1
   fi
-  export_gerbers mic_carrier "F.Cu,B.Cu,F.Mask,B.Mask,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"
   export_gerbers riser_board "F.Cu,B.Cu,F.Mask,B.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"
   if cover_confirmed; then
     export_gerbers cover_flex "F.Cu,F.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"

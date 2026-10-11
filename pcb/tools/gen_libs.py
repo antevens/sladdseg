@@ -168,18 +168,32 @@ def body(w, h, cx=0.0, cy=0.0, crt=0.25, silk=True):
     return out
 
 
-def fp_rocker():
-    # Marquardt drawing 1802.2504 rev g (recommended hole layout), mounted turned 90 degrees; origin =
-    # body centre: poles 10.2 mm apart along x (pole 1 = 1/1a at -x, pole 2 = 2/2a at +x), pins 1 / 2
-    # on the body's centre line, 1a / 2a 7 mm off it (-y); holes 1.3 (+0.1) mm, pins 0.8 mm; body
-    # below the panel 22 x 18.6 mm. Pin numbering per the DPST schematic: confirm on a sample.
-    items = [tht("1", -5.1, 0.0, "circle", 2.4, 2.4, 1.4), tht("1a", -5.1, -7.0, "circle", 2.4, 2.4, 1.4),
-             tht("2", 5.1, 0.0, "circle", 2.4, 2.4, 1.4), tht("2a", 5.1, -7.0, "circle", 2.4, 2.4, 1.4)]
+def slot(num, x, y, sx, sy, dx, dy):
+    """Plated slot: oval pad sx x sy, oval drill dx x dy."""
+    return S("pad", num, Sym("thru_hole"), Sym("oval"), S("at", x, y), S("size", sx, sy),
+             S("drill", Sym("oval"), dx, dy), S("layers", "*.Cu", "*.Mask"))
+
+
+def fp_rocker(name=FP_ROCKER, slots=True):
+    # Mounted turned 90 degrees; origin = body centre, poles 10.2 mm apart along x (pole 1 = 1/1a at -x, pole 2 =
+    # 2/2a at +x), 1 / 2 on the body's centre line, 1a / 2a off it (-y). Marquardt 1802.2504 (drawing rev g): 0.8 mm
+    # pins, 1a / 2a 7.0 off, holes 1.3 (+0.1). slots: also the E-Switch RA412C1100 (RA4 drawing, D-88): 4.8 x 0.8 tabs
+    # along x, 7.1 off, snapped in either way round so its tabs land on the slots: slots 5.2 x 1.2, pads 6.2 x 2.3,
+    # 1a / 2a 7.05 off. Pin numbering per the DPST schematic: confirm on samples.
+    if slots:
+        items = [slot(n, x, y, 6.2, 2.3, 5.2, 1.2) for n, x, y in
+                 (("1", -5.1, 0.0), ("1a", -5.1, -7.05), ("2", 5.1, 0.0), ("2a", 5.1, -7.05))]
+        what = ("Rocker switch DPST: Marquardt 1802.2504 (0.8 mm pins) or E-Switch RA412C1100 (4.8 x 0.8 tabs), plated "
+                "slots 5.2 x 1.2 on 10.2 x 7.05 mm")
+    else:
+        items = [tht(n, x, y, "circle", 2.4, 2.4, 1.4) for n, x, y in
+                 (("1", -5.1, 0.0), ("1a", -5.1, -7.0), ("2", 5.1, 0.0), ("2a", 5.1, -7.0))]
+        what = "Rocker switch DPST, PCB pins 0.8 mm, holes 1.3 mm on 10.2 x 7 mm grid"
     items += body(22.0, 18.6, crt=1.25, silk=False)       # courtyard round the 24 x 21 flange (overhangs at the panel)
     items.append(model3d("Marquardt_1802.2504"))
-    return _fp(FP_ROCKER, f"Rocker switch DPST, PCB pins 0.8 mm, holes 1.3 mm on 10.2 x 7 mm grid (1 / 2 on the body centre line), "
-               f"body 22x18.6 mm, flange 24x21 mm, PCB seat 16.2 mm below the panel face; {ROCKER_DS}",
-               "rocker switch DPST Marquardt 1800",
+    return _fp(name, f"{what} (1 / 2 on the body centre line), body 22x18.6 mm, flange 24x21 mm, 1802.2504 PCB seat "
+               f"16.2 mm below the panel face; {ROCKER_DS}" + ("; E-Switch RA4 datasheet" if slots else ""),
+               "rocker switch DPST Marquardt 1800" + (" E-Switch RA4" if slots else ""),
                "through_hole", items)
 
 
@@ -202,6 +216,13 @@ def fp_wago():
     return _fp(FP_WAGO, f"WAGO 2604-1106 PCB terminal block, push-in lever, 6-pole, P5.00 mm, 4 mm2, "
                f"entry parallel to PCB (entry side -y), 400 V III/2, {WAGO_DS}; pin rows {WAGO_ROW_PITCH} mm apart "
                "and body from WAGO's 3D model", "WAGO 2604 terminal block push-in", "through_hole", items)
+
+
+def fp_kicad_logo():
+    """The stock KiCad logo, board-only (no schematic symbol: kept out of the parity check)."""
+    fp = loads((FP_DIR / "Symbol.pretty" / f"{FP_KICAD}.kicad_mod").read_text())
+    first(fp, "attr").insert(1, Sym("board_only"))
+    return fp
 
 
 def fp_ant_logo():

@@ -2081,7 +2081,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "wiring_board:Marquardt_1802.2504_DPST_PCB"
+		(property "Footprint" "wiring_board:Rocker_DPST_Marquardt_1802.2504_E-Switch_RA412C1100"
 			(at 76.2 91.44 0)
 			(effects
 				(font
@@ -2671,7 +2671,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "3404.2416.22"
+		(property "MPN" "3403.0166.11"
 			(at 111.76 91.44 0)
 			(effects
 				(font

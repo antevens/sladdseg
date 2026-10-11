@@ -23,8 +23,9 @@ depth is still to be tried in a real box (D-36).
   "routed isolation slot in outline, do not omit" to the order remarks.
 - Three Ø2.2 holes for the cap's long bosses (M2), no copper within 1.0 mm.
 - Front (F): F1, RV1, J3 (SMD). Back (B): J1, J2 (WAGO 2604-3102), PS1 (Traco TMPS 03-105), THT.
-- S1 (Marquardt 1802.2504) is **not fitted** by PCBWay: it snaps into the cap's cup first and is then
-  soldered by hand.
+- S1 (Marquardt 1802.2504) is **not fitted** by PCBWay: it snaps into the cap's cup first. **Solder it by
+  hand only after the mains board is screwed onto the cap's bosses**: its holes are 5.2 mm plated slots
+  (D-88), so the cup's panel cutout, not the board, locates the rocker.
 
 ## 5 V board (`eu_5v_board/`)
 
@@ -47,3 +48,6 @@ depth is still to be tried in a real box (D-36).
 - [ ] Spring pin working height on a printed cap (6.4–7.2 mm, designed 6.8 ± 0.3).
 - [ ] EU stack depth tried in the printed test socket (D-76), then a real 47 mm box (−43.8 mm deepest part).
 - [ ] Approvals of S1, J1, J2, PS1, F1 and RV1 adequate for the installation.
+- [ ] Second-source rocker E-Switch RA412C1100 (D-88): its tab rows on a sample, tabs soldered into the
+      slots outside the maker's listed terminations (D-86), its 10(4) A ENEC rating accepted; S1's slot pads
+      reach the WAGO bodies' edge (0.05 mm), 3.85 mm from their pins.

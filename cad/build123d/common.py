@@ -31,6 +31,21 @@ def taper(w, h, r, z0, z1, grow):
     return loft([a, b])
 
 
+def sound_column(port, mic, port_in, board_top, top_z, bore, gasket, boot):
+    """Face plate's sound column over a top-port mic (D-83): a rounded column from top_z down to a gasket on the board
+    round the mic, hollow over the mic (boot = clearance round the body, wall, gap over its top), the bore from the
+    cavity up over the port. port: (x, y); mic: body w, l, h, port end up."""
+    from build123d import Box
+    clr, wall, gap = boot
+    cy = port[1] - (mic[1] / 2 - port_in)                     # body centre
+    w, l = mic[0] + 2 * clr, mic[1] + 2 * clr
+    z0, zc = board_top + gasket, board_top + mic[2] + gap     # foot, cavity top
+    col = Pos(port[0], cy, 0) * slab(rr(w + 2 * wall, l + 2 * wall, wall), z0, top_z)
+    col -= Pos(port[0], cy, (z0 + zc) / 2 - 0.5) * Box(w, l, zc - z0 + 1)
+    col -= Pos(port[0], port[1], (zc + top_z) / 2) * Cylinder(bore / 2, top_z - zc + 1)
+    return col
+
+
 def ellipsoid(rx, ry, rz):
     """Poles on the Y axis so no mesh singularity lands on a cut surface."""
     return (Rot(90, 0, 0) * Sphere(1)).transform_geometry(Matrix([[rx, 0, 0, 0], [0, ry, 0, 0], [0, 0, rz, 0]]))
