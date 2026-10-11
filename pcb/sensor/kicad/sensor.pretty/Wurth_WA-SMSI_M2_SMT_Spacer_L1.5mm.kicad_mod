@@ -3,8 +3,8 @@
 	(generator "gen_libs")
 	(generator_version "9.0")
 	(layer "F.Cu")
-	(descr "Wurth WA-SMSI SMT steel spacer M2, L 1.5 mm (nut), hole 3.0 mm unplated, pad 5.3 mm, https://www.we-online.com/catalog/datasheet/9774015243R.pdf")
-	(tags "spacer nut SMT M2")
+	(descr "Wurth WA-SMSI SMT steel spacer M2, L 1.5 mm, body 4.35 mm, spigot hole 3.0 mm unplated, pad 5.3 mm, stencil ring 3.1/5.2 mm, https://www.we-online.com/catalog/datasheet/9774015243R.pdf")
+	(tags "spacer standoff SMT M2")
 	(property "Reference" "REF**"
 		(at 0 0 0)
 		(layer "F.SilkS")

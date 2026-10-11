@@ -5,7 +5,6 @@ function and its power nets. Sheet writes a flat schematic, Board builds a board
 Run with the Python that ships pcbnew.
 """
 import copy
-import datetime
 import math
 from dataclasses import dataclass
 from pathlib import Path
@@ -14,7 +13,6 @@ from typing import Callable
 import pcbnew as P
 from sexpr import loads, dumps, find, first, Sym, S
 
-DATE = datetime.date.today().isoformat()
 OX, OY = 100.0, 100.0
 
 
@@ -97,13 +95,13 @@ class Sheet:
         self.items.append(S("text", text, S("exclude_from_sim", Sym("no")), S("at", x, y, 0),
                             self.font(justify="left top"), S("uuid", self.lib.uid(self.project, "text", text[:40]))))
 
-    def write(self, title, rev, comments):
+    def write(self, title, rev, date, comments):
         lib_symbols = S("lib_symbols")
         for name in sorted(self.used):
             s = copy.deepcopy(self.symlib[name])
             s[1] = f"{self.lib.name}:{name}"
             lib_symbols.append(s)
-        tb = S("title_block", S("title", title), S("date", DATE), S("rev", rev), S("company", "smart-wallplate"),
+        tb = S("title_block", S("title", title), S("date", date), S("rev", rev), S("company", "smart-wallplate"),
                *[S("comment", i + 1, c) for i, c in enumerate(comments)])
         sch = S("kicad_sch", S("version", Sym("20250114")), S("generator", "eeschema"),
                 S("generator_version", "9.0"), S("uuid", self.root), S("paper", "A4"), tb, lib_symbols,
@@ -111,7 +109,7 @@ class Sheet:
         (self.lib.prj / f"{self.project}.kicad_sch").write_text(dumps(sch) + "\n")
 
 
-def build_schematic(lib, project, parts, flags, title, rev, comments, notes):
+def build_schematic(lib, project, parts, flags, title, rev, date, comments, notes):
     g = 2.54
     sh = Sheet(lib, project)
     pwr = 0
@@ -139,9 +137,7 @@ def build_schematic(lib, project, parts, flags, title, rev, comments, notes):
         else:
             sh.label(net, (px, py, 90.0))
     sh.note(notes, 25, 180)
-    sh.write(title, rev, comments)
-
-
+    sh.write(title, rev, date, comments)
 
 
 def V(x, y):
@@ -546,5 +542,3 @@ class Board:
             if self.on_save:
                 self.on_save()
         print("wrote", out)
-
-

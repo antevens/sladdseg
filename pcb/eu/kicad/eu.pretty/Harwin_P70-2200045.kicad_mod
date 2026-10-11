@@ -3,7 +3,7 @@
 	(generator "gen_libs")
 	(generator_version "9.0")
 	(layer "F.Cu")
-	(descr "Harwin P70-2200045 SMT spring pin with peg, https://content.harwin.com/asset/7e702b12-8f84-42b5-9282-d7e22f3466f3/DRG-02624-Technical-Drawing-Datasheet-P70-220-pdf.pdf")
+	(descr "Harwin P70-2200045 SMT spring pin with peg, pad 2.2 mm, hole 1.2 mm, https://content.harwin.com/asset/7e702b12-8f84-42b5-9282-d7e22f3466f3/DRG-02624-Technical-Drawing-Datasheet-P70-220-pdf.pdf")
 	(tags "spring pin pogo")
 	(property "Reference" "REF**"
 		(at 0 0 0)
@@ -31,6 +31,16 @@
 		(size 2.2 2.2)
 		(drill 1.2)
 		(layers "*.Cu" "*.Mask" "F.Paste")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 1 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
 	)
 	(fp_circle
 		(center 0 0)

@@ -1,8 +1,9 @@
 """Build the project-local libraries (kicad/wiring_board.kicad_sym and .pretty).
 
-Stock KiCad parts are copied so the project is self-contained. Four footprints
-are built from datasheets: the Marquardt 1802.2504 rocker, the WAGO 2604-1106
-terminal block, the TDK CU4032 SMD varistor and the Wurth WA-SMSI M2 spacer.
+Stock KiCad parts are copied so the project is self-contained. Built from datasheets: the Marquardt
+1802.2504 rocker, the WAGO 2604-1106 terminal block, the TDK CU4032 SMD varistor, the Wurth WA-SMSI M2
+spacer and the standoff mounting hole; the ant logo from pcb/art. gen_sensor.py and gen_eu.py share the
+helpers here (stock symbols, the rocker, the varistor, the WA-SMSI spacer, the Harwin P70 spring pin).
 """
 import copy
 import os
@@ -13,7 +14,7 @@ from sexpr import loads, dumps, find, first, Sym, S
 from parts import (LIB, FP_ROCKER, FP_WAGO, FP_IRM, FP_FUSE, FP_MOV, FP_J2, FP_POST, FP_MH, FP_ANT, FP_KICAD,
                    ANT_LOGO_H,
                    MOUNT_D, STANDOFF_HEX_D, SCREW_HEAD_D, WAGO_PAD, WAGO_ROW_PITCH, WAGO_BODY, ROCKER_DS, WAGO_DS, CU_DS, BOARD, PS1_PINS,
-                   SMSI_DS, POST_HOLE, POST_PAD, POST_PASTE)
+                   SMSI_DS, POST_HOLE, POST_PAD, POST_PASTE, SMSI_BODY_D)
 
 _BASES = ["/usr/share/kicad", "/usr/local/share/kicad", "/opt/kicad/share/kicad",
           "/var/lib/flatpak/app/org.kicad.KiCad/current/active/files/share/kicad",
@@ -46,7 +47,6 @@ SYMBOLS = [
     ("Connector_Generic", "Conn_01x01", "Conn_01x01"),
     ("Connector", "Screw_Terminal_01x06", "Screw_Terminal_01x06"),
     ("Connector_Generic", "Conn_01x06", "Conn_01x06"),
-    ("Switch", "SW_DPST", "SW_DPST_Marquardt"),
     ("power", "+5V", "+5V"),
     ("power", "GND", "GND"),
     ("power", "PWR_FLAG", "PWR_FLAG"),
@@ -84,6 +84,22 @@ def stock_symbol(lib, name):
     return base
 
 
+def rename_symbol(sym, new):
+    """Rename a symbol and its units in place; returns it."""
+    old = sym[1]
+    sym[1] = new
+    for sub in find(sym, "symbol"):
+        sub[1] = sub[1].replace(old, new, 1)
+    return sym
+
+
+def marquardt_symbol():
+    """The Marquardt 1802.2504 rocker: the stock SW_DPST with pins 1 / 1a, 2 / 2a."""
+    sym = rename_symbol(stock_symbol("Switch", "SW_DPST"), "SW_DPST_Marquardt")
+    renumber_rocker(sym)
+    return sym
+
+
 def renumber_rocker(sym):
     """Rename pin numbers and the unit names, set datasheet fields."""
     def walk(node):
@@ -108,14 +124,8 @@ def build_symbols():
     out = [Sym("kicad_symbol_lib"), S("version", Sym("20241209")), S("generator", "gen_libs"),
            S("generator_version", "9.0")]
     for lib, name, new in SYMBOLS:
-        s = stock_symbol(lib, name)
-        old = s[1]
-        s[1] = new
-        for sub in find(s, "symbol"):
-            sub[1] = sub[1].replace(old, new, 1)
-        if new == "SW_DPST_Marquardt":
-            renumber_rocker(s)
-        out.append(s)
+        out.append(rename_symbol(stock_symbol(lib, name), new))
+    out.append(marquardt_symbol())
     (PRJ / f"{LIB}.kicad_sym").write_text(dumps(out) + "\n")
 
 
@@ -166,8 +176,7 @@ def fp_rocker():
     items = [tht("1", -5.1, 0.0, "circle", 2.4, 2.4, 1.4), tht("1a", -5.1, -7.0, "circle", 2.4, 2.4, 1.4),
              tht("2", 5.1, 0.0, "circle", 2.4, 2.4, 1.4), tht("2a", 5.1, -7.0, "circle", 2.4, 2.4, 1.4)]
     items += body(22.0, 18.6, crt=1.25, silk=False)       # courtyard round the 24 x 21 flange (overhangs at the panel)
-    items.append(S("model", "${KIPRJMOD}/3d/Marquardt_1802.2504.step",
-                   S("offset", S("xyz", 0, 0, 0)), S("scale", S("xyz", 1, 1, 1)), S("rotate", S("xyz", 0, 0, 0))))
+    items.append(model3d("Marquardt_1802.2504"))
     return _fp(FP_ROCKER, f"Rocker switch DPST, PCB pins 0.8 mm, holes 1.3 mm on 10.2 x 7 mm grid (1 / 2 on the body centre line), "
                f"body 22x18.6 mm, flange 24x21 mm, PCB seat 16.2 mm below the panel face; {ROCKER_DS}",
                "rocker switch DPST Marquardt 1800",
@@ -189,8 +198,7 @@ def fp_wago():
     items += [rect(-16.2, -front, 16.2, back, "F.Fab", 0.1),
               rect(-16.32, -front - 0.12, 16.32, back + 0.12, "F.SilkS", 0.12),
               rect(-16.45, -lever - 0.25, 16.45, back + 0.25, "F.CrtYd", 0.05)]
-    items.append(S("model", "${KIPRJMOD}/3d/WAGO_2604-1106.step",
-                   S("offset", S("xyz", 0, 0, 0)), S("scale", S("xyz", 1, 1, 1)), S("rotate", S("xyz", 0, 0, 0))))
+    items.append(model3d("WAGO_2604-1106"))
     return _fp(FP_WAGO, f"WAGO 2604-1106 PCB terminal block, push-in lever, 6-pole, P5.00 mm, 4 mm2, "
                f"entry parallel to PCB (entry side -y), 400 V III/2, {WAGO_DS}; pin rows {WAGO_ROW_PITCH} mm apart "
                "and body from WAGO's 3D model", "WAGO 2604 terminal block push-in", "through_hole", items)
@@ -214,12 +222,15 @@ def fp_ant_logo():
                "board_only exclude_from_pos_files exclude_from_bom allow_missing_courtyard", items)
 
 
+def circ(layer, r, w):
+    """Circle of radius r round the footprint origin."""
+    return S("fp_circle", S("center", 0, 0), S("end", r, 0), S("stroke", S("width", w), S("type", Sym("solid"))),
+             S("fill", Sym("no")), S("layer", layer))
+
+
 def fp_mount():
     """Unplated hole for one of the insert's nylon standoffs, with no copper: the standoff's hex
     (front) and the screw head (back) bear on bare laminate. The board keeps copper MOUNT_KO away."""
-    circ = lambda layer, r, w: S("fp_circle", S("center", 0, 0), S("end", r, 0),
-                                 S("stroke", S("width", w), S("type", Sym("solid"))), S("fill", Sym("no")),
-                                 S("layer", layer))
     items = [S("pad", "", Sym("np_thru_hole"), Sym("circle"), S("at", 0, 0), S("size", MOUNT_D, MOUNT_D),
                S("drill", MOUNT_D), S("layers", "*.Cu", "*.Mask"))]
     items += [circ("F.CrtYd", STANDOFF_HEX_D / 2 + 0.25, 0.05),
@@ -254,21 +265,34 @@ def _ring_pads(num, layers, ri, ro, web):
     return out
 
 
-def fp_post():
-    """Wurth WA-SMSI M2 SMT spacer, L 7 mm: unplated hole for the spigot (front mask open over the
-    ring only), solder pad ring in two halves, stencil ring in four sectors, per the datasheet's land pattern."""
-    circ = lambda layer, r, w: S("fp_circle", S("center", 0, 0), S("end", r, 0),
-                                 S("stroke", S("width", w), S("type", Sym("solid"))), S("fill", Sym("no")),
-                                 S("layer", layer))
-    items = [S("pad", "", Sym("np_thru_hole"), Sym("circle"), S("at", 0, 0), S("size", POST_HOLE, POST_HOLE),
-               S("drill", POST_HOLE), S("layers", "*.Cu", "B.Mask"))]
-    items += _ring_pads("1", ["F.Cu", "F.Mask"], POST_HOLE / 2, POST_PAD / 2, 0)
+def fp_smsi(name, length, hole, pad, ds, silk=True):
+    """Wurth WA-SMSI M2 SMT spacer of the given length: unplated hole for the spigot (front mask open over
+    the ring only), solder pad ring in two halves, stencil ring in four sectors, per the datasheet's land pattern."""
+    items = [S("pad", "", Sym("np_thru_hole"), Sym("circle"), S("at", 0, 0), S("size", hole, hole),
+               S("drill", hole), S("layers", "*.Cu", "B.Mask"))]
+    items += _ring_pads("1", ["F.Cu", "F.Mask"], hole / 2, pad / 2, 0)
     items += _ring_pads("", ["F.Paste"], POST_PASTE[0] / 2, POST_PASTE[1] / 2, POST_PASTE[2])
-    items += [circ("F.Fab", 4.35 / 2, 0.1), circ("F.SilkS", POST_PAD / 2 + 0.2, 0.12),
-              circ("F.CrtYd", POST_PAD / 2 + 0.25, 0.05)]
-    return _fp(FP_POST, f"Wurth WA-SMSI SMT steel spacer M2, L 7 mm, body 4.35 mm, spigot hole {POST_HOLE} mm "
-               f"unplated, pad {POST_PAD} mm, stencil ring {POST_PASTE[0]}/{POST_PASTE[1]} mm, {SMSI_DS}",
+    items.append(circ("F.Fab", SMSI_BODY_D / 2, 0.1))
+    if silk:
+        items.append(circ("F.SilkS", pad / 2 + 0.2, 0.12))
+    items.append(circ("F.CrtYd", pad / 2 + 0.25, 0.05))
+    return _fp(name, f"Wurth WA-SMSI SMT steel spacer M2, L {length} mm, body {SMSI_BODY_D} mm, spigot hole {hole} mm "
+               f"unplated, pad {pad} mm, stencil ring {POST_PASTE[0]}/{POST_PASTE[1]} mm, {ds}",
                "spacer standoff SMT M2", "smd allow_soldermask_bridges", items)
+
+
+def fp_post():
+    """The wiring board's spacer posts: WA-SMSI M2, L 7 mm."""
+    return fp_smsi(FP_POST, 7, POST_HOLE, POST_PAD, SMSI_DS)
+
+
+def fp_p70(name, pad_d, hole_d, flange_d, ds):
+    """Harwin P70-2200045 SMT spring pin with peg: recommended pad over a plated hole for the peg."""
+    items = [S("pad", "1", Sym("thru_hole"), Sym("circle"), S("at", 0, 0), S("size", pad_d, pad_d), S("drill", hole_d),
+               S("layers", "*.Cu", "*.Mask", "F.Paste")),
+             circ("F.Fab", flange_d / 2, 0.1), circ("F.CrtYd", pad_d / 2 + 0.25, 0.05), model3d(name)]
+    return _fp(name, f"Harwin P70-2200045 SMT spring pin with peg, pad {pad_d} mm, hole {hole_d} mm, {ds}",
+               "spring pin pogo", "smd", items)
 
 
 def model3d(name):
@@ -338,21 +362,18 @@ def trim_irm_silk(fp):
     raise RuntimeError("IRM silk line not found")
 
 
-def build_tables():
-    (PRJ / "fp-lib-table").write_text(
-        '(fp_lib_table\n\t(version 7)\n'
-        f'\t(lib (name "{LIB}")(type "KiCad")(uri "${{KIPRJMOD}}/{LIB}.pretty")(options "")'
-        '(descr "Project footprints"))\n)\n')
-    (PRJ / "sym-lib-table").write_text(
-        '(sym_lib_table\n\t(version 7)\n'
-        f'\t(lib (name "{LIB}")(type "KiCad")(uri "${{KIPRJMOD}}/{LIB}.kicad_sym")(options "")'
-        '(descr "Project symbols"))\n)\n')
+def write_lib_tables(prj, lib, what):
+    """fp-lib-table and sym-lib-table of a project with one library: <lib>.pretty and <lib>.kicad_sym."""
+    for kind, ext, noun in (("fp", "pretty", "footprints"), ("sym", "kicad_sym", "symbols")):
+        (Path(prj) / f"{kind}-lib-table").write_text(
+            f'({kind}_lib_table\n\t(version 7)\n\t(lib (name "{lib}")(type "KiCad")(uri "${{KIPRJMOD}}/{lib}.{ext}")'
+            f'(options "")(descr "{what} {noun}"))\n)\n')
 
 
 def _have_stock():
     if not SYM_DIR or not FP_DIR:
         return False
-    return all((SYM_DIR / f"{lib}.kicad_sym").exists() for lib, _, _ in SYMBOLS) and \
+    return all((SYM_DIR / f"{lib}.kicad_sym").exists() for lib in {lib for lib, _, _ in SYMBOLS} | {"Switch"}) and \
         all((FP_DIR / f"{lib}.pretty" / f"{n}.kicad_mod").exists() for lib, n in STOCK_FP.values())
 
 
@@ -367,4 +388,4 @@ if __name__ == "__main__":
               file=sys.stderr)
     else:
         sys.exit("gen_libs: KiCad stock libraries not found; set KICAD9_SYMBOL_DIR / KICAD9_FOOTPRINT_DIR")
-    build_tables()
+    write_lib_tables(PRJ, LIB, "Project")

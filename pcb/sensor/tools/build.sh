@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# Regenerate the low-voltage boards (docs/DESIGN.md D-50): ring board, mic carrier, riser board, back cover
-# flex and the EU sensor flex: libraries, projects, schematics and boards, then run ERC and DRC on each and
-# write the PCBWay fab files. The ring board's and the EU cap board's / adapter's fab files are withheld while the CN2 mate and
-# contact map (and the EU socket / header parts) are placeholders; the cover flex's while its positions are REF / MEASURE.
+# Regenerate the low-voltage boards (docs/DESIGN.md D-50, D-56, D-70): ring board, mic carrier, riser board, back
+# cover flex and the EU cap board: libraries, projects, schematics and boards, then run ERC and DRC on each and
+# write the PCBWay fab files. The ring board's and the EU cap board's fab files are withheld while the CN2 mate and
+# contact map are placeholders; the cover flex's while its positions are REF / MEASURE.
 #
 # Usage: pcb/sensor/tools/build.sh
 # Environment: KICAD_PYTHON (python with pcbnew, default python3),
@@ -95,12 +95,12 @@ function main() {
   fi
   if cn2_confirmed; then
     export_gerbers ring_board "F.Cu,B.Cu,F.Mask,B.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"
+    export_gerbers eu_cap_board "F.Cu,B.Cu,F.Mask,B.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"
   else
-    rm -rf "${FAB}/ring_board"
-    err "ring_board: CN2 mate and contact map are placeholders (sensor_parts.CN2_CONFIRMED); no fab files written"
+    rm -rf "${FAB}/ring_board" "${FAB}/eu_cap_board"
+    err "ring_board, eu_cap_board: CN2 mate and contact map are placeholders (sensor_parts.CN2_CONFIRMED);" \
+      "no fab files written"
   fi
-  rm -rf "${FAB}/eu_sensor_flex" "${FAB}/eu_cap_board" "${FAB}/eu_adapter"
-  err "eu_cap_board: the CN2 mate and contact map are placeholders (sensor_parts.CN2_CONFIRMED); no fab files written"
 }
 
 main "$@"

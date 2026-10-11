@@ -25,6 +25,8 @@ NOTES = {
     ep.LV: {
         "P1": "SMT spring pin, front (F), peg into the 1.2 mm hole",
         "P2": "SMT spring pin, front (F), peg into the 1.2 mm hole",
+        "P3": "SMT spring pin, front (F), peg into the 1.2 mm hole",
+        "P4": "SMT spring pin, front (F), peg into the 1.2 mm hole",
         "J1": "THT socket on the back (B), mates the mains board's J3 (Samtec TSM): confirm 8.51 mm body (SOCKET)",
     },
 }

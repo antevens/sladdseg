@@ -42,15 +42,26 @@
 		(fill no)
 		(layer "F.Fab")
 	)
-	(fp_rect
-		(start -1.35 -1.35)
-		(end 1.35 1.35)
+	(fp_circle
+		(center 0 0)
+		(end 1.35 0)
 		(stroke
 			(width 0.05)
 			(type solid)
 		)
 		(fill no)
 		(layer "F.CrtYd")
+	)
+	(model "${KIPRJMOD}/3d/Harwin_P70-2200045.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
 	)
 	(embedded_fonts no)
 )

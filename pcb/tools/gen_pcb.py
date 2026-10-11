@@ -3,16 +3,15 @@
 Run with the Python that ships pcbnew. Board centre sits at page (100, 100) mm; the
 aux and grid origins are set there, so exports use board-centre coordinates (X right, Y up).
 """
-import datetime
 import math
 from pathlib import Path
 import pcbnew as P
 from parts import (VIAS, PARTS, LIB, PROJECT, uid, BOARD, PS1_PINS, NETCLASS, RING_OUTER, RING_INNER,
-                   SELV_ZONE, POURS, POUR_PRIO, PE_ARMS, TRACKS, REV, MOUNT, MOUNT_KO, PE_DETOURS, PE_DETOUR_W, FP_MH, LOGOS, URL, URL_POS)
+                   SELV_ZONE, POURS, POUR_PRIO, PE_ARMS, TRACKS, REV, REV_DATE, MOUNT, MOUNT_KO, PE_DETOURS,
+                   PE_DETOUR_W, FP_MH, LOGOS, URL, URL_POS)
 
 PRJ = Path(__file__).resolve().parents[1] / "kicad"
 OX, OY = 100.0, 100.0
-DATE = datetime.date.today().isoformat()
 NETNAME = {n: f"/{n}" for n in ("L_IN", "L_SW", "L_F", "N_IN", "N_SW", "PE")}
 NETNAME.update({"+5V": "+5V", "GND": "GND", "NC5": "unconnected-(PS1-NC-Pad5)"})
 LAYERS = {"F.Cu": P.F_Cu, "B.Cu": P.B_Cu, "F.SilkS": P.F_SilkS, "B.SilkS": P.B_SilkS,
@@ -373,10 +372,10 @@ for num, label in (("1", "PE"), ("2", "N SW"), ("3", "N IN"), ("4", "L SW"), ("5
 text("MAINS 270 VAC MAX", -9.0, 29.2, "B.SilkS", 1.0)
 text("LOAD: L SW / N SW", 0.0, 16.2, "B.SilkS", 0.8, 0.12)
 text(f"wiring_board {REV}", -9.0, 31.0, "B.SilkS", 1.0)
+text(REV_DATE, 11.0, 27.5, "B.SilkS", 0.8, 0.12)
+text(URL, URL_POS[0], URL_POS[1], f"{URL_POS[2]}.SilkS", 0.8, 0.12)
 # front face
 text("+5V  GND", 12.7, -32.7, "F.SilkS", 0.8, 0.12)
-text(DATE, 11.0, 27.5, "B.SilkS", 0.8, 0.12)
-text(URL, URL_POS[0], URL_POS[1], f"{URL_POS[2]}.SilkS", 0.8, 0.12)
 
 # part labels: reference + maker / model on each part's side (pcb/tools/kigen.py)
 import kigen

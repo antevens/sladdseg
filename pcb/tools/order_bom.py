@@ -38,7 +38,7 @@ DIGIKEY = {
     "RC0402FR-07100KL": "311-100KLRCT-ND",
     "TLV75533PDBVR": "296-50411-1-ND",
     "CL05A105KP5NNNC": "1276-1076-1-ND",
-    "TSM-102-01-L-SV": "SAM8979-ND",
+    "TSM-102-02-L-SV": "",                     # TODO distributor PN (imports by MPN until then)
     "SSW-102-01-G-S": "612-SSW-102-01-G-S-ND",
     "P70-2200045": "952-3124-ND",
 }
@@ -46,11 +46,11 @@ DIGIKEY = {
 # carried by Mouser (import reported no match), those go to <name>_mouser_rest_digikey.csv
 MOUSER = {
     "TMPS 03-105": "495-TMPS03-105",
-    "TSM-102-01-L-SV": "200-TSM10201LSV",
+    "TSM-102-02-L-SV": "",                     # TODO distributor PN (imports by MPN until then)
     "2604-3102": None,
     "P70-2200045": None,
 }
-SMALL = ("0402", "1206", "SOT-23", "DFN", "PUI_", "S7081", "P70-", "FH12", "UMT250", "CU4032", "SMD", "WA-SMSI", "MillMax",
+SMALL = ("0402", "1206", "SOT-23", "DFN", "PUI_", "S7081", "P70-", "FH12", "UMT250", "CU4032", "SMD", "WA-SMSI",
          "WA-SBRIE")
 # NA parts that are not on a board (D-50, D-57): the spacer posts' studs, the board standoffs and the 5 V FFC
 EXTRA_NA = {

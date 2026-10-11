@@ -1,5 +1,5 @@
 """Generate the low-voltage boards' KiCad projects in pcb/sensor/kicad/ (D-50): ring board, mic carrier, riser
-board, back cover flex (D-35) and the EU sensor flex (D-30).
+board, back cover flex (D-35) and the EU cap board (D-56, D-70).
 
 Libraries, project and rules, schematics and boards, all from sensor_parts.py (which takes its
 geometry from cad/build123d/params.py). Run with the Python that ships pcbnew.
@@ -26,14 +26,13 @@ LIB = sp.LIB
 POWER = ("+5V", "+3V3", "GND")
 
 SYMBOLS = [("Connector_Generic", "Conn_02x15_Odd_Even"), ("Connector_Generic", "Conn_01x01"),
-           ("Connector_Generic", "Conn_01x06"), ("Connector_Generic", "Conn_02x03_Odd_Even"), ("Mechanical", "MountingHole"),
+           ("Connector_Generic", "Conn_01x06"), ("Mechanical", "MountingHole"),
            ("Sensor_Humidity", "SHT4x"), ("Device", "C"), ("Device", "R"), ("Connector", "TestPoint"),
            ("Regulator_Linear", "TLV75533PDBV"),
            ("power", "+5V"), ("power", "+3V3"), ("power", "GND"), ("power", "PWR_FLAG")]
 STOCK_FP = {sp.FP_SHT: "Sensor_Humidity", sp.FP_C: "Capacitor_SMD", sp.FP_R: "Resistor_SMD",
             sp.FP_SOT: "Package_TO_SOT_SMD", sp.FP_C1206: "Capacitor_SMD", sp.FP_FH12: "Connector_FFC-FPC",
             eu.FP_HOLE: "MountingHole"}
-NO_SILK = set()
 # DMM-4026-B-I2S-R pins (datasheet rev A) from the stock SPH0645LM4H symbol's pins, plus CONFIG
 MIC_PINS = {"1": ("5", "WS"), "2": ("1", "LR"), "3": ("4", "GND"), "4": ("6", "SCK"), "5": ("3", "VDD"),
             "6": ("7", "SD")}
@@ -42,6 +41,11 @@ MIC_PINS = {"1": ("5", "WS"), "2": ("1", "LR"), "3": ("4", "GND"), "4": ("6", "S
 # ============================== libraries ==============================
 def pad(num, x, y, sx, sy, layers=("F.Cu", "F.Mask"), shape="rect"):
     return S("pad", num, Sym("smd"), Sym(shape), S("at", x, y), S("size", sx, sy), S("layers", *layers))
+
+
+def rect_pts(x, y, w, h):
+    """Closed rectangle w x h centred on (x, y), counter-clockwise from the bottom right corner."""
+    return [(x + w / 2, y - h / 2), (x + w / 2, y + h / 2), (x - w / 2, y + h / 2), (x - w / 2, y - h / 2)]
 
 
 def courtyard(w, h):
@@ -80,8 +84,8 @@ def fp_finger():
 
 def fp_mic():
     """PUI Audio DMM-4026-B-I2S-R land pattern (datasheet rev A): origin = body centre, +y towards the
-    port. GND ring pad (soldered all round: it seals the port) and the port hole through flex and stiffener."""
-    port_y = sp.MIC[1] / 2 - 1.0                        # MIC_PORT_IN from the body's port end
+    port. GND ring pad (soldered all round: it seals the port) and the port hole through the carrier."""
+    port_y = sp.MIC[1] / 2 - sp.MIC_PORT_IN             # port centre from the body's port end
     rows = [port_y - sp.MIC_PORT_ROW - i * sp.MIC_ROW for i in range(3)]       # nearest the port first
     items = []
     for col, pins in ((-sp.MIC_COL, ("3", "2", "1")), (sp.MIC_COL, ("5", "6", "7"))):
@@ -105,11 +109,8 @@ def fp_mic():
 
 def mic_symbol():
     """DMM-4026-B-I2S symbol: the stock SPH0645LM4H with the DMM-4026 pin numbers and a CONFIG pin."""
-    s = gl.stock_symbol("Sensor_Audio", "SPH0645LM4H")
-    old, new = s[1], "DMM-4026-B-I2S"
-    s[1] = new
-    for sub in find(s, "symbol"):
-        sub[1] = sub[1].replace(old, new, 1)
+    new = "DMM-4026-B-I2S"
+    s = gl.rename_symbol(gl.stock_symbol("Sensor_Audio", "SPH0645LM4H"), new)
     host, lr = None, None
     for sub in find(s, "symbol"):
         for x in sub:
@@ -133,20 +134,6 @@ def fp_round_pad(name, d, descr):
     """Bare gold (ENIG) round pad, no paste."""
     return gl._fp(name, descr, "pad target contact", "smd", [pad("1", 0, 0, d, d, shape="circle"),
                                                              courtyard(d + 0.25, d + 0.25)])
-
-
-def fp_nut():
-    """Wurth WA-SMSI M2 L1.5 SMT spacer: land pattern as the wiring board's spacer posts (same datasheet family)."""
-    circ = lambda layer, r, w: S("fp_circle", S("center", 0, 0), S("end", r, 0),
-                                 S("stroke", S("width", w), S("type", Sym("solid"))), S("fill", Sym("no")),
-                                 S("layer", layer))
-    items = [S("pad", "", Sym("np_thru_hole"), Sym("circle"), S("at", 0, 0), S("size", sp.RING_NUT_HOLE, sp.RING_NUT_HOLE),
-               S("drill", sp.RING_NUT_HOLE), S("layers", "*.Cu", "B.Mask"))]
-    items += gl._ring_pads("1", ["F.Cu", "F.Mask"], sp.RING_NUT_HOLE / 2, sp.RING_NUT_PAD / 2, 0)
-    items += gl._ring_pads("", ["F.Paste"], 3.1 / 2, 5.2 / 2, 0.6)
-    items += [circ("F.Fab", 4.35 / 2, 0.1), circ("F.CrtYd", sp.RING_NUT_PAD / 2 + 0.25, 0.05)]
-    return gl._fp(sp.FP_NUT, f"Wurth WA-SMSI SMT steel spacer M2, L 1.5 mm (nut), hole {sp.RING_NUT_HOLE} mm unplated, "
-                  f"pad {sp.RING_NUT_PAD} mm, {sp.NUT_DS}", "spacer nut SMT M2", "smd allow_soldermask_bridges", items)
 
 
 def _carrier_pads():
@@ -187,23 +174,9 @@ def fp_post_pad():
     """Plated M2 hole with a ring pad under the screw head, on both sides (the standoff's face on the back)."""
     d, drill = sp.POST_PAD
     items = [S("pad", "1", Sym("thru_hole"), Sym("circle"), S("at", 0, 0), S("size", d, d), S("drill", drill),
-               S("layers", "*.Cu", "*.Mask")),
-             S("fp_circle", S("center", 0, 0), S("end", d / 2 + 0.1, 0), S("stroke", S("width", 0.05),
-               S("type", Sym("solid"))), S("fill", Sym("no")), S("layer", "F.CrtYd"))]
+               S("layers", "*.Cu", "*.Mask")), gl.circ("F.CrtYd", d / 2 + 0.1, 0.05)]
     return gl._fp(sp.FP_POST_PAD, f"M2 screw onto a spacer post: plated {drill} mm hole, {d} mm pad (pan head 4.0)",
                   "M2 post pad", "through_hole", items)
-
-
-def fp_pin():
-    """Harwin P70-2200045 SMT spring pin with peg: recommended pad 2.2 over a 1.2 plated hole for the peg."""
-    d = sp.PIN_PAD_D
-    items = [S("pad", "1", Sym("thru_hole"), Sym("circle"), S("at", 0, 0), S("size", d, d), S("drill", sp.PIN_HOLE_D),
-               S("layers", "*.Cu", "*.Mask", "F.Paste")),
-             S("fp_circle", S("center", 0, 0), S("end", sp.PIN_FLANGE[0] / 2, 0), S("stroke", S("width", 0.1),
-               S("type", Sym("solid"))), S("fill", Sym("no")), S("layer", "F.Fab")),
-             courtyard(d + 0.5, d + 0.5)]
-    return gl._fp(sp.FP_PIN, f"Harwin P70-2200045 SMT spring pin with peg, pad {d} mm, hole {sp.PIN_HOLE_D} mm, "
-                  f"{sp.PIN_DS}", "spring pin pogo", "smd", items)
 
 
 def build_libs():
@@ -219,21 +192,14 @@ def build_libs():
         f.unlink()
     for name, lib in STOCK_FP.items():
         fp = gl.localize_models(loads((gl.FP_DIR / f"{lib}.pretty" / f"{name}.kicad_mod").read_text()), PRJ)
-        if name in NO_SILK:                                  # outline wider than the board it sits on
-            fp = [x for x in fp if not (isinstance(x, list) and x and x[0] in (Sym("fp_line"), "fp_line")
-                                        and any(isinstance(y, list) and y[:1] in ([Sym("layer")], ["layer"])
-                                                and "SilkS" in str(y[1]) for y in x))]
         (d / f"{name}.kicad_mod").write_text(dumps(fp) + "\n")
-    for fp in (fp_b2b(), fp_finger(), fp_mic(), fp_nut(), fp_carrier(), fp_carrier_land(), fp_pin(), fp_post_pad(),
+    for fp in (fp_b2b(), fp_finger(), fp_mic(), fp_carrier(), fp_carrier_land(), fp_post_pad(),
+               gl.fp_smsi(sp.FP_NUT, 1.5, sp.RING_NUT_HOLE, sp.RING_NUT_PAD, sp.NUT_DS, silk=False),
+               gl.fp_p70(sp.FP_PIN, sp.PIN_PAD_D, sp.PIN_HOLE_D, sp.PIN_FLANGE[0], sp.PIN_DS),
                fp_round_pad(sp.FP_PIN_PAD, sp.BC_PAD_D, "Gold pad under a spring pin (back cover flex)"),
                fp_round_pad(eu.FP_PAD, eu.E.CB_PAD_D, "Gold pad under a spring pin (EU cap board)")):
         (d / f"{fp[1]}.kicad_mod").write_text(dumps(fp) + "\n")
-    (PRJ / "fp-lib-table").write_text(
-        f'(fp_lib_table\n\t(version 7)\n\t(lib (name "{LIB}")(type "KiCad")(uri "${{KIPRJMOD}}/{LIB}.pretty")'
-        '(options "")(descr "Low-voltage board footprints"))\n)\n')
-    (PRJ / "sym-lib-table").write_text(
-        f'(sym_lib_table\n\t(version 7)\n\t(lib (name "{LIB}")(type "KiCad")(uri "${{KIPRJMOD}}/{LIB}.kicad_sym")'
-        '(options "")(descr "Low-voltage board symbols"))\n)\n')
+    gl.write_lib_tables(PRJ, LIB, "Low-voltage board")
 
 
 # ============================== project + rules ==============================
@@ -288,8 +254,7 @@ def build_eu_capboard():
     bd = Board(CTX, eu.CAPBOARD, 2, eu.E.CB_T, 0.12, 0.12, via_min=(0.45, 0.2))    # fine vias round CN2
     bd.outline(eu.CB_OUTER, eu.CB_OUTER_R)
     bd.polyline(eu.CB_POCKET)
-    x, y, w, h = eu.MIC_WIN
-    bd.outline([(x + w / 2, y - h / 2), (x + w / 2, y + h / 2), (x - w / 2, y + h / 2), (x - w / 2, y - h / 2)], 0.4)
+    bd.outline(rect_pts(*eu.MIC_WIN), 0.4)
     for win in eu.CB_SNAP_WINDOWS:
         bd.outline(win, 0.5)
     for ref, p in eu.CAPBOARD_PARTS.items():
@@ -429,12 +394,10 @@ def build_cover():
     bd.shape(P.SHAPE_T_SEGMENT, P.Cmts_User, 0.1, (sp._xr0, sp.COVER_BEND_Y), (sp._xr1, sp.COVER_BEND_Y))
     bd.text("BEND 90 deg, copper outside", 0.0, sp.COVER_BEND_Y + 1.2, P.Cmts_User, 0.6)
     for (a0, b0), (a1, b1) in sp.COVER_STIFF:
-        for a, b in (((a0, b0), (a1, b0)), ((a1, b0), (a1, b1)), ((a1, b1), (a0, b1)), ((a0, b1), (a0, b0))):
-            bd.shape(P.SHAPE_T_SEGMENT, P.User_1, 0.1, a, b)
+        bd.polyline([(a0, b0), (a1, b0), (a1, b1), (a0, b1)], P.User_1, 0.1)
         bd.text(f"STIFFENER FR4 {sp.BC_END_T} mm, back side (cut to the outline)", (a0 + a1) / 2, b0 - 1.0, P.User_1, 0.6)
     for (a0, b0), (a1, b1) in sp.COVER_PAD_STIFF:
-        for a, b in (((a0, b0), (a1, b0)), ((a1, b0), (a1, b1)), ((a1, b1), (a0, b1)), ((a0, b1), (a0, b0))):
-            bd.shape(P.SHAPE_T_SEGMENT, P.User_1, 0.1, a, b)
+        bd.polyline([(a0, b0), (a1, b0), (a1, b1), (a0, b1)], P.User_1, 0.1)
     bd.text(f"STIFFENER FR4 {sp.BC_PAD_STIFF_T} mm, back side, flush with the long edges (snap hooks)",
             sp._xs0 - 4.0, sp._yb + 2.0, P.User_1, 0.6, 90)
     if not sp.COVER_CONFIRMED:
@@ -462,8 +425,7 @@ def place_ring():
     bd = Board(CTX, sp.RING, 2, 1.6, 0.12, 0.15)
     bd.outline(sp.RING_OUTER, sp.RING_OUTER_R)
     bd.polyline(sp.RING_WINDOW)
-    x, y, w, h = sp.MIC_WIN_RECT
-    bd.outline([(x + w / 2, y - h / 2), (x + w / 2, y + h / 2), (x - w / 2, y + h / 2), (x - w / 2, y - h / 2)], 0.4)
+    bd.outline(rect_pts(*sp.MIC_WIN_RECT), 0.4)
     for ref, p in sp.RING_PARTS.items():
         bd.place(ref, p, False)
     return bd
@@ -480,7 +442,6 @@ def build_ring():
     for lay in (F, B):
         bd.zone("GND", lay, sp.RING_OUTER, min_w=0.25, fillet_r=0.5, name="GND")
     pin = {net: bd.pad_xy("J2", n) for n, net in sp.CN2_MAP.items() if net != "GND"}
-    up = sp.CN2_ROW - 0.4 + 0.0                              # pad end offset from the row centre
     top, bot = pin["I2S_WS"][1] + 0.4, pin["SCL"][1] - 0.4   # upper / lower row pad ends
     land = {n: bd.pad_xy("J3", n) for n in sp.CARRIER_NETS}
     # I2S: up from the upper row, right, up the jog to the carrier's left column
@@ -574,7 +535,7 @@ def build_ring():
     bd.track("GND", 0.25, [c2g, vs])
     for v in (vs, (-20.0, -50.0), (20.0, -50.0), (-20.0, 52.0), (-8.0, 68.5), (8.0, 68.5)):   # stitching, beside the switch notches
         bd.via("GND", *v)
-    bd.text("RING BOARD v0.4 (D-50)", 0.0, -53.6, P.F_SilkS, 1.0)
+    bd.text(f"RING BOARD {sp.REV} (D-50)", 0.0, -53.6, P.F_SilkS, 1.0)
     if not sp.CN2_CONFIRMED:
         bd.text("J2 FOOTPRINT AND PIN MAP ARE PLACEHOLDERS - DO NOT FABRICATE", 0.0, 66.5, P.Cmts_User, 1.0)
     bd.save()
@@ -583,17 +544,15 @@ def build_ring():
 def build_carrier():
     """Mic carrier: mic on the back, port hole at the origin; I2S to the left castellations, power to the right."""
     bd = Board(CTX, sp.CARRIER, 2, sp.CARRIER_T, 0.12, 0.15)
-    w, h = sp.CARRIER_W, sp.CARRIER_H
-    bd.outline([(w / 2, -h / 2), (w / 2, h / 2), (-w / 2, h / 2), (-w / 2, -h / 2)], 0.3)
+    rect = rect_pts(0.0, 0.0, sp.CARRIER_W, sp.CARRIER_H)
+    bd.outline(rect, 0.3)
     for ref, p in sp.CARRIER_PARTS.items():
         bd.place(ref, p, False)
-    bd.zone("GND", P.F_Cu, [(w / 2, -h / 2), (w / 2, h / 2), (-w / 2, h / 2), (-w / 2, -h / 2)], min_w=0.2,
-            fillet_r=0.2, name="GND")
+    bd.zone("GND", P.F_Cu, rect, min_w=0.2, fillet_r=0.2, name="GND")
     B = P.B_Cu
     mk = {n: bd.pad_xy("MK1", n) for n in ("1", "2", "3", "4", "5", "6", "7")}
     cs = {n: bd.pad_xy("J1", n) for n in sp.CARRIER_NETS}
     e = sp.CARRIER_W / 2 - sp.CARRIER_CAST[0]               # castellation pads' inner edge
-    px = sp.MIC_COL + sp.MIC_PAD[0] / 2                      # mic pads' outer edge
     # I2S: WS (nearest the port) to the bottom castellation, SCK the middle, SD the top
     bd.track("I2S_WS", 0.15, [mk["5"], (-2.0, mk["5"][1]), (-2.0, cs["3"][1]), cs["3"]], B)
     bd.track("I2S_SCK", 0.15, [mk["6"], (-2.35, mk["6"][1]), (-2.35, cs["2"][1]), cs["2"]], B)
@@ -614,15 +573,14 @@ def build_riser():
     """Riser (D-53, D-60, D-79): the posts level at its lower corners, the pins above and between them; +5V post to
     the upper pin, GND post to the lower."""
     bd = Board(CTX, sp.RISER_B, 2, sp.RISER[2], 0.2, 0.5)
-    x, y, w, h = sp.RISER_RECT
-    bd.outline([(x + w / 2, y - h / 2), (x + w / 2, y + h / 2), (x - w / 2, y + h / 2), (x - w / 2, y - h / 2)], 1.0)
+    bd.outline(rect_pts(*sp.RISER_RECT), 1.0)
     for ref, p in sp.RISER_PARTS.items():
         bd.place(ref, p, False)
     p5, pg = bd.pad_xy("P1", "1"), bd.pad_xy("P2", "1")
     j5, jg = bd.pad_xy("J1", "1"), bd.pad_xy("J2", "1")
     bd.track("+5V", 1.0, [p5, (j5[0] - 1.8, j5[1]), j5])
     bd.track("GND", 1.0, [pg, (jg[0] + 1.8, jg[1]), jg])
-    bd.text(f"RISER {sp.REV}", x, (j5[1] + jg[1]) / 2, P.B_SilkS, 0.8)          # between the pins' pads
+    bd.text(f"RISER {sp.REV}", sp.RISER_RECT[0], (j5[1] + jg[1]) / 2, P.B_SilkS, 0.8)          # between the pins' pads
     bd.save()
 
 
@@ -634,33 +592,34 @@ def main():
     status = "CN2 mate and contact map UNCONFIRMED (placeholder) - do not fabricate" if not sp.CN2_CONFIRMED \
         else "CN2 mate confirmed"
     gen = "Generated by pcb/sensor/tools/gen_sensor.py - edit sensor_parts.py"
-    build_schematic(CTX, sp.RING, sp.RING_PARTS, ("+5V", "+3V3", "GND"), "Smart wall plate - ring board", sp.REV,
-                    [status, gen],
-                    "Ring board (docs/DESIGN.md D-50): FR4 1.6 mm round the insert's plug, against the wall.\n"
-                    "J1: 5 V from the wiring board's J2 over a 6-way 0.5 mm FFC (pinout mirror-symmetric).\n"
-                    "J2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin).\n"
-                    "U1: SHT45, I2C on the MSR-2 bus (SDA = IO1, SCL = IO0).\n"
-                    "J3: land for the mic carrier (I2S microphone, D-29): SCK = IO4, WS = IO6, SD = IO7.\n"
-                    "H1-H3: SMT spacers under the MSR-2's board. Copper keeps 8 mm from the box opening.")
-    build_schematic(CTX, sp.CARRIER, sp.CARRIER_PARTS, ("+3V3", "GND"), "Smart wall plate - mic carrier", sp.REV,
-                    [gen], "Mic carrier (docs/DESIGN.md D-50): the bottom-port I2S microphone on the back, port up\n"
-                    "through the carrier; castellated edges soldered flat on the ring board's land (J3 there).\n"
-                    "LR and CONFIG to GND: left channel.")
-    build_schematic(CTX, sp.RISER_B, sp.RISER_PARTS, ("+5V", "GND"), "Smart wall plate - riser board", sp.REV,
-                    [gen], "Riser board (docs/DESIGN.md D-50): on the two spacer posts from the wiring board's 5 V area\n"
-                    "(M2 screws, P1 +5V, P2 GND); J1 / J2 Harwin P70-2200045 spring pins onto the back cover's pads.")
-    build_schematic(CTX, sp.COVER, sp.COVER_PARTS, ("+5V", "GND"), "Smart wall plate - back cover flex", sp.REV,
-                    [gen],
-                    "Replacement back cover flex (docs/DESIGN.md D-35, D-50): J1 / J2 pads under the plate's spring\n"
-                    "pins (+5V, GND), U1 3.3 V regulator, J3 / J4 spring fingers on the BILRESA's VBAT plate / GND leaf\n"
-                    "spring. One bend, single layer.")
-    build_schematic(CTX, eu.CAPBOARD, eu.CAPBOARD_PARTS, ("+5V", "+3V3", "GND"), "Smart wall plate - EU cap board",
-                    sp.REV, [status, "Generated by pcb/sensor/tools/gen_sensor.py - edit eu_capboard_parts.py"],
-                    "EU cap board (docs/DESIGN.md D-56, D-70): FR4 1.6 mm in the cap's printed carrier.\n"
-                    "TP1 / TP2 on the underside: pads under the 5 V board's sensor spring pins (GND, +5 V).\n"
-                    "J2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin); H5-H7 SMT spacers.\n"
-                    "J3: land for the mic carrier (I2S microphone, D-29) over a window; U1: SHT45 on the MSR-2's I2C.\n"
-                    "H1-H4: holes for the M2 screws into the carrier.")
+
+    def schematic(name, parts, flags, title, comments, notes):
+        build_schematic(CTX, name, parts, flags, f"Smart wall plate - {title}", sp.REV, sp.REV_DATE, comments, notes)
+    schematic(sp.RING, sp.RING_PARTS, ("+5V", "+3V3", "GND"), "ring board", [status, gen],
+              "Ring board (docs/DESIGN.md D-50): FR4 1.6 mm round the insert's plug, against the wall.\n"
+              "J1: 5 V from the wiring board's J2 over a 6-way 0.5 mm FFC (pinout mirror-symmetric).\n"
+              "J2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin).\n"
+              "U1: SHT45, I2C on the MSR-2 bus (SDA = IO1, SCL = IO0).\n"
+              "J3: land for the mic carrier (I2S microphone, D-29): SCK = IO4, WS = IO6, SD = IO7.\n"
+              "H1-H3: SMT spacers under the MSR-2's board. Copper keeps 8 mm from the box opening.")
+    schematic(sp.CARRIER, sp.CARRIER_PARTS, ("+3V3", "GND"), "mic carrier",
+              [gen], "Mic carrier (docs/DESIGN.md D-50): the bottom-port I2S microphone on the back, port up\n"
+              "through the carrier; castellated edges soldered flat on the ring board's land (J3 there).\n"
+              "LR and CONFIG to GND: left channel.")
+    schematic(sp.RISER_B, sp.RISER_PARTS, ("+5V", "GND"), "riser board",
+              [gen], "Riser board (docs/DESIGN.md D-50): on the two spacer posts from the wiring board's 5 V area\n"
+              "(M2 screws, P1 +5V, P2 GND); J1 / J2 Harwin P70-2200045 spring pins onto the back cover's pads.")
+    schematic(sp.COVER, sp.COVER_PARTS, ("+5V", "GND"), "back cover flex", [gen],
+              "Replacement back cover flex (docs/DESIGN.md D-35, D-50): J1 / J2 pads under the plate's spring\n"
+              "pins (+5V, GND), U1 3.3 V regulator, J3 / J4 spring fingers on the BILRESA's VBAT plate / GND leaf\n"
+              "spring. One bend, single layer.")
+    schematic(eu.CAPBOARD, eu.CAPBOARD_PARTS, ("+5V", "+3V3", "GND"), "EU cap board",
+              [status, "Generated by pcb/sensor/tools/gen_sensor.py - edit eu_capboard_parts.py"],
+              "EU cap board (docs/DESIGN.md D-56, D-70): FR4 1.6 mm in the cap's printed carrier.\n"
+              "TP1 / TP2 on the underside: pads under the 5 V board's sensor spring pins (GND, +5 V).\n"
+              "J2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin); H5-H7 SMT spacers.\n"
+              "J3: land for the mic carrier (I2S microphone, D-29) over a window; U1: SHT45 on the MSR-2's I2C.\n"
+              "H1-H4: holes for the M2 screws into the carrier.")
     # board files: build in memory, save (KiCad 9 python cannot refill/reload safely in one board)
     build_ring()
     build_carrier()

@@ -1,4 +1,4 @@
-# Low-voltage boards (D-50, D-35, D-42)
+# Low-voltage boards (D-50, D-35, D-56, D-70)
 
 The ring board, the mic carrier, the riser board, the replacement back cover's flex and the EU cap board,
 generated from `tools/sensor_parts.py` and `tools/eu_capboard_parts.py`, which
@@ -31,7 +31,7 @@ SHT45, the left side a GND pour that joins the top and bottom pours. SDA, SCL an
 band on the back, under J1, to three vias above the rail; the I²S lanes and +5V stay on the front.
 
 **Not ready to fabricate.** J2's footprint (0.4 mm, 2 × 15) and its contact map are placeholders:
-CN2's part and pin map are not confirmed (D-27, `docs/MEASUREMENTS.md`). `CN2_MAP` only keeps the
+CN2's part and pin map are not confirmed (D-50, D-51, `docs/MEASUREMENTS.md`). `CN2_MAP` only keeps the
 fan-out from crossing. `tools/build.sh` writes no ring board fab files while `CN2_CONFIRMED` is false.
 
 ## Mic carrier (`kicad/mic_carrier.*`, fab pack in `fab/mic_carrier/`)
@@ -54,11 +54,12 @@ back cover's pad positions. 1 mm tracks.
 
 ## 5 V FFC
 
-Stock: Würth WR-FFC 687606152002 (0.5 mm, 6 contacts, 152 mm, Type 1). Wiring board J2 → the tunnel in the insert
-(D-62) → out of the flange onto the board → ring board J1, both latched (FH12 slide lock); the spare length lies in four flat
-layers beside J1 (the 100 mm stock length is 4 mm short of the route). Assembly: with the wiring board on its standoffs,
-thread the end down the tunnel and latch it into J2 from the side; pull it taut from the face side, fold the spare,
-latch J1, screw the ring board on.
+Stock: Würth WR-FFC 687606152002 (0.5 mm, 6 contacts, 152 mm, Type 1). Wiring board J2 → the straight bore in the
+insert's top-right corner (D-74) → out of the flange onto the ring board → ring board J1, both latched (FH12 slide
+lock); the spare length lies folded flat in four layers (12 mm) at y 43.4, between the flange and J1 (D-68). Assembly:
+with the wiring board on its standoffs, push the end up the bore from the insert's underside round its one bend into
+the slot and latch it into J2 from the side; press the ring board onto the collar's crush ribs (no screws, D-68), pull
+the cable taut from the face side, fold the spare, latch J1.
 
 ## Microphone firmware (D-29)
 
@@ -98,7 +99,6 @@ api:
 Open: whether the pipeline accepts 48 kHz from this microphone on the C3 or needs 32 kHz, and
 the C3's RAM / CPU headroom next to the radar, Wi-Fi and BLE.
 
-
 ## Back cover flex
 
 Single copper layer, polyimide, for the replacement back cover that powers a BILRESA E2490
@@ -106,15 +106,15 @@ without cells (`cad/build123d/backcover.py`, DESIGN D-35). Drawn flat, seen from
 
 - J1, J2: Ø2.6 gold pads (+5V, GND) on the pad section, which lies copper down on a ledge in the
   cover, behind Ø2.1 windows in its back: the plate's spring pins press on them (NA, D-50).
-- A 2.6 mm run (through a slot under the GND contact block) to the terminal end; one 90° bend
-  (copper outside).
+- A 2.6 mm run (in a notch along the GND contact post's inner face, D-79) to the terminal end; one 90°
+  bend (copper outside).
 - J1 takes +5 V from the plate (D-41, D-50); U1 TI TLV75533PDBVR (3.3 V, SOT-23-5) with C3 / C4 1 µF on
   the section below the fingers, copper down in a recess in the cover (0.4 mm wall left), feeds VBAT.
 - A 0.8 mm FR4 stiffener (back side) on the pad and regulator sections, flush with their long
-  edges: six snap hooks in the cover hold it down against the pins' push (D-45). No holes.
+  edges: five snap hooks in the cover hold it down against the pins' push (D-45, D-79). No holes.
 - J3, J4: Harwin S7081-42R spring fingers (VBAT, GND) on the end section, on the cell axes, long
   axis vertical with the bend end up (the battery contacts ride down the arm's ramp as the cover
-  goes on), on a 0.4 mm FR4 stiffener (back side). The end section stands 2.0 mm (the fingers'
+  goes on), on a 0.4 mm FR4 stiffener (back side); it slides down slots along the contact blocks (D-55). The end section stands 2.0 mm (the fingers'
   working height) in from the cell end plane: J3 presses the remote's fixed VBAT plate, J4 its GND
   leaf spring (finger and leaf share the travel). Between them only a band passes under the
   remote's PCB strip.

@@ -3785,7 +3785,7 @@
 		)
 		(uuid "399fe1b7-71e9-5a2f-998f-fc828cd55daf")
 	)
-	(text "Wiring board for the smart wall plate (docs/DESIGN.md D-24, D-25; pcb/README.md).\nJ1 takes the house wiring: L, N, PE in and switched L, N, PE out to the load.\nS1 (Marquardt 1802.2504) switches line and neutral; the PSU is fed after the switch through F1.\nF1 rating T1A is a designer's choice (Mean Well gives none): HUMAN REVIEW. F1 breaking capacity 200 A.\nSpacing targets (not a compliance claim): L-N, L in-L sw, N in-N sw, mains-PE >= 3.5 mm;\nmains-5 V >= 8.0 mm with a routed slot under PS1. Enforced by wiring_board.kicad_dru.\nPS1 pinout per https://www.meanwell.com/Upload/PDF/IRM-03/IRM-03-SPEC.PDF: 1=AC/L, 3=AC/N, 14=-Vo, 16=+Vo, 5=NC."
+	(text "Wiring board for the smart wall plate (docs/DESIGN.md D-24, D-25; pcb/README.md).\nJ1 takes the house wiring: L, N, PE in and switched L, N, PE out to the load.\nS1 (Marquardt 1802.2504) switches line and neutral; the PSU is fed after the switch through F1.\nJ2: 5 V to the ring board over a 6-way 0.5 mm FFC (D-50). P1 / P2: spacer posts (+5V, GND) for the riser board\nwith the battery-free remote's spring pins (D-50, D-59).\nF1 rating T1A is a designer's choice (Mean Well gives none): HUMAN REVIEW. F1 breaking capacity 200 A.\nSpacing targets (not a compliance claim): L-N, L in-L sw, N in-N sw, mains-PE >= 3.5 mm;\nmains-5 V >= 8.0 mm with a routed slot under PS1. Enforced by wiring_board.kicad_dru.\nPS1 pinout per https://www.meanwell.com/Upload/PDF/IRM-03/IRM-03-SPEC.PDF: 1=AC/L, 3=AC/N, 14=-Vo, 16=+Vo, 5=NC."
 		(exclude_from_sim no)
 		(at 25 125 0)
 		(effects

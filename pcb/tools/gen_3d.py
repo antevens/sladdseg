@@ -14,7 +14,7 @@ from build123d import Box, Cylinder, Pos, Rot, export_step, import_step
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "cad" / "build123d"))
-from params import FINGER, FINGER_FREE, MIC                    # noqa: E402
+from params import FINGER_FREE, MIC                            # noqa: E402
 
 VENDOR = ROOT / "scratch" / "3d"
 PROJECTS = {"na": ROOT / "pcb" / "kicad" / "3d", "eu": ROOT / "pcb" / "eu" / "kicad" / "3d",
@@ -116,7 +116,7 @@ MODELS = {
     # at x -8.2 (lever side), board at y 0, body +y: z -> X (poles' centre), x -> Y (body centre), y -> Z
     "WAGO_2604-3102_1x02_P5.00mm_Vertical": (("eu",), wago2_vertical, "wago/2604-3102.stp",
                                               ((90, 0, 90), (-4.8, 4.75, 0))),
-    "Harwin_P70-2200045": (("eu",), p70, None, None),
+    "Harwin_P70-2200045": (("eu", "sensor"), p70, None, None),
     "Harwin_S7081-42R": (("sensor",), s7081, None, None),
     "PUI_DMM-4026-B-I2S_4x3mm": (("sensor",), dmm4026, None, None),
     "Sensirion_DFN-4_1.5x1.5mm_P0.8mm_SHT4x_NoCentralPad": (("sensor",), sht4x, None, None),

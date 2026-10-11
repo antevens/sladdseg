@@ -17,7 +17,7 @@ of the lights; the PSU is fed from the switched side, so the rocker also turns t
 | F1 | Schurter UMT 250, T1A 250 VAC | front | L_SW to L_F |
 | RV1 | TDK CU4032K275G2, 275 VAC | front | L_F to N_SW |
 | PS1 | Traco TMPS 03-105, 5 V 600 mA (IEC/UL 62368-1, IEC 60335-1; OVC II, PD2, reinforced) | back | inputs L_F / N_SW above the slot, outputs +5V / GND below it |
-| J3 | Samtec TSM-102-01-L-SV, SMT pin header 1x2, 2.54 mm, 5.84 mm post (no pin tails under the PSU) | front, 5 V island | +5V, GND |
+| J3 | Samtec TSM-102-02-L-SV, SMT pin header 1x2, 2.54 mm, 8.13 mm post (no pin tails under the PSU) | front, 5 V island | +5V, GND |
 | MH1-MH3 | M2 holes on the cap's long bosses | - | - |
 
 - The lights' current runs in copper pours: L_IN and L_SW on F.Cu (right), N_IN and N_SW on B.Cu
@@ -39,12 +39,13 @@ boss through. No mains on it.
 
 | Ref | Part | Side | Nets |
 | --- | --- | --- | --- |
-| J1 | 2.54 mm pin socket 1x2 (8.5 mm), on the mains board's J3 | back | +5V, GND |
+| J1 | Samtec SSW-102-01-G-S pin socket 1x2, 2.54 mm (8.5 mm), on the mains board's J3 | back | +5V, GND |
 | C1 | 22 µF 10 V X5R 1206 | front | +5V to GND |
-| P1, P2 | Harwin P70-2200045 SMT spring pins, 2 A | front | GND (P1, upper), +5V (P2) (through the cap onto the flex's pads; order set by the flex's tongue, D-42) |
+| P1, P2 | Harwin P70-2200045 SMT spring pins with pegs, 2 A | front | GND (P1, upper), +5V (P2): through the cap onto the cap board's pads (D-56, D-59, D-70) |
+| P3, P4 | Harwin P70-2200045 SMT spring pins with pegs, 2 A | front | +5V (P3, upper), GND (P4): through the cap onto the battery-free back cover's pads (D-54, D-79) |
 | MH1, MH2 | M2 holes on the cap's bosses | - | - |
 
-The header posts reach 3.2 mm into the socket (boards 13.8 mm apart; check with the parts).
+The header posts reach 3.07 mm into the socket (boards 16.1 mm apart, D-59; check with the parts).
 Nothing is soldered or wired between the boards or across the cap (DESIGN R9, R10).
 
 ## Rules

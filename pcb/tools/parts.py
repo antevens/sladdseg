@@ -9,6 +9,7 @@ NS = uuid.UUID("2b7f0c1e-4c1d-4f55-9b0e-3a8d6c2f1e07")
 LIB = "wiring_board"
 PROJECT = "wiring_board"
 REV = "v0.4"
+REV_DATE = "2026-10-11"                     # title blocks and silkscreen
 
 
 def uid(*names):
@@ -102,6 +103,7 @@ MOUNT = {"MH1": (-21.0, 33.5), "MH2": (-21.0, -33.5), "MH3": (21.0, 24.77), "MH4
 POST_HOLE = 3.0                             # non-plated through hole for the spigot (Ø2.8, 1.4 long: ends inside the 1.6 board)
 POST_PAD = 5.3                              # solder pad outer diameter (inner = the hole)
 POST_PASTE = (3.1, 5.2, 0.6)                # stencil ring inner / outer diameter, web width
+SMSI_BODY_D = 4.35                          # spacer body diameter (Fab outline)
 
 # PS1 on the back: target pad positions (front view). AC end left, DC end right.
 PS1_PINS = {"1": (-15.24, -12.5), "3": (-10.16, -12.5), "5": (15.24, -12.5),
@@ -171,7 +173,6 @@ TRACKS = {
              ("F.Cu", 0.5, [(10.5, -0.1), (10.5, -5.0), (-5.5, -5.0), (-5.5, -14.0)])],
     # PSU feed: F1.1 -> vias to the L_SW pour on the back
     "L_SW": [("F.Cu", 0.8, [(-14.6, -27.25), (-13.0, -28.4), (-9.0, -28.4)])],
-    # J1.6 and J1.1 (both pin rows) to the ring
     # PS1.16 -> P1 up the left (F, ends on the pad ring); J2.2 / J2.5 -> vias at their tails -> B.Cu -> PS1.16
     "+5V": [("F.Cu", 0.8, [(10.16, -30.28), (8.5, -28.62), (8.5, -19.5), (9.4, -18.75)]),
             ("F.Cu", 0.3, [(11.1, -24.05), (10.4, -24.05)]), ("F.Cu", 0.3, [(11.1, -25.55), (10.4, -25.55)]),

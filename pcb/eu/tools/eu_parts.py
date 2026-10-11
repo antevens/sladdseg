@@ -23,14 +23,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "cad" / "build123d" / "eu"))
-from params_eu import (WB_R, WB_CUT_Y, WB_T, PSU, WAGO_EU, WAGO_PITCH, WAGO_ROW, WAGO_ROW_OFF, MB_T, MB_PSU_C,  # noqa: E402
+from params_eu import (WB_R, WB_CUT_Y, PSU, WAGO_EU, WAGO_PITCH, WAGO_ROW, WAGO_ROW_OFF, MB_PSU_C,  # noqa: E402
                        MB_WAGO_C, MB_SLOT, MB_HDR, MB_BOSS, MB_BOSS_D, MB_BOSS_CLR, SW_Y,
-                       WB_MOUNT, DOMES, DOME_NOTCH_R, PINS, PIN_PAD_D, PIN_HOLE_D, BC_FINGERS)
-sys.path.insert(0, str(ROOT / "cad" / "build123d"))
+                       WB_MOUNT, DOMES, DOME_NOTCH_R, PINS, PIN_PAD_D, PIN_HOLE_D, PIN_FLANGE, BC_FINGERS)
 
 LIB = "eu"
 MAINS, LV = "eu_mains_board", "eu_5v_board"
-REV = "v0.2"
+REV = "v0.4"
+REV_DATE = "2026-10-11"                    # title blocks
 NS = uuid.UUID("8d2f4a8e-0b3c-4e7a-9f1d-6c5b2a1e3d40")
 
 
@@ -53,7 +53,7 @@ FP_ROCKER = "Marquardt_1802.2504_DPST_PCB"
 FP_HDR = "PinHeader_1x02_P2.54mm_Vertical_SMD_Pin1Left"   # KiCad stock, Samtec TSM -SV pad layout
 FP_SOCKET = "PinSocket_1x02_P2.54mm_Vertical"
 ROCKER_DS = "Marquardt drawing 1802.2504 rev g, 2003-09-16 (K-drawing 18022504.03)"
-FP_PIN = "Harwin_P70-2200045"             # SMT spring pin with peg: pad 2.2, hole 1.2 (drawing P70-2200045)
+FP_PIN = "Harwin_P70-2200045"             # SMT spring pin with peg (gen_libs.fp_p70)
 PIN_DS = ("https://content.harwin.com/asset/7e702b12-8f84-42b5-9282-d7e22f3466f3/"
           "DRG-02624-Technical-Drawing-Datasheet-P70-220-pdf.pdf")
 WAGO_PAD = (2.2, 2.2)                     # J1 / J2 pad, round, as the NA 2604 footprint; drill 1.3 (+0.1) DATASHEET
@@ -65,8 +65,6 @@ PSU_PINS = {"1": (10.16, -10.16), "2": (5.08, -10.16), "3": (-10.16, 10.16), "4"
             "5": (10.16, 10.16)}
 
 PSU_PIN_NAMES = {"3": "NC"}
-
-EDGE_MAINS = 1.0                          # mains copper to the board edge (rule in the .kicad_dru)
 
 
 def notches(cut_y=None):
@@ -194,4 +192,3 @@ LV_BOSS_HOLES = [(xy, MB_BOSS_D / 2 + MB_BOSS_CLR) for xy in MB_BOSS if xy[1] < 
 
 NETCLASS = {"Mains_L": ("L_IN", "L_SW", "L_F"), "Mains_N": ("N_IN", "N_SW"), "SELV": ("+5V", "GND")}
 TRACK_W = {"Mains_L": 1.0, "Mains_N": 1.0, "SELV": 0.6}
-LOAD_NETS = ("L_IN", "L_SW", "N_IN", "N_SW")                 # carry the load current: copper pours

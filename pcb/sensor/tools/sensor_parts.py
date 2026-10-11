@@ -17,7 +17,7 @@ Back cover flex: see below.
 """
 import sys
 import uuid
-from math import asin, atan2, cos, degrees, hypot, radians, sin, sqrt
+from math import atan2, cos, degrees, radians, sin, sqrt
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -26,12 +26,13 @@ from params import (FINGER, FINGER_PAD, FLEX_T, MIC, MIC_FLEX_HOLE_D, MIC_PORT_I
                     MIC_WIN, BOX_W, BOX_H, RING_T, RING_KEEP, RING_HALF_W, RING_Y, RING_R, RING_INNER, RING_J1,
                     MSR_SPACERS, RING_NUT_HOLE, RING_NUT_PAD, RING_SMALL, SCREW_PITCH, BOSS_R, MSR_CN2_X, MSR_Y,
                     SHT_AT, RISER, RISER_C, POSTS, PIN_PAD_D, PIN_HOLE_D, PIN_FLANGE, MSR_SW_CUTS, RING_NOTCH_R,
-                    AAA_L, BC_CELL_X, BC_CELL_Y0, BC_CELL_Z, BC_TERM_Y, BC_VBAT_X, BC_FLEX_Z, BC_END_T, BC_END_H,
-                    BC_FINGERS, BC_STRIP, BC_RUN, BC_RUN_JOG, BC_JOG, BC_CONTACT_W, BC_COPPER_Y, BC_REG, BC_PCB_W, BC_PCB_CLR,
+                    BC_CELL_X, BC_CELL_Z, BC_VBAT_X, BC_FLEX_Z, BC_END_T, BC_END_H,
+                    BC_FINGERS, BC_STRIP, BC_RUN, BC_RUN_JOG, BC_JOG, BC_COPPER_Y, BC_REG, BC_PCB_W, BC_PCB_CLR,
                     BC_BRIDGE_H, BC_LANE_H, BC_END_CORNER, BC_END_XO, BC_PAD_END, BC_PAD_LOW, BC_PAD_STIFF_T, BC_PAD_D, end_top)
 
 LIB = "sensor"
 REV = "v0.4"
+REV_DATE = "2026-10-11"                                     # title blocks
 RING, CARRIER, RISER_B, COVER = "ring_board", "mic_carrier", "riser_board", "cover_flex"
 
 # ---- CN2 mate: placeholder until the part and contact map are confirmed (MEASURE) ----------
@@ -40,7 +41,6 @@ CN2_PINS, CN2_PITCH, CN2_ROW = 30, 0.4, 1.2                 # 2 x 15, rows at lo
 # Placeholder map, contact -> net. NOT the MSR-2's pinout.
 CN2_MAP = {"19": "+5V", "21": "GND", "23": "I2S_SD", "25": "I2S_SCK", "27": "I2S_WS",
            "24": "SCL", "26": "SDA", "28": "+3V3", "30": "GND"}
-I2S_GPIO = {"I2S_SCK": "IO4", "I2S_WS": "IO6", "I2S_SD": "IO7"}   # MSR-2 GPIOs (D-29), free on CN2
 
 FP_B2B = "B2B_0.4mm_2x15_PLACEHOLDER"
 FP_FINGER = "Harwin_S7081-42R"
@@ -254,6 +254,3 @@ COVER_PARTS = {
                pos=(-BC_REG["C4"][0], BC_REG["C4"][1], 0), mfr="Samsung Electro-Mechanics", mpn="CL05A105KP5NNNC",
                desc="LDO output capacitor, 1 uF 10 V X5R 0402 (TLV755P: >= 1 uF)", ds=""),
 }
-
-def uid(*parts):
-    return str(uuid.uuid5(uuid.NAMESPACE_URL, "smart-wallplate/sensor/" + "/".join(parts)))

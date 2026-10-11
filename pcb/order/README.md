@@ -5,8 +5,8 @@ plates; change with `make order NA_PLATES=4 EU_PLATES=1`.
 
 | File | Contents |
 | --- | --- |
-| `na_digikey.csv`, `na_mouser.csv` | NA plate: wiring board, sensor flex, back cover flex |
-| `eu_digikey.csv`, `eu_mouser.csv` | EU plate: mains board, 5 V board, EU cap board, back cover flex |
+| `na_digikey.csv`, `na_mouser.csv` | NA plate: wiring board, ring board, mic carrier, riser, back cover flex; spacer studs, standoffs, FFC |
+| `eu_digikey.csv`, `eu_mouser.csv` | EU plate: mains board, 5 V board, EU cap board, mic carrier, back cover flex |
 | `all_digikey.csv`, `all_mouser.csv` | Both variants merged by part number |
 | `<name>_digikey_rest_mouser.csv` | Parts DigiKey does not carry (Marquardt 1802.2504): order these from Mouser with a DigiKey order |
 | `<name>_mouser_rest_digikey.csv` | Parts Mouser does not carry (WAGO 2604-3102, Harwin P70-2200045): order these from DigiKey with a Mouser order |
@@ -30,6 +30,6 @@ Per-plate count times the plates, plus spares: half again (at least 2) for the s
 
 ## Not in the lists
 
-- The CN2 plug on both sensor flexes (part and contact map open).
-- The PCBs and flexes (PCBWay), the IKEA BILRESA remotes, the Apollo MSR-2 and its GPIO add-on, 3M 467MP
-  tape, the #6-32 box screws, the EU's M2 thread-forming screws, filament.
+- The CN2 plug on the ring board and the EU cap board (part and contact map open).
+- The PCBs and flexes (PCBWay), the IKEA BILRESA remotes, the Apollo MSR-2 and its GPIO add-on, the #6-32
+  box screws, the NA M2 × 5 and nylon M3 × 8 screws and heatshrink, the EU's M2 thread-forming screws, filament.
