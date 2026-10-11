@@ -13,8 +13,8 @@ box, `cad/build123d/eu/`, `pcb/eu/`). Both can run the BILRESA without batteries
 replacement back cover powered from the plate.
 
 The plate is two printed parts: a **box insert** (all mains/low-voltage barrier
-geometry, UL94 V-0 PC-FR) and a **trim plate** (PETG/ASA), for an Elegoo Centauri
-Carbon 2.
+geometry, UL94 V-0 PC-FR) and a passive **trim plate** (PETG/ASA), for an Elegoo Centauri
+Carbon 2. The sensors sit on a **ring board** pressed onto the insert's collar, under the face plate (v0.4, D-50, D-68).
 
 The house wiring lands on one board: L/N/PE in and out on a WAGO push-in block,
 the Marquardt 1802.2504 DPST emergency rocker, and the PSU, all in a 2.5"
@@ -25,7 +25,7 @@ make system-deps     # once, Ubuntu 24.04 (KiCad 9, headless slicer libs)
 make setup           # once (venv + pinned OrcaSlicer)
 make cad check       # CAD -> build/, all checks must pass
 make print           # OrcaSlicer projects -> print/*.3mf
-make pcb             # all boards and flexes: ERC/DRC, STEP, PCBWay packs -> pcb/fab/, pcb/eu/fab/
+make pcb             # all boards and flexes: ERC/DRC, STEP, PCBWay packs -> pcb/fab/, pcb/sensor/fab/, pcb/eu/fab/
 make eu              # EU variant: CAD, checks, renders
 make renders         # docs/renders/*.png
 ```
@@ -60,56 +60,54 @@ the sensors and the automations could not control them.
 
 ## Renders
 
-### v0.3
+### v0.4
 
-Shaded views of the assembly: trim plate (white), box insert (grey), BILRESA
-remote (model), Marquardt 1802.2504 rocker (red), wiring board (green, KiCad
-model), board posts (orange). Regenerate with `make renders`.
+Shaded views of the assembly: face plate (white), box insert (grey), BILRESA remote (model), Marquardt
+1802.2504 rocker (red), wiring board (green, KiCad model), ring board (green) on the insert's collar
+with the MSR-2 (black), the mic carrier and the SHT45, nylon board standoffs. Regenerate with `make renders`.
 
 | Front | Remote lifted out |
 | --- | --- |
-| ![v0.3 front](docs/renders/v0.3_front.png) | ![v0.3 remote out](docs/renders/v0.3_remote_out.png) |
+| ![v0.4 front](docs/renders/v0.4_front.png) | ![v0.4 remote out](docs/renders/v0.4_remote_out.png) |
 
 | Half-section | Back, mains side |
 | --- | --- |
-| ![v0.3 half-section](docs/renders/v0.3_section.png) | ![v0.3 back](docs/renders/v0.3_back.png) |
+| ![v0.4 half-section](docs/renders/v0.4_section.png) | ![v0.4 back](docs/renders/v0.4_back.png) |
 
-Exploded: remote, trim plate, box insert, the four board posts that screw into
-the insert's bosses (D-28), wiring board (with the rocker, WAGO block and PSU from
-the KiCad model).
+Exploded: remote, face plate, insert, ring board with the MSR-2, riser with the spring pins on the spacer
+posts, the four nylon board standoffs (D-57), wiring board.
 
-![v0.3 exploded assembly](docs/renders/v0.3_exploded.png)
+![v0.4 exploded assembly](docs/renders/v0.4_exploded.png)
 
-Sensor flex (D-27, D-47; trim and remote hidden): from the MSR-2's rear connector into the
-top-right corner (spring fingers), down the flange's right band in a groove of the trim, past the
-microphone below the flange, to the SHT45 on its tail.
+Face plate lifted off (see-through): it carries nothing but plastic; the ring board, the MSR-2, the mic
+carrier and the SHT45 stay on the insert (D-50, D-68).
 
-![v0.3 sensor flex route](docs/renders/v0.3_flex.png)
+![v0.4 face plate lifted off](docs/renders/v0.4_face_off.png)
 
-Power contact: two spring fingers on the flex press on the gold pads of the 5 V jumper's
-stiffened end, which sits on a shelf at the insert flange's top-right corner.
+Ring board from the front, red where copper may not go (8 mm along the wall from the box opening): the
+MSR-2 on CN2 and three SMT spacers, J1 for the FFC, the mic carrier at the top right, the SHT45 at the bottom.
 
-![v0.3 spring-finger power contact](docs/renders/v0.3_contact.png)
+![v0.4 ring board](docs/renders/v0.4_ring.png)
 
-5 V power path (insert cut at the pass-through, seen from the right): a two-layer flex
-jumper plugs into J2 on the wiring board (Hirose FH12-6S, slide lock), folds once between the
-board and the insert (a 40 mm service loop: plug it in with the board held beside the insert,
-where the latch can be seen), goes up through the pass-through and out of the flange's corner,
-and ends on the corner shelf under the spring fingers. No wires, no solder joints at assembly.
+5 V power path (insert cut at the pass-through, seen from the right): a stock 6-way FFC from J2 on the
+wiring board runs between the rocker and the top-right standoff to a straight bore in the insert's top-right corner
+(an open groove in the corner taper, then closed from 4.4 mm under the wall plane, D-74), one bend into a flat slot and
+out of the flange onto the ring board to J1; its spare
+length lies folded flat beside J1 (D-68). Both ends latch (Hirose FH12, slide lock).
 
-![v0.3 5 V power path](docs/renders/v0.3_power.png)
+![v0.4 5 V power path](docs/renders/v0.4_power.png)
 
-Face plate lifted off (trim see-through): the flex with the MSR-2, SHT45, mic and spring fingers goes
-with the face plate; the 5 V jumper (wiring board J2 -> pass-through -> pad end on the shelf) stays on
-the insert side. The fingers on the jumper's pads are the only electrical interface (R9, checked).
+Battery-free remote: two spring pins on the riser board, which stands on the two spacer posts from the
+wiring board's 5 V area, through the pocket floor onto the pads of the replacement back cover.
 
-![v0.3 face plate and insert separated](docs/renders/v0.3_separation.png)
+| Exploded | Section through the pins |
+| --- | --- |
+| ![v0.4 battery-free](docs/renders/v0.4_battery_free.png) | ![v0.4 spring pins](docs/renders/v0.4_pins.png) |
 
-Microphone (D-29, push-to-talk voice to Home Assistant): an I²S MEMS microphone under the
-flex below the flange's right band, its port sealed by a gasket ring to a Ø1.0 sound hole in
-the face skin at the bottom right. Sections through the sound hole, across and along the flex:
+Microphone (D-29, D-50): the bottom-port I²S mic under its carrier, hanging into a window in the ring
+board, the port up through the carrier into the face plate's sound tube (gasket on the carrier).
 
-![v0.3 microphone sections](docs/renders/v0.3_mic_section.png)
+![v0.4 microphone sections](docs/renders/v0.4_mic_section.png)
 
 BILRESA model: stadium outline, wheel with its gap ring, three LEDs, side
 parting line, and a back that curves from a flat central pad out to the sides.
@@ -118,18 +116,25 @@ parting line, and a back that curves from a flat central pad out to the sides.
 | --- | --- |
 | ![BILRESA model, front](docs/renders/bilresa_model.png) | ![BILRESA model, back](docs/renders/bilresa_back.png) |
 
-Cross-sections: box insert (red, UL94 V-0), trim plate (blue), wiring board
-(green), board posts (orange), BILRESA (grey). The dashed line is the wall surface;
-the x = -21 cut runs through two posts and their bosses.
+MSR-2 model with the SCD40 CO2 add-on (`cad/build123d/msr2.py`, D-64): board, ESP32-C3-MINI-1 over its antenna
+notch, USB-C, LD2410B radar on its header, CN1 with the add-on and the SCD4x, Boot / RST switches on the back. Sizes
+from the datasheets, the board plane and limits from Apollo's case; part positions are estimates from Apollo's photos.
 
-![v0.3 assembly cross-sections](docs/renders/v0.3_sections.png)
+| Front | Back |
+| --- | --- |
+| ![MSR-2 model, front](docs/renders/msr2_front.png) | ![MSR-2 model, back](docs/renders/msr2_back.png) |
 
-### v0.3 wiring board
+Cross-sections of every v0.4 part (legend under the sheet, each panel titled with what it shows). The dashed
+line is the wall surface.
+
+![v0.4 assembly cross-sections](docs/renders/v0.4_sections.png)
+
+### v0.4 wiring board
 
 KiCad renders of `pcb/`. The front faces the plate (rocker, SMD
-fuse and MOV, 5 V connector); the back faces the box (WAGO block, PSU). The four
-corner holes take the insert's snap posts; they are unplated with no copper round them, and the
-PE ring detours round them, so earth continuity never depends on the posts or on vias.
+fuse and MOV, 5 V connector J2, the two SMT spacer posts below it); the back faces the box (WAGO block, PSU). The four
+corner holes take the insert's nylon standoffs (M3 screws from the back); they are unplated with no copper round
+them, and the PE ring detours round them, so earth continuity never depends on the standoffs or on vias.
 
 | Front | Back |
 | --- | --- |
@@ -148,12 +153,16 @@ Without components, so every trace and pour shows:
 ### EU variant (concept, D-30, D-36)
 
 A separate design for a round EU flush box (68 mm hole saw, Ø60 inside); `make eu`, `cad/build123d/eu/`,
-`pcb/eu/`. The remote sits flush on a V-0 cap over the box; the emergency rocker (Marquardt 1802.2504,
+`pcb/eu/`. The remote sits on a V-0 cap over the box, 2.6 mm proud of the face as on the NA plate (D-70); the emergency rocker (Marquardt 1802.2504,
 as on the NA plate) under it is hidden until the remote is lifted out. Two boards: a mains board at
 the rocker's PCB seat (rocker, two WAGO push-in blocks, fuse, MOV, PSU over a routed relief slot,
-5 V island with a header) and a 5 V board just under the cap (pin socket on the header, two spring
-pins up through the cap onto gold pads on the sensor flex: nothing soldered, wired or plugged
-across). Box values are catalogue placeholders until measured; the stack reaches 43 mm deep (to be
+5 V island with a header) and a 5 V board just under the cap (pin socket on the header, four spring pins
+up through the cap: two for the battery-free back cover, two onto a cap board). The sensors sit on the
+cap side, nothing in the face plate and no flex (D-56, D-59, D-70): a 1.6 mm FR4 cap board in a printed
+carrier with the MSR-2 on its CN2 mate and three SMT spacers, the microphone and the SHT45, as on the NA ring
+board. The carrier goes on the wall first; the cap's edge pins its lip to the wall and the cap's teeth stop it
+turning (D-71). The face plate snaps into the carrier: four fingers at the corners catch grooves in closed, keyed
+windows (D-77). Box values are catalogue placeholders until measured; the stack reaches 43 mm deep (to be
 tried in a box).
 
 | Remote in place | Remote lifted: rocker |
@@ -163,21 +172,25 @@ tried in a box).
 
 ![EU exploded](docs/renders/eu_exploded.png)
 
-Face plate lifted off: the spring pins on the 5 V board stand through the cap; the flex's pads on
-the pins are the only interface (R9, checked).
+The sensors' side with the face plate and remote off: the carrier round the cap, the cap board in it with the MSR-2 on
+CN2 and its spacers, the mic carrier, the SHT45.
 
-![EU face plate and cap separated](docs/renders/eu_separation.png)
+![EU sensors](docs/renders/eu_sensors.png)
 
-| Flex | Power contact through the cap |
+The carrier clamp (D-71) from the wall side: the cap's teeth at the snap angles in the gaps of the carrier's lip;
+section at the top: the lip under the cap's rebate, outside the seal band.
+
+| Wall side | Section |
 | --- | --- |
-| ![EU flex](docs/renders/eu_flex.png) | ![EU spring-pin contact](docs/renders/eu_contact.png) |
+| ![EU carrier clamp](docs/renders/eu_carrier_clamp.png) | ![EU carrier lip](docs/renders/eu_carrier_lip.png) |
 
-Section through the spring pins: 5 V board, pins through the cap, flex pads, trim rib behind them.
+| Sensor pins onto the cap board's pads | Face plate snap: finger, bump in the groove of the carrier's window |
+| --- | --- |
+| ![EU sensor pins](docs/renders/eu_sensor_pins.png) | ![EU snap](docs/renders/eu_snaps.png) |
 
-![EU contact section](docs/renders/eu_contact_section.png)
-
-Mains board: L pours on the front, N pours on the back, the relief slot under the PSU, the 5 V island
-with the header; installer labels on the back.
+| Cap board, front copper | Cap board, back copper |
+| --- | --- |
+| ![EU cap board, front copper](docs/renders/eu_cap_board_copper_front.png) | ![EU cap board, back copper](docs/renders/eu_cap_board_copper_back.png) |
 
 | Mains board, front | Mains board, back |
 | --- | --- |
@@ -187,67 +200,57 @@ with the header; installer labels on the back.
 | 5 V board, front | 5 V board, back |
 | --- | --- |
 | ![EU 5 V board, front](docs/renders/eu_5v_board_front.png) | ![EU 5 V board, back](docs/renders/eu_5v_board_back.png) |
+| ![EU 5 V board, front copper](docs/renders/eu_5v_board_copper_front.png) | ![EU 5 V board, back copper](docs/renders/eu_5v_board_copper_back.png) |
+
+### Steel plate cutting jigs (D-52)
+
+The steel plate that ships with the BILRESA is cut to an 18.5 mm piece for the insert (NA) or the cap (EU). Left: hacksaw
+guide (clamp in a vise, saw down the slot). Right: marker gauge (mark along the fence, cut with shears, a grinder or a
+saw). Red: the cut line.
+
+![Steel plate cutting jigs](docs/renders/plate_jigs.png)
 
 ### Replacement back cover (D-35, D-40, D-41, D-44, D-45)
 
 Runs the remote without cells. The printed cover snaps onto the remote like the original (clips at
 the top and bottom, side ribs, a pry notch) and carries the remote's magnet plate inside a ridge, clipped at both ends,
-and a flex: two spring fingers poke through windows in its back onto flush gold pads (+5 V, GND) in a
-thin pocket-floor insert, a 3.3 V regulator on the flex feeds the remote, and at the terminal end two
-more fingers press on the remote's VBAT plate and GND spring. The flex is held by a 0.8 mm stiffener under six
-snap hooks on its long edges and, at the end, by a lip at the foot of each contact block and a snap hook beside
-each block. The floor pads come from a tongue of the sensor flex on both variants: on NA it runs under the
-trim, behind a strip of the trim down the pocket wall and under the floor insert, which hangs from that strip,
-so all of it comes off with the face plate and no flex shows on the insert or in the empty pocket (D-49). No new
-openings in the mains barrier. Several remote dimensions are still estimates
+and a flex: two gold pads behind windows in its back take +5 V and GND from the plate (NA: the spring pins
+through the pocket floor, D-50; EU: two spring pins from the 5 V board through the cap, D-54), a 3.3 V regulator on the flex feeds the
+remote, and at the terminal end two spring fingers press on the remote's VBAT plate and GND spring. The flex is
+held by a 0.8 mm stiffener under six snap hooks on its long edges and, at the end, by a lip at the foot of each
+contact block and a slot along each block's outer face that it slides down into. Several remote dimensions are still estimates
 (`docs/MEASUREMENTS.md`).
 
-| NA, exploded: floor insert, tongue, cover, remote | NA, section on the tongue |
-| --- | --- |
-| ![Battery-free, exploded](docs/renders/v0.3_battery_free.png) | ![Battery-free, tongue section](docs/renders/v0.3_tongue.png) |
-
-| NA, remote lifted out: floor insert, the trim's strip, the floor pads | NA, face plate lifted off: tongue and floor insert go with it |
-| --- | --- |
-| ![Battery-free, empty pocket](docs/renders/v0.3_pocket_empty.png) | ![Battery-free, face plate off](docs/renders/v0.3_face_off.png) |
-
-| Cover, inside | Cover, back (fingers free) |
+| Cover, inside | Cover, back (pin windows) |
 | --- | --- |
 | ![Back cover, inside](docs/renders/bc_inside.png) | ![Back cover, back](docs/renders/bc_back.png) |
 
-| Pocket-floor insert in the EU plate | Exploded: remote, cover, floor insert, plate |
-| --- | --- |
-| ![Pocket-floor insert](docs/renders/bc_floor.png) | ![Back cover, exploded](docs/renders/bc_exploded.png) |
+Exploded in the EU plate: remote, cover, the battery-free pins through the cap:
 
-Cut through a finger: window, finger on the floor pad, ledge, flex. And through the VBAT contact:
-the finger on the end section, its dome on the remote's battery plate.
+![Back cover, exploded](docs/renders/bc_exploded.png)
 
-![Back cover, finger section](docs/renders/bc_finger_section.png)
+Cut through a pin pad: the spring pin at mid-stroke through its window onto the pad, ledge, flex. And
+through the VBAT contact: the finger on the end section, its dome on the remote's battery plate.
+
+![Back cover, pin section](docs/renders/bc_pin_section.png)
 
 ![Back cover, VBAT contact section](docs/renders/bc_contact_section.png)
 
 ![Back cover flex, copper](docs/renders/cover_flex_copper_front.png)
 
-### Sensor flex and 5 V jumper
+### Ring board, mic carrier, riser
 
-KiCad projects in `pcb/sensor/` (D-27, D-47). The flex is drawn flat (two layers): one strip, folded
-twice at 45° in the trim. Left to right: CN2 plug (placeholder, not for fabrication yet), the two
-spring fingers side by side on the corner section, the band run, the microphone on its widened
-section (D-29), the SHT45 at the tail, and the battery-free tongue from the finger section to its two
-floor pads (D-49). GND_SENS and +3V3 run on the back layer, and GND along the tongue.
+KiCad projects in `pcb/sensor/` (D-50). Ring board: I²S and +5V on the front, SDA, SCL and +3V3 across the
+top band on the back to the right rail, down the rail on the front round the box's corner keep-out to the
+SHT45; GND pours (the left rail carries GND). The CN2 mate and its map are placeholders: no fab files yet.
 
-| Front copper | Back copper |
+| Ring board, front | Ring board, back |
 | --- | --- |
-| ![Sensor flex, front copper](docs/renders/sensor_flex_copper_front.png) | ![Sensor flex, back copper](docs/renders/sensor_flex_copper_back.png) |
+| ![Ring board, front](docs/renders/ring_board_front.png) | ![Ring board, back](docs/renders/ring_board_back.png) |
+| ![Ring board, front copper](docs/renders/ring_board_copper_front.png) | ![Ring board, back copper](docs/renders/ring_board_copper_back.png) |
 
-5 V jumper, drawn flat (two layers): FH12 contacts at the left, the pad end at the right (GND pad
-straight ahead, +5 V on the left).
+Mic carrier (7 × 6 mm, castellated) and riser board (two spring pins, two M2 post pads):
 
-| Front copper | Back copper |
-| --- | --- |
-| ![5 V jumper, front copper](docs/renders/power_jumper_copper_front.png) | ![5 V jumper, back copper](docs/renders/power_jumper_copper_back.png) |
-
-EU sensor flex, drawn flat: CN2 plug, the microphone on its outer side, the two pads under the
-spring pins, the battery-free tongue between them (folded 45° under the floor insert, slit beside
-its neck), the SHT45 at the tail.
-
-![EU sensor flex, copper](docs/renders/eu_sensor_flex_copper_front.png)
+| Mic carrier, front | Mic carrier, back (mic side) | Riser, front | Riser, back |
+| --- | --- | --- | --- |
+| ![Mic carrier, front copper](docs/renders/mic_carrier_copper_front.png) | ![Mic carrier, back copper](docs/renders/mic_carrier_copper_back.png) | ![Riser, front copper](docs/renders/riser_board_copper_front.png) | ![Riser, back copper](docs/renders/riser_board_copper_back.png) |

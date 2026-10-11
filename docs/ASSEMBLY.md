@@ -9,31 +9,53 @@ sizes below. Nothing here is a compliance statement; mains work is a human decis
 | Part | Held by | Notes |
 | --- | --- | --- |
 | Insert | the two #6-32 box screws through its flange | |
-| Trim | clamped by the same screws; two pins key it | |
-| Wiring board | four screw-in snap posts (D-28) | |
-| Rocker, WAGO, PSU, F1, RV1, J2 | soldered; the rocker also snaps into the insert's panel | |
-| 5 V jumper, connector end | FH12 slide latch on J2 | |
-| 5 V jumper, run | the service loop folds loose between board and insert (it has to, to plug in with the board beside the insert); guided through the pass-through | D-31 |
-| 5 V jumper, pad end | tape on its stiffener to the corner shelf; the flange's face below it stops it sliding down; the spring fingers press it down | D-47 |
-| Sensor-flex tongue (battery-free) | the trim's underside groove over the flange (the flange clamps it) and the groove under the trim's tab in the island notch; behind the trim's strip down the pocket's arc (the insert's groove takes strip and tongue); under the floor insert in its channel, up its slot onto the pad strip, the tail down the second slot (both laid in sideways through the notches) | no tape; part of the face plate (D-49) |
-| NA floor insert | hangs from the trim strip's foot (its hook in the window of the floor's tab); lies on the pocket floor, the remote on it | comes off with the face plate; fitted for a battery remote too (D-49) |
-| MSR-2 board | two snap hooks at its short ends in the trim's bay (D-45), plus CN2 | snap in from behind |
-| Sensor flex | CN2 plug; tape (each point checked for room in `make check`): the rise from CN2 along the underside of the trim's ramp; the finger-section stiffener to the face skin; the band run into the trim's groove (the flange clamps it once the trim is on); the microphone stiffener to the skin (the mic's own gasket ring seals its port); the bottom run between the fold and the SHT45 bay to the skin; the SHT45 tail's back to the floor of its bay | D-47, D-48 |
-| Supplied magnet (cut piece) | its own adhesive in the pocket-floor recess | D-43 |
+| Trim (face plate) | clamped by the same screws; two pins key it | passive: no electronics, no contacts (D-50) |
+| Wiring board | four nylon M3 standoffs (Keystone 25503) screwed into the insert's tapped bosses, a nylon M3 × 8 screw through each corner hole (D-57) | cut the top-right standoff's stud to 5 mm first |
+| Rocker, WAGO, PSU, F1, RV1, J2, spacer posts P1 / P2 | soldered; the rocker also snaps into the insert's panel | |
+| Spacer studs (WA-SBRIE) | screwed into P1 / P2; heatshrink over each post | D-50 |
+| Riser board | two M2 × 5 screws into the studs; in its pocket under the pocket floor | D-50 |
+| Spring pins | soldered on the riser; their barrels stand in the floor holes | D-50 |
+| FFC, wiring board end | FH12 slide latch on J2 | |
+| FFC, run | from J2 between the rocker and the top-right standoff to the straight bore's mouth on the insert's underside, through the bore and the slot; out of the flange onto the ring board; the spare folded flat in four layers beside J1, between the flange and J1 | D-50, D-74 |
+| FFC, ring board end | FH12 slide latch on the ring board's J1 | |
+| Ring board | pressed onto eight crush ribs on the collar's outside (0.15 mm into its window edge) for handling; in the box the flange's 1.8 mm land clamps its inner edge against the wall, the face plate's posts and frames the rest | D-50, D-68 |
+| MSR-2 | CN2 on the ring board and three 1.5 mm SMT spacers under its board; three posts on the face plate press its board onto the spacers (the skin stands 0.3 mm clear of the CO2 add-on and the radar) | D-50, D-66, D-68 |
+| SHT45, passives, J1, nuts | soldered on the ring board | |
+| Mic carrier | soldered flat on the ring board by its castellated edges; the face plate's sound tube presses its gasket on | D-50 |
+| Supplied steel plate (cut piece) | its own adhesive in the pocket-floor recess; cut with the hacksaw guide or the marker gauge | D-43, D-52 |
+
+## Order of work for the NA plate
+
+0. Cut the supplied steel plate: lay it whole in a jig, round end on the stop. Hacksaw guide: clamp the jig in a vise
+   and saw down the slot. Marker gauge: mark along the fence, then cut with metal shears, a grinder or a hacksaw.
+   Deburr the cut edge.
+1. Wiring board: solder P1 / P2 with the SMD parts (reflow); screw the WA-SBRIE studs in; heatshrink.
+2. Ring board: solder the parts and the mic carrier; plug the MSR-2 onto CN2.
+3. Insert: fit the rocker.
+4. Riser: screw it onto the studs (M2 × 5); check that each pin moves freely.
+5. Fit the wiring board on its standoffs (the pins enter the floor holes from behind). Push the FFC's end into the
+   straight bore from the underside (lay it in the groove in the corner taper, push it up round the one bend into the
+   slot); it comes out under the flange; latch it into J2 from the side
+   (J2 faces the board's right edge).
+6. Ring board: slide it over the plug from behind (the window passes the wiring board) and press it onto the collar's
+   ribs until it sits under the flange's land. From the face side pull the cable up until it lies taut along its
+   route, fold the spare in four flat layers left of J1 and latch it into J1.
+7. In the box: wire the WAGO block, screw the insert to the ears, put the face plate on.
 
 ## EU plate
 
 | Part | Held by | Notes |
 | --- | --- | --- |
 | Cap | two screws into the box's top and bottom domes | |
-| Trim | two M2 screws through its tabs into the cap | |
+| Trim | four snap fingers at the corners drop into closed, keyed windows in the cap board and the carrier (the wide one top right) and catch the grooves in the carrier's windows | D-70, D-77 |
 | Mains board, 5 V board | M2 screws on the cap's long bosses | |
 | Rocker, WAGO blocks, PSU, header, socket, spring pins | soldered; the rocker also snaps into the cup | |
-| Floor insert | glued to the trim (lifts off with it) | |
-| Tongue | enters under the pocket wall's notch, runs under the floor insert, folds there, its neck rises through the slot onto the top (laid in sideways through the notch); the pads lie in the top recess | no tape (D-49) |
-| MSR-2 board | two snap hooks at its short ends in the trim's bay (D-45), plus CN2 | |
-| Sensor flex | CN2 plug; tape: the rise from CN2 and both slopes of the dip to the pin pads along the undersides of the trim's ramps, the pad section's stiffener to its rib in the trim (the spring pins press it up against it), the microphone stiffener to the skin, the SHT45 tail to its bay | D-48 |
-| Cut magnet piece | glued under the cap floor | |
+| Cut steel piece | adhesive, in the recess in the cap's pocket floor (round end down), 0.5 mm below the seat | D-72 |
+| Carrier | on the wall before the cap; its lip under the cap's edge, pinned to the wall by the cap's two screws; the cap's four teeth in gaps in the lip stop it turning (keyed, one way only) | D-56, D-71 |
+| Cap board | in the carrier's rim, four M2 × 6 screws into the carrier; the 5 V board's sensor pins press up on its pads | D-56, D-70 |
+| MSR-2 board | CN2 on the cap board and three 1.5 mm SMT spacers under its board; three posts on the face plate press its board onto the spacers (the skin stands 1.3 mm clear of its front) | D-67, D-70 |
+| Mic carrier | soldered flat on the cap board's land over its window; the face plate's sound tube on its gasket | D-70 |
+| SHT45 | soldered on the cap board under its vents | D-56 |
 
 ## Replacement back cover
 
@@ -41,15 +63,15 @@ sizes below. Nothing here is a compliance statement; mains work is a human decis
 | --- | --- | --- |
 | Cover on the remote | two snap clips (top, bottom) on the housing's wall; side ribs keep it from flexing | pry it off at the notch |
 | Plate (magnet, 12 × 20 × 2) | a ridge round it on the full-thickness shell, a clip at each end | snap in from above; print the cover in PETG (the clips broke in PLA) |
-| Cover flex, pad and regulator sections | 0.8 mm FR4 stiffener on top, pressed down past six snap hooks on its long edges (each side of each finger and of the regulator) | press straight down until all six click; to remove, spread the hooks on one edge with a pick |
+| Cover flex, pad and regulator sections | 0.8 mm FR4 stiffener on top, pressed down past six snap hooks on its long edges (each side of each pin pad and of the regulator) | press straight down until all six click; to remove, spread the hooks on one edge with a pick |
 | Cover flex, run | the slot under the GND contact block | |
-| Cover flex, end section | its foot drops into the slot behind a lip on each contact block; a snap hook beside each block's outer side catches its outer edge (PETG; lips 0.35 mm over the copper face, below the rim) | fold it up onto the blocks until both hooks click |
+| Cover flex, end section | slides down a slot along each contact block's outer face (lip over its outer edge) into the slot behind the foot lips (D-55) | slide the end section in from above first, then lay the strip on the ledge and press the pad section down past its hooks |
 
 ## Order of work for the back cover
 
 1. Snap the plate into its pocket.
 2. Thread the flex's run through the slot under the GND block from the cell side; press the pad and
-   regulator sections straight down onto the ledge, the fingers into their windows and the regulator
+   regulator sections straight down onto the ledge, the pin pads over their windows and the regulator
    into its recess, until the six snap hooks click over the stiffener.
 3. Check that no hook is left standing on the stiffener's top.
 4. Fold the end section up (foot into the lip slots) and press it onto the blocks until both side hooks
@@ -58,35 +80,13 @@ sizes below. Nothing here is a compliance statement; mains work is a human decis
 
 ## Tape points, rendered
 
-Each part with its flexes and the tape (3M 467MP, blue, semi-translucent). The flexes are drawn 2.5 mm off
-the part they are taped to, so the part, the tape and the flex all show (`cad/build123d/render_tape.py`,
-tape geometry in `tape.py` and `eu/tape_eu.py`).
+The back cover with its flex drawn 2.5 mm off it, so both show (`cad/build123d/render_tape.py`).
 
-NA face plate (trim, seen from the wall side): the sensor flex, taped under the ramp over its rise, the
-finger section and the microphone to the skin, the band run in its groove, the bottom run and the SHT45 tail;
-the battery-free tongue in its groove, behind the strip and under the floor insert hanging from the strip (D-49).
+NA plate: no flex and no tape (D-50).
 
-| Whole trim | Top-right corner | Bottom |
-| --- | --- | --- |
-| ![NA trim, sensor flex and tape](renders/tape_na_trim.png) | ![NA trim corner](renders/tape_na_trim_corner.png) | ![NA trim bottom](renders/tape_na_trim_bottom.png) |
-
-NA insert (seen from the room) with the face plate off: only the 5 V jumper's pad end on the corner shelf
-(D-49). The battery-free tongue and the floor insert are on the face plate side (NA trim render).
-
-| Insert | Corner shelf |
-| --- | --- |
-| ![NA insert, jumper pad end and tape](renders/tape_na_insert.png) | ![NA insert corner](renders/tape_na_insert_corner.png) |
-
-Replacement back cover: no tape; snap hooks hold the pad and regulator sections and the end section (a
-hook beside each contact block).
+Replacement back cover: no tape; snap hooks hold the pad and regulator sections, the end section slides
+down a slot along each contact block (D-55).
 
 | Cover | End section |
 | --- | --- |
 | ![Back cover and flex](renders/tape_cover.png) | ![Back cover end section](renders/tape_cover_end.png) |
-
-EU face plate (trim, from the wall side) and floor insert: the flex taped under the ramps over its three
-slopes, the pad section on its rib, the microphone, the SHT45 tail; the tongue in the floor insert's recess.
-
-| EU trim | EU right channel | EU floor insert |
-| --- | --- | --- |
-| ![EU trim, sensor flex and tape](renders/tape_eu_trim.png) | ![EU channel](renders/tape_eu_trim_channel.png) | ![EU floor insert](renders/tape_eu_floor.png) |

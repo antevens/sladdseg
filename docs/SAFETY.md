@@ -12,11 +12,15 @@ hard requirement.
    to question.
 3. Mains-side parts must carry recognised marks: rocker (CSA/cUL; ENEC for EU/UK),
    IRM-03-5 (cURus/CB/TÜV), terminal block, fuse, MOV.
-4. The 5 V flex jumper runs from inside the box to the plate, through the single
-   collar hole. It is not a rated wire: polyimide base and coverlay, copper exposed
-   only at its two ends (J2 on the board's 5 V side, the pads on the shelf outside
-   the box). Its distance to mains-side parts along its route, and whether the
-   film is sufficient insulation where it passes them, are open for human review.
+4. The 5 V FFC runs from inside the box to the ring board, through the single
+   pass-through. It is not a rated wire: a stock flat flexible cable, conductors
+   exposed only at its two latched ends (J2 on the wiring board's 5 V side, J1 on the
+   ring board outside the box). Its distance to mains-side parts along its route, and
+   whether its insulation is sufficient where it passes them, are open for human review.
+   The same holds for the riser board, its two spring pins and the two spacer posts
+   (bare 5 V metal, heatshrink only) in the box under the pocket floor (D-50): they sit
+   over the wiring board's 5 V area, 8 mm from mains copper on the board; their distance
+   to the WAGO block, the rocker and the house wiring in a real box is open for review.
 5. Bond grounds per local code. The printed plate is non-conductive and is not grounded.
 6. Box fill must be calculated with the insert, the rocker body and the wiring board
    (terminal block, PSU) counted.
@@ -27,8 +31,10 @@ hard requirement.
 8. Barrier geometry (pocket shell, switch well, collar; the box insert) is
    printed in a UL94 V-0 filament with its datasheet on file. PLA/PETG are for
    test fits only.
-9. No holes may be added to the barrier other than the 5 V pass-through. The rocker
-   panel cutout is closed by the rocker body itself: never energise with the rocker out.
+9. No holes may be added to the barrier other than the 5 V pass-through and the two
+   spring-pin holes in the pocket floor (D-50, human decision 2026-10-10). The rocker
+   panel cutout is closed by the rocker body itself, each pin hole by its pin's barrel:
+   never energise with the rocker, the riser or a pin out.
    `make check` runs a barrier-continuity test (mains air must not reach the pocket,
    trim hollow or room); it must pass.
 
