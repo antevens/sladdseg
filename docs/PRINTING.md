@@ -10,10 +10,10 @@ every part is single-material.
 
 | File | Part(s) | Filament | Est. time / mass (OrcaSlicer 2.4.2) |
 |------|---------|----------|------------------------------------------|
-| `print/coupons_PLA.3mf` | pocket+well coupon (with the steel piece's recess), MSR-2 bay coupon, rocker panel ladder, crush-rib coupon (D-68) | PLA | 2 h 16 m / 59.8 g |
-| `print/insert_PLA_testfit.3mf` | NA box insert (fit check only, **not for mains**), on supports | PLA | 2 h 18 m / 58.9 g |
+| `print/coupons_PLA.3mf` | pocket+well coupon (with the steel piece's recess), MSR-2 bay coupon, rocker panel ladder, crush-rib coupon (D-68) | PLA | 2 h 18 m / 60.2 g |
+| `print/insert_PLA_testfit.3mf` | NA box insert (fit check only, **not for mains**), on supports | PLA | 2 h 19 m / 59.0 g |
 | `print/trim_PLA.3mf` | NA trim plate (face plate, passive) | PLA | 38 m / 22.4 g |
-| `print/insert_PC-FR.3mf` | NA box insert, **final**, on supports | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 2 h 18 m / 51.9 g |
+| `print/insert_PC-FR.3mf` | NA box insert, **final**, on supports | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 2 h 19 m / 51.9 g |
 | `print/backcover_PETG.3mf` | replacement back cover for the battery-free BILRESA (D-35), back down; PETG: its clips broke in PLA (D-44) | PETG | 21 m / 8.5 g |
 | `print/backcover_ABS.3mf` | the same cover in ABS, to test before the PETG arrives (shrinks more: check the fit first) | ABS | 17 m / 7.5 g |
 | `print/back_gauges_PLA.3mf` | five flat profile gauges for the inside of the remote's original back cover, side to side: the modelled back (round-over 8.1 × 8.0, measured) with its round-over 0.5 mm smaller to 0.5 mm larger in 0.25 mm steps (engraved R7.60 … R8.60), a line at the rim (D-87); deburr the arcs before use | PLA | 18 m / 7.8 g |

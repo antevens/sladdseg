@@ -133,6 +133,48 @@ def riser_pocket():
     return out
 
 
+def _riser_clip_frames():
+    """(edge point (x, y), outward normal (nx, ny), tangent (tx, ty)) for each clip on the riser's edges."""
+    w, h, _ = RISER
+    cx, cy = RISER_C
+    out = []
+    for edge, s in RISER_CLIPS:
+        if edge == "top":
+            out.append(((cx + s, cy + h / 2), (0, 1), (1, 0)))
+        else:
+            sx = -1 if edge == "left" else 1
+            out.append(((cx + sx * w / 2, cy + s), (sx, 0), (0, 1)))
+    return out
+
+
+def riser_clips():
+    """Snap clips holding the riser up against the pins' push (D-91): (relief cut, hooks). Each finger is the pocket's
+    wall, freed by a relief slot all round it (in front: above the pocket's ceiling) from the insert's underside up to
+    POCKET_WALL under the seat, and below its tip; its hook stands in under the riser's back face (catch RISER_CLIP_PLAY below it) with a 45 deg
+    ramp underneath, so the riser snaps in from behind with the wiring board."""
+    from build123d import Plane, Polyline, extrude, make_face
+    fw, ft, hd, g = RISER_CLIP
+    c = RISER_CLR
+    z_root = SEAT_Z - POCKET_WALL
+    z_catch = RISER_BOT - RISER_CLIP_PLAY
+    z_tip = z_catch - 0.2 - (c + hd)                       # 0.2 flat face, then the 45 deg ramp back to the wall
+    zb = Z_BOT - 1
+    relief, hooks = None, None
+    for (ex, ey), (nx, ny), (tx, ty) in _riser_clip_frames():
+        def box(n0, n1, t0, t1, z0, z1):
+            cn, ct = (n0 + n1) / 2, (t0 + t1) / 2
+            sn, st = n1 - n0, t1 - t0
+            return Pos(ex + nx * cn + tx * ct, ey + ny * cn + ty * ct, (z0 + z1) / 2) * \
+                Box(abs(nx) * sn + abs(tx) * st, abs(ny) * sn + abs(ty) * st, z1 - z0)
+        r = box(c - g, c + ft + g, -fw / 2 - g, fw / 2 + g, zb, z_root) - box(c, c + ft, -fw / 2, fw / 2, z_tip, z_root + 1)
+        relief = r if relief is None else relief + r
+        pl = Plane(origin=(ex, ey, 0), x_dir=(nx, ny, 0), z_dir=(ny, -nx, 0))      # profile in the (n, z) plane, y up
+        prof = [(c + 0.01, z_catch), (-hd, z_catch), (-hd, z_catch - 0.2), (c + 0.01, z_tip)]
+        k = extrude(pl * make_face(Polyline(*prof, prof[0])), fw / 2, both=True)
+        hooks = k if hooks is None else hooks + k
+    return relief, hooks
+
+
 def parts():
     brd, pins, posts, sleeves, screws = riser()
     return {"ring": board(), "keep": keepout(), "spacers": spacers(), "cn2": cn2(), "msr": msr(), "j1": j1(),

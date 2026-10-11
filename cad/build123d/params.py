@@ -300,6 +300,13 @@ RISER = (14.0, 12.0, 0.8)                 # riser board w, h, t
 RISER_C = (13.25, -13.4)                  # riser centre (room x, y): posts at its lower corners (in the wiring board's
                                           # 5 V area), the pins above and between them (D-79)
 RISER_CLR = 0.3                           # riser to its pocket under the floor
+# snap clips in the riser pocket (D-91): fingers hang from the pocket floor down past the riser's edges, a hook under its
+# back face holds it against the pins' push. Clip centres on the riser's edges: (edge, position along it from the riser
+# centre). With the two posts the top clip makes a three-point hold in line with the pins; the right one sits between the
+# pins. None on the left edge: the steel piece's recess above it leaves no floor for a relief slot.
+RISER_CLIPS = (("top", 0.0), ("right", 2.2))
+RISER_CLIP = (3.0, 0.8, 0.4, 0.3)         # finger width, thickness, hook depth under the board, relief round the finger
+RISER_CLIP_PLAY = 0.1                     # hook's catch face below the riser's back face
 POSTS = ((9.85, -16.5), (16.65, -16.5))   # spacer posts on the wiring board's 5 V area (+5V, GND), level, the pins either side (D-60)
 # each post: Wurth WA-SMSI M2 SMT spacer (soldered on the wiring board, 4.35 OD, through bore) + WA-SBRIE M2
 # male-female brass standoff (4 mm hex) screwed into it; an M2 screw through the riser into the top; heatshrink over

@@ -18,7 +18,7 @@ tape. Nothing here is a compliance statement; mains work is a human decision (SA
 | Wiring board | four nylon M3 standoffs (Keystone 25503) screwed into the insert's tapped bosses, a nylon M3 × 8 screw through each corner hole (D-57) | cut the top-right standoff's stud to 5 mm first |
 | Rocker, WAGO, PSU, F1, RV1, J2, spacer posts P1 / P2 | soldered; the rocker also snaps into the insert's panel | rocker soldered last, with the board screwed down (see the note at the top) |
 | Spacer studs (WA-SBRIE) | screwed into P1 / P2; heatshrink over each post | D-50 |
-| Riser board | two M2 × 5 screws into the studs; in its pocket under the pocket floor | D-50 |
+| Riser board | two M2 × 5 screws into the studs; in its pocket under the pocket floor, two snap clips in the pocket (top edge, right edge) hold its back face against the pins' push | D-50, D-91 |
 | Spring pins | soldered on the riser; their barrels stand in the floor holes | D-50 |
 | FFC, wiring board end | FH12 slide latch on J2 | |
 | FFC, run | from J2 between the rocker and the top-right standoff to the straight bore's mouth on the insert's underside, through the bore and the slot; out of the flange onto the ring board; the spare folded flat in four layers beside J1, between the flange and J1 | D-50, D-74 |
@@ -39,7 +39,8 @@ tape. Nothing here is a compliance statement; mains work is a human decision (SA
 3. Insert: snap the rocker into its panel from the front. Do not solder it yet.
 4. Riser: screw it onto the studs (M2 × 5); check that each pin moves freely.
 5. Fit the wiring board on its standoffs (the pins enter the floor holes from behind; the rocker's pins or tabs
-   enter the board's slots) and tighten all four screws.
+   enter the board's slots; the riser snaps past the two clips in its pocket) and tighten all four screws. To take
+   the board off again, press the two clip hooks outwards with a pick while pulling it back.
 6. **Now solder the rocker** from the board's back, with the board screwed down and the rocker seated in the panel.
    Then push the FFC's end into the straight bore from the underside (lay it in the groove in the corner taper, push
    it up round the one bend into the slot); it comes out under the flange; latch it into J2 from the side

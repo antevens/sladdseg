@@ -48,7 +48,10 @@ def build():
         cut += Pos(0, s * SCREW_PITCH / 2, DECK_Z / 2) * Cylinder(SCREW_D / 2, DECK_Z + 2)
     cut += ffc_channel()
     cut += ring.pin_holes() + ring.riser_pocket()                                         # battery-free remote (D-50)
+    clip_relief, clip_hooks = ring.riser_clips()                                          # riser snap clips (D-91)
+    cut += clip_relief
     body -= cut
+    body += clip_hooks
     for kx, ky in KEY_POS:                                                                # locating pins
         body += Pos(kx, ky, DECK_Z + KEY_H / 2 - 0.01) * Cylinder(KEY_D / 2, KEY_H + 0.02)
     body += mount_bosses()                                                                # after the pocket cut

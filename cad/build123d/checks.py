@@ -847,6 +847,25 @@ def battery_free_checks(ins, tr):
     import backcover as bc
     import ring, assembly
     rp = ring.parts()
+    import insert as insm
+    relief, hooks = ring.riser_clips()
+    above = insm.magnet_recess() + ring.pin_holes() + slab(stadium(*POCKET_IN), SEAT_Z, PT + 5)
+    hit = Pos(0, 0, POCKET_WALL - 0.01) * relief & above
+    check(hit is None or hit.volume < 1e-4, f"riser clip relief slots {POCKET_WALL} mm or more under the steel recess, the "
+                                            f"pin holes and the remote pocket (D-91)")
+    fw, ft, hd, g = RISER_CLIP
+    w, hgt, _ = RISER
+    over = [round(min(abs(hb.bounding_box().max.X - (RISER_C[0] - w / 2)), abs(hb.bounding_box().min.X - (RISER_C[0] + w / 2)),
+                      abs(hb.bounding_box().min.Y - (RISER_C[1] + hgt / 2))), 2) for hb in hooks.solids()]
+    zc = max(hb.bounding_box().max.Z for hb in hooks.solids())
+    L = (SEAT_Z - POCKET_WALL) - min(hb.bounding_box().min.Z for hb in hooks.solids())
+    check(len(hooks.solids()) == len(RISER_CLIPS) and all(abs(o - hd) < 0.01 for o in over)
+          and abs(RISER_BOT - zc - RISER_CLIP_PLAY) < 1e-3,
+          f"riser clips {len(RISER_CLIPS)}: hooks {hd} mm under the riser's back face, catch {RISER_CLIP_PLAY} below it; "
+          f"fingers {ft} x {fw}, {L:.1f} mm free (bending strain at {hd} mm deflection {1.5 * ft * hd / L ** 2 * 100:.1f} %)")
+    for k in ("pins", "posts", "sleeves", "screws"):
+        r = hooks & rp[k]
+        check(r is None or r.volume < 1e-4, f"riser clip hooks clear the {k}")
     barrel = PIN_BARREL[0]
     lo, hi = PIN_WORK - PIN_TOL, PIN_WORK + PIN_TOL
     check(lo >= PIN_WH[0] - 1e-6 and hi <= PIN_WH[2] + 1e-6,
