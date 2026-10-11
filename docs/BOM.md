@@ -23,7 +23,7 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | J1 (ring) | FPC connector, 6 contacts, 0.5 mm | Hirose FH12-6S-0.5SH(55) | D-50: 5 V in from the FFC. |
 | C1 (ring) | 22 µF 10 V X5R 1206 | Samsung CL31A226KPHNNNE or equiv. | At J1 (moved from the wiring board). |
 | U1 (ring) | SHT45 | Sensirion SHT45-AD1B-R2 (DFN-4 1.5 × 1.5) | On the ring board under its vents, I²C from the MSR-2. |
-| C2, C4, R1 (ring, EU cap board) | 100 nF X7R 0402 ×2; 100 kΩ 1 % 0402 | any (Murata GRM155R71C104KA88D, Yageo RC0402FR-07100KL in the order lists) | SHT45 and ADAU7002 decoupling; I²S SD pull-down (the ADAU7002 tristates SDATA). |
+| C2, C4, R1 (ring, EU cap board) | 100 nF X7R 0402 ×2; 100 kΩ 1 % 0402 | any (Murata GRM155R71C104KA88J, Yageo RC0402FR-07100KL in the order lists) | SHT45 and ADAU7002 decoupling; I²S SD pull-down (the ADAU7002 tristates SDATA). |
 | C3 (ring, EU cap board) | 100 nF C0G 25 V ±5 % 1206, 3.2 × 1.6 × 1.8 max | KEMET C1206C104J3GACTU | D-85: the mic's decoupling; Knowles: no Class 2 dielectrics near the mic. 100 nF C0G starts at 1206 (KEMET, TDK, AVX, Murata catalogs). |
 | J2 (ring board, EU cap board) | CN2 mating plug, SlimStack 24 contacts, 0.4 mm, 2 rows | Molex 55909-2474 | D-82, D-89: mates the MSR-2's CN2, assumed Molex 51338-2474 (1.5 mm mated); land pattern from Molex SD-55909-003 rev J; contact map and pin 1 wait for Apollo's pinout. |
 | MK1 (ring, EU cap board) | PDM MEMS microphone, top port, 3 × 4 × 1 mm | Knowles SPK0641HT4H-1 (DigiKey lists it under Syntiant) | D-83: on the board, port end up under the face plate's sound column. |

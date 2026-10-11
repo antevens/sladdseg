@@ -90,7 +90,11 @@ class DigiKey:
 
     def lookup(self, pn):
         """dict(pn, stock, status, lead) or None when DigiKey does not list it."""
-        s, r = http(DK_DETAILS.format(urllib.parse.quote(pn, safe="")), headers=self.headers())
+        for attempt in range(3):                          # retry server errors
+            s, r = http(DK_DETAILS.format(urllib.parse.quote(pn, safe="")), headers=self.headers())
+            if s < 500:
+                break
+            time.sleep(2 * (attempt + 1))
         if s == 404:
             return None
         if s != 200 or not isinstance(r, dict) or "Product" not in r:
@@ -103,7 +107,7 @@ class DigiKey:
             status += " (end of life)"
         dkpn = next((v.get("DigiKeyProductNumber") for v in p.get("ProductVariations") or []
                      if v.get("DigiKeyProductNumber")), "")
-        return dict(pn=dkpn, stock=p.get("QuantityAvailable"), status=status.strip(),
+        return dict(pn=dkpn, stock=p.get("QuantityAvailable") or 0, status=status.strip(),
                     lead=f"{p['ManufacturerLeadWeeks']} wk" if p.get("ManufacturerLeadWeeks") else "")
 
 
@@ -144,6 +148,13 @@ class Mouser:
                     lead=hit.get("LeadTime") or "", avail=hit.get("Availability") or "")
 
 
+def dk_pn(mpn):
+    """DigiKey part number for an MPN: the DIGIKEY table's entry, the MPN where it has none (or an empty one), None
+    where DigiKey does not carry it."""
+    pn = ob.DIGIKEY.get(mpn, mpn)
+    return mpn if pn == "" else pn
+
+
 def active(status):
     s = (status or "").lower()
     return not any(k in s for k in INACTIVE)
@@ -167,7 +178,7 @@ def stock():
     rows, bad = [], []
     fmt = lambda x: "-" if x is None else f"{x['stock'] if x['stock'] is not None else '?'} {x['status']}".strip()
     for mpn, line in lines.items():
-        dkpn, mspn = ob.DIGIKEY.get(mpn, mpn), ob.MOUSER.get(mpn, mpn) or mpn
+        dkpn, mspn = dk_pn(mpn), ob.MOUSER.get(mpn, mpn) or mpn
         d = dk.lookup(dkpn) if dk.ok and dkpn is not None else None
         m = ms.lookup(mspn, mpn) if ms.ok and ob.MOUSER.get(mpn, "") is not None else None
         rule = parts_rule(d, m) if (dk.ok and ms.ok) else ("ok" if parts_rule(d, m) == "ok" else "partial")
@@ -200,7 +211,7 @@ def push(na, eu, primary, dry):
     for mpn, line in lines.items():
         n = ob.quantity(line, plates)
         ref = ("WP " + " ".join(sorted({r.split()[0] for r in line["refs"]})) + " " + line["refs"][0].split()[-1])[:48]
-        dkpn, mspn = ob.DIGIKEY.get(mpn, mpn), ob.MOUSER.get(mpn, "")
+        dkpn, mspn = dk_pn(mpn), ob.MOUSER.get(mpn, "")
         to_dk = dkpn is not None and (primary == "digikey" or mspn is None)
         if to_dk:
             dk_parts.append({"requestedPartNumber": dkpn, "manufacturerName": line["mfr"],

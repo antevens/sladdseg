@@ -9,7 +9,7 @@ Mouser Part Number,Mfr Part Number,Manufacturer,Quantity,Customer Part Number,De
 ,55909-2474,Molex,3,WP EU J2,"SlimStack plug 24 contacts, 0.4 mm, 2 rows, mating the MSR-2's CN2 (1/plate EU; EU cap board J2)"
 ,SPK0641HT4H-1,Knowles,4,WP EU MK1,"PDM MEMS microphone, top port, 1.6-3.6 V; SELECT low (1/plate EU; EU cap board MK1)"
 ,ADAU7002ACBZ-R7,Analog Devices,4,WP EU U2,"Stereo PDM to I2S converter, WLCSP-8 0.4 mm; CONFIG high = I2S (1/plate EU; EU cap board U2)"
-,GRM155R71C104KA88D,Murata,10,WP EU C4,Ceramic 100 nF 16 V X7R 0402 (2/plate EU; EU cap board C4; EU cap board C2)
+,GRM155R71C104KA88J,Murata,10,WP EU C4,Ceramic 100 nF 16 V X7R 0402 (2/plate EU; EU cap board C4; EU cap board C2)
 ,RC0402FR-07100KL,Yageo,10,WP EU R1,Resistor 100 kOhm 1 % 0402 (1/plate EU; EU cap board R1)
 ,C1206C104J3GACTU,KEMET,4,WP EU C3,"Microphone decoupling, C0G 25 V 1206 (1/plate EU; EU cap board C3)"
 ,SHT45-AD1B-R2,Sensirion,4,WP EU U1,"Humidity and temperature sensor, I2C 0x44 (1/plate EU; EU cap board U1)"

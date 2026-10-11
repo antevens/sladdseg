@@ -3,14 +3,14 @@ Digi-Key Part Number,Manufacturer Part Number,Manufacturer,Quantity,Customer Ref
 ,3403.0166.11,Schurter,4,WP EU F1,"SMD fuse UMT 250, time-lag 1 A 250 VAC (1/plate EU; EU mains board F1)"
 495-1467-1-ND,B72660M0271K093,TDK,4,WP EU RV1,"SMD varistor SIOV-CU4032K275G2K1, 275 VAC (1/plate EU; EU mains board RV1)"
 ,TMPS 03-105,Traco Power,3,WP EU PS1,"AC-DC module 85-264 VAC in, 5 V 600 mA, 25.4x25.4x16.3 mm, IEC/UL 62368-1, IEC 60335-1 (1/plate EU; EU mains board PS1)"
-,TSM-102-02-L-SV,Samtec,4,WP EU J3,"SMT pin header 1x2, 2.54 mm, 8.13 mm post, gold on post (1/plate EU; EU mains board J3)"
+SAM10268-ND,TSM-102-02-L-SV,Samtec,4,WP EU J3,"SMT pin header 1x2, 2.54 mm, 8.13 mm post, gold on post (1/plate EU; EU mains board J3)"
 612-SSW-102-01-G-S-ND,SSW-102-01-G-S,Samtec,3,WP EU J1,5 V from the mains board's header (1/plate EU; EU 5 V board J1)
 1276-1287-1-ND,CL31A226KPHNNNE,Samsung Electro-Mechanics,6,WP EU C1,"Ceramic 22 uF 10 V X5R 1206, 1.8 mm max (2/plate EU; EU 5 V board C1; EU cap board C1)"
 952-3124-ND,P70-2200045,Harwin,12,WP EU P1,"Spring pin with peg, 2 A (4/plate EU; EU 5 V board P1; EU 5 V board P2; EU 5 V board P3; EU 5 V board P4)"
-,55909-2474,Molex,3,WP EU J2,"SlimStack plug 24 contacts, 0.4 mm, 2 rows, mating the MSR-2's CN2 (1/plate EU; EU cap board J2)"
+WM3787CT-ND,55909-2474,Molex,3,WP EU J2,"SlimStack plug 24 contacts, 0.4 mm, 2 rows, mating the MSR-2's CN2 (1/plate EU; EU cap board J2)"
 6017-SPK0641HT4H-1CT-ND,SPK0641HT4H-1,Knowles,4,WP EU MK1,"PDM MEMS microphone, top port, 1.6-3.6 V; SELECT low (1/plate EU; EU cap board MK1)"
 ,ADAU7002ACBZ-R7,Analog Devices,4,WP EU U2,"Stereo PDM to I2S converter, WLCSP-8 0.4 mm; CONFIG high = I2S (1/plate EU; EU cap board U2)"
-490-3261-1-ND,GRM155R71C104KA88D,Murata,10,WP EU C4,Ceramic 100 nF 16 V X7R 0402 (2/plate EU; EU cap board C4; EU cap board C2)
+490-6328-1-ND,GRM155R71C104KA88J,Murata,10,WP EU C4,Ceramic 100 nF 16 V X7R 0402 (2/plate EU; EU cap board C4; EU cap board C2)
 311-100KLRCT-ND,RC0402FR-07100KL,Yageo,10,WP EU R1,Resistor 100 kOhm 1 % 0402 (1/plate EU; EU cap board R1)
 ,C1206C104J3GACTU,KEMET,4,WP EU C3,"Microphone decoupling, C0G 25 V 1206 (1/plate EU; EU cap board C3)"
 1649-SHT45-AD1B-R2CT-ND,SHT45-AD1B-R2,Sensirion,4,WP EU U1,"Humidity and temperature sensor, I2C 0x44 (1/plate EU; EU cap board U1)"

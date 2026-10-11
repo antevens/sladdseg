@@ -9,7 +9,7 @@ Mouser Part Number,Mfr Part Number,Manufacturer,Quantity,Customer Part Number,De
 ,CL31A226KPHNNNE,Samsung Electro-Mechanics,11,WP EU NA C1,"Ceramic 22 uF 10 V X5R 1206 at J1 (1/plate NA, 2/plate EU; NA ring board C1; EU 5 V board C1; EU cap board C1)"
 ,55909-2474,Molex,6,WP EU NA J2,"SlimStack plug 24 contacts, 0.4 mm, 2 rows, mating the MSR-2's CN2 (1/plate NA, 1/plate EU; NA ring board J2; EU cap board J2)"
 ,SHT45-AD1B-R2,Sensirion,8,WP EU NA U1,"Humidity and temperature sensor, I2C 0x44 (1/plate NA, 1/plate EU; NA ring board U1; EU cap board U1)"
-,GRM155R71C104KA88D,Murata,20,WP EU NA C2,"Ceramic 100 nF 16 V X7R 0402 (2/plate NA, 2/plate EU; NA ring board C2; NA ring board C4; EU cap board C4; EU cap board C2)"
+,GRM155R71C104KA88J,Murata,20,WP EU NA C2,"Ceramic 100 nF 16 V X7R 0402 (2/plate NA, 2/plate EU; NA ring board C2; NA ring board C4; EU cap board C4; EU cap board C2)"
 ,SPK0641HT4H-1,Knowles,8,WP EU NA MK1,"PDM MEMS microphone, top port, 1.6-3.6 V; SELECT low (1/plate NA, 1/plate EU; NA ring board MK1; EU cap board MK1)"
 ,ADAU7002ACBZ-R7,Analog Devices,8,WP EU NA U2,"Stereo PDM to I2S converter, WLCSP-8 0.4 mm; CONFIG high = I2S (1/plate NA, 1/plate EU; NA ring board U2; EU cap board U2)"
 ,RC0402FR-07100KL,Yageo,10,WP EU NA R1,"Resistor 100 kOhm 1 % 0402 (1/plate NA, 1/plate EU; NA ring board R1; EU cap board R1)"

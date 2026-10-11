@@ -2,7 +2,7 @@ Item #,Designator,Qty,Manufacturer,Mfg Part #,Description / Value,Package/Footpr
 1,J1,1,Hirose,FH12-6S-0.5SH(55),"5V in (FFC) - FPC connector 0.5 mm, 6 contacts, slide lock",Hirose_FH12-6S-0.5SH_1x06-1MP_P0.50mm_Horizontal,SMD,Source this MPN exactly
 2,C1,1,Samsung Electro-Mechanics,CL31A226KPHNNNE,22uF 10V X5R - Ceramic 22 uF 10 V X5R 1206 at J1,C_1206_3216Metric,SMD,Source this MPN exactly
 3,U1,1,Sensirion,SHT45-AD1B-R2,"SHT45 - Humidity and temperature sensor, I2C 0x44",Sensirion_DFN-4_1.5x1.5mm_P0.8mm_SHT4x_NoCentralPad,SMD,Source this MPN exactly
-4,"C2,C4",2,Murata,GRM155R71C104KA88D,100nF - Ceramic 100 nF 16 V X7R 0402,C_0402_1005Metric,SMD,Source this MPN exactly
+4,"C2,C4",2,Murata,GRM155R71C104KA88J,100nF - Ceramic 100 nF 16 V X7R 0402,C_0402_1005Metric,SMD,Source this MPN exactly
 5,MK1,1,Knowles,SPK0641HT4H-1,"SPK0641HT4H-1 - PDM MEMS microphone, top port, 1.6-3.6 V; SELECT low",Knowles_SPK0641HT4H-1_3x4mm,SMD,Source this MPN exactly
 6,U2,1,Analog Devices,ADAU7002ACBZ-R7,"ADAU7002 - Stereo PDM to I2S converter, WLCSP-8 0.4 mm; CONFIG high = I2S",Analog_WLCSP-8_0.76x1.56mm_P0.4mm,SMD,Source this MPN exactly
 7,R1,1,Yageo,RC0402FR-07100KL,100k - Resistor 100 kOhm 1 % 0402,R_0402_1005Metric,SMD,Source this MPN exactly

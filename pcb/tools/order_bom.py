@@ -16,7 +16,7 @@ OUT = ROOT / "pcb" / "order"
 
 # generic passives ("any") ordered as these parts
 SUBST = {
-    "0402 X7R 100 nF 16 V": ("Murata", "GRM155R71C104KA88D", "Ceramic 100 nF 16 V X7R 0402"),
+    "0402 X7R 100 nF 16 V": ("Murata", "GRM155R71C104KA88J", "Ceramic 100 nF 16 V X7R 0402"),
     "0402 1% 100 kOhm": ("Yageo", "RC0402FR-07100KL", "Resistor 100 kOhm 1 % 0402"),
 }
 # hand-soldered small parts: half again as spares (at least 2); 0402 passives rounded up to tens
@@ -32,13 +32,15 @@ DIGIKEY = {
     "FH12-6S-0.5SH(55)": "HFJ106CT-ND",
     "S7081-42R": "952-1734-1-ND",
     "SHT45-AD1B-R2": "1649-SHT45-AD1B-R2CT-ND",
-    "GRM155R71C104KA88D": "490-3261-1-ND",
+    "GRM155R71C104KA88J": "490-6328-1-ND",             # KA88D: 0 at DigiKey (API 2026-10-11)
     "SPK0641HT4H-1": "6017-SPK0641HT4H-1CT-ND",           # DigiKey listing, 2026-10-11
     "RC0402FR-07100KL": "311-100KLRCT-ND",
     "TLV75533PDBVR": "296-50411-1-ND",
-    "TSM-102-02-L-SV": "",                     # TODO distributor PN (imports by MPN until then)
+    "TSM-102-02-L-SV": "SAM10268-ND",          # DigiKey API 2026-10-11 (bulk)
     "SSW-102-01-G-S": "612-SSW-102-01-G-S-ND",
     "P70-2200045": "952-3124-ND",
+    "55909-2474": "WM3787CT-ND",               # DigiKey lists it as 0559092474 (API 2026-10-11)
+    "25503": "36-25503-ND",                    # bare 25503 is ambiguous at DigiKey (API 2026-10-11)
 }
 # Mouser's own numbers where its BOM import does not match the MPN (search results 2026-10-09); None: not
 # carried by Mouser (import reported no match), those go to <name>_mouser_rest_digikey.csv
