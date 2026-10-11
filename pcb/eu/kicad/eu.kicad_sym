@@ -1345,7 +1345,7 @@
 		)
 		(embedded_fonts no)
 	)
-	(symbol "TMPS03-105"
+	(symbol "ZPI03S0500WC"
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -1357,7 +1357,7 @@
 				)
 			)
 		)
-		(property "Value" "TMPS03-105"
+		(property "Value" "ZPI03S0500WC"
 			(at 0 -6.35 0)
 			(effects
 				(font
@@ -1365,7 +1365,7 @@
 				)
 			)
 		)
-		(property "Footprint" "eu:Converter_ACDC_TRACO_TMPS03_THT"
+		(property "Footprint" "eu:Converter_ACDC_Zettler_ZPI03_THT"
 			(at 0 -8.89 0)
 			(effects
 				(font
@@ -1374,7 +1374,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://www.tracopower.com/sites/default/files/products/datasheets/tmps03_datasheet.pdf"
+		(property "Datasheet" "https://www.zettlermagnetics.com/media/pdfs/magnetics/datasheets/ZPI03SXX00WC.pdf"
 			(at 0 -10.16 0)
 			(effects
 				(font
@@ -1383,7 +1383,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Traco TMPS 03-105 AC-DC module, 5 V 600 mA, 3 W, 1 x 1 in"
+		(property "Description" "Zettler ZPI03S0500WC AC-DC module, 5 V 600 mA, 3 W, 25 x 25 mm"
 			(at 0 0 0)
 			(effects
 				(font
@@ -1392,7 +1392,7 @@
 				(hide yes)
 			)
 		)
-		(property "ki_keywords" "AC-DC module Traco"
+		(property "ki_keywords" "AC-DC module Zettler"
 			(at 0 0 0)
 			(effects
 				(font
@@ -1401,7 +1401,7 @@
 				(hide yes)
 			)
 		)
-		(property "ki_fp_filters" "Converter*ACDC*TRACO*TMPS*"
+		(property "ki_fp_filters" "Converter*ACDC*Zettler*ZPI03*"
 			(at 0 0 0)
 			(effects
 				(font
@@ -1410,7 +1410,7 @@
 				(hide yes)
 			)
 		)
-		(symbol "TMPS03-105_0_1"
+		(symbol "ZPI03S0500WC_0_1"
 			(rectangle
 				(start -7.62 5.08)
 				(end 7.62 -5.08)
@@ -1564,11 +1564,11 @@
 				)
 			)
 		)
-		(symbol "TMPS03-105_1_1"
+		(symbol "ZPI03S0500WC_1_1"
 			(pin power_in line
 				(at -10.16 2.54 0)
 				(length 2.54)
-				(name "AC(L)"
+				(name "AC/L"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -1586,7 +1586,7 @@
 			(pin power_in line
 				(at -10.16 -2.54 0)
 				(length 2.54)
-				(name "AC(N)"
+				(name "AC/N"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -1601,11 +1601,10 @@
 					)
 				)
 			)
-			(pin no_connect line
-				(at -7.62 0 0)
+			(pin power_out line
+				(at 10.16 2.54 180)
 				(length 2.54)
-				(hide yes)
-				(name "NC"
+				(name "V+"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -1621,27 +1620,9 @@
 				)
 			)
 			(pin power_out line
-				(at 10.16 2.54 180)
-				(length 2.54)
-				(name "+Vout"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "5"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin power_out line
 				(at 10.16 -2.54 180)
 				(length 2.54)
-				(name "-Vout"
+				(name "V-"
 					(effects
 						(font
 							(size 1.27 1.27)

@@ -44,6 +44,7 @@ DIGIKEY = {
     "25503": "36-25503-ND",                    # bare 25503 is ambiguous at DigiKey (API 2026-10-11)
     "RA412C1100": "EG5628-ND",                 # DigiKey API 2026-10-11 (584, 9 wk)
     "221-412": "2946-221-412-ND",              # DigiKey API 2026-10-11 (bulk)
+    "ZPI03S0500WC": "3388-ZPI03S0500WC-ND",    # DigiKey API 2026-10-11 (tube, 142; D-100)
     "ADAU7002ACBZ-R7": "505-ADAU7002ACBZ-R7CT-ND",   # cut tape (DigiKey cart, API 2026-10-11)
     "GRM3195C1H104JA05D": "490-GRM3195C1H104JA05DCT-ND",   # DigiKey API 2026-10-11 (D-98)
     "05-06-A-0152-A-4-06-4-G": "2073-05-06-A-0152-A-4-06-4-G-ND",   # DigiKey API 2026-10-11 (D-98)
@@ -51,7 +52,6 @@ DIGIKEY = {
 # Mouser's own numbers where its BOM import does not match the MPN (search results 2026-10-09); None: not
 # carried by Mouser (import reported no match), those go to <name>_mouser_rest_digikey.csv
 MOUSER = {
-    "TMPS 03-105": "495-TMPS03-105",
     "1802.2504": "979-1802.2504",               # in stock 2026-10-11 (01802.2504-03: non-stocked)
     "TSM-102-02-L-SV": "",                     # TODO distributor PN (imports by MPN until then)
     "2604-3102": None,

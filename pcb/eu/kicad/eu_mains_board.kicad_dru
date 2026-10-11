@@ -27,12 +27,8 @@
     (constraint clearance (min 8.0mm))
     (constraint creepage (min 8.0mm)))
 
-(rule "Mains to the PSU's NC pin (DC end) >= 8.0 mm"
-    (condition "(A.NetClass == 'Mains_L' || A.NetClass == 'Mains_N') && B.NetName == 'unconnected-(PS1-NC-Pad3)'")
-    (constraint clearance (min 8.0mm)))
-
 # Exception (AGENTS.md hard constraint 3): pins of one rated part keep the part's own spacing
-# (TMPS 03 3 kVAC reinforced, WAGO 2604 400 V III/2, Marquardt 1802.2504, UMT 250 fuse, CU4032 varistor).
+# (Zettler ZPI03 3.6 kVAC I/P-O/P, WAGO 2604 400 V III/2, Marquardt 1802.2504, UMT 250 fuse, CU4032 varistor).
 (rule "Pins of one rated part"
     (condition "A.Type == 'Pad' && B.Type == 'Pad' && A.Parent.Reference == B.Parent.Reference")
     (constraint clearance (min 0.2mm)))

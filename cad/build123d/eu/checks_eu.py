@@ -99,8 +99,8 @@ def layout():
             gap = max(abs(c1[0] - c2[0]) - (w1 + w2) / 2, abs(c1[1] - c2[1]) - (h1 + h2) / 2)
             check(gap >= 0.8, f"{names[a]} {gap:.2f} mm from the {names[b]}")
     x0, x1, ys, w = MB_SLOT
-    pin_out = MB_PSU_C[1] - 10.16                          # PSU output row (TMPS 03, datasheet)
-    pin_in = MB_PSU_C[1] + 10.16
+    pin_out = MB_PSU_C[1] - PSU_ROWS / 2                   # PSU output row (Zettler ZPI03, datasheet)
+    pin_in = MB_PSU_C[1] + PSU_ROWS / 2
     check(pin_out < ys - w / 2 - 1.0 and pin_in > ys + w / 2 + 1.0 and x1 - x0 >= PSU[0] + 6,
           f"relief slot under the PSU between its input row (y {pin_in:.1f}) and output row (y {pin_out:.1f}), "
           f"{x1 - x0:.0f} mm long")

@@ -16,7 +16,7 @@ of the lights; the PSU is fed from the switched side, so the rocker also turns t
 | J2 | WAGO 2604-3102 (as J1) | back | N_IN (house neutral), N_SW (to the lights) |
 | F1 | Schurter UMT 250, T1A 250 VAC | front | L_SW to L_F |
 | RV1 | TDK CU4032K275G2, 275 VAC | front | L_F to N_SW |
-| PS1 | Traco TMPS 03-105, 5 V 600 mA (IEC/UL 62368-1, IEC 60335-1; OVC II, PD2, reinforced) | back | inputs L_F / N_SW above the slot, outputs +5V / GND below it |
+| PS1 | Zettler ZPI03S0500WC, 5 V 600 mA (UL/EN 62368-1, EN 61558-2-16; I/P-O/P 3600 VAC; reinforced / OVC not stated: review, D-100) | back | inputs L_F / N_SW above the slot, outputs +5V / GND below it |
 | J3 | Samtec TSM-102-02-L-SV, SMT pin header 1x2, 2.54 mm, 8.13 mm post (no pin tails under the PSU) | front, 5 V island | +5V, GND |
 | MH1-MH3 | M2 holes on the cap's long bosses | - | - |
 

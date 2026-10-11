@@ -65,11 +65,12 @@ def mov_cu4032():
     return Pos(0, 0, 4.5 / 2) * Box(10.2, 8.0, 4.5)
 
 
-def tmps03():
-    """Traco TMPS 03 (datasheet rev. 2026-07-01): 25.4 x 25.4 x 16.3 body, pins 0.6 x 5.08."""
-    b = Pos(0, 0, 16.3 / 2) * Box(25.4, 25.4, 16.3)
-    for x, y in ((10.16, 10.16), (5.08, 10.16), (-10.16, -10.16), (0.0, -10.16), (10.16, -10.16)):
-        b += Pos(x, y, -5.08 / 2) * Cylinder(0.3, 5.08)
+def zpi03():
+    """Zettler ZPI03 (datasheet ZPI03SXX00WC, 2021-11-22): 25 x 25 x 16 body, pins 0.8 x 3.5 (PCB layout, top view;
+    the footprint's y down is the model's -y)."""
+    b = Pos(0, 0, 16.0 / 2) * Box(25.0, 25.0, 16.0)
+    for x, y in ((-7.5, -7.5), (7.5, -7.5), (2.5, 7.5), (-2.5, 7.5)):
+        b += Pos(x, y, -3.5 / 2) * Cylinder(0.4, 3.5)
     return b
 
 
@@ -114,9 +115,7 @@ MODELS = {
     "WAGO_2604-1106": (("na",), wago6, "wago/2604-1106.stp", ((90, 0, 90), (-14.8, 0, 0))),
     "Fuse_Schurter_UMT250": (("na", "eu"), fuse_umt250, None, None),
     "Varistor_TDK_CU4032": (("na", "eu"), mov_cu4032, None, None),
-    # Traco tmps03_3d_drawing.stp (tracopower.com/overview/tmps03, 3D drawings): body z 0..16 with the
-    # pins up, inputs along y at x -10.16: flip, turn the inputs onto the footprint's pin 1 / 2 row
-    "Converter_ACDC_TRACO_TMPS03_THT": (("eu",), tmps03, "tmps03_3d_drawing.stp", ((180, 0, -90), (0, 0, 16.0))),
+    "Converter_ACDC_Zettler_ZPI03_THT": (("eu",), zpi03, None, None),
     # WAGO 2604-3102.stp (wago.com, CADENAS download): poles along z (2.3, 7.3), first pin row at x 0, second
     # at x -8.2 (lever side), board at y 0, body +y: z -> X (poles' centre), x -> Y (body centre), y -> Z
     "WAGO_2604-3102_1x02_P5.00mm_Vertical": (("eu",), wago2_vertical, "wago/2604-3102.stp",

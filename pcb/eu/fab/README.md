@@ -22,7 +22,7 @@ depth is still to be tried in a real box (D-36).
 - **The outline has a routed relief slot under the PSU.** It is part of Edge.Cuts, not a drill: add
   "routed isolation slot in outline, do not omit" to the order remarks.
 - Three Ø2.2 holes for the cap's long bosses (M2), no copper within 1.0 mm.
-- Front (F): F1, RV1, J3 (SMD). Back (B): J1, J2 (WAGO 2604-3102), PS1 (Traco TMPS 03-105), THT.
+- Front (F): F1, RV1, J3 (SMD). Back (B): J1, J2 (WAGO 2604-3102), PS1 (Zettler ZPI03S0500WC), THT.
 - S1 (Marquardt 1802.2504) is **not fitted** by PCBWay: it snaps into the cap's cup first. **Solder it by
   hand only after the mains board is screwed onto the cap's bosses**: its holes are 5.2 mm plated slots
   (D-88), so the cup's panel cutout, not the board, locates the rocker.
@@ -40,7 +40,9 @@ depth is still to be tried in a real box (D-36).
 - [ ] Isolation targets on the mains board (L–N and L–L(switched) ≥ 3.5 mm, mains to the 5 V island
       ≥ 8.0 mm plus the slot) reviewed against IEC 60664-1 / 62368-1.
 - [ ] Thermal review of the load paths; choose the copper weight.
-- [ ] F1 T1A (Traco's recommended input fuse) against the branch circuit's prospective fault current
+- [ ] PS1 Zettler ZPI03S0500WC (D-100): its insulation class (reinforced?) and overvoltage category are not in the
+      datasheet (I/P-O/P 3600 VAC, UL/EN 62368-1): confirm with Zettler or its UL / CB file before mains use.
+- [ ] F1 T1A (Zettler's application circuit shows 0.5 A / 250 V) against the branch circuit's prospective fault current
       (UMT 250 breaking capacity).
 - [ ] WAGO 2604-3102 pin rows checked on a part (from WAGO's 3D model).
 - [ ] Header / socket stack: TSM-102-02-L-SV post 8.13 mm into the SSW socket (body 8.5 mm), 16.1 mm

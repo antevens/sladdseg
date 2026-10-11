@@ -1,10 +1,10 @@
-(footprint "Converter_ACDC_TRACO_TMPS03_THT"
+(footprint "Converter_ACDC_Zettler_ZPI03_THT"
 	(version 20241229)
 	(generator "gen_libs")
 	(generator_version "9.0")
 	(layer "F.Cu")
-	(descr "Traco TMPS 03 AC-DC module, 1 x 1 in, THT, https://www.tracopower.com/sites/default/files/products/datasheets/tmps03_datasheet.pdf")
-	(tags "AC-DC converter Traco TMPS")
+	(descr "Zettler ZPI03 AC-DC module, 25 x 25 mm, THT, https://www.zettlermagnetics.com/media/pdfs/magnetics/datasheets/ZPI03SXX00WC.pdf")
+	(tags "AC-DC converter Zettler ZPI03")
 	(property "Reference" "REF**"
 		(at 0 0 0)
 		(layer "F.SilkS")
@@ -15,7 +15,7 @@
 			)
 		)
 	)
-	(property "Value" "Converter_ACDC_TRACO_TMPS03_THT"
+	(property "Value" "Converter_ACDC_Zettler_ZPI03_THT"
 		(at 0 0 0)
 		(layer "F.Fab")
 		(effects
@@ -27,38 +27,32 @@
 	)
 	(attr through_hole)
 	(pad "1" thru_hole rect
-		(at 10.16 -10.16)
-		(size 1.5 1.5)
-		(drill 0.9)
+		(at -7.5 7.5)
+		(size 2.2 2.2)
+		(drill 1.2)
 		(layers "*.Cu" "*.Mask")
 	)
 	(pad "2" thru_hole circle
-		(at 5.08 -10.16)
-		(size 1.5 1.5)
-		(drill 0.9)
+		(at 7.5 7.5)
+		(size 2.2 2.2)
+		(drill 1.2)
 		(layers "*.Cu" "*.Mask")
 	)
 	(pad "3" thru_hole circle
-		(at -10.16 10.16)
-		(size 1.5 1.5)
-		(drill 0.9)
+		(at 2.5 -7.5)
+		(size 2.2 2.2)
+		(drill 1.2)
 		(layers "*.Cu" "*.Mask")
 	)
 	(pad "4" thru_hole circle
-		(at 0 10.16)
-		(size 1.5 1.5)
-		(drill 0.9)
-		(layers "*.Cu" "*.Mask")
-	)
-	(pad "5" thru_hole circle
-		(at 10.16 10.16)
-		(size 1.5 1.5)
-		(drill 0.9)
+		(at -2.5 -7.5)
+		(size 2.2 2.2)
+		(drill 1.2)
 		(layers "*.Cu" "*.Mask")
 	)
 	(fp_rect
-		(start -12.7 -12.7)
-		(end 12.7 12.7)
+		(start -12.75 -12.75)
+		(end 12.75 12.75)
 		(stroke
 			(width 0.1)
 			(type solid)
@@ -67,8 +61,8 @@
 		(layer "F.Fab")
 	)
 	(fp_rect
-		(start -12.95 -12.95)
-		(end 12.95 12.95)
+		(start -13 -13)
+		(end 13 13)
 		(stroke
 			(width 0.05)
 			(type solid)
@@ -76,7 +70,7 @@
 		(fill no)
 		(layer "F.CrtYd")
 	)
-	(model "${KIPRJMOD}/3d/Converter_ACDC_TRACO_TMPS03_THT.step"
+	(model "${KIPRJMOD}/3d/Converter_ACDC_Zettler_ZPI03_THT.step"
 		(offset
 			(xyz 0 0 0)
 		)

@@ -3,7 +3,7 @@ EG5628-ND,RA412C1100,E-Switch,1,WP EU S1,"Rocker switch DPST, 4.8 mm tabs into t
 ,2604-3102,WAGO,2,WP EU J1,"PCB terminal block, push-in, 2-pole, 4 mm2, entry 90 deg to the PCB, 400 V III/2 (2/plate EU; EU mains board J1; EU mains board J2)"
 ,3403.0166.11,Schurter,1,WP EU F1,"SMD fuse UMT 250, time-lag 1 A 250 VAC (1/plate EU; EU mains board F1)"
 495-1467-1-ND,B72660M0271K093,TDK,1,WP EU RV1,"SMD varistor SIOV-CU4032K275G2K1, 275 VAC (1/plate EU; EU mains board RV1)"
-,TMPS 03-105,Traco Power,1,WP EU PS1,"AC-DC module 85-264 VAC in, 5 V 600 mA, 25.4x25.4x16.3 mm, IEC/UL 62368-1, IEC 60335-1 (1/plate EU; EU mains board PS1)"
+3388-ZPI03S0500WC-ND,ZPI03S0500WC,Zettler Magnetics,1,WP EU PS1,"AC-DC module 90-264 VAC in, 5 V 600 mA, 25x25x16 mm, I/P-O/P 3600 VAC, UL/EN 62368-1 (1/plate EU; EU mains board PS1)"
 SAM10268-ND,TSM-102-02-L-SV,Samtec,1,WP EU J3,"SMT pin header 1x2, 2.54 mm, 8.13 mm post, gold on post (1/plate EU; EU mains board J3)"
 612-SSW-102-01-G-S-ND,SSW-102-01-G-S,Samtec,1,WP EU J1,5 V from the mains board's header (1/plate EU; EU 5 V board J1)
 399-12290-1-ND,C1206C226M4PACTU,KEMET,2,WP EU C1,"Ceramic 22 uF 16 V X5R 1206, 1.8 mm max (2/plate EU; EU 5 V board C1; EU cap board C1)"

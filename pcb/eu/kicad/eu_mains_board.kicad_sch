@@ -1179,320 +1179,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "eu:TMPS03-105"
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "PS"
-				(at 0 6.35 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "TMPS03-105"
-				(at 0 -6.35 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" "eu:Converter_ACDC_TRACO_TMPS03_THT"
-				(at 0 -8.89 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "https://www.tracopower.com/sites/default/files/products/datasheets/tmps03_datasheet.pdf"
-				(at 0 -10.16 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Traco TMPS 03-105 AC-DC module, 5 V 600 mA, 3 W, 1 x 1 in"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "AC-DC module Traco"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "Converter*ACDC*TRACO*TMPS*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "TMPS03-105_0_1"
-				(rectangle
-					(start -7.62 5.08)
-					(end 7.62 -5.08)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-				(polyline
-					(pts
-						(xy -5.334 -0.635)
-						(xy -2.794 -0.635)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -4.064 0.635)
-					(mid -4.699 0.2495)
-					(end -5.334 0.635)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -4.064 0.635)
-					(mid -3.429 1.0072)
-					(end -2.794 0.635)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 5.08)
-						(xy 0 3.81)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 2.54)
-						(xy 0 1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0)
-						(xy 0 -1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 -2.54)
-						(xy 0 -3.81)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.794 0.635)
-						(xy 3.302 0.635)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.794 -0.635)
-						(xy 5.334 -0.635)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 3.81 0.635)
-						(xy 4.318 0.635)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 4.826 0.635)
-						(xy 5.334 0.635)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "TMPS03-105_1_1"
-				(pin power_in line
-					(at -10.16 2.54 0)
-					(length 2.54)
-					(name "AC(L)"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at -10.16 -2.54 0)
-					(length 2.54)
-					(name "AC(N)"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin no_connect line
-					(at -7.62 0 0)
-					(length 2.54)
-					(hide yes)
-					(name "NC"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_out line
-					(at 10.16 2.54 180)
-					(length 2.54)
-					(name "+Vout"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_out line
-					(at 10.16 -2.54 180)
-					(length 2.54)
-					(name "-Vout"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "eu:Varistor"
 			(pin_numbers
 				(hide yes)
@@ -1676,6 +1362,301 @@
 						)
 					)
 					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "eu:ZPI03S0500WC"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "PS"
+				(at 0 6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "ZPI03S0500WC"
+				(at 0 -6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "eu:Converter_ACDC_Zettler_ZPI03_THT"
+				(at 0 -8.89 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://www.zettlermagnetics.com/media/pdfs/magnetics/datasheets/ZPI03SXX00WC.pdf"
+				(at 0 -10.16 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Zettler ZPI03S0500WC AC-DC module, 5 V 600 mA, 3 W, 25 x 25 mm"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "AC-DC module Zettler"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Converter*ACDC*Zettler*ZPI03*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "ZPI03S0500WC_0_1"
+				(rectangle
+					(start -7.62 5.08)
+					(end 7.62 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -5.334 -0.635)
+						(xy -2.794 -0.635)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -4.064 0.635)
+					(mid -4.699 0.2495)
+					(end -5.334 0.635)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -4.064 0.635)
+					(mid -3.429 1.0072)
+					(end -2.794 0.635)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 5.08)
+						(xy 0 3.81)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54)
+						(xy 0 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0)
+						(xy 0 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -2.54)
+						(xy 0 -3.81)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.794 0.635)
+						(xy 3.302 0.635)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.794 -0.635)
+						(xy 5.334 -0.635)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.81 0.635)
+						(xy 4.318 0.635)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 4.826 0.635)
+						(xy 5.334 0.635)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "ZPI03S0500WC_1_1"
+				(pin power_in line
+					(at -10.16 2.54 0)
+					(length 2.54)
+					(name "AC/L"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -10.16 -2.54 0)
+					(length 2.54)
+					(name "AC/N"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_out line
+					(at 10.16 2.54 180)
+					(length 2.54)
+					(name "V+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_out line
+					(at 10.16 -2.54 180)
+					(length 2.54)
+					(name "V-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2087,7 +2068,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "SMD fuse UMT 250, time-lag 1 A 250 VAC (TMPS 03 recommended input fuse T1.0 A / 250 V)"
+		(property "Description" "SMD fuse UMT 250, time-lag 1 A 250 VAC (Zettler's application circuit shows 0.5 A / 250 V: review, D-100)"
 			(at 157.48 91.44 0)
 			(effects
 				(font
@@ -2261,7 +2242,7 @@
 		(uuid "d0c51669-9bd6-5228-be75-52c414752880")
 	)
 	(symbol
-		(lib_id "eu:TMPS03-105")
+		(lib_id "eu:ZPI03S0500WC")
 		(at 238.76 91.44 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -2278,7 +2259,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "TMPS 03-105"
+		(property "Value" "ZPI03S0500WC"
 			(at 241.76 99.94 0)
 			(effects
 				(font
@@ -2287,7 +2268,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "eu:Converter_ACDC_TRACO_TMPS03_THT"
+		(property "Footprint" "eu:Converter_ACDC_Zettler_ZPI03_THT"
 			(at 238.76 91.44 0)
 			(effects
 				(font
@@ -2296,7 +2277,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://www.tracopower.com/sites/default/files/products/datasheets/tmps03_datasheet.pdf"
+		(property "Datasheet" "https://www.zettlermagnetics.com/media/pdfs/magnetics/datasheets/ZPI03SXX00WC.pdf"
 			(at 238.76 91.44 0)
 			(effects
 				(font
@@ -2305,7 +2286,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "AC-DC module 85-264 VAC in, 5 V 600 mA, 25.4x25.4x16.3 mm, IEC/UL 62368-1, IEC 60335-1"
+		(property "Description" "AC-DC module 90-264 VAC in, 5 V 600 mA, 25x25x16 mm, I/P-O/P 3600 VAC, UL/EN 62368-1 (D-100)"
 			(at 238.76 91.44 0)
 			(effects
 				(font
@@ -2314,7 +2295,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Traco Power"
+		(property "Manufacturer" "Zettler Magnetics"
 			(at 238.76 91.44 0)
 			(effects
 				(font
@@ -2323,7 +2304,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "TMPS 03-105"
+		(property "MPN" "ZPI03S0500WC"
 			(at 238.76 91.44 0)
 			(effects
 				(font
@@ -2340,9 +2321,6 @@
 		)
 		(pin "3"
 			(uuid "6799f2b8-70d1-5b1c-bcf5-837506e9590d")
-		)
-		(pin "5"
-			(uuid "830551d0-31df-513c-9b5a-b0847fead600")
 		)
 		(pin "4"
 			(uuid "f4a9a021-6c1b-5175-ae9b-fcf18d04f865")
@@ -2377,10 +2355,6 @@
 			(justify right bottom)
 		)
 		(uuid "c83a2ca2-a22d-5be3-ba11-8ced17291988")
-	)
-	(no_connect
-		(at 231.14 91.44)
-		(uuid "4c11e9d3-4fc0-5e6b-9b22-29b117f52f74")
 	)
 	(symbol
 		(lib_id "eu:+5V")
@@ -3292,7 +3266,7 @@
 		)
 		(uuid "d6b283d8-cb52-5618-aefa-1b834fd2aa23")
 	)
-	(text "EU mains board (docs/DESIGN.md D-36): S1 (Marquardt 1802.2504) breaks line and neutral of the\nload between the WAGO blocks J1 (L) and J2 (N). F1 / RV1 / PS1 (TMPS 03-105) from the switched side;\nPS1's outputs on the 5 V island (relief slot), J3 header to the 5 V board."
+	(text "EU mains board (docs/DESIGN.md D-36): S1 (Marquardt 1802.2504) breaks line and neutral of the\nload between the WAGO blocks J1 (L) and J2 (N). F1 / RV1 / PS1 (Zettler ZPI03S0500WC) from the switched side;\nPS1's outputs on the 5 V island (relief slot), J3 header to the 5 V board."
 		(exclude_from_sim no)
 		(at 25 180 0)
 		(effects

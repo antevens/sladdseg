@@ -18,7 +18,7 @@ NOTES = {
         "PS1": "Safety-critical, do not substitute. Back (B) side over the routed relief slot, sit flush",
         "J1": "Safety-critical, do not substitute. Back (B) side, levers towards the board centre",
         "J2": "Safety-critical, do not substitute. Back (B) side, levers towards the board centre",
-        "F1": "T1A 250 V per the Traco TMPS 03 datasheet's recommended input fuse - confirm before ordering",
+        "F1": "T1A 250 V; Zettler's application circuit shows 0.5 A / 250 V for the ZPI03 - confirm before ordering (D-100)",
         "RV1": "Safety-critical, do not substitute without review",
         "J3": "SMT header on the 5 V island (no pin tails under the PSU)",
     },

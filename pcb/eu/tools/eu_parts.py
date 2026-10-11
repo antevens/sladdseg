@@ -7,7 +7,7 @@ origin = box centre.
 Mains board (MB_*): round, at the rocker's PCB seat. The rocker (Marquardt 1802.2504, DPST) breaks
 line and neutral of the load: L_IN -> L_SW and N_IN -> N_SW, between two WAGO 2604-3102 push-in
 blocks on the back (wires from the back of the box). L copper (pours) on F.Cu, N on B.Cu. F1 fuses
-the PSU feed from L_SW, RV1 clamps it; the PSU (Traco TMPS 03-105) on the back straddles a routed
+the PSU feed from L_SW, RV1 clamps it; the PSU (Zettler ZPI03S0500WC, D-100) on the back straddles a routed
 relief slot: inputs above it, outputs on the 5 V island below it, with a 2-pin header (J3).
 
 5 V board (WB_*): D-shaped, just under the cap, below the switch cup. A pin socket on its back (J1)
@@ -24,7 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "cad" / "build123d" / "eu"))
 from params_eu import (WB_R, WB_CUT_Y, PSU, WAGO_EU, WAGO_PITCH, WAGO_ROW, WAGO_ROW_OFF, MB_PSU_C,  # noqa: E402
-                       MB_WAGO_C, MB_SLOT, MB_HDR, MB_BOSS, MB_BOSS_D, MB_BOSS_CLR, SW_Y,
+                       MB_WAGO_C, MB_SLOT, PSU_ROWS, MB_HDR, MB_BOSS, MB_BOSS_D, MB_BOSS_CLR, SW_Y,
                        WB_MOUNT, DOMES, DOME_NOTCH_R, PINS, PIN_PAD_D, PIN_HOLE_D, PIN_FLANGE, BC_FINGERS,
                        SW_PIN_GRID, SW_PAD)
 
@@ -33,7 +33,7 @@ MAINS, LV = "eu_mains_board", "eu_5v_board"
 # silkscreen logos and the project URL: footprint, (x, y), side, rotation; URL (x, y, side)
 FP_ANT, FP_KICAD = "Ant_Logo_8mm_SilkScreen", "KiCad-Logo2_5mm_SilkScreen"
 URL = "github.com/antevens/smart-wallplate"
-BRAND = {"eu_mains_board": ([(FP_ANT, (-6.9, -10.1), "F", 0), (FP_KICAD, (8.9, -12.1), "F", 0)], (-0.4, 23.7, "B")),
+BRAND = {"eu_mains_board": ([(FP_ANT, (0.0, -9.95), "F", 0), (FP_KICAD, (15.0, -10.5), "F", 0)], (-0.4, 23.7, "B")),
          "eu_5v_board": ([(FP_ANT, (-9.9, -6.7), "B", 0), (FP_KICAD, (2.4, -5.7), "B", 0)], (-2.1, -12.6, "B"))}
 REV = "v0.4"
 REV_DATE = "2026-10-11"                    # title blocks
@@ -44,12 +44,12 @@ def uid(*names):
     return str(uuid.uuid5(NS, "/".join(names)))
 
 
-TMPS_DS = "https://www.tracopower.com/sites/default/files/products/datasheets/tmps03_datasheet.pdf"
+PSU_DS = "https://www.zettlermagnetics.com/media/pdfs/magnetics/datasheets/ZPI03SXX00WC.pdf"
 WAGO_DS = "https://www.wago.com/global/pcb-terminal-blocks-and-pluggable-connectors/pcb-terminal-block/p/2604-3102"
 UMT_DS = "https://us.schurter.com/bundles/snceschurter/epim/_ProdPool_/newDS/en/typ_UMT_250.pdf"
 CU_DS = "https://www.farnell.com/datasheets/2921094.pdf"
 
-FP_PSU = "Converter_ACDC_TRACO_TMPS03_THT"
+FP_PSU = "Converter_ACDC_Zettler_ZPI03_THT"
 FP_WAGO = "WAGO_2604-3102_1x02_P5.00mm_Vertical"
 FP_FUSE = "Fuse_Schurter_UMT250"
 FP_MOV = "Varistor_TDK_CU4032"
@@ -64,13 +64,10 @@ PIN_DS = ("https://content.harwin.com/asset/7e702b12-8f84-42b5-9282-d7e22f3466f3
           "DRG-02624-Technical-Drawing-Datasheet-P70-220-pdf.pdf")
 WAGO_PAD = (2.2, 2.2)                     # J1 / J2 pad, round, as the NA 2604 footprint; drill 1.3 (+0.1) DATASHEET
 WAGO_DRILL = 1.3
-PSU_PAD, PSU_DRILL = 1.5, 0.9             # TMPS pins Ø0.6 +-0.1 (DATASHEET): 0.9 hole, 0.3 annular ring
-# TMPS 03 pins, top view, body centre origin, KiCad y down (datasheet bottom view mirrored):
-# 1 AC(N), 2 AC(L) on one edge; 3 NC, 4 -Vout, 5 +Vout on the opposite edge (rows 20.32 apart)
-PSU_PINS = {"1": (10.16, -10.16), "2": (5.08, -10.16), "3": (-10.16, 10.16), "4": (0.0, 10.16),
-            "5": (10.16, 10.16)}
-
-PSU_PIN_NAMES = {"3": "NC"}
+PSU_PAD, PSU_DRILL = 2.2, 1.2             # Zettler pins Ø0.8 (ref): its PCB layout's Ø1.2 holes, 0.5 annular ring
+# Zettler ZPI03 pins, top view (the datasheet's PCB layout), body centre origin, KiCad y down: 1 AC/N, 2 AC/L
+# 15.0 apart on one row; 4 V-, 3 V+ 5.0 apart on the other, PSU_ROWS from it
+PSU_PINS = {"1": (-7.5, PSU_ROWS / 2), "2": (7.5, PSU_ROWS / 2), "3": (2.5, -PSU_ROWS / 2), "4": (-2.5, -PSU_ROWS / 2)}
 
 
 def notches(cut_y=None):
@@ -148,17 +145,17 @@ MAINS_PARTS = {
                desc="PCB terminal block, push-in, 2-pole, 4 mm2, entry 90 deg to the PCB, 400 V III/2: house neutral in, "
                     "switched neutral to the load", ds=WAGO_DS),
     "F1": dict(label="Schurter UMT250 T1A", sym="Fuse", fp=FP_FUSE, value="T1A 250V", nets={"1": "L_SW", "2": "L_F"},
-               pos=(14.0, -3.0, 0), side="F", mfr="Schurter", mpn="3403.0166.11",
-               desc="SMD fuse UMT 250, time-lag 1 A 250 VAC (TMPS 03 recommended input fuse T1.0 A / 250 V)",
+               pos=(15.0, -2.5, 0), side="F", mfr="Schurter", mpn="3403.0166.11",
+               desc="SMD fuse UMT 250, time-lag 1 A 250 VAC (Zettler's application circuit shows 0.5 A / 250 V: review, D-100)",
                ds=UMT_DS),
     "RV1": dict(label="TDK CU4032K275G2", sym="Varistor", fp=FP_MOV, value="CU4032K275G2", nets={"1": "L_F", "2": "N_SW"},
                 pos=(-17.0, -3.0, 90), side="F", mfr="TDK", mpn="B72660M0271K093",
                 desc="SMD varistor SIOV-CU4032K275G2K1, 275 VAC", ds=CU_DS),
-    "PS1": dict(sym="TMPS03-105", fp=FP_PSU, value="TMPS 03-105",
-                nets={"1": "N_SW", "2": "L_F", "4": "GND", "5": "+5V"}, pin_names=PSU_PIN_NAMES,
-                pos=(*MB_PSU_C, 0), side="B", mfr="Traco Power", mpn="TMPS 03-105",
-                desc="AC-DC module 85-264 VAC in, 5 V 600 mA, 25.4x25.4x16.3 mm, IEC/UL 62368-1, IEC 60335-1",
-                ds=TMPS_DS),
+    "PS1": dict(sym="ZPI03S0500WC", fp=FP_PSU, value="ZPI03S0500WC",
+                nets={"1": "N_SW", "2": "L_F", "3": "+5V", "4": "GND"},
+                pos=(*MB_PSU_C, 0), side="B", mfr="Zettler Magnetics", mpn="ZPI03S0500WC",
+                desc="AC-DC module 90-264 VAC in, 5 V 600 mA, 25x25x16 mm, I/P-O/P 3600 VAC, UL/EN 62368-1 (D-100)",
+                ds=PSU_DS),
     # SMT header (no pin tails under the PSU on the back); footprint origin between the posts, pin 1 post on MB_HDR
     "J3": dict(sym="Conn_01x02", fp=FP_HDR, value="TSM-102-02-L-SV", nets={"1": "+5V", "2": "GND"},
                pos=(MB_HDR[0], MB_HDR[1] - 1.27, 0), side="F", mfr="Samtec", mpn="TSM-102-02-L-SV",

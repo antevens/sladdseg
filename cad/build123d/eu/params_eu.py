@@ -14,7 +14,7 @@ the wall, z = 0 the wall surface, z < 0 inside the box (MAINS SIDE).
   magnet; a cup under the recess keeps the barrier's floor under it (D-72).
 - Two boards (D-36). The mains board, at the rocker's PCB seat, carries the rocker, two WAGO
   2604-3102 push-in blocks (L in / switched, N in / switched; wires enter from the back of the box),
-  fuse, MOV and the PSU (Traco TMPS 03-105) over a routed relief slot; the PSU's outputs land on a
+  fuse, MOV and the PSU (Zettler ZPI03S0500WC, D-100) over a routed relief slot; the PSU's outputs land on a
   5 V island cut off by the slot, with a pin header. The 5 V board, just under the cap, takes 5 V
   from that header through a pin socket and carries four spring pins through the cap: two onto gold
   pads under the cap board, two onto the back cover's pads (R9, R10). Both hang from bosses under the cap.
@@ -125,7 +125,9 @@ FRONT_PARTS = {"C1": (3.2, 1.6, 1.8)}      # 1206 capacitor on the 5 V board's f
 # ---- mains board (round, at the rocker's PCB seat) ----
 MB_T = 1.6
 MB_PSU_C = (0.0, -12.5)                   # PSU centre (on the back), inputs on its upper row
-PSU = (25.4, 25.4, 16.3)                  # DATASHEET Traco TMPS 03-105 body w, h, height above the board (rev. 2026-07-01)
+PSU = (25.5, 25.5, 16.5)                  # DATASHEET Zettler ZPI03S0500WC body 25.0 x 25.0 x 16.0 +-0.5, the maximum
+                                          # (ZPI03SXX00WC, issue 2021-11-22; D-100)
+PSU_ROWS = 15.0                           # DATASHEET Zettler: AC pin row to the output row (PCB layout)
 WAGO_EU = (12.6, 16.7, 21.3)              # DATASHEET WAGO 2604-3102 (3D model): body 12.4 wide, 0.1 off the poles' centre
                                           # (bound +-6.3 about it), depth, height above the board
 WAGO_PITCH = 5.0                          # DATASHEET pin spacing (poles)
@@ -137,8 +139,10 @@ S1_WAGO_PIN_GAP = 3.5                     # S1's slot pads to any WAGO pad, copp
 MB_WAGO_C = ((16.6, 7.5), (-16.6, 7.5))   # L block (right), N block (left), body centres on the back; poles
                                           # along y, upper pole in, lower pole switched (as the rocker's poles);
                                           # levers towards the board centre
-MB_SLOT = (-18.0, 18.0, -17.5, 2.0)       # routed relief slot under the PSU: x0, x1, y, width
-MB_HDR = (-5.0, -20.5)                    # 2-pin header on the 5 V island (front): pin 1 (+5V) here, pin 2 (GND) 2.54 below
+MB_SLOT = (-18.0, 18.0, -15.0, 2.0)       # routed relief slot under the PSU: x0, x1, y, width (between the fused line's
+                                          # track 5.2 under the AC row and the output row, D-100)
+MB_HDR = (8.5, -20.5)                     # 2-pin header on the 5 V island (front): pin 1 (+5V) here, pin 2 (GND) 2.54 below;
+                                          # beside the PSU's V+ (D-100)
 MB_BOSS = ((-17.5, 19.5), (17.5, 19.5), (-20.0, -12.0))  # mains board holes (M2) on long cap bosses: two beside
                                           # the switch cup, one through the 5 V board (the PSU end)
 MB_BOSS_D, MB_BOSS_CLR = 6.0, 0.5         # long boss diameter; hole round it in the 5 V board (each side)
