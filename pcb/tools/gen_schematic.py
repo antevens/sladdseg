@@ -78,7 +78,7 @@ def note(text, x, y):
 
 
 G = 2.54
-X = {"J1": 14 * G, "S1": 30 * G, "F1": 44 * G, "RV1": 54 * G, "PS1": 66 * G, "C1": 80 * G, "J2": 90 * G}
+X = {"J1": 14 * G, "S1": 30 * G, "F1": 44 * G, "RV1": 54 * G, "PS1": 66 * G, "P1": 78 * G, "P2": 84 * G, "J2": 92 * G}
 pwr_n = 0
 for ref, p in PARTS.items():
     pins = place(ref, p["sym"], X[ref], 36 * G, p["value"], p["fp"], p["ds"], p["desc"],

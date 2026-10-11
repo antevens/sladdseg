@@ -1,4 +1,4 @@
-"""Shared generators for the small KiCad projects (sensor flex, 5 V jumper, EU PSU board).
+"""Shared generators for the small KiCad projects (ring board, mic carrier, riser, cover flex, EU boards).
 
 Lib holds a project's library context: project directory, library name, a stable uuid
 function and its power nets. Sheet writes a flat schematic, Board builds a board through pcbnew.
@@ -153,8 +153,10 @@ def mm(v):
 
 
 def fillet(pts, r, closed):
-    """Corners of a polyline as tangent arcs: list of ("seg", a, b) / ("arc", a, mid, b)."""
+    """Corners of a polyline as tangent arcs: list of ("seg", a, b) / ("arc", a, mid, b). r: one radius, or one per
+    point."""
     n = len(pts)
+    radii = list(r) if isinstance(r, (list, tuple)) else [r] * n
     idx = range(n) if closed else range(1, n - 1)
     corners = {}
     for i in idx:
@@ -166,7 +168,7 @@ def fillet(pts, r, closed):
         turn = math.acos(max(-1.0, min(1.0, ux * vx + uy * vy)))
         if turn < math.radians(2):
             continue
-        t = min(r * math.tan(turn / 2), 0.45 * min(lu, lv))
+        t = min(radii[i] * math.tan(turn / 2), 0.45 * min(lu, lv))
         rr = t / math.tan(turn / 2)
         a = (p1[0] - ux * t, p1[1] - uy * t)
         b = (p1[0] + vx * t, p1[1] + vy * t)
@@ -359,7 +361,7 @@ def place_labels(board, items, size=LABEL_SIZE, th=LABEL_TH, margin=LABEL_MARGIN
 
 
 class Board:
-    def __init__(self, lib, name, layers, thickness, clearance, track, on_save=None):
+    def __init__(self, lib, name, layers, thickness, clearance, track, on_save=None, via_min=(0.5, 0.3)):
         self.lib = lib
         self.on_save = on_save                                # rewrites the .kicad_pro (SaveBoard resets it)
         self.name = name
@@ -372,7 +374,8 @@ class Board:
         ds.m_MinClearance = P.FromMM(min(clearance, 0.1))
         ds.m_TrackMinWidth = P.FromMM(min(track, 0.1))
         ds.m_HoleClearance = P.FromMM(0.2)
-        ds.m_ViasMinSize = P.FromMM(0.5)
+        ds.m_ViasMinSize = P.FromMM(via_min[0])
+        ds.m_MinThroughDrill = P.FromMM(via_min[1])
         ds.m_ViasMinAnnularWidth = P.FromMM(0.1)
         nc = ds.m_NetSettings.GetDefaultNetclass()
         nc.SetClearance(P.FromMM(clearance))
@@ -488,7 +491,7 @@ class Board:
         fp.SetOrientationDegrees(rot)
         for pd in fp.Pads():
             num = pd.GetNumber()
-            if not num:                                  # unnumbered pad (NPTH hole): no net
+            if not num or (num == "MP" and "MP" not in p["nets"]):   # NPTH hole, mounting pad: no net
                 continue
             net = p["nets"].get(num)
             if not net:                                  # unused pin: KiCad's name for its schematic net
@@ -520,11 +523,11 @@ class Board:
             t.SetNet(self.net(net))
             self.b.Add(t)
 
-    def via(self, net, x, y):
+    def via(self, net, x, y, d=0.6, drill=0.3):
         v = P.PCB_VIA(self.b)
         v.SetPosition(V(x, y))
-        v.SetWidth(P.FromMM(0.6))
-        v.SetDrill(P.FromMM(0.3))
+        v.SetWidth(P.FromMM(d))
+        v.SetDrill(P.FromMM(drill))
         v.SetNet(self.net(net))
         self.b.Add(v)
 

@@ -1,8 +1,8 @@
 """Build the project-local libraries (kicad/wiring_board.kicad_sym and .pretty).
 
-Stock KiCad parts are copied so the project is self-contained. Three footprints
+Stock KiCad parts are copied so the project is self-contained. Four footprints
 are built from datasheets: the Marquardt 1802.2504 rocker, the WAGO 2604-1106
-terminal block and the TDK CU4032 SMD varistor.
+terminal block, the TDK CU4032 SMD varistor and the Wurth WA-SMSI M2 spacer.
 """
 import copy
 import os
@@ -10,9 +10,10 @@ import shutil
 import sys
 from pathlib import Path
 from sexpr import loads, dumps, find, first, Sym, S
-from parts import (LIB, FP_ROCKER, FP_WAGO, FP_IRM, FP_FUSE, FP_MOV, FP_J2, FP_C1, FP_MH, FP_ANT, FP_KICAD,
+from parts import (LIB, FP_ROCKER, FP_WAGO, FP_IRM, FP_FUSE, FP_MOV, FP_J2, FP_POST, FP_MH, FP_ANT, FP_KICAD,
                    ANT_LOGO_H,
-                   MOUNT_D, POST_SHOULDER_D, POST_HEAD_D, WAGO_PAD, WAGO_ROW_PITCH, WAGO_BODY, ROCKER_DS, WAGO_DS, CU_DS, BOARD, PS1_PINS)
+                   MOUNT_D, STANDOFF_HEX_D, SCREW_HEAD_D, WAGO_PAD, WAGO_ROW_PITCH, WAGO_BODY, ROCKER_DS, WAGO_DS, CU_DS, BOARD, PS1_PINS,
+                   SMSI_DS, POST_HOLE, POST_PAD, POST_PASTE)
 
 _BASES = ["/usr/share/kicad", "/usr/local/share/kicad", "/opt/kicad/share/kicad",
           "/var/lib/flatpak/app/org.kicad.KiCad/current/active/files/share/kicad",
@@ -42,7 +43,7 @@ SYMBOLS = [
     ("Converter_ACDC", "IRM-03-5", "IRM-03-5"),
     ("Device", "Fuse", "Fuse"),
     ("Device", "Varistor", "Varistor"),
-    ("Device", "C", "C"),
+    ("Connector_Generic", "Conn_01x01", "Conn_01x01"),
     ("Connector", "Screw_Terminal_01x06", "Screw_Terminal_01x06"),
     ("Connector_Generic", "Conn_01x06", "Conn_01x06"),
     ("Switch", "SW_DPST", "SW_DPST_Marquardt"),
@@ -54,7 +55,6 @@ STOCK_FP = {
     FP_IRM: ("Converter_ACDC", FP_IRM),
     FP_FUSE: ("Fuse", FP_FUSE),
     FP_J2: ("Connector_FFC-FPC", FP_J2),
-    FP_C1: ("Capacitor_SMD", FP_C1),
     FP_KICAD: ("Symbol", FP_KICAD),
 }
 ART = Path(__file__).resolve().parents[1] / "art"
@@ -215,19 +215,60 @@ def fp_ant_logo():
 
 
 def fp_mount():
-    """Unplated hole for one of the insert's snap posts, with no copper: the post's shoulder
-    (front) and snap head (back) bear on bare laminate. The board keeps copper MOUNT_KO away."""
+    """Unplated hole for one of the insert's nylon standoffs, with no copper: the standoff's hex
+    (front) and the screw head (back) bear on bare laminate. The board keeps copper MOUNT_KO away."""
     circ = lambda layer, r, w: S("fp_circle", S("center", 0, 0), S("end", r, 0),
                                  S("stroke", S("width", w), S("type", Sym("solid"))), S("fill", Sym("no")),
                                  S("layer", layer))
     items = [S("pad", "", Sym("np_thru_hole"), Sym("circle"), S("at", 0, 0), S("size", MOUNT_D, MOUNT_D),
                S("drill", MOUNT_D), S("layers", "*.Cu", "*.Mask"))]
-    items += [circ("F.CrtYd", POST_SHOULDER_D / 2 + 0.25, 0.05),
-              circ("B.CrtYd", POST_HEAD_D / 2 + 0.25, 0.05),
-              circ("F.Fab", POST_SHOULDER_D / 2, 0.1)]
-    return _fp(FP_MH, f"Mounting hole {MOUNT_D} mm for the insert's snap posts, unplated, no copper "
-               "(docs/DESIGN.md D-28)", "mounting hole snap post",
+    items += [circ("F.CrtYd", STANDOFF_HEX_D / 2 + 0.25, 0.05),
+              circ("B.CrtYd", SCREW_HEAD_D / 2 + 0.25, 0.05),
+              circ("F.Fab", STANDOFF_HEX_D / 2, 0.1)]
+    return _fp(FP_MH, f"Mounting hole {MOUNT_D} mm for the insert's M3 nylon standoffs, unplated, no copper "
+               "(docs/DESIGN.md D-57)", "mounting hole standoff",
                "through_hole board_only exclude_from_pos_files exclude_from_bom", items)
+
+
+def _arc_pts(r, a0, a1, n=12):
+    from math import cos, sin, radians
+    return [(round(r * cos(radians(a0 + (a1 - a0) * i / n)), 4), round(r * sin(radians(a0 + (a1 - a0) * i / n)), 4))
+            for i in range(n + 1)]
+
+
+def _ring_pads(num, layers, ri, ro, web):
+    """Custom SMD pads forming a ring ri..ro round the origin: two half rings that meet (web 0) or four
+    sectors split by webs of width web. Each pad is anchored on its own sector."""
+    from math import asin, cos, sin, degrees, radians
+    a = degrees(asin(web / 2 / ri)) if web else 0.0
+    n, rm, anchor, out = (4, 90) if web else (2, 180), (ri + ro) / 2, min(0.5, ro - ri - 0.05), []
+    for k in range(n[0]):
+        a0, a1 = k * n[1] + a, (k + 1) * n[1] - a
+        cx, cy = round(rm * cos(radians((a0 + a1) / 2)), 4), round(rm * sin(radians((a0 + a1) / 2)), 4)
+        pts = _arc_pts(ro, a0, a1) + _arc_pts(ri, a1, a0)
+        prim = S("gr_poly", S("pts", *[S("xy", round(x - cx, 4), round(y - cy, 4)) for x, y in pts]),
+                 S("width", 0), S("fill", Sym("yes")))
+        out.append(S("pad", num, Sym("smd"), Sym("custom"), S("at", cx, cy), S("size", anchor, anchor),
+                     S("layers", *layers), S("options", S("clearance", Sym("outline")), S("anchor", Sym("circle"))),
+                     S("primitives", prim)))
+    return out
+
+
+def fp_post():
+    """Wurth WA-SMSI M2 SMT spacer, L 7 mm: unplated hole for the spigot (front mask open over the
+    ring only), solder pad ring in two halves, stencil ring in four sectors, per the datasheet's land pattern."""
+    circ = lambda layer, r, w: S("fp_circle", S("center", 0, 0), S("end", r, 0),
+                                 S("stroke", S("width", w), S("type", Sym("solid"))), S("fill", Sym("no")),
+                                 S("layer", layer))
+    items = [S("pad", "", Sym("np_thru_hole"), Sym("circle"), S("at", 0, 0), S("size", POST_HOLE, POST_HOLE),
+               S("drill", POST_HOLE), S("layers", "*.Cu", "B.Mask"))]
+    items += _ring_pads("1", ["F.Cu", "F.Mask"], POST_HOLE / 2, POST_PAD / 2, 0)
+    items += _ring_pads("", ["F.Paste"], POST_PASTE[0] / 2, POST_PASTE[1] / 2, POST_PASTE[2])
+    items += [circ("F.Fab", 4.35 / 2, 0.1), circ("F.SilkS", POST_PAD / 2 + 0.2, 0.12),
+              circ("F.CrtYd", POST_PAD / 2 + 0.25, 0.05)]
+    return _fp(FP_POST, f"Wurth WA-SMSI SMT steel spacer M2, L 7 mm, body 4.35 mm, spigot hole {POST_HOLE} mm "
+               f"unplated, pad {POST_PAD} mm, stencil ring {POST_PASTE[0]}/{POST_PASTE[1]} mm, {SMSI_DS}",
+               "spacer standoff SMT M2", "smd allow_soldermask_bridges", items)
 
 
 def model3d(name):
@@ -273,7 +314,7 @@ def build_footprints():
             first(fp, "attr").insert(1, Sym("board_only"))
         localize_models(fp, PRJ)
         (d / f"{new}.kicad_mod").write_text(dumps(fp) + "\n")
-    for fp in (fp_rocker(), fp_wago(), fp_mov(), fp_mount(), fp_ant_logo()):
+    for fp in (fp_rocker(), fp_wago(), fp_mov(), fp_mount(), fp_post(), fp_ant_logo()):
         (d / f"{fp[1]}.kicad_mod").write_text(dumps(fp) + "\n")
 
 

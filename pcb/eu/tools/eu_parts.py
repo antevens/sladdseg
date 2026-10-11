@@ -12,7 +12,9 @@ relief slot: inputs above it, outputs on the 5 V island below it, with a 2-pin h
 
 5 V board (WB_*): D-shaped, just under the cap, below the switch cup. A pin socket on its back (J1)
 takes +5V / GND from the header; two spring pins (P1, P2) on its front reach through the cap onto
-the sensor flex's pads (R9, R10). No mains on it.
+the cap board's pads (R9, R10, D-56), two more (P3, P4) onto the battery-free back cover's pads (D-54). All four
+are Harwin P70-2200045 at one working height (D-59).
+No mains on it.
 """
 import sys
 import uuid
@@ -23,7 +25,8 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "cad" / "build123d" / "eu"))
 from params_eu import (WB_R, WB_CUT_Y, WB_T, PSU, WAGO_EU, WAGO_PITCH, WAGO_ROW, WAGO_ROW_OFF, MB_T, MB_PSU_C,  # noqa: E402
                        MB_WAGO_C, MB_SLOT, MB_HDR, MB_BOSS, MB_BOSS_D, MB_BOSS_CLR, SW_Y,
-                       WB_MOUNT, DOMES, DOME_NOTCH_R, PINS, PIN_PAD_D, PIN_HOLE_D)
+                       WB_MOUNT, DOMES, DOME_NOTCH_R, PINS, PIN_PAD_D, PIN_HOLE_D, BC_FINGERS)
+sys.path.insert(0, str(ROOT / "cad" / "build123d"))
 
 LIB = "eu"
 MAINS, LV = "eu_mains_board", "eu_5v_board"
@@ -153,10 +156,10 @@ MAINS_PARTS = {
                 desc="AC-DC module 85-264 VAC in, 5 V 600 mA, 25.4x25.4x16.3 mm, IEC/UL 62368-1, IEC 60335-1",
                 ds=TMPS_DS),
     # SMT header (no pin tails under the PSU on the back); footprint origin between the posts, pin 1 post on MB_HDR
-    "J3": dict(sym="Conn_01x02", fp=FP_HDR, value="TSM-102-01-L-SV", nets={"1": "+5V", "2": "GND"},
-               pos=(MB_HDR[0], MB_HDR[1] - 1.27, 0), side="F", mfr="Samtec", mpn="TSM-102-01-L-SV",
-               label="Samtec TSM-102-01-L-SV",
-               desc="SMT pin header 1x2, 2.54 mm, 5.84 mm post, gold on post: 5 V to the 5 V board's pin socket "
+    "J3": dict(sym="Conn_01x02", fp=FP_HDR, value="TSM-102-02-L-SV", nets={"1": "+5V", "2": "GND"},
+               pos=(MB_HDR[0], MB_HDR[1] - 1.27, 0), side="F", mfr="Samtec", mpn="TSM-102-02-L-SV",
+               label="Samtec TSM-102-02-L-SV",
+               desc="SMT pin header 1x2, 2.54 mm, 8.13 mm post, gold on post: 5 V to the 5 V board's pin socket "
                     "(5 V island)", ds="https://suddendocs.samtec.com/catalog_english/tsm.pdf"),
 }
 MAINS_PARTS.update({f"MH{i + 1}": dict(sym="MountingHole", fp=FP_MH, value="M2", nets={}, pos=(*xy, 0), side="F",
@@ -172,10 +175,16 @@ LV_PARTS = {
                desc="Ceramic 22 uF 10 V X5R 1206, 1.8 mm max (or equivalent)", ds="https://www.samsungsem.com"),
     "P1": dict(label="Harwin P70-2200045 GND", sym="Conn_01x01", fp=FP_PIN, value="P70-2200045 GND", nets={"1": "GND"},
                pos=(*PINS[0], 0), side="F", mfr="Harwin", mpn="P70-2200045",
-               desc="Spring pin, 2 A, 7.1 mm working height: GND to the flex pad through the cap", ds=PIN_DS),
+               desc="Spring pin with peg, 2 A: GND to the cap board's pad through the cap", ds=PIN_DS),
     "P2": dict(label="Harwin P70-2200045 +5V", sym="Conn_01x01", fp=FP_PIN, value="P70-2200045 +5V", nets={"1": "+5V"},
                pos=(*PINS[1], 0), side="F", mfr="Harwin", mpn="P70-2200045",
-               desc="Spring pin, 2 A, 7.1 mm working height: +5 V to the flex pad through the cap", ds=PIN_DS),
+               desc="Spring pin with peg, 2 A: +5 V to the cap board's pad through the cap", ds=PIN_DS),
+    "P3": dict(label="Harwin P70-2200045 +5V", sym="Conn_01x01", fp=FP_PIN, value="P70-2200045 +5V", nets={"1": "+5V"},
+               pos=(*BC_FINGERS[0], 0), side="F", mfr="Harwin", mpn="P70-2200045",
+               desc="Spring pin with peg, 2 A: +5V onto the back cover's pad through the cap", ds=PIN_DS),
+    "P4": dict(label="Harwin P70-2200045 GND", sym="Conn_01x01", fp=FP_PIN, value="P70-2200045 GND", nets={"1": "GND"},
+               pos=(*BC_FINGERS[1], 0), side="F", mfr="Harwin", mpn="P70-2200045",
+               desc="Spring pin with peg, 2 A: GND onto the back cover's pad through the cap", ds=PIN_DS),
     "MH1": dict(sym="MountingHole", fp=FP_MH, value="M2", nets={}, pos=(*WB_MOUNT[0], 0), side="F",
                 mfr="-", mpn="-", desc="M2 to the cap boss", ds="", in_bom=False),
     "MH2": dict(sym="MountingHole", fp=FP_MH, value="M2", nets={}, pos=(*WB_MOUNT[1], 0), side="F",

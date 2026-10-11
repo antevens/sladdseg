@@ -1,0 +1,5 @@
+(version 1)
+# Mic carrier (low voltage only): FR4 0.8 mm, castellated edges.
+(rule "Board edge clearance"
+    (constraint edge_clearance (min 0.2mm))
+    (condition "!A.isPlated()"))

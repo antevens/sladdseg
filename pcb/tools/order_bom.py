@@ -2,7 +2,7 @@
 
 Usage: python3 pcb/tools/order_bom.py [NA_PLATES] [EU_PLATES]   (defaults 3 and 2)
 Writes pcb/order/{na,eu,all}_{digikey,mouser}.csv from the boards' part tables (parts.py, eu_parts.py,
-sensor_parts.py, eu_flex_parts.py). Lines merge by MPN; the quantity is the per-plate count times the plates plus
+sensor_parts.py, eu_capboard_parts.py) and the NA mechanical parts (EXTRA_NA). Lines merge by MPN; the quantity is the per-plate count times the plates plus
 spares. Parts without an MPN yet (the CN2 plug) are listed on stdout, not in the files.
 """
 import csv
@@ -50,7 +50,24 @@ MOUSER = {
     "2604-3102": None,
     "P70-2200045": None,
 }
-SMALL = ("0402", "1206", "SOT-23", "DFN", "PUI_", "S7081", "P70-", "FH12", "UMT250", "CU4032", "SMD")
+SMALL = ("0402", "1206", "SOT-23", "DFN", "PUI_", "S7081", "P70-", "FH12", "UMT250", "CU4032", "SMD", "WA-SMSI", "MillMax",
+         "WA-SBRIE")
+# NA parts that are not on a board (D-50, D-57): the spacer posts' studs, the board standoffs and the 5 V FFC
+EXTRA_NA = {
+    "ST1": dict(mfr="Wurth Elektronik", mpn="971100244", fp="WA-SBRIE", desc="Brass spacer stud M2 male-female, 10 mm, "
+                "4 mm hex: spacer post, wiring board P1 to the riser"),
+    "ST2": dict(mfr="Wurth Elektronik", mpn="971100244", fp="WA-SBRIE", desc="Brass spacer stud M2 male-female, 10 mm, "
+                "4 mm hex: spacer post, wiring board P2 to the riser"),
+    **{f"SO{i}": dict(mfr="Keystone", mpn="25503", fp="standoff", desc="Nylon M3 male-female hex standoff, 15 mm, "
+                      "5.0 mm hex: wiring board to the insert (D-57)") for i in range(1, 5)},
+    "W1": dict(mfr="Wurth Elektronik", mpn="687606152002", fp="FFC", desc="FFC 0.5 mm, 6 contacts, 152 mm, Type 1: "
+               "wiring board J2 to the ring board J1"),
+}
+# bought locally: no MPN in the lists (printed on stdout)
+LOCAL = {"NA": ["M2 x 5 pan head screw ISO 7045, steel: 2 per plate (riser onto the spacer posts)",
+                "heatshrink 6 mm (2:1), 15 mm: 2 per plate (over the spacer posts)",
+                "M3 x 8 slotted pan head screw ISO 1580, nylon: 4 per plate (wiring board onto the standoffs)"],
+         "EU": ["M2 x 6 thread-forming screw for plastics: 4 per plate (cap board into the carrier)"]}
 
 
 def tables():
@@ -62,10 +79,13 @@ def tables():
         finally:
             sys.path.pop(0)
     na, eu = load("pcb/tools", "parts"), load("pcb/eu/tools", "eu_parts")
-    sen, euf = load("pcb/sensor/tools", "sensor_parts"), load("pcb/sensor/tools", "eu_flex_parts")
-    return [("NA", "wiring board", na.PARTS), ("NA", "sensor flex", sen.FLEX_PARTS), ("NA", "cover flex", sen.COVER_PARTS),
+    sen, euc = load("pcb/sensor/tools", "sensor_parts"), load("pcb/sensor/tools", "eu_capboard_parts")
+    return [("NA", "wiring board", na.PARTS), ("NA", "ring board", sen.RING_PARTS),
+            ("NA", "mic carrier", sen.CARRIER_PARTS), ("NA", "riser", sen.RISER_PARTS), ("NA", "cover flex", sen.COVER_PARTS),
+            ("NA", "mechanical", EXTRA_NA),
             ("EU", "mains board", eu.MAINS_PARTS), ("EU", "5 V board", eu.LV_PARTS),
-            ("EU", "sensor flex", euf.PARTS), ("EU", "cover flex", sen.COVER_PARTS)]
+            ("EU", "cap board", euc.CAPBOARD_PARTS),
+            ("EU", "mic carrier", sen.CARRIER_PARTS), ("EU", "cover flex", sen.COVER_PARTS)]
 
 
 def short(desc, n=90):
@@ -147,6 +167,9 @@ def main():
     print(f"plates: NA {na}, EU {eu}")
     for o in sorted(set(open_parts)):
         print("not in the lists (no part yet):", o)
+    for v, items in LOCAL.items():
+        for o in items:
+            print(f"not in the lists (buy locally), {v}:", o)
 
 
 if __name__ == "__main__":

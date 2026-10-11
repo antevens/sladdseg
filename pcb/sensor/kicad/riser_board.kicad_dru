@@ -1,0 +1,4 @@
+(version 1)
+# Riser board (low voltage only): FR4 0.8 mm.
+(rule "Board edge clearance"
+    (constraint edge_clearance (min 0.3mm)))

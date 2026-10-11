@@ -1,6 +1,6 @@
-# Wiring board (v0.3)
+# Wiring board (v0.4)
 
-The single wiring board for the v0.3 plate (docs/DESIGN.md D-24, D-25, D-26). One board
+The single wiring board for the v0.4 plate (docs/DESIGN.md D-24, D-25, D-26). One board
 carries the house wiring terminal block, the
 emergency rocker that switches line and neutral, and the PSU that feeds the MSR-2.
 
@@ -27,9 +27,11 @@ the board centre. F faces the plate, B faces the box.
 - Pours that compete for copper have fixed priorities (line over neutral), so the fill is
   the same on every rebuild.
 - 5 V area: bottom right (X 7 to 19.5, Y -33.5 to -13), GND pour on F.
-- Mounting holes for the insert's snap posts (D-28), 2.6 mm, all unplated: MH1 (-21, 33.5),
-  MH2 (-21, -33.5), MH3 (21, 24.77), MH4 (21, -33.5). A rule area keeps all copper 2.75 mm
-  from each hole on both layers (the post's shoulder and snap head bear on bare laminate).
+- Mounting holes for the insert's nylon standoffs (D-57), 3.2 mm, all unplated: MH1 (-21, 33.5),
+  MH2 (-21, -33.5), MH3 (21, 24.77), MH4 (21, -33.5). A rule area keeps all copper 3.39 mm
+  from each hole on both layers (the standoff's hex and the screw head bear on bare laminate). At MH2 / MH4
+  the screw heads reach into PS1's courtyard margin, 1.35 mm clear of its body: a DRC rule allows it and
+  `make check` tests the heads against the board STEP.
   Board-only footprints, not in the BOM or centroid. Mains copper keeps 1.0 mm from holes.
 
 ## Parts
@@ -41,8 +43,8 @@ the board centre. F faces the plate, B faces the box.
 | PS1 | Mean Well AC-DC module, 5 V 600 mA | IRM-03-5 | B, under the slot | <https://www.meanwell.com/Upload/PDF/IRM-03/IRM-03-SPEC.PDF> |
 | F1 | Schurter UMT 250 SMD fuse, T1A 250 VAC | 3404.2416.22 | F, (-14.6, -23) | <https://us.schurter.com/bundles/snceschurter/epim/_ProdPool_/newDS/en/typ_UMT_250.pdf> |
 | RV1 | TDK SMD varistor 275 VAC | B72660M0271K093 (CU4032K275G2) | F, (-5.5, -22) | <https://www.farnell.com/datasheets/2921094.pdf> |
-| C1 | Samsung MLCC 22 uF 10 V X5R 1206 | CL31A226KPHNNNE | F, (13, -26) | <https://www.samsungsem.com> |
-| J2 | Hirose FH12 FPC connector, 6 contacts, 0.5 mm, slide lock, 5 V out to the flex jumper | FH12-6S-0.5SH(55) | F, (13, -19.5) | <https://www.hirose.com/product/en/products/FH12/FH12-6S-0.5SH(55)/> |
+| P1, P2 | Würth WA-SMSI SMT spacer M2, 7 mm (spacer posts for the riser, D-50, D-59, D-60) | 9774070243R | F, (9.85, -16.5), (16.65, -16.5) | <https://www.we-online.com/catalog/datasheet/9774070243R.pdf> |
+| J2 | Hirose FH12 FPC connector, 6 contacts, 0.5 mm, slide lock, 5 V out to the ring board's FFC | FH12-6S-0.5SH(55) | F, (13.5, -24.8), turned 90: FFC out to the right | <https://www.hirose.com/product/en/products/FH12/FH12-6S-0.5SH(55)/> |
 
 S1 data from the drawing:
 
@@ -63,8 +65,8 @@ S1 data from the drawing:
 | /N_IN | Mains_N | J1.3, S1.2 |
 | /N_SW | Mains_N | J1.2, S1.2a, PS1.3 (AC/N), RV1.2 |
 | /PE | PE | J1.1, J1.6, PE ring |
-| +5V | SELV | PS1.16, C1.1, J2.4–6 |
-| GND | SELV | PS1.14, C1.2, J2.1–3 |
+| +5V | SELV | PS1.16, P1, J2.2, J2.5 (mirror-symmetric pinout: an FFC flipped either way keeps the polarity) |
+| GND | SELV | PS1.14, P2, J2.1, J2.3, J2.4, J2.6 |
 
 S1 pin positions (front view): L_IN (-5.1, 19.5), L_SW (-5.1, 26.5), N_IN (5.1, 19.5),
 N_SW (5.1, 26.5). Pins 1 / 2 lie on the body's centre line, 1a / 2a 7 mm off it (drawing
@@ -126,7 +128,8 @@ Open:
   needs review against the branch circuit's prospective fault current.
 - RV1 pad gap: the datasheet's D = 10.1 mm does not match B + C + B; the larger gap
   is used.
-- C1 is a generic part; any 22 uF 10 V X5R 1206 fits.
+- The 22 uF output capacitor is on the ring board at J1 (D-50).
+- P1 / P2 carry the riser board and its 5 V: the WA-SBRIE studs' 5 mm male thread ends inside the 7 mm spacer, short of the board and the PSU behind it (`make check`).
 
 ## Silkscreen labels and 3D models (all boards)
 

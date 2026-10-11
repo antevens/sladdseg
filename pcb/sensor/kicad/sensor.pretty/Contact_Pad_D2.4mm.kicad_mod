@@ -3,7 +3,7 @@
 	(generator "gen_libs")
 	(generator_version "9.0")
 	(layer "F.Cu")
-	(descr "Gold pad under a spring pin (EU)")
+	(descr "Gold pad under a spring pin (EU cap board)")
 	(tags "pad target contact")
 	(property "Reference" "REF**"
 		(at 0 0 0)

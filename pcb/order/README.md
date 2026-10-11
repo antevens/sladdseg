@@ -6,7 +6,7 @@ plates; change with `make order NA_PLATES=4 EU_PLATES=1`.
 | File | Contents |
 | --- | --- |
 | `na_digikey.csv`, `na_mouser.csv` | NA plate: wiring board, sensor flex, back cover flex |
-| `eu_digikey.csv`, `eu_mouser.csv` | EU plate: mains board, 5 V board, EU sensor flex, back cover flex |
+| `eu_digikey.csv`, `eu_mouser.csv` | EU plate: mains board, 5 V board, EU cap board, back cover flex |
 | `all_digikey.csv`, `all_mouser.csv` | Both variants merged by part number |
 | `<name>_digikey_rest_mouser.csv` | Parts DigiKey does not carry (Marquardt 1802.2504): order these from Mouser with a DigiKey order |
 | `<name>_mouser_rest_digikey.csv` | Parts Mouser does not carry (WAGO 2604-3102, Harwin P70-2200045): order these from DigiKey with a Mouser order |

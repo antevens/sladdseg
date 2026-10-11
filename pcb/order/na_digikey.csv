@@ -3,12 +3,18 @@ Digi-Key Part Number,Manufacturer Part Number,Manufacturer,Quantity,Customer Ref
 1866-3020-ND,IRM-03-5,Mean Well,4,WP NA PS1,"AC-DC module 85-305 VAC in, 5 V 600 mA, 37x24x15 mm (1/plate NA; NA wiring board PS1)"
 486-3951-1-ND,3404.2416.22,Schurter,5,WP NA F1,"SMD fuse UMT 250, time-lag 1 A 250 VAC (1/plate NA; NA wiring board F1)"
 495-1467-1-ND,B72660M0271K093,TDK,5,WP NA RV1,"SMD varistor SIOV-CU4032K275G2K1, 275 VAC (1/plate NA; NA wiring board RV1)"
-1276-1287-1-ND,CL31A226KPHNNNE,Samsung Electro-Mechanics,5,WP NA C1,"Ceramic 22 uF 10 V X5R 1206, 1.8 mm max (1/plate NA; NA wiring board C1)"
-HFJ106CT-ND,FH12-6S-0.5SH(55),Hirose,5,WP NA J2,"FPC connector 0.5 mm, 6 contacts, slide lock (1/plate NA; NA wiring board J2)"
-952-1734-1-ND,S7081-42R,Harwin,27,WP NA J2,"SMT spring finger, gold, 4 A, working height 2.0 mm (6/plate NA; NA sensor flex J2; NA sensor flex J3; NA cover flex J1; NA cover flex J2; NA cover flex J3; NA cover flex J4)"
-1649-SHT45-AD1B-R2CT-ND,SHT45-AD1B-R2,Sensirion,5,WP NA U1,"Humidity and temperature sensor, I2C 0x44 (1/plate NA; NA sensor flex U1)"
-490-3261-1-ND,GRM155R71C104KA88D,Murata,10,WP NA C1,Ceramic 100 nF 16 V X7R 0402 (2/plate NA; NA sensor flex C1; NA sensor flex C2)
-668-DMM-4026-B-I2S-RCT-ND,DMM-4026-B-I2S-R,PUI Audio,5,WP NA MK1,"I2S MEMS microphone, bottom port, 1.62-3.63 V; LR low = left channel (1/plate NA; NA sensor flex MK1)"
-311-100KLRCT-ND,RC0402FR-07100KL,Yageo,10,WP NA R1,Resistor 100 kOhm 1 % 0402 (1/plate NA; NA sensor flex R1)
+,9774070243R,Wurth Elektronik,9,WP NA P1,"SMT steel spacer, internal thread M2, 7 mm, tin (2/plate NA; NA wiring board P1; NA wiring board P2)"
+HFJ106CT-ND,FH12-6S-0.5SH(55),Hirose,9,WP NA J2,"FPC connector 0.5 mm, 6 contacts, slide lock (2/plate NA; NA wiring board J2; NA ring board J1)"
+1276-1287-1-ND,CL31A226KPHNNNE,Samsung Electro-Mechanics,5,WP NA C1,Ceramic 22 uF 10 V X5R 1206 at J1 (1/plate NA; NA ring board C1)
+1649-SHT45-AD1B-R2CT-ND,SHT45-AD1B-R2,Sensirion,5,WP NA U1,"Humidity and temperature sensor, I2C 0x44 (1/plate NA; NA ring board U1)"
+490-3261-1-ND,GRM155R71C104KA88D,Murata,10,WP NA C2,Ceramic 100 nF 16 V X7R 0402 (2/plate NA; NA ring board C2; NA ring board C3)
+311-100KLRCT-ND,RC0402FR-07100KL,Yageo,10,WP NA R1,Resistor 100 kOhm 1 % 0402 (1/plate NA; NA ring board R1)
+,9774015243R,Wurth Elektronik,14,WP NA H1,"SMT steel spacer M2, 1.5 mm, tin (3/plate NA; NA ring board H1; NA ring board H2; NA ring board H3)"
+668-DMM-4026-B-I2S-RCT-ND,DMM-4026-B-I2S-R,PUI Audio,5,WP NA MK1,"I2S MEMS microphone, bottom port, 1.62-3.63 V; LR low = left channel (1/plate NA; NA mic carrier MK1)"
+952-3124-ND,P70-2200045,Harwin,9,WP NA J1,"SMT spring pin with peg, 2 A, gold (2/plate NA; NA riser J1; NA riser J2)"
+952-1734-1-ND,S7081-42R,Harwin,9,WP NA J3,"SMT spring finger, gold, 4 A, working height 2.0 mm (2/plate NA; NA cover flex J3; NA cover flex J4)"
 296-50411-1-ND,TLV75533PDBVR,Texas Instruments,5,WP NA U1,"LDO 3.3 V 500 mA, 1.45-5.5 V in, SOT-23-5 (1/plate NA; NA cover flex U1)"
 1276-1076-1-ND,CL05A105KP5NNNC,Samsung Electro-Mechanics,10,WP NA C3,"LDO input capacitor, 1 uF 10 V X5R 0402 (2/plate NA; NA cover flex C3; NA cover flex C4)"
+,971100244,Wurth Elektronik,9,WP NA ST1,"Brass spacer stud M2 male-female, 10 mm, 4 mm hex (2/plate NA; NA mechanical ST1; NA mechanical ST2)"
+,25503,Keystone,13,WP NA SO1,"Nylon M3 male-female hex standoff, 15 mm, 5.0 mm hex (4/plate NA; NA mechanical SO1; NA mechanical SO2; NA mechanical SO3; NA mechanical SO4)"
+,687606152002,Wurth Elektronik,4,WP NA W1,"FFC 0.5 mm, 6 contacts, 152 mm, Type 1 (1/plate NA; NA mechanical W1)"

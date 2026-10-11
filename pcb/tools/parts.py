@@ -8,7 +8,7 @@ import uuid
 NS = uuid.UUID("2b7f0c1e-4c1d-4f55-9b0e-3a8d6c2f1e07")
 LIB = "wiring_board"
 PROJECT = "wiring_board"
-REV = "v0.3"
+REV = "v0.4"
 
 
 def uid(*names):
@@ -20,6 +20,7 @@ WAGO_DS = "https://www.wago.com/global/pcb-terminal-blocks-and-pluggable-connect
 UMT_DS = "https://us.schurter.com/bundles/snceschurter/epim/_ProdPool_/newDS/en/typ_UMT_250.pdf"
 CU_DS = "https://www.farnell.com/datasheets/2921094.pdf"
 FH12_DS = "https://www.hirose.com/product/en/products/FH12/FH12-6S-0.5SH(55)/"
+SMSI_DS = "https://www.we-online.com/catalog/datasheet/9774070243R.pdf"
 ROCKER_DS = "Marquardt drawing 1802.2504 rev g, 2003-09-16 (K-drawing 18022504.03)"
 
 # Footprint names in the project library
@@ -29,10 +30,10 @@ FP_IRM = "Converter_ACDC_MeanWell_IRM-03-xx_THT"
 FP_FUSE = "Fuse_Schurter_UMT250"
 FP_MOV = "Varistor_TDK_CU4032"
 FP_J2 = "Hirose_FH12-6S-0.5SH_1x06-1MP_P0.50mm_Horizontal"
-FP_C1 = "C_1206_3216Metric"
+FP_POST = "Wurth_WA-SMSI_M2_SMT_Spacer_L7mm"
 FP_ANT = "Ant_Logo_8mm_SilkScreen"
 FP_KICAD = "KiCad-Logo2_5mm_SilkScreen"
-FP_MH = "MountingHole_2.6mm_NPTH"
+FP_MH = "MountingHole_3.2mm_M3_NPTH"
 
 # ref: symbol, footprint, value, pin -> net, placement (x, Y, rot_deg, side), bom
 PARTS = {
@@ -62,14 +63,19 @@ PARTS = {
     "RV1": dict(label="TDK CU4032K275G2", sym="Varistor", fp=FP_MOV, value="CU4032K275G2", nets={"1": "L_F", "2": "N_SW"},
                 pcb=(-5.5, -22.0, 90, "F"), mfr="TDK", mpn="B72660M0271K093",
                 desc="SMD varistor SIOV-CU4032K275G2K1, 275 VAC", ds=CU_DS),
-    "C1": dict(label="22uF 10V X5R 1206", sym="C", fp=FP_C1, value="22uF 10V X5R", nets={"1": "+5V", "2": "GND"},
-               pcb=(13.0, -26.0, 0, "F"), mfr="Samsung Electro-Mechanics", mpn="CL31A226KPHNNNE",
-               desc="Ceramic 22 uF 10 V X5R 1206, 1.8 mm max (or equivalent)", ds="https://www.samsungsem.com"),
-    # turned 180: the flex jumper enters from the top (towards the pass-through); pads 1-3 GND, 4-6 +5V
-    "J2": dict(label="Hirose FH12-6S", sym="Conn_01x06", fp=FP_J2, value="5V out (flex jumper)",
-               nets={"1": "GND", "2": "GND", "3": "GND", "4": "+5V", "5": "+5V", "6": "+5V"},
-               pcb=(13.0, -19.5, 180, "F"), mfr="Hirose", mpn="FH12-6S-0.5SH(55)",
-               desc="FPC connector 0.5 mm, 6 contacts, slide lock: 5 V to the flex jumper (D-27, R9)", ds=FH12_DS),
+    # spacer posts for the battery-free remote's spring pins (D-50): the riser board screws onto them
+    "P1": dict(label="Wurth WA-SMSI M2 L7", sym="Conn_01x01", fp=FP_POST, value="+5V post", nets={"1": "+5V"},
+               pcb=(9.85, -16.5, 0, "F"), mfr="Wurth Elektronik", mpn="9774070243R",
+               desc="SMT steel spacer, internal thread M2, 7 mm, tin: +5V to the riser board (D-50, D-59)", ds=SMSI_DS),
+    "P2": dict(label="Wurth WA-SMSI M2 L7", sym="Conn_01x01", fp=FP_POST, value="GND post", nets={"1": "GND"},
+               pcb=(16.65, -16.5, 0, "F"), mfr="Wurth Elektronik", mpn="9774070243R",
+               desc="SMT steel spacer, internal thread M2, 7 mm, tin: GND to the riser board (D-50, D-59)", ds=SMSI_DS),
+    # turned 90: the FFC leaves to the right, then up past the posts. Pinout mirror-symmetric (GND 1, 3, 4, 6;
+    # +5V 2, 5), so an FFC with contacts on either side, flipped end to end, keeps the polarity
+    "J2": dict(label="Hirose FH12-6S", sym="Conn_01x06", fp=FP_J2, value="5V out (FFC to the ring board)",
+               nets={"1": "GND", "2": "+5V", "3": "GND", "4": "GND", "5": "+5V", "6": "GND"},
+               pcb=(13.5, -24.8, 90, "F"), mfr="Hirose", mpn="FH12-6S-0.5SH(55)",
+               desc="FPC connector 0.5 mm, 6 contacts, slide lock: 5 V to the ring board FFC (D-50)", ds=FH12_DS),
 }
 
 # Silkscreen logos (board-only footprints) and the project URL, as on the author's other
@@ -81,15 +87,21 @@ LOGOS = {"LOGO1": (FP_ANT, (-15.5, 27.0), "F", 0), "LOGO2": (FP_KICAD, (15.6, 27
 URL = "github.com/antevens/smart-wallplate"
 URL_POS = (0.0, 14.6, "B")
 
-# Mounting holes for the insert's snap posts (D-28), front view; mirrored in cad params
-# (MOUNT_HOLES, checked by `make check`). All unplated, with no copper under the posts: a copper
-# keep-out round each hole (MOUNT_KO) on both layers, and the PE ring detours round MH1 and MH3
-# on the inside (PE_DETOURS), so earth continuity never depends on copper the posts press on, or
+# Mounting holes for the insert's nylon standoffs (D-57), front view; mirrored in cad params
+# (MOUNT_HOLES, checked by `make check`). All unplated, with no copper under the standoffs or the screw heads:
+# a copper keep-out round each hole (MOUNT_KO) on both layers, and the PE ring detours round MH1 and MH3
+# on the inside (PE_DETOURS), so earth continuity never depends on copper they press on, or
 # on vias. Top right is lowered so the insert boss clears the 5 V pass-through.
-MOUNT_D = 2.6
-POST_SHOULDER_D, POST_HEAD_D = 4.5, 3.2     # post shoulder on the front, snap head on the back
-MOUNT_KO = max(POST_SHOULDER_D, POST_HEAD_D) / 2 + 0.5   # copper keep-out radius round each hole
+MOUNT_D = 3.2                               # M3 clearance (ISO 273 fine)
+STANDOFF_HEX_D = 5.0 / 0.866                # Keystone 25503 5.0 mm hex across its corners (front)
+SCREW_HEAD_D = 5.6                          # Keystone 29341 M3 pan head, ISO 1580 maximum (back)
+MOUNT_KO = max(STANDOFF_HEX_D, SCREW_HEAD_D) / 2 + 0.5   # copper keep-out radius round each hole
 MOUNT = {"MH1": (-21.0, 33.5), "MH2": (-21.0, -33.5), "MH3": (21.0, 24.77), "MH4": (21.0, -33.5)}
+
+# WA-SMSI M2 land pattern (DATASHEET 9774070243R, the same as the L6 9774060243R): spigot hole, solder pad, stencil ring
+POST_HOLE = 3.0                             # non-plated through hole for the spigot (Ø2.8, 1.4 long: ends inside the 1.6 board)
+POST_PAD = 5.3                              # solder pad outer diameter (inner = the hole)
+POST_PASTE = (3.1, 5.2, 0.6)                # stencil ring inner / outer diameter, web width
 
 # PS1 on the back: target pad positions (front view). AC end left, DC end right.
 PS1_PINS = {"1": (-15.24, -12.5), "3": (-10.16, -12.5), "5": (15.24, -12.5),
@@ -146,7 +158,8 @@ PE_ARMS += [(lay, [(PE_PIN_X[1], _arm_y[0]), (_ring_r, _arm_y[0]), (_ring_r, _ar
 POUR_PRIO = {"L_IN": 3, "N_IN": 2, "L_SW": 3, "N_SW": 2}
 
 # Tracks: net -> [(layer, width, [(x, Y), ...])]
-VIAS = {"L_SW": [(-12.0, -28.4), (-9.0, -28.4)]}  # (x, y), 1.0 / 0.5 mm
+VIAS = {"L_SW": [(-12.0, -28.4), (-9.0, -28.4)],  # (x, y): 1.0 / 0.5 mm; or (x, y, diameter, drill)
+        "+5V": [(10.4, -24.05, 0.6, 0.3), (10.4, -25.55, 0.6, 0.3)]}   # J2.5 / J2.2 to B.Cu
 
 TRACKS = {
     # fused line: F1.2 (top) -> PS1.1, and F1.2 -> RV1.1 (bottom) round the right of F1
@@ -159,14 +172,14 @@ TRACKS = {
     # PSU feed: F1.1 -> vias to the L_SW pour on the back
     "L_SW": [("F.Cu", 0.8, [(-14.6, -27.25), (-13.0, -28.4), (-9.0, -28.4)])],
     # J1.6 and J1.1 (both pin rows) to the ring
-    "+5V": [("F.Cu", 0.8, [(10.16, -30.28), (10.16, -26.0), (11.53, -26.0)]),
-            ("F.Cu", 0.8, [(11.53, -26.0), (11.53, -22.6), (12.25, -22.6)]),
-            ("F.Cu", 0.3, [(11.75, -22.6), (12.75, -22.6)]),                       # bar under J2.4-6
-            ("F.Cu", 0.3, [(11.75, -22.6), (11.75, -20.85)]), ("F.Cu", 0.3, [(12.25, -22.6), (12.25, -20.85)]),
-            ("F.Cu", 0.3, [(12.75, -22.6), (12.75, -20.85)])],
-    "GND": [("F.Cu", 0.8, [(15.24, -30.28), (15.24, -26.0), (14.47, -26.0)]),
-            ("F.Cu", 0.8, [(14.47, -26.0), (14.47, -22.6), (13.75, -22.6)]),
-            ("F.Cu", 0.3, [(13.25, -22.6), (14.25, -22.6)]),                       # bar under J2.1-3
-            ("F.Cu", 0.3, [(13.25, -22.6), (13.25, -20.85)]), ("F.Cu", 0.3, [(13.75, -22.6), (13.75, -20.85)]),
-            ("F.Cu", 0.3, [(14.25, -22.6), (14.25, -20.85)])],
+    # PS1.16 -> P1 up the left (F, ends on the pad ring); J2.2 / J2.5 -> vias at their tails -> B.Cu -> PS1.16
+    "+5V": [("F.Cu", 0.8, [(10.16, -30.28), (8.5, -28.62), (8.5, -19.5), (9.4, -18.75)]),
+            ("F.Cu", 0.3, [(11.1, -24.05), (10.4, -24.05)]), ("F.Cu", 0.3, [(11.1, -25.55), (10.4, -25.55)]),
+            ("B.Cu", 0.4, [(10.4, -24.05), (10.4, -29.3), (10.16, -30.28)])],
+    # PS1.14 -> P2 up the right (F); J2.1 / 3 / 4 / 6 -> a bar left of the +5V vias -> the 5 V side pour
+    "GND": [("F.Cu", 0.8, [(15.24, -30.28), (17.0, -30.28), (18.6, -28.68), (18.6, -20.0), (17.45, -18.65)]),
+            ("F.Cu", 0.3, [(11.1, -23.55), (10.6, -23.05), (9.7, -23.05)]),
+            ("F.Cu", 0.3, [(11.1, -26.05), (10.6, -26.55), (9.7, -26.55)]),
+            ("F.Cu", 0.3, [(11.1, -24.55), (10.6, -24.8), (9.7, -24.8)]), ("F.Cu", 0.3, [(11.1, -25.05), (10.6, -24.8)]),
+            ("F.Cu", 0.3, [(9.7, -26.55), (9.7, -23.05)])],
 }

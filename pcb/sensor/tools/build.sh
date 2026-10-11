@@ -1,8 +1,9 @@
 #!/bin/bash
 #
-# Regenerate the sensor flex, the power jumper, the back cover flex and the EU sensor flex (docs/DESIGN.md D-27): libraries, projects,
-# schematics and boards, then run ERC and DRC on both and write the PCBWay fab files. The flex's
-# fab files are withheld while its CN2 mate and contact map are placeholders.
+# Regenerate the low-voltage boards (docs/DESIGN.md D-50): ring board, mic carrier, riser board, back cover
+# flex and the EU sensor flex: libraries, projects, schematics and boards, then run ERC and DRC on each and
+# write the PCBWay fab files. The ring board's and the EU cap board's / adapter's fab files are withheld while the CN2 mate and
+# contact map (and the EU socket / header parts) are placeholders; the cover flex's while its positions are REF / MEASURE.
 #
 # Usage: pcb/sensor/tools/build.sh
 # Environment: KICAD_PYTHON (python with pcbnew, default python3),
@@ -19,7 +20,7 @@ readonly REPO
 readonly PRJ="${SENSOR_DIR}/kicad"
 readonly FAB="${SENSOR_DIR}/fab"
 readonly OUT="${REPO}/build"
-readonly BOARDS=(sensor_flex power_jumper cover_flex eu_sensor_flex)
+readonly BOARDS=(ring_board mic_carrier riser_board cover_flex eu_cap_board)
 
 function err() {
   echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" >&2
@@ -81,10 +82,11 @@ function main() {
   "${CAD_PYTHON:-${REPO}/.venv/bin/python}" "${REPO}/pcb/tools/gen_3d.py"
   "$(kicad_python)" "${TOOLS}/gen_sensor.py"
   if ! check; then
-    err "ERC or DRC reported violations; see ${OUT}/sensor_flex_*.rpt and power_jumper_*.rpt"
+    err "ERC or DRC reported violations; see ${OUT}/<board>_erc.rpt and <board>_drc.rpt"
     exit 1
   fi
-  export_gerbers power_jumper "F.Cu,B.Cu,F.Mask,B.Mask,F.Silkscreen,B.Silkscreen,Edge.Cuts"
+  export_gerbers mic_carrier "F.Cu,B.Cu,F.Mask,B.Mask,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"
+  export_gerbers riser_board "F.Cu,B.Cu,F.Mask,B.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"
   if cover_confirmed; then
     export_gerbers cover_flex "F.Cu,F.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"
   else
@@ -92,13 +94,13 @@ function main() {
     err "cover_flex: positions are REF / MEASURE (sensor_parts.COVER_CONFIRMED); no fab files written"
   fi
   if cn2_confirmed; then
-    export_gerbers sensor_flex "F.Cu,F.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"
-    export_gerbers eu_sensor_flex "F.Cu,F.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"
+    export_gerbers ring_board "F.Cu,B.Cu,F.Mask,B.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"
   else
-    rm -rf "${FAB}/sensor_flex" "${FAB}/eu_sensor_flex"
-    err "sensor_flex, eu_sensor_flex: CN2 mate and contact map are placeholders (sensor_parts.CN2_CONFIRMED);" \
-      "no fab files written"
+    rm -rf "${FAB}/ring_board"
+    err "ring_board: CN2 mate and contact map are placeholders (sensor_parts.CN2_CONFIRMED); no fab files written"
   fi
+  rm -rf "${FAB}/eu_sensor_flex" "${FAB}/eu_cap_board" "${FAB}/eu_adapter"
+  err "eu_cap_board: the CN2 mate and contact map are placeholders (sensor_parts.CN2_CONFIRMED); no fab files written"
 }
 
 main "$@"

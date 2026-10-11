@@ -172,7 +172,7 @@ for ref, (name, (x, y), side, rot) in LOGOS.items():
         fp.Flip(fp.GetPosition(), P.FLIP_DIRECTION_LEFT_RIGHT)
     fps[ref] = fp
 
-# mounting holes for the insert's snap posts (board-only footprints, no symbol): unplated
+# mounting holes for the insert's nylon standoffs (board-only footprints, no symbol): unplated
 for ref, (x, y) in MOUNT.items():
     fp = P.FootprintLoad(lib_path, FP_MH)
     fp.SetFPID(P.LIB_ID(LIB, FP_MH))
@@ -257,7 +257,7 @@ for ref, (a0, a1) in PE_DETOURS.items():                     # ring detours roun
     inner = circle_pts(c, MOUNT_KO - 0.1, a1, a0, 24)
     zone("PE", ["F.Cu", "B.Cu"], outer + inner, prio=6, name=f"PE detour {ref}")
 for ref, c in MOUNT.items():
-    keepout(c, MOUNT_KO, f"no copper under the {ref} post")
+    keepout(c, MOUNT_KO, f"no copper under the {ref} standoff")
 zone("GND", ["F.Cu"], SELV_ZONE, prio=4, connection=P.ZONE_CONNECTION_THERMAL, name="5 V side")
 for net, lay, outline in POURS:
     zone(net, [lay], outline, prio=POUR_PRIO[net], name=f"{net} pour")
@@ -286,11 +286,11 @@ for a, b in zip(pts, pts[1:]):
         board.Add(v)
 
 for net, pts in VIAS.items():
-    for x, y in pts:
+    for x, y, d, drill in ((*q, 1.0, 0.5) if len(q) == 2 else q for q in pts):
         v = P.PCB_VIA(board)
         v.SetPosition(V(x, y))
-        v.SetWidth(P.FromMM(1.0))
-        v.SetDrill(P.FromMM(0.5))
+        v.SetWidth(P.FromMM(d))
+        v.SetDrill(P.FromMM(drill))
         v.SetNet(nets[net])
         board.Add(v)
 
@@ -428,5 +428,5 @@ if not ok_f:
 print("J1 pads (num, X, Y):", J1_PADS)
 for n in ("1", "3", "5", "14", "16"):
     print(f"PS1.{n} at", tuple(round(c, 2) for c in pad_xy(fps["PS1"], n)))
-for ref in ("S1", "F1", "RV1", "C1", "J2"):
+for ref in ("S1", "F1", "RV1", "P1", "P2", "J2"):
     print(ref, [(q.GetNumber(), tuple(round(c, 2) for c in mm(q.GetPosition()))) for q in fps[ref].Pads()])

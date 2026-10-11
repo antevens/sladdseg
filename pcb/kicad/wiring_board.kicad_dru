@@ -50,3 +50,9 @@
 (rule "Pins of one rated part"
     (condition "A.Type == 'Pad' && B.Type == 'Pad' && A.Parent.Reference == B.Parent.Reference")
     (constraint clearance (min 0.2mm)))
+
+# MH2 / MH4: the standoff screws' heads (Ø5.6, back) reach into PS1's courtyard margin (1.95 mm round its
+# body) but stay 1.35 mm clear of the body; `make check` tests the heads against the board STEP (D-57).
+(rule "Standoff screw heads in PS1's courtyard margin"
+    (condition "((A.Reference == 'MH2' || A.Reference == 'MH4') && B.Reference == 'PS1') || (A.Reference == 'PS1' && (B.Reference == 'MH2' || B.Reference == 'MH4'))")
+    (constraint courtyard_clearance (min -2mm)))

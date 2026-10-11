@@ -1,9 +1,11 @@
-"""Generate the sensor flex and power jumper KiCad projects in pcb/sensor/kicad/ (D-27).
+"""Generate the low-voltage boards' KiCad projects in pcb/sensor/kicad/ (D-50): ring board, mic carrier, riser
+board, back cover flex (D-35) and the EU sensor flex (D-30).
 
 Libraries, project and rules, schematics and boards, all from sensor_parts.py (which takes its
 geometry from cad/build123d/params.py). Run with the Python that ships pcbnew.
 """
 import copy
+from math import cos, radians, sin
 import json
 import sys
 from pathlib import Path
@@ -13,7 +15,7 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(1, str(HERE.parents[1] / "tools"))          # pcb/tools: sexpr + stock library lookup
 import pcbnew as P
 import sensor_parts as sp
-import eu_flex_parts as eu
+import eu_capboard_parts as eu
 from sexpr import loads, dumps, find, first, Sym, S
 import gen_libs as gl
 import kigen
@@ -24,12 +26,14 @@ LIB = sp.LIB
 POWER = ("+5V", "+3V3", "GND")
 
 SYMBOLS = [("Connector_Generic", "Conn_02x15_Odd_Even"), ("Connector_Generic", "Conn_01x01"),
-           ("Connector_Generic", "Conn_01x06"),
+           ("Connector_Generic", "Conn_01x06"), ("Connector_Generic", "Conn_02x03_Odd_Even"), ("Mechanical", "MountingHole"),
            ("Sensor_Humidity", "SHT4x"), ("Device", "C"), ("Device", "R"), ("Connector", "TestPoint"),
            ("Regulator_Linear", "TLV75533PDBV"),
            ("power", "+5V"), ("power", "+3V3"), ("power", "GND"), ("power", "PWR_FLAG")]
 STOCK_FP = {sp.FP_SHT: "Sensor_Humidity", sp.FP_C: "Capacitor_SMD", sp.FP_R: "Resistor_SMD",
-            sp.FP_SOT: "Package_TO_SOT_SMD"}
+            sp.FP_SOT: "Package_TO_SOT_SMD", sp.FP_C1206: "Capacitor_SMD", sp.FP_FH12: "Connector_FFC-FPC",
+            eu.FP_HOLE: "MountingHole"}
+NO_SILK = set()
 # DMM-4026-B-I2S-R pins (datasheet rev A) from the stock SPH0645LM4H symbol's pins, plus CONFIG
 MIC_PINS = {"1": ("5", "WS"), "2": ("1", "LR"), "3": ("4", "GND"), "4": ("6", "SCK"), "5": ("3", "VDD"),
             "6": ("7", "SD")}
@@ -125,25 +129,81 @@ def mic_symbol():
     return s
 
 
-def fp_plain_pad(name, w, h, descr):
-    """Bare gold (ENIG) pad, no paste: x = w, y = h."""
-    return gl._fp(name, descr, "pad target contact", "smd", [pad("1", 0, 0, w, h), courtyard(w + 0.25, h + 0.25)])
-
-
 def fp_round_pad(name, d, descr):
     """Bare gold (ENIG) round pad, no paste."""
     return gl._fp(name, descr, "pad target contact", "smd", [pad("1", 0, 0, d, d, shape="circle"),
                                                              courtyard(d + 0.25, d + 0.25)])
 
 
-def fp_fpc():
-    """Six exposed flex contacts at 0.5 mm pitch for a Hirose FH12 (FPC spec MEASURE); pin 1 at local +y
-    (board -Y)."""
-    n, pitch, (w, h) = 6, sp.FPC_PITCH, sp.FPC_PAD
-    items = [pad(str(i + 1), 0, round(((n - 1) / 2 - i) * pitch, 3), w, h) for i in range(n)]
-    items.append(courtyard(w + 0.25, (n - 1) * pitch + h + 0.25))
-    return gl._fp(sp.FP_FPC, "Flex contacts, 6 x 0.5 mm, for a Hirose FH12-6S (slide lock)", "FPC contacts",
-                  "smd", items)
+def fp_nut():
+    """Wurth WA-SMSI M2 L1.5 SMT spacer: land pattern as the wiring board's spacer posts (same datasheet family)."""
+    circ = lambda layer, r, w: S("fp_circle", S("center", 0, 0), S("end", r, 0),
+                                 S("stroke", S("width", w), S("type", Sym("solid"))), S("fill", Sym("no")),
+                                 S("layer", layer))
+    items = [S("pad", "", Sym("np_thru_hole"), Sym("circle"), S("at", 0, 0), S("size", sp.RING_NUT_HOLE, sp.RING_NUT_HOLE),
+               S("drill", sp.RING_NUT_HOLE), S("layers", "*.Cu", "B.Mask"))]
+    items += gl._ring_pads("1", ["F.Cu", "F.Mask"], sp.RING_NUT_HOLE / 2, sp.RING_NUT_PAD / 2, 0)
+    items += gl._ring_pads("", ["F.Paste"], 3.1 / 2, 5.2 / 2, 0.6)
+    items += [circ("F.Fab", 4.35 / 2, 0.1), circ("F.CrtYd", sp.RING_NUT_PAD / 2 + 0.25, 0.05)]
+    return gl._fp(sp.FP_NUT, f"Wurth WA-SMSI SMT steel spacer M2, L 1.5 mm (nut), hole {sp.RING_NUT_HOLE} mm unplated, "
+                  f"pad {sp.RING_NUT_PAD} mm, {sp.NUT_DS}", "spacer nut SMT M2", "smd allow_soldermask_bridges", items)
+
+
+def _carrier_pads():
+    """(number, x, y) of the six castellations: left column 1-3 top to bottom, right column 4-6 top to bottom."""
+    out = []
+    for col, nums in ((-1, ("1", "2", "3")), (1, ("4", "5", "6"))):
+        for k, n in enumerate(nums):
+            out.append((n, col * sp.CARRIER_W / 2, (1 - k) * sp.CARRIER_PITCH))
+    return out
+
+
+def fp_carrier():
+    """Mic carrier castellations: plated half-holes centred on the side edges, pads CARRIER_CAST[0] inwards (the
+    outer half is milled off with the edge). KiCad y runs down: room y -> -y."""
+    px, py, drill = sp.CARRIER_CAST
+    items = []
+    for n, x, y in _carrier_pads():
+        items.append(S("pad", n, Sym("thru_hole"), Sym("roundrect"), S("at", x, -y),
+                       S("size", px * 2, py), S("drill", drill), S("layers", "*.Cu", "*.Mask"),
+                       S("roundrect_rratio", 0.15), S("property", Sym("pad_prop_castellated"))))
+    w, h = sp.CARRIER_W, sp.CARRIER_H
+    items += [gl.rect(-w / 2, -h / 2, w / 2, h / 2, "F.Fab", 0.1), courtyard(w + 2 * px + 0.5, h + 0.5)]
+    return gl._fp(sp.FP_CARRIER, "Mic carrier castellations, 2 x 3, half-holes on the board edge", "castellated",
+                  "through_hole", items)
+
+
+def fp_carrier_land():
+    """Ring board land for the mic carrier: six pads centred on the carrier's side edges (y up = room)."""
+    lx, ly = sp.CARRIER_LAND
+    items = [pad(n, x, -y, lx, ly, ("F.Cu", "F.Paste", "F.Mask")) for n, x, y in _carrier_pads()]
+    w, h = sp.CARRIER_W, sp.CARRIER_H
+    items += [gl.rect(-w / 2, -h / 2, w / 2, h / 2, "F.Fab", 0.1), courtyard(w + lx + 0.5, h + 0.5)]
+    return gl._fp(sp.FP_CARRIER_LAND, "Land for the mic carrier's castellations (the window under the mic is on the "
+                  "board's Edge.Cuts)", "castellated land", "smd", items)
+
+
+def fp_post_pad():
+    """Plated M2 hole with a ring pad under the screw head, on both sides (the standoff's face on the back)."""
+    d, drill = sp.POST_PAD
+    items = [S("pad", "1", Sym("thru_hole"), Sym("circle"), S("at", 0, 0), S("size", d, d), S("drill", drill),
+               S("layers", "*.Cu", "*.Mask")),
+             S("fp_circle", S("center", 0, 0), S("end", d / 2 + 0.1, 0), S("stroke", S("width", 0.05),
+               S("type", Sym("solid"))), S("fill", Sym("no")), S("layer", "F.CrtYd"))]
+    return gl._fp(sp.FP_POST_PAD, f"M2 screw onto a spacer post: plated {drill} mm hole, {d} mm pad (pan head 4.0)",
+                  "M2 post pad", "through_hole", items)
+
+
+def fp_pin():
+    """Harwin P70-2200045 SMT spring pin with peg: recommended pad 2.2 over a 1.2 plated hole for the peg."""
+    d = sp.PIN_PAD_D
+    items = [S("pad", "1", Sym("thru_hole"), Sym("circle"), S("at", 0, 0), S("size", d, d), S("drill", sp.PIN_HOLE_D),
+               S("layers", "*.Cu", "*.Mask", "F.Paste")),
+             S("fp_circle", S("center", 0, 0), S("end", sp.PIN_FLANGE[0] / 2, 0), S("stroke", S("width", 0.1),
+               S("type", Sym("solid"))), S("fill", Sym("no")), S("layer", "F.Fab")),
+             courtyard(d + 0.5, d + 0.5)]
+    return gl._fp(sp.FP_PIN, f"Harwin P70-2200045 SMT spring pin with peg, pad {d} mm, hole {sp.PIN_HOLE_D} mm, "
+                  f"{sp.PIN_DS}", "spring pin pogo", "smd", items)
 
 
 def build_libs():
@@ -159,44 +219,50 @@ def build_libs():
         f.unlink()
     for name, lib in STOCK_FP.items():
         fp = gl.localize_models(loads((gl.FP_DIR / f"{lib}.pretty" / f"{name}.kicad_mod").read_text()), PRJ)
+        if name in NO_SILK:                                  # outline wider than the board it sits on
+            fp = [x for x in fp if not (isinstance(x, list) and x and x[0] in (Sym("fp_line"), "fp_line")
+                                        and any(isinstance(y, list) and y[:1] in ([Sym("layer")], ["layer"])
+                                                and "SilkS" in str(y[1]) for y in x))]
         (d / f"{name}.kicad_mod").write_text(dumps(fp) + "\n")
-    for fp in (fp_b2b(), fp_finger(), fp_mic(),
-               fp_plain_pad(sp.FP_TP_CONTACT, *sp.CONTACT_PAD, "Gold contact pad under a spring finger"),
-               fp_fpc(), fp_plain_pad(sp.FP_FLOOR_CONTACT, sp.BC_FLOOR_PAD[1], sp.BC_FLOOR_PAD[0],
-                                      "Gold pad under a back cover spring finger"),
-               fp_plain_pad(eu.FP_FLOOR_PAD, eu.E.EU_PAD_X[1] - eu.E.EU_PAD_X[0], eu.E.BC_FLOOR_PAD[1],
-                            "Gold pad under a back cover spring finger (EU floor, D-41)"),
-               fp_round_pad(eu.FP_PIN_PAD, eu.E.FLEX_PAD_D, "Gold pad under a spring pin (EU)")):
+    for fp in (fp_b2b(), fp_finger(), fp_mic(), fp_nut(), fp_carrier(), fp_carrier_land(), fp_pin(), fp_post_pad(),
+               fp_round_pad(sp.FP_PIN_PAD, sp.BC_PAD_D, "Gold pad under a spring pin (back cover flex)"),
+               fp_round_pad(eu.FP_PAD, eu.E.CB_PAD_D, "Gold pad under a spring pin (EU cap board)")):
         (d / f"{fp[1]}.kicad_mod").write_text(dumps(fp) + "\n")
     (PRJ / "fp-lib-table").write_text(
         f'(fp_lib_table\n\t(version 7)\n\t(lib (name "{LIB}")(type "KiCad")(uri "${{KIPRJMOD}}/{LIB}.pretty")'
-        '(options "")(descr "Sensor flex and power jumper footprints"))\n)\n')
+        '(options "")(descr "Low-voltage board footprints"))\n)\n')
     (PRJ / "sym-lib-table").write_text(
         f'(sym_lib_table\n\t(version 7)\n\t(lib (name "{LIB}")(type "KiCad")(uri "${{KIPRJMOD}}/{LIB}.kicad_sym")'
-        '(options "")(descr "Sensor flex and power jumper symbols"))\n)\n')
+        '(options "")(descr "Low-voltage board symbols"))\n)\n')
 
 
 # ============================== project + rules ==============================
 RULES = {
-    sp.FLEX: """(version 1)
-# Sensor flex (5 V side only): single-layer polyimide flex.
-(rule "Flex edge clearance"
-    (constraint edge_clearance (min 0.2mm)))
+    sp.RING: """(version 1)
+# Ring board (low voltage only): FR4 1.6 mm. Copper keep-out from the box opening: rule areas on the board.
+(rule "Board edge clearance"
+    (constraint edge_clearance (min 0.25mm)))
+""",
+    sp.CARRIER: """(version 1)
+# Mic carrier (low voltage only): FR4 0.8 mm, castellated edges.
+(rule "Board edge clearance"
+    (constraint edge_clearance (min 0.2mm))
+    (condition "!A.isPlated()"))
+""",
+    sp.RISER_B: """(version 1)
+# Riser board (low voltage only): FR4 0.8 mm.
+(rule "Board edge clearance"
+    (constraint edge_clearance (min 0.3mm)))
 """,
     sp.COVER: """(version 1)
 # Back cover flex (low voltage only): single-layer polyimide flex.
 (rule "Flex edge clearance"
     (constraint edge_clearance (min 0.2mm)))
 """,
-    eu.NAME: """(version 1)
-# EU sensor flex (low voltage only): single-layer polyimide flex.
-(rule "Flex edge clearance"
-    (constraint edge_clearance (min 0.2mm)))
-""",
-    sp.JUMPER: """(version 1)
-# Power jumper (5 V side only): single-layer polyimide flex.
-(rule "Flex edge clearance"
-    (constraint edge_clearance (min 0.2mm)))
+    eu.CAPBOARD: """(version 1)
+# EU cap board (low voltage only): FR4 1.6 mm in the cap's carrier.
+(rule "Board edge clearance"
+    (constraint edge_clearance (min 0.3mm)))
 """,
 }
 
@@ -214,235 +280,104 @@ def build_project(name):
 CTX = kigen.Lib(PRJ, LIB, sp.uid, POWER)
 
 
-def build_flex():
-    """NA sensor flex (D-27, D-47), two layers: CN2 fan-out, the +5 V / GND climb to the side-by-side fingers,
-    the band lanes, the microphone and the SHT45 on F; GND_SENS and +3V3 on B, up through vias at each part."""
-    bd = Board(CTX, sp.FLEX, 2, sp.SFLEX_T, 0.15, 0.15)
-    bd.outline(sp.FLEX_OUTLINE, 0.75)
-    for ref, p in sp.FLEX_PARTS.items():
+def build_eu_capboard():
+    """EU cap board (D-70), as the NA ring board round CN2: I2S from CN2's upper row up, right and down to the mic
+    carrier's land, +3V3 from the lower row down under the land to its right column; SDA, SCL, +3V3 on the back down
+    the outer left edge (outside the snap windows and the screws) to the SHT45; +5V from the pin pad on the back up the
+    outer right edge and across to CN2; GND pours on both layers."""
+    bd = Board(CTX, eu.CAPBOARD, 2, eu.E.CB_T, 0.12, 0.12, via_min=(0.45, 0.2))    # fine vias round CN2
+    bd.outline(eu.CB_OUTER, eu.CB_OUTER_R)
+    bd.polyline(eu.CB_POCKET)
+    x, y, w, h = eu.MIC_WIN
+    bd.outline([(x + w / 2, y - h / 2), (x + w / 2, y + h / 2), (x - w / 2, y + h / 2), (x - w / 2, y - h / 2)], 0.4)
+    for win in eu.CB_SNAP_WINDOWS:
+        bd.outline(win, 0.5)
+    for ref, p in eu.CAPBOARD_PARTS.items():
         bd.place(ref, p, False)
-    B = P.B_Cu
-    pin = {ln: bd.pad_xy("J1", n) for ln, n in sp.CN2_MAP.items()}
-    w = {"+5V": 0.3, "GND": 0.3, "I2S_WS": 0.12, "I2S_SCK": 0.12, "I2S_SD": 0.12, "SDA": 0.12, "SCL": 0.12,
-         "GND_SENS": 0.15, "+3V3": 0.15}
-    # F lanes in the 4 mm strip, then down the band after the corner's jog; B lanes throughout
-    strip = {"+5V": 1.55, "GND": 1.0, "I2S_WS": 0.55, "I2S_SCK": 0.25, "I2S_SD": -0.05, "SDA": -0.5, "SCL": -0.85}
-    band = {"I2S_WS": 0.05, "I2S_SCK": -0.25, "I2S_SD": -0.55, "SDA": -1.0, "SCL": -1.35}
-    blane = {"GND_SENS": -0.6, "+3V3": -1.2}
-    level = {"+5V": 3.70, "GND": 3.30, "I2S_WS": 2.95, "I2S_SCK": 2.65, "I2S_SD": 2.35, "SDA": -3.2, "SCL": -3.6}
-    d0, d1 = sp.PLUG_LEN, sp.NECK_X - 0.08
-    for ln in strip:                                       # fan-out: pin -> level -> neck diagonal -> lane
-        px, py = pin[ln]
-        bd.track(ln, 0.12, [(px, py), (px, level[ln]), (d0, level[ln]), (d1, strip[ln])])
-    # GND_SENS and +3V3 drop to B right at the plug
-    vg, v3 = (3.6, -2.0), (5.2, -2.6)
-    bd.track("GND_SENS", 0.15, [pin["GND_SENS"], (pin["GND_SENS"][0], -1.6), vg])
-    bd.track("+3V3", 0.15, [pin["+3V3"], (pin["+3V3"][0], v3[1]), v3])
-    for net, xy in (("GND_SENS", vg), ("+3V3", v3)):
-        bd.via(net, *xy)
-    # corner: +5V climbs to the outer finger (J2), GND to the inner one (J3); the rest jog down to the band
-    j2, j3 = bd.pad_xy("J2", "1"), bd.pad_xy("J3", "1")
-    xa, xb = sp.SEC_X0 + 0.6, sp.SEC_X0 + 1.4
-    bd.track("+5V", 0.3, [(d1, strip["+5V"]), (xa, strip["+5V"]), (xa, j2[1]), j2])
-    bd.track("GND", 0.3, [(d1, strip["GND"]), (xb, strip["GND"]), (xb, j3[1]), j3])
-    xj = sp.SEC_X0 + 2.6
-    # microphone (rot 270): I2S rise straight into the pads facing the band
-    mk = {n: bd.pad_xy("MK1", n) for n in ("1", "2", "3", "4", "5", "6", "7")}
-    into = {"I2S_WS": mk["5"], "I2S_SCK": mk["6"], "I2S_SD": mk["7"]}
-    jog = {ln: [(d1, strip[ln]), (xj, strip[ln]), (xj + 2.0, band[ln])] for ln in band}   # shallow: lanes keep spacing
-    for ln, q in into.items():
-        bd.track(ln, w[ln], jog[ln] + [(q[0], band[ln]), q])
-    # microphone power: VDD and the GND pads / ring / C2 / R1 on F, joined to the B lanes by vias
-    xc = sp.MIC_XC
-    ring = mk["4"]
-    top = sp.MIC_SEC_W - 0.65                              # GND route over the VDD via
-    x_ring = ring[0] - 0.75                                 # up past the ring's left side, clear of the port hole
-    v_ring = (x_ring, 3.6)
-    v_vdd = (mk["3"][0], 3.95)
-    c2g, c2v = bd.pad_xy("C2", "1"), bd.pad_xy("C2", "2")
-    r1s, r1g = bd.pad_xy("R1", "1"), bd.pad_xy("R1", "2")
-    v_c2 = (c2v[0], 3.95)
-    v_gout = (r1g[0] + 0.65, r1g[1])
-    bd.track("GND_SENS", 0.15, [ring, (x_ring, ring[1]), v_ring, (x_ring, top), (mk["2"][0], top), mk["2"], mk["1"], c2g])
-    bd.track("GND_SENS", 0.15, [r1g, v_gout])
-    bd.track("GND_SENS", 0.15, [r1g, (c2g[0] + 0.1, c2g[1] - 0.6), c2g])
-    bd.track("+3V3", 0.15, [mk["3"], v_vdd])
-    bd.track("+3V3", 0.15, [c2v, v_c2])
-    bd.track("I2S_SD", 0.12, [mk["7"], r1s])
-    for net, xy in (("GND_SENS", v_ring), ("+3V3", v_vdd), ("+3V3", v_c2), ("GND_SENS", v_gout)):
-        bd.via(net, *xy)
-    # SHT45 tail: SDA / SCL on F into the left pads; GND_SENS / +3V3 up from B beside the right pads, C1 beside
-    sda, scl, vdd, vss = (bd.pad_xy("U1", n) for n in ("1", "2", "3", "4"))
-    c_vdd, c_gnd = bd.pad_xy("C1", "1"), bd.pad_xy("C1", "2")
-    x_in = sda[0] - 1.6
-    bd.track("SDA", 0.12, jog["SDA"] + [(x_in, band["SDA"]), (x_in + 0.6, sda[1]), sda])
-    bd.track("SCL", 0.12, jog["SCL"] + [(x_in, band["SCL"]), (x_in + 0.15, scl[1]), scl])
-    v_sg, v_s3 = (vss[0] + 0.85, sp.RUN_C + 1.45), (vdd[0] + 0.85, sp.RUN_C - 1.45)
-    bd.track("GND_SENS", 0.15, [vss, (vss[0] + 0.3, vss[1]), v_sg])
-    bd.track("GND_SENS", 0.15, [(vss[0] + 0.3, vss[1]), c_gnd])
-    bd.track("+3V3", 0.15, [vdd, (vdd[0] + 0.3, vdd[1]), v_s3])
-    bd.track("+3V3", 0.15, [(vdd[0] + 0.3, vdd[1]), c_vdd])
-    for net, xy in (("GND_SENS", v_sg), ("+3V3", v_s3)):
-        bd.via(net, *xy)
-    # B: GND_SENS and +3V3 from the plug vias to the microphone and on to the SHT45
-    bd.track("GND_SENS", 0.15, [vg, (d0, vg[1]), (d1, blane["GND_SENS"]), (v_ring[0], blane["GND_SENS"]), v_ring], B)
-    bd.track("GND_SENS", 0.15, [v_gout, (v_gout[0] + 0.6, blane["GND_SENS"]), (v_sg[0] - 1.6, blane["GND_SENS"]),
-                                v_sg], B)
-    bd.track("+3V3", 0.15, [v3, (d0, v3[1]), (d1, blane["+3V3"]), (v_s3[0] - 1.6, blane["+3V3"]), v_s3], B)
-    bd.track("+3V3", 0.15, [(v_vdd[0], blane["+3V3"]), v_vdd], B)
-    bd.track("+3V3", 0.15, [(v_c2[0], blane["+3V3"]), v_c2], B)
-    # battery-free tongue (D-49): +5V on F from J2 up the tongue's left lane into TP3; GND drops to B on its F lead to
-    # J3, runs under J2 and up the right lane, under TP3, and comes back up between the floor pads into TP4
-    tp3, tp4 = bd.pad_xy("TP3", "1"), bd.pad_xy("TP4", "1")
-    lane = 0.55
-    tl, tr = sp._offset(sp.TONGUE_PATH, lane), sp._offset(sp.TONGUE_PATH, -lane)
-    bd.track("+5V", 0.3, [(tl[0][0], j2[1])] + tl[:-1] + [(tl[-1][0], tp3[1])])
-    v_g1 = (sp.SEC_X0 + 6.0, j3[1])
-    v_g2 = (tr[-1][0], (tp3[1] + tp4[1]) / 2)
-    y_b = sp.SEC_Y - 0.9
-    bd.track("GND", 0.3, [v_g1, (v_g1[0], y_b), (tr[0][0], y_b)] + tr[:-1] + [v_g2], B)
-    bd.track("GND", 0.3, [v_g2, (tp4[0], v_g2[1]), tp4])
-    for xy in (v_g1, v_g2):
-        bd.via("GND", *xy)
-    # fab notes: folds, stiffeners, placeholder warning
-    x, y = sp.TONGUE_FOLD
-    h = sp.BC_NA_NECK_W / 2
-    bd.shape(P.SHAPE_T_SEGMENT, P.Cmts_User, 0.1, (x - h, y - h), (x + h, y + h))
-    bd.text("TONGUE FOLD: 45 deg, flips the strip", x + 6.0, y, P.Cmts_User, 0.7)
-    for i, (x, yc, h) in enumerate(sp.FOLDS):
-        bd.shape(P.SHAPE_T_SEGMENT, P.Cmts_User, 0.1, (x - h, yc - h), (x + h, yc + h))
-        bd.text(f"FOLD {i + 1}: 45 deg, flips the strip", x, yc + h + 1.2, P.Cmts_User, 0.7)
-    for (x0, y0), (x1, y1), t in sp.STIFFENERS:
-        for a, b in (((x0, y0), (x1, y0)), ((x1, y0), (x1, y1)), ((x1, y1), (x0, y1)), ((x0, y1), (x0, y0))):
-            bd.shape(P.SHAPE_T_SEGMENT, P.User_1, 0.1, a, b)
-        bd.text(f"STIFFENER FR4 {t} mm, back side", (x0 + x1) / 2, y1 + 0.9, P.User_1, 0.6)
-    bd.text(f"MK1 PORT: {sp.MIC_FLEX_HOLE_D} mm hole through flex + stiffener, adhesive gasket ring to the skin",
-            xc, sp.MIC_SEC_W + 1.0, P.Cmts_User, 0.6)
-    if not sp.CN2_CONFIRMED:
-        bd.text("J1 FOOTPRINT AND PIN MAP ARE PLACEHOLDERS - DO NOT FABRICATE", 40.0, -4.5, P.Cmts_User, 1.0)
-    bd.save()
-
-
-def build_eu_flex():
-    """EU sensor flex (eu_flex_parts.py): CN2 fan-out, lanes, microphone, pin pads, tongue, SHT45."""
-    bd = Board(CTX, eu.NAME, 1, sp.FLEX_T, 0.15, 0.15)
-    bd.outline(eu.FLEX_OUTLINE, 0.75)
-    for ref, p in eu.PARTS.items():
-        bd.place(ref, p, False)
-    j1 = {n: bd.pad_xy("J1", n) for n in eu.CN2_MAP}
-    # lanes in the strip (+Y inwards): power / SHT45 group above, microphone group below
-    lane = {"19": 1.65, "21": 1.225, "23": 0.835, "25": 0.51, "27": 0.21, "29": -0.115,
-            "28": -0.425, "26": -0.725, "24": -1.025, "22": -1.32, "20": -1.62}
-    level = {"19": 3.65, "21": 3.25, "23": 2.87, "25": 2.53, "27": 2.23, "29": 1.90,
-             "20": -3.65, "22": -3.33, "24": -3.02, "26": -2.72, "28": -2.42}
-    width = {"GND": 0.3, "GND_SHT": 0.2, "+5V": 0.25, "SDA": 0.15, "SCL": 0.15, "+3V3": 0.2, "MIC_3V3": 0.15, "MIC_GND": 0.15,
-             "I2S_SD": 0.12, "I2S_SCK": 0.12, "I2S_WS": 0.12}
-    wn = {n: width[net] for n, net in eu.CN2_MAP.items()}
-    hw = {n: (0.2 if n in ("19", "21") else 0.15 if n == "23" else 0.12) for n in eu.CN2_MAP}   # fan-out widths
-    d0, d1 = eu.PLUG_LEN, eu.NECK_X - 0.08
-    head = {}
-    for n, (px, py) in j1.items():
-        head[n] = [(px, py), (px, level[n]), (d0, level[n]), (d1, lane[n])]
-        bd.track(eu.CN2_MAP[n], hw[n], head[n])
-        head[n] = [(d1, lane[n])]
-    # microphone: WS / SCK into the inner pad column from above, SD from below through the gap with R1 to
-    # MIC_GND; MIC_GND / MIC_3V3 under the outer column (C2 across them), GND on to the port ring
-    for ref in ("R1", "C2"):                                   # pad 2 up (towards the strip), pad 1 down
-        f = bd.fps[ref]
-        for rot in (90, 270):
-            f.SetOrientationDegrees(rot)
-            if bd.pad_xy(ref, "2")[1] > bd.pad_xy(ref, "1")[1]:
-                break
-    mk = {n: bd.pad_xy("MK1", n) for n in ("1", "2", "3", "5", "6", "7")}
-    ring = (eu.MIC_XC + (sp.MIC[1] / 2 - 1.0), eu.MIC_Y_FLAT)   # port centre (the GND ring round it)
-    r1_sd, r1_gnd = bd.pad_xy("R1", "2"), bd.pad_xy("R1", "1")
-    c2_gnd, c2_3v3 = bd.pad_xy("C2", "2"), bd.pad_xy("C2", "1")
-    y_sd, y_mg, y_m3 = r1_sd[1] + 0.55, c2_gnd[1], c2_3v3[1]
-    xa = eu.MX0 + 0.5
-    bd.track("MIC_3V3", 0.15, head["20"] + [(xa, lane["20"]), (xa + 0.35, y_m3), (mk["3"][0], y_m3), mk["3"]])
-    bd.track("MIC_GND", 0.15, head["22"] + [(xa + 0.45, lane["22"]), (xa + 0.8, y_mg), (mk["2"][0], y_mg), mk["2"]])
-    bd.track("MIC_GND", 0.15, [(mk["1"][0], y_mg), mk["1"]])
-    bd.track("MIC_GND", 0.15, [(r1_gnd[0], y_mg), r1_gnd])
-    bd.track("MIC_GND", 0.15, [mk["2"], (mk["2"][0], ring[1] - 0.4), (ring[0] - 0.5, ring[1] - 0.4)])
-    bd.track("I2S_SD", 0.12, head["24"] + [(xa + 0.9, lane["24"]), (xa + 1.25, y_sd), (mk["7"][0], y_sd), mk["7"]])
-    bd.track("I2S_SD", 0.12, [(r1_sd[0], y_sd), r1_sd])
-    bd.track("I2S_SCK", 0.12, head["26"] + [(mk["6"][0], lane["26"]), mk["6"]])
-    bd.track("I2S_WS", 0.12, head["28"] + [(mk["5"][0], lane["28"]), mk["5"]])
-    # pin pads (GND first, then +5V) and the tongue between them; the through lanes step down under the pads
-    tp1, tp2, tp3, tp4 = (bd.pad_xy(r, "1") for r in ("TP1", "TP2", "TP3", "TP4"))
-    shift = 1.125                                              # +5V passes under the GND pin pad
-    low = {n: lane[n] - shift for n in ("21", "23", "25", "27", "29")}
-    jog = {n: eu.PX0 - 9.0 + 1.5 * k for k, n in enumerate(("29", "27", "25", "23", "21"))}   # bottom lane first
-    bd.track("GND", 0.3, head["19"] + [(tp1[0] - 1.6, lane["19"]), tp1])
-    for n in low:
-        bd.track(eu.CN2_MAP[n], wn[n], head[n] + [(jog[n], lane[n]), (jog[n] + shift, low[n])])
-    bd.track("+5V", wn["21"], [(jog["21"] + shift, low["21"]), (tp2[0] - 1.8, low["21"]), tp2])
-    g_x, p_x = eu.TONGUE_LANES
-    top = eu.PAD_Y[1] + 0.3
-    turn = eu.flat_floor(eu.E.EU_FOLD_X, eu.GND_TURN_Y)[1]     # above the slit: the neck and the pad part join there
-    bd.track("GND", 0.3, [tp1, (g_x, top), (g_x, turn), (tp4[0], turn), tp4])
-    bd.track("+5V", 0.3, [tp2, (p_x, top), (p_x, tp3[1]), tp3])
-    # SHT45 tail: lanes back up to the tail positions, then as on the NA flex
-    sda, scl, vdd, vss = (bd.pad_xy("U1", n) for n in ("1", "2", "3", "4"))
-    c_vdd, c_gnd = bd.pad_xy("C1", "1"), bd.pad_xy("C1", "2")
-    tail = {"23": 1.2, "25": 0.4, "27": -0.4, "29": -1.2}
-    u1 = eu.PX1 + 7.0
-    for k, (n, y) in enumerate(tail.items()):                  # top lane up first
-        u = eu.PX1 + 1.0 + 1.8 * k
-        bd.track(eu.CN2_MAP[n], wn[n], [(jog[n] + shift, low[n]), (u, low[n]), (u + (y - low[n]), y), (u1, y)])
-    xr = vss[0] + 0.9
-    bd.track("SDA", 0.15, [(u1, 0.4), sda])
-    bd.track("SCL", 0.15, [(u1, -0.4), scl])
-    bd.track("GND_SHT", 0.2, [(u1, 1.2), (xr, 1.2), (xr, vss[1]), vss])
-    bd.track("GND_SHT", 0.2, [(xr, 1.2), (c_gnd[0], 1.2), c_gnd])
-    bd.track("+3V3", 0.2, [(u1, -1.2), (xr, -1.2), (xr, vdd[1]), vdd])
-    bd.track("+3V3", 0.2, [(xr, -1.2), (c_vdd[0], -1.2), c_vdd])
-    # fab notes: folds, the tongue's fold, stiffeners, placeholder warning
-    h = eu.HALF
-    for i, x in enumerate(eu.FOLDS):
-        bd.shape(P.SHAPE_T_SEGMENT, P.Cmts_User, 0.1, (x - h, -h), (x + h, h))
-        bd.text(f"FOLD {i + 1}: 45 deg, flips the strip", x, h + 1.2, P.Cmts_User, 0.7)
-    bd.shape(P.SHAPE_T_SEGMENT, P.Cmts_User, 0.1, *eu.FOLD_LINE)
-    bd.text("TONGUE FOLD 45 deg (pads face up)", eu.FOLD_LINE[1][0] + 3.0, eu.FOLD_LINE[1][1], P.Cmts_User, 0.6)
-    for (x0, y0), (x1, y1) in eu.STIFFENERS:
-        for a, b in (((x0, y0), (x1, y0)), ((x1, y0), (x1, y1)), ((x1, y1), (x0, y1)), ((x0, y1), (x0, y0))):
-            bd.shape(P.SHAPE_T_SEGMENT, P.User_1, 0.1, a, b)
+    F, B = P.F_Cu, P.B_Cu
+    for lay in (F, B):
+        bd.zone("GND", lay, eu.CB_OUTER, min_w=0.25, fillet_r=0.5, name="GND")
+    via = lambda net, v: bd.via(net, *v, d=0.45, drill=0.2)
+    pin = {n: bd.pad_xy("J2", n) for n in sp.CN2_MAP}
+    land = {n: bd.pad_xy("J3", n) for n in sp.CARRIER_NETS}
+    cy = eu.E.MSR_Y
+    up, lo = pin["19"][1] + 0.4, pin["24"][1] - 0.4          # upper row pads' top ends, lower row pads' bottom ends
+    # I2S on the front: up from the upper row, right (leftmost pad highest), down to the land's left column
+    for n, dy, xd, dn in (("23", 2.95, 21.4, "1"), ("25", 2.5, 21.0, "2"), ("27", 2.1, 20.6, "3")):
+        x0, dst = pin[n][0], land[dn]
+        bd.track(sp.CN2_MAP[n], 0.12, [(x0, up), (x0, cy + dy), (xd, cy + dy), (xd, dst[1]), dst])
+    r1, r1g = bd.pad_xy("R1", "1"), bd.pad_xy("R1", "2")
+    bd.track("I2S_SD", 0.15, [r1, (21.4, r1[1])])           # SD pull-down off the SD lane
+    vr = (r1g[0] + 0.9, r1g[1])
+    bd.track("GND", 0.2, [r1g, vr])
+    via("GND", vr)
+    # +3V3 on the front: lower row down under the land to its right column and C3; a via to the back lanes
+    p3 = pin["28"]
+    y3 = land["3"][1] - 1.0
+    xl6 = land["6"][0] - 1.2
+    bd.track("+3V3", 0.2, [(p3[0], lo), (p3[0], y3), (xl6, y3), (xl6, land["6"][1]), land["6"]])
+    c3, c3g = bd.pad_xy("C3", "1"), bd.pad_xy("C3", "2")
+    bd.track("+3V3", 0.2, [land["6"], (c3[0], land["6"][1]), c3])
+    vc3 = (c3g[0] + 0.9, c3g[1])
+    bd.track("GND", 0.2, [c3g, vc3])
+    via("GND", vc3)
+    v33 = (p3[0], lo - 1.6)
+    via("+3V3", v33)
+    # SDA, SCL: vias under the lower row
+    vsda, vscl = (pin["26"][0] - 0.1, lo - 1.0), (pin["24"][0] - 0.5, lo - 1.0)
+    bd.track("SDA", 0.12, [(pin["26"][0], lo), (vsda[0], lo - 0.3), vsda])
+    bd.track("SCL", 0.12, [(pin["24"][0], lo), (pin["24"][0], lo - 0.45), (vscl[0], lo - 0.65), vscl])
+    via("SDA", vsda)
+    via("SCL", vscl)
+    # back: down, left above the pocket, down the outer left edge, right below the pocket to the SHT45
+    u = {n: bd.pad_xy("U1", n) for n in ("1", "2", "3", "4")}
+    c2p, c2g = bd.pad_xy("C2", "1"), bd.pad_xy("C2", "2")
+    xl = {"SCL": -34.8, "SDA": -34.3, "+3V3": -33.8}        # the lane leaving highest runs outermost
+    yt = {"SCL": 44.6, "SDA": 44.0, "+3V3": 43.4}
+    yb = {"SCL": -41.2, "SDA": -40.6, "+3V3": -40.0}
+    xv = {"SCL": -2.0, "SDA": -1.3, "+3V3": 4.2}            # vias to the front at the SHT45
+    for net, v in (("SCL", vscl), ("SDA", vsda), ("+3V3", v33)):
+        bd.track(net, 0.2, [v, (v[0], yt[net]), (xl[net], yt[net]), (xl[net], yb[net]), (xv[net], yb[net])], B)
+        bd.via(net, xv[net], yb[net])
+    bd.track("SDA", 0.2, [(xv["SDA"], yb["SDA"]), (xv["SDA"], u["1"][1]), u["1"]])
+    bd.track("SCL", 0.2, [(xv["SCL"], yb["SCL"]), (xv["SCL"], u["2"][1]), u["2"]])
+    bd.track("+3V3", 0.2, [(xv["+3V3"], yb["+3V3"]), (xv["+3V3"], c2p[1]), c2p])
+    bd.track("+3V3", 0.2, [c2p, u["3"]])
+    bd.track("GND", 0.2, [u["4"], c2g])
+    vs = (c2g[0], c2g[1] + 1.1)
+    bd.track("GND", 0.25, [c2g, vs])
+    # +5V: CN2's upper row up-left to a via; on the back across and down the outer right edge to the pin pad and C1
+    tp5, tpg = bd.pad_xy("TP2", "1"), bd.pad_xy("TP1", "1")
+    c5, cg = bd.pad_xy("C1", "1"), bd.pad_xy("C1", "2")
+    xr = 34.3
+    v5 = (pin["19"][0] - 0.6, cy + 2.0)
+    bd.track("+5V", 0.25, [(pin["19"][0], up), (pin["19"][0], v5[1]), v5])
+    via("+5V", v5)
+    bd.track("+5V", 0.5, [v5, (v5[0], cy + 6.0), (xr, cy + 6.0), (xr, tp5[1]), tp5], B)
+    vc5 = (c5[0] + 1.6, c5[1])
+    bd.track("+5V", 0.4, [c5, vc5])
+    bd.via("+5V", *vc5)
+    bd.track("+5V", 0.4, [vc5, (xr, vc5[1])], B)
+    # GND: pin pad, C1, CN2's GND contacts to the pours; the land's GND pins together
+    vg = (tpg[0] + 2.2, tpg[1])
+    bd.track("GND", 0.5, [tpg, vg], B)
+    bd.via("GND", *vg)
+    vcg = (cg[0] - 1.6, cg[1])
+    bd.track("GND", 0.4, [cg, vcg])
+    bd.via("GND", *vcg)
+    g21 = (pin["21"][0], cy)
+    bd.track("GND", 0.15, [(pin["21"][0], pin["21"][1] - 0.4), g21])
+    via("GND", g21)
+    g30 = (pin["30"][0] + 0.3, lo - 1.0)
+    bd.track("GND", 0.15, [(pin["30"][0], lo), g30])
+    via("GND", g30)
+    bd.track("GND", 0.3, [land["4"], land["5"]])
+    via("GND", (land["4"][0] + 0.45, land["4"][1] + 0.6))
+    for v in (vs, (-20.0, -46.0), (20.0, -40.0), (-20.0, 52.0), (20.0, 60.0), (-28.0, 40.0)):
+        bd.via("GND", *v)
+    bd.text(f"EU CAP BOARD {sp.REV} (D-70)", -20.0, -46.0, P.F_SilkS, 1.0)
     if not eu.CN2_CONFIRMED:
-        bd.text("J1 FOOTPRINT AND PIN MAP ARE PLACEHOLDERS - DO NOT FABRICATE", 40.0, -6.5, P.Cmts_User, 1.0)
-    bd.save()
-
-
-def build_jumper():
-    bd = Board(CTX, sp.JUMPER, 2, sp.JUMPER_T, 0.15, 0.2)
-    bd.outline(sp.JUMPER_OUTLINE, 0.3)
-    for ref, p in sp.JUMPER_PARTS.items():
-        bd.place(ref, p, False)
-    w = sp.TRACK_W
-    bar = sp.FPC_PAD[0] + 0.45                           # bar joining each net's three contacts, past the pads
-    for net, ns, y in (("GND", (1, 2, 3), sp.GND_Y), ("+5V", (4, 5, 6), sp.P5_Y)):
-        ends = [bd.pad_xy("J1", str(n)) for n in ns]
-        for x, yy in ends:
-            bd.track(net, 0.3, [(x + sp.FPC_PAD[0] / 2 - 0.2, yy), (bar, yy)])
-        bd.track(net, 0.3, [(bar, ends[0][1]), (bar, ends[-1][1])])
-        bd.track(net, w, [(bar, y), (bar + 1.0, y)])
-    tp1, tp2 = bd.pad_xy("TP1", "1"), bd.pad_xy("TP2", "1")
-    # pad end (D-47): GND straight on into the pad ahead (TP2), +5V climbs to the pad on the left (TP1)
-    x_up = sp.PE_X0 + 0.3
-    y_hi = tp2[1] + sp.CONTACT_PAD[1] / 2 + 0.45
-    bd.track("+5V", w, [(bar + 1.0, sp.P5_Y), (x_up, sp.P5_Y), (x_up + 0.7, y_hi), (x_up + 0.7, tp1[1]),
-                        (tp1[0], tp1[1])])
-    bd.track("GND", w, [(bar + 1.0, sp.GND_Y), (tp2[0], sp.GND_Y), tp2])
-    # fab notes: stiffeners, contact side
-    for (x0, y0), (x1, y1) in sp.JUMPER_STIFFENERS:
-        for a, b in (((x0, y0), (x1, y0)), ((x1, y0), (x1, y1)), ((x1, y1), (x0, y1)), ((x0, y1), (x0, y0))):
-            bd.shape(P.SHAPE_T_SEGMENT, P.User_1, 0.1, a, b)
-    bd.text(f"STIFFENER PI, back side: total {sp.END_T} mm (MEASURE: FH12 FPC spec)", sp.END_L / 2 + 6.0, -3.0,
-            P.User_1, 0.6)
-    bd.text(f"STIFFENER FR4, back side: total {sp.TARGET_T} mm", sp.PE_X0 + sp.PE_LEN / 2, -3.0, P.User_1, 0.6)
-    bd.text("J1: exposed gold contacts; check the side against J2 (FH12) on a sample", 20.0, 3.0,
-            P.Cmts_User, 0.7)
-    bd.text(f"Flat length {sp.JUMPER_LEN:.1f} mm incl. {sp.JUMPER_SERVICE:.0f} mm service loop (Z-fold)",
-            sp.JUMPER_LEN / 2, 3.0, P.Cmts_User, 0.7)
+        bd.text("J2 FOOTPRINT AND PIN MAP ARE PLACEHOLDERS - DO NOT FABRICATE", 0.0, 30.0, P.Cmts_User, 1.0)
     bd.save()
 
 
@@ -468,32 +403,29 @@ def build_cover():
                 break
         else:
             raise RuntimeError(f"no orientation of {ref} puts its bend end away from the bend line")
-    # regulator: IN, GND, EN on the upper row (IN towards the inner lane), OUT under IN, NC under EN
-    u = bd.fps["U1"]
-    for rot in (0, 90, 180, 270):
-        u.SetOrientationDegrees(rot)
-        p_in, p_gnd, p_en, p_out = (bd.pad_xy("U1", n) for n in ("1", "2", "3", "5"))
-        if abs(p_in[1] - p_en[1]) < 0.01 and p_in[1] > p_out[1] and p_in[0] > p_en[0]:
-            break
-    else:
-        raise RuntimeError("no orientation of U1 puts IN / GND / EN on the upper row, IN inside")
+    # regulator above the pads (D-53), unrotated: IN / GND / EN down its outer column, OUT / NC on the inner one
+    p_in, p_gnd, p_en, p_out = (bd.pad_xy("U1", n) for n in ("1", "2", "3", "5"))
+    xm = bd.fps["U1"].GetPosition()
+    xm = kigen.mm(xm)[0]                                 # under the body, between the two columns
     c3_gnd, c3_5v = bd.pad_xy("C3", "1"), bd.pad_xy("C3", "2")
     c4_gnd, c4_3v3 = bd.pad_xy("C4", "1"), bd.pad_xy("C4", "2")
-    y_tie = c3_5v[1]                                     # +5V over the top: IN, EN, C3
-    y_low = c4_gnd[1] + 0.6                              # GND under U1, from the outer lane to the GND pin
-    x_left = sp._xs0 + 0.8                               # outer GND lane past the regulator
-    # +5V: inner lane past the GND finger, into IN; EN and C3 tied over the top
-    x5 = -(sp.BC_STRIP[0] + 0.5)                         # +5V lane inside the pad section's inner edge
-    bd.track("+5V", w, [f1, (x5, f1[1]), (x5, y_tie), (p_in[0], y_tie), p_in])
-    bd.track("+5V", w, [(p_in[0], y_tie), (p_en[0], y_tie), p_en])
-    bd.track("+5V", w, [(p_en[0], y_tie), c3_5v])
-    # GND: finger down the outer side, C3, under U1 to its GND pin (between NC and OUT), C4, run, J4
-    bd.track("GND", w, [f2, (x_left, f2[1] - 2.0), (x_left, y_low), (p_gnd[0], y_low)])
-    bd.track("GND", w, [c3_gnd, (x_left, c3_gnd[1])])
-    bd.track("GND", w, [p_gnd, (p_gnd[0], y_low), c4_gnd, (x_out, c4_gnd[1] - 0.6), (x_out, gnd[1] + 2.0), gnd])
-    # +3V3: OUT, C4, inner lane down the run, across the band under the PCB strip, into VBAT
-    bd.track("+3V3", w, [p_out, (p_out[0], c4_3v3[1] + 0.7), c4_3v3, (x_in, c4_3v3[1] - 0.6), (x_in, y_band),
-                         (vbat[0], y_band), vbat])
+    xg = sp.COVER_GND_X
+    y_up = sp._yt + 0.1                                  # just inside the regulator section
+    # +5V: straight up from the upper pad, under U1 to IN, EN on the way, C3 beside it
+    bd.track("+5V", w, [f1, (f1[0], y_up - 0.4), (xm, y_up), (xm, p_in[1]), p_in])
+    bd.track("+5V", w, [(xm, p_en[1]), p_en])
+    bd.track("+5V", w, [c3_5v, (xm, c3_5v[1])])
+    # GND: lower pad up the outer edge to U1's GND pin, C3 and C4; and down into the run to J4
+    bd.track("GND", w, [f2, (xg, f2[1]), (xg, c4_gnd[1]), c4_gnd])
+    bd.track("GND", w, [p_gnd, (xg, p_gnd[1])])
+    bd.track("GND", w, [c3_gnd, (xg, c3_gnd[1])])
+    bd.track("GND", w, [f2, (f2[0], sp._yb + 0.5), (x_out, sp._yb + 0.5), (x_out, gnd[1] + 2.0), gnd])
+    # +3V3: OUT up to C4, down the pad section's inner edge past both pads, across the jog above the GND lane (D-79),
+    # down the run's inner lane, across the band, into VBAT
+    x_e = sp._xs1 - 0.65
+    y_j = sp._yb + 1.3
+    bd.track("+3V3", w, [p_out, (p_out[0], c4_3v3[1] - 0.7), c4_3v3, (x_e, c4_3v3[1]), (x_e, y_j), (x_in, y_j),
+                         (x_in, y_band), (vbat[0], y_band), vbat])
     bd.shape(P.SHAPE_T_SEGMENT, P.Cmts_User, 0.1, (sp._xr0, sp.COVER_BEND_Y), (sp._xr1, sp.COVER_BEND_Y))
     bd.text("BEND 90 deg, copper outside", 0.0, sp.COVER_BEND_Y + 1.2, P.Cmts_User, 0.6)
     for (a0, b0), (a1, b1) in sp.COVER_STIFF:
@@ -504,52 +436,237 @@ def build_cover():
         for a, b in (((a0, b0), (a1, b0)), ((a1, b0), (a1, b1)), ((a1, b1), (a0, b1)), ((a0, b1), (a0, b0))):
             bd.shape(P.SHAPE_T_SEGMENT, P.User_1, 0.1, a, b)
     bd.text(f"STIFFENER FR4 {sp.BC_PAD_STIFF_T} mm, back side, flush with the long edges (snap hooks)",
-            sp._xs0 - 4.0, sp._yt - 2.0, P.User_1, 0.6, 90)
+            sp._xs0 - 4.0, sp._yb + 2.0, P.User_1, 0.6, 90)
     if not sp.COVER_CONFIRMED:
         bd.text("POSITIONS REF / MEASURE - DO NOT FABRICATE", 0.0, 2.0, P.Cmts_User, 0.9)
+    bd.save()
+
+
+def rule_area(bd, pts, layer, name):
+    """Keep-out rule area on one copper layer: no tracks, vias, pads or pours."""
+    z = P.ZONE(bd.b)
+    z.SetLayer(layer)
+    z.SetIsRuleArea(True)
+    for f in (z.SetDoNotAllowCopperPour, z.SetDoNotAllowTracks, z.SetDoNotAllowVias, z.SetDoNotAllowPads):
+        f(True)
+    z.SetDoNotAllowFootprints(False)
+    z.SetZoneName(name)
+    ol = z.Outline()
+    ol.NewOutline()
+    for x, y in pts:
+        ol.Append(kigen.V(x, y))
+    bd.b.Add(z)
+
+
+def place_ring():
+    bd = Board(CTX, sp.RING, 2, 1.6, 0.12, 0.15)
+    bd.outline(sp.RING_OUTER, sp.RING_OUTER_R)
+    bd.polyline(sp.RING_WINDOW)
+    x, y, w, h = sp.MIC_WIN_RECT
+    bd.outline([(x + w / 2, y - h / 2), (x + w / 2, y + h / 2), (x - w / 2, y + h / 2), (x - w / 2, y - h / 2)], 0.4)
+    for ref, p in sp.RING_PARTS.items():
+        bd.place(ref, p, False)
+    return bd
+
+
+def build_ring():
+    """Ring board: CN2 fan-out on the front, I2S to the mic carrier's left column, +3V3 under the carrier to its right
+    column; SDA, SCL, +3V3 on the back across the top band to the right rail, down the rail on the front round the
+    box's corner keep-out and along the bottom band to the SHT45; +5V from J1 on the back to CN2; GND pours."""
+    bd = place_ring()
+    F, B = P.F_Cu, P.B_Cu
+    rule_area(bd, sp.KEEP_FRONT, F, "front copper keep-out: box opening + 6.4 mm")
+    rule_area(bd, sp.KEEP_BACK, B, "back copper keep-out: box opening + 8.0 mm")
+    for lay in (F, B):
+        bd.zone("GND", lay, sp.RING_OUTER, min_w=0.25, fillet_r=0.5, name="GND")
+    pin = {net: bd.pad_xy("J2", n) for n, net in sp.CN2_MAP.items() if net != "GND"}
+    up = sp.CN2_ROW - 0.4 + 0.0                              # pad end offset from the row centre
+    top, bot = pin["I2S_WS"][1] + 0.4, pin["SCL"][1] - 0.4   # upper / lower row pad ends
+    land = {n: bd.pad_xy("J3", n) for n in sp.CARRIER_NETS}
+    # I2S: up from the upper row, right, up the jog to the carrier's left column
+    for net, y, xj, n in (("I2S_SD", 61.4, 22.6, "1"), ("I2S_SCK", 61.0, 23.2, "2"), ("I2S_WS", 60.6, 23.8, "3")):
+        x0 = pin[net][0]
+        bd.track(net, 0.12, [(x0, top), (x0, y), (xj, y), (xj, land[n][1]), land[n]])
+    r1 = bd.pad_xy("R1", "1")
+    bd.track("I2S_SD", 0.12, [r1, (r1[0], 61.4)])
+    # +5V: CN2 up-left to a via; J1's +5V pins to vias; C1 to a via; joined on the back
+    p5 = pin["+5V"]
+    v5 = (12.9, 61.4)
+    bd.track("+5V", 0.2, [(p5[0], top), (p5[0], 60.6), v5])
+    j1 = {n: bd.pad_xy("J1", n) for n in sp.FH12_NETS}
+    vj = [(j1["2"][0], 51.3), (j1["5"][0], 51.3)]
+    for n, v in zip(("2", "5"), vj):
+        bd.track("+5V", 0.3, [(j1[n][0], j1[n][1] + 0.6), v])
+    c1 = bd.pad_xy("C1", "1")
+    vc = (c1[0], c1[1] + 1.25)
+    bd.track("+5V", 0.4, [c1, vc])
+    for v in vj + [vc, v5]:
+        bd.via("+5V", *v)
+    bd.track("+5V", 0.4, [vj[1], vj[0], (vj[0][0], 58.5), (v5[0], 58.5), v5], B)
+    bd.track("+5V", 0.4, [vc, (vc[0], 58.5)], B)
+    # J1 GND: 1 / 6 out and up, 3 / 4 up between the +5V vias, a bar above them
+    yb = 52.0
+    for n, dx in (("1", -0.4), ("6", 0.4)):
+        bd.track("GND", 0.25, [(j1[n][0], j1[n][1] + 0.6), (j1[n][0] + dx, 51.3), (j1[n][0] + dx, yb)])
+    xm = (j1["3"][0] + j1["4"][0]) / 2
+    for n in ("3", "4"):
+        bd.track("GND", 0.25, [(j1[n][0], j1[n][1] + 0.6), (xm, 51.2)])
+    bd.track("GND", 0.25, [(xm, 51.2), (xm, yb)])
+    bd.track("GND", 0.3, [(j1["1"][0] - 0.4, yb), (j1["6"][0] + 0.4, yb)])
+    # CN2 GND contacts: vias to both pours
+    g21, g30 = bd.pad_xy("J2", "21"), bd.pad_xy("J2", "30")
+    vg1, vg2 = (g21[0], 62.1), (g30[0] + 0.55, bot - 0.5)
+    bd.track("GND", 0.15, [(g21[0], top), vg1])
+    bd.track("GND", 0.15, [(g30[0], bot), (g30[0], bot - 0.25), vg2])
+    for v in (vg1, vg2):
+        bd.via("GND", *v)
+    # +3V3: lower row down, right, via to the back; on up to C3 and under the carrier to its right column
+    p3 = pin["+3V3"]
+    v3 = (24.5, 55.5)
+    c3, c3g = bd.pad_xy("C3", "1"), bd.pad_xy("C3", "2")
+    yw = 59.0                                               # below the mic window
+    bd.track("+3V3", 0.2, [(p3[0], bot), (p3[0], v3[1]), v3, (v3[0], yw), (30.9, yw), (30.9, c3[1]), c3, land["6"]])
+    vc3 = (31.6, 58.0)
+    bd.track("GND", 0.25, [c3g, vc3])
+    bd.via("GND", *vc3)
+    bd.track("GND", 0.3, [land["4"], land["5"]])
+    # SDA / SCL: lower row down to vias
+    sda, scl = pin["SDA"], pin["SCL"]
+    vsda, vscl = (sda[0], 54.7), (13.6, 54.5)
+    bd.track("SDA", 0.15, [(sda[0], bot), vsda])
+    bd.track("SCL", 0.15, [(scl[0], bot), (scl[0], 55.6), (vscl[0], 55.0), vscl])
+    for net, v in (("SDA", vsda), ("SCL", vscl), ("+3V3", v3)):
+        bd.via(net, *v)
+    # back: three lanes across the top band (under J1) to the rail vias
+    lanes = (("SCL", vscl, 48.4, (31.3, 48.4)), ("SDA", vsda, 49.4, (31.3, 49.4)), ("+3V3", v3, 50.4, (31.3, 50.4)))
+    w = sp.RAIL_W
+    for net, v, y, vr in lanes:
+        bd.track(net, w, [v, (v[0], y), vr], B)
+        bd.via(net, *vr)
+    # front: from the rail vias onto the rail, down it, round the corner keep-out, along the bottom band
+    cx, cy = sp.BOX_W / 2, -sp.BOX_H / 2                     # the box opening's bottom right corner
+    r0 = sp.RAIL_X[0] - cx
+    rail_top = sp.BOX_H / 2 + sp.K_FRONT - 0.1               # where the front keep-out begins
+    starts = [(vr, vr[1] - (sp.RAIL_X[i] - vr[0])) for i, (_, _, _, vr) in enumerate(lanes)]   # 45 deg onto the rail
+    u1 = {n: bd.pad_xy("U1", n) for n in ("1", "2", "3", "4")}
+    c2p, c2g = bd.pad_xy("C2", "1"), bd.pad_xy("C2", "2")
+    for i, ((net, _, _, _), (via, y1)) in enumerate(zip(lanes, starts)):
+        x = sp.RAIL_X[i]
+        r = r0 + i * sp.RAIL_PITCH
+        corner = [(cx + r * cos(radians(a)), cy + r * sin(radians(a))) for a in range(0, -91, -5)]
+        yl = cy - r                                         # lane along the bottom band, then down past the boss notch
+        x0 = 9.0 + 0.137 * i
+        yl2 = yl - 1.9
+        pts = [via, (x, y1), (x, rail_top)] + corner + [(x0, yl), (x0 - 1.9, yl2)]
+        yl = yl2
+        if net == "+3V3":                                   # first down (lowest lane): C2, then VDD
+            pts += [(3.4, yl), (3.4, c2p[1]), c2p]
+            bd.track(net, w, pts)
+            bd.track(net, w, [c2p, u1["3"]])
+        elif net == "SDA":
+            pts += [(-1.3, yl), (-1.3, u1["1"][1]), u1["1"]]   # into pin 1 from outside the sensor's keep-out
+            bd.track(net, w, pts)
+        else:                                               # SCL: round the left of the SHT45 into pin 2
+            pts += [(-2.0, yl), (-2.0, u1["2"][1]), u1["2"]]
+            bd.track(net, w, pts)
+    bd.track("GND", 0.2, [u1["4"], c2g])
+    vs = (c2g[0], c2g[1] + 1.1)                              # the SHT45's GND patch to the back pour
+    bd.track("GND", 0.25, [c2g, vs])
+    for v in (vs, (-20.0, -50.0), (20.0, -50.0), (-20.0, 52.0), (-8.0, 68.5), (8.0, 68.5)):   # stitching, beside the switch notches
+        bd.via("GND", *v)
+    bd.text("RING BOARD v0.4 (D-50)", 0.0, -53.6, P.F_SilkS, 1.0)
+    if not sp.CN2_CONFIRMED:
+        bd.text("J2 FOOTPRINT AND PIN MAP ARE PLACEHOLDERS - DO NOT FABRICATE", 0.0, 66.5, P.Cmts_User, 1.0)
+    bd.save()
+
+
+def build_carrier():
+    """Mic carrier: mic on the back, port hole at the origin; I2S to the left castellations, power to the right."""
+    bd = Board(CTX, sp.CARRIER, 2, sp.CARRIER_T, 0.12, 0.15)
+    w, h = sp.CARRIER_W, sp.CARRIER_H
+    bd.outline([(w / 2, -h / 2), (w / 2, h / 2), (-w / 2, h / 2), (-w / 2, -h / 2)], 0.3)
+    for ref, p in sp.CARRIER_PARTS.items():
+        bd.place(ref, p, False)
+    bd.zone("GND", P.F_Cu, [(w / 2, -h / 2), (w / 2, h / 2), (-w / 2, h / 2), (-w / 2, -h / 2)], min_w=0.2,
+            fillet_r=0.2, name="GND")
+    B = P.B_Cu
+    mk = {n: bd.pad_xy("MK1", n) for n in ("1", "2", "3", "4", "5", "6", "7")}
+    cs = {n: bd.pad_xy("J1", n) for n in sp.CARRIER_NETS}
+    e = sp.CARRIER_W / 2 - sp.CARRIER_CAST[0]               # castellation pads' inner edge
+    px = sp.MIC_COL + sp.MIC_PAD[0] / 2                      # mic pads' outer edge
+    # I2S: WS (nearest the port) to the bottom castellation, SCK the middle, SD the top
+    bd.track("I2S_WS", 0.15, [mk["5"], (-2.0, mk["5"][1]), (-2.0, cs["3"][1]), cs["3"]], B)
+    bd.track("I2S_SCK", 0.15, [mk["6"], (-2.35, mk["6"][1]), (-2.35, cs["2"][1]), cs["2"]], B)
+    bd.track("I2S_SD", 0.15, [mk["7"], (-(e + 0.3), mk["7"][1]), (-(e + 0.3), cs["1"][1]), cs["1"]], B)
+    # VDD down the right to the bottom castellation; CONFIG and LR to the top one (GND)
+    bd.track("+3V3", 0.2, [mk["3"], (2.0, mk["3"][1]), (2.0, cs["6"][1]), cs["6"]], B)
+    bd.track("GND", 0.2, [mk["2"], (e + 0.4, mk["2"][1])], B)
+    bd.track("GND", 0.2, [mk["1"], (2.0, mk["1"][1]), (2.0, mk["2"][1])], B)
+    # port ring to the front pour through a via under the body's port end
+    vg = (0.0, -1.6)
+    bd.track("GND", 0.2, [(0.0, -sum(sp.MIC_RING) / 4), vg], B)
+    bd.via("GND", *vg)
+    bd.text(f"MK1 PORT {sp.MIC_FLEX_HOLE_D} mm: gasket seat, keep flat", 0.0, sp.CARRIER_H / 2 + 0.8, P.Cmts_User, 0.5)
+    bd.save()
+
+
+def build_riser():
+    """Riser (D-53, D-60, D-79): the posts level at its lower corners, the pins above and between them; +5V post to
+    the upper pin, GND post to the lower."""
+    bd = Board(CTX, sp.RISER_B, 2, sp.RISER[2], 0.2, 0.5)
+    x, y, w, h = sp.RISER_RECT
+    bd.outline([(x + w / 2, y - h / 2), (x + w / 2, y + h / 2), (x - w / 2, y + h / 2), (x - w / 2, y - h / 2)], 1.0)
+    for ref, p in sp.RISER_PARTS.items():
+        bd.place(ref, p, False)
+    p5, pg = bd.pad_xy("P1", "1"), bd.pad_xy("P2", "1")
+    j5, jg = bd.pad_xy("J1", "1"), bd.pad_xy("J2", "1")
+    bd.track("+5V", 1.0, [p5, (j5[0] - 1.8, j5[1]), j5])
+    bd.track("GND", 1.0, [pg, (jg[0] + 1.8, jg[1]), jg])
+    bd.text(f"RISER {sp.REV}", x, (j5[1] + jg[1]) / 2, P.B_SilkS, 0.8)          # between the pins' pads
     bd.save()
 
 
 def main():
     PRJ.mkdir(parents=True, exist_ok=True)
     build_libs()
-    for name in (sp.FLEX, sp.JUMPER, sp.COVER, eu.NAME):
+    for name in (sp.RING, sp.CARRIER, sp.RISER_B, sp.COVER, eu.CAPBOARD):
         build_project(name)
     status = "CN2 mate and contact map UNCONFIRMED (placeholder) - do not fabricate" if not sp.CN2_CONFIRMED \
         else "CN2 mate confirmed"
-    build_schematic(CTX, sp.FLEX, sp.FLEX_PARTS, ("+5V", "+3V3", "GND", "GND_SENS"),
-                    "Smart wall plate - sensor flex", sp.REV,
-                    [status, "Generated by pcb/sensor/tools/gen_sensor.py - edit sensor_parts.py"],
-                    "Sensor flex (docs/DESIGN.md D-27, D-47): two layers, two 45 deg folds.\n"
-                    "J1 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin).\n"
-                    "J2, J3: Harwin S7081-42R spring fingers on the 5 V jumper's pad end (+5 V, GND from the wiring board).\n"
-                    "U1: SHT45 on the flex tail, I2C on the MSR-2 bus (SDA = IO1, SCL = IO0).\n"
-                    "MK1: I2S microphone (D-29), left channel; SCK = IO4, WS = IO6, SD = IO7 (CN2 contacts placeholder).\n"
-                    "GND_SENS: the microphone's and the SHT45's own CN2 ground contact, joined to GND on the MSR-2.")
-    build_schematic(CTX, sp.JUMPER, sp.JUMPER_PARTS, ("+5V", "GND"), "Smart wall plate - power jumper", sp.REV,
-                    ["Generated by pcb/sensor/tools/gen_sensor.py - edit sensor_parts.py"],
-                    "5 V flex jumper (docs/DESIGN.md D-27, R9): J1 plugs into the wiring board's J2\n"
-                    "(Hirose FH12-6S, slide lock); TP1 / TP2: gold pads on the corner shelf under the\n"
-                    "sensor flex's spring fingers. No wires, no solder joints between parts.")
+    gen = "Generated by pcb/sensor/tools/gen_sensor.py - edit sensor_parts.py"
+    build_schematic(CTX, sp.RING, sp.RING_PARTS, ("+5V", "+3V3", "GND"), "Smart wall plate - ring board", sp.REV,
+                    [status, gen],
+                    "Ring board (docs/DESIGN.md D-50): FR4 1.6 mm round the insert's plug, against the wall.\n"
+                    "J1: 5 V from the wiring board's J2 over a 6-way 0.5 mm FFC (pinout mirror-symmetric).\n"
+                    "J2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin).\n"
+                    "U1: SHT45, I2C on the MSR-2 bus (SDA = IO1, SCL = IO0).\n"
+                    "J3: land for the mic carrier (I2S microphone, D-29): SCK = IO4, WS = IO6, SD = IO7.\n"
+                    "H1-H3: SMT spacers under the MSR-2's board. Copper keeps 8 mm from the box opening.")
+    build_schematic(CTX, sp.CARRIER, sp.CARRIER_PARTS, ("+3V3", "GND"), "Smart wall plate - mic carrier", sp.REV,
+                    [gen], "Mic carrier (docs/DESIGN.md D-50): the bottom-port I2S microphone on the back, port up\n"
+                    "through the carrier; castellated edges soldered flat on the ring board's land (J3 there).\n"
+                    "LR and CONFIG to GND: left channel.")
+    build_schematic(CTX, sp.RISER_B, sp.RISER_PARTS, ("+5V", "GND"), "Smart wall plate - riser board", sp.REV,
+                    [gen], "Riser board (docs/DESIGN.md D-50): on the two spacer posts from the wiring board's 5 V area\n"
+                    "(M2 screws, P1 +5V, P2 GND); J1 / J2 Harwin P70-2200045 spring pins onto the back cover's pads.")
     build_schematic(CTX, sp.COVER, sp.COVER_PARTS, ("+5V", "GND"), "Smart wall plate - back cover flex", sp.REV,
-                    ["Generated by pcb/sensor/tools/gen_sensor.py - edit sensor_parts.py"],
-                    "Replacement back cover flex (docs/DESIGN.md D-35): J1 / J2 spring fingers on the plate's floor\n"
-                    "pads (+5V, GND), U1 3.3 V regulator, J3 / J4 spring fingers on the BILRESA's VBAT plate / GND leaf\n"
+                    [gen],
+                    "Replacement back cover flex (docs/DESIGN.md D-35, D-50): J1 / J2 pads under the plate's spring\n"
+                    "pins (+5V, GND), U1 3.3 V regulator, J3 / J4 spring fingers on the BILRESA's VBAT plate / GND leaf\n"
                     "spring. One bend, single layer.")
+    build_schematic(CTX, eu.CAPBOARD, eu.CAPBOARD_PARTS, ("+5V", "+3V3", "GND"), "Smart wall plate - EU cap board",
+                    sp.REV, [status, "Generated by pcb/sensor/tools/gen_sensor.py - edit eu_capboard_parts.py"],
+                    "EU cap board (docs/DESIGN.md D-56, D-70): FR4 1.6 mm in the cap's printed carrier.\n"
+                    "TP1 / TP2 on the underside: pads under the 5 V board's sensor spring pins (GND, +5 V).\n"
+                    "J2 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin); H5-H7 SMT spacers.\n"
+                    "J3: land for the mic carrier (I2S microphone, D-29) over a window; U1: SHT45 on the MSR-2's I2C.\n"
+                    "H1-H4: holes for the M2 screws into the carrier.")
     # board files: build in memory, save (KiCad 9 python cannot refill/reload safely in one board)
-    build_schematic(CTX, eu.NAME, eu.PARTS, ("+5V", "+3V3", "GND", "GND_SHT", "MIC_3V3", "MIC_GND"),
-                    "Smart wall plate - EU sensor flex", sp.REV,
-                    [status, "Generated by pcb/sensor/tools/gen_sensor.py - edit eu_flex_parts.py"],
-                    "EU sensor flex (docs/DESIGN.md D-30, D-41): single layer, two 45 deg folds and the tongue's.\n"
-                    "J1 mates the MSR-2's rear connector CN2 (MSR-2 powered through its 5V pin).\n"
-                    "TP1 / TP2: pads under the 5 V board's spring pins (GND, +5 V).\n"
-                    "TP3 / TP4: floor pads under the replacement back cover's fingers (+5 V, GND), on the tongue.\n"
-                    "U1: SHT45, I2C on the MSR-2 bus; MK1: I2S microphone (D-29), left channel.\n"
-                    "GND_SHT / MIC_3V3 / MIC_GND: their own CN2 contacts, joined to GND / +3V3 on the MSR-2.")
-    build_flex()
-    build_jumper()
+    build_ring()
+    build_carrier()
+    build_riser()
     build_cover()
-    build_eu_flex()
+    build_eu_capboard()
 
 
 if __name__ == "__main__":
