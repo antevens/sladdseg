@@ -323,6 +323,9 @@ the cover flex's fab files (`COVER_CONFIRMED`), PC-FR datasheet (`V0_RATED_T`), 
    dual-button remote (E2489, outline and cells recorded from IKEA's drawing);
    jumbo-plate option; the EU stack in a real 47 mm box (the printed test socket, D-76,
    has markers at 40, 43, 60 and 63 mm).
+8. Once the full plates are done (human, 2026-10-11): plain versions, NA and EU, without the
+   microphone, the temperature sensor and the MSR-2: only the switches (rocker, remote) and
+   the space for the remote. Components stay as they are until then.
 
 ## Open questions for the human
 

@@ -11,6 +11,9 @@
   coupon_back_gauges  five flat profile gauges for the inside of the remote's original back cover, side to side: the
                       modelled back (flat, quarter-ellipse round-over B_BACK_RUN x B_BACK_RISE) with the round-over
                       changed by GAUGE_DR (engraved: its run), a line at the rim (D-87).
+  coupon_end_gauges   five flat '#' frames for the inside of the original back cover in plan view: the bar tips cut to
+                      a rounded rectangle (the original's inside) with corner radius END_GAUGE_R (engraved); the one
+                      that drops in at the rim touching every tip gives the remote's end shape (D-101).
 """
 from math import cos, pi, sin
 from build123d import Box, Pos, Rectangle, Rot, Polyline, Text, extrude, make_face
@@ -23,6 +26,9 @@ PANEL_STEPS = (1.0, 1.5, 2.0, 2.5, 3.0)
 RIB_STEPS = (0.10, 0.15, 0.20)                     # crush rib interference into the board's edge
 GAUGE_DR = (-0.5, -0.25, 0.0, 0.25, 0.5)          # back gauges: change of the round-over's run and rise
 GAUGE_T = 2.0                                      # gauge thickness
+END_GAUGE_R = (20.9, 18.0, 15.0, 12.0, 9.0)        # end gauges: corner radius of the plan outline (20.9: semicircular ends)
+END_GAUGE_CLR = 0.05                               # each side, under the original cover's inside outline
+END_GAUGE_BARS = ((-13.0, 13.0), (7.5, -20.0), 4.0, 3.0)   # bars: x of the two along y, y of the two along x, widths
 GAUGE_GRIP = 8.0                                   # gauge above the cover's rim
 
 
@@ -102,6 +108,35 @@ def back_gauge(dr):
     return g
 
 
+def end_gauge(r):
+    """'#' frame (plan view, remote coordinates): two bars along y at END_GAUGE_BARS x, two along x at its y (above
+    and below the magnet holder, clear of the side tabs), cut to the original cover's inside outline (B_W, B_H less
+    BC_WALL each side) as a rounded rectangle with corner radius r, END_GAUGE_CLR under it; r engraved."""
+    from build123d import RectangleRounded
+    (xa, xb), (ya, yb), wv, wh = END_GAUGE_BARS
+    w, h = B_W - 2 * BC_WALL - 2 * END_GAUGE_CLR, B_H - 2 * BC_WALL - 2 * END_GAUGE_CLR
+    out = slab(RectangleRounded(w, h, min(r, w / 2 - 0.01)), 0, GAUGE_T)
+    bars = None
+    for x in (xa, xb):
+        b = Pos(x, 0, GAUGE_T / 2) * Box(wv, h + 2, GAUGE_T)
+        bars = b if bars is None else bars + b
+    for y in (ya, yb):
+        bars += Pos(0, y, GAUGE_T / 2) * Box(w + 2, wh, GAUGE_T)
+    g = out & bars
+    g -= Pos(xb, (ya + yb) / 2, GAUGE_T - 0.2) * Rot(0, 0, 90) * extrude(Text(f"R{r:g}", 3.5), 0.6)
+    return g
+
+
+def end_gauges():
+    """The END_GAUGE_R gauges in two rows (3 + 2), flat."""
+    dx, dy = B_W - 2 * BC_WALL + 4.0, B_H - 2 * BC_WALL + 4.0
+    out = None
+    for i, r in enumerate(END_GAUGE_R):
+        g = Pos((i % 3) * dx, -(i // 3) * dy, 0) * end_gauge(r)
+        out = g if out is None else out + g
+    return out
+
+
 def back_gauges():
     """The GAUGE_DR gauges side by side along y, the smallest round-over at the bottom."""
     h = B_SEAM_Z - BC_WALL + GAUGE_GRIP + 4.0
@@ -114,6 +149,6 @@ def back_gauges():
 
 if __name__ == "__main__":
     for name, p in (("pocket_well", pocket_well()), ("msr", msr()), ("rocker", rocker_ladder()), ("ribs", ribs()),
-                    ("back_gauges", back_gauges())):
+                    ("back_gauges", back_gauges()), ("end_gauges", end_gauges())):
         bb = p.bounding_box()
         print(f"coupon_{name}: {bb.size.X:.0f} x {bb.size.Y:.0f} x {bb.size.Z:.0f} mm, {p.volume/1000:.1f} cm3, valid={p.is_valid}, solids={len(p.solids())}")
