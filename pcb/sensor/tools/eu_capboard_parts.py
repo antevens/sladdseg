@@ -71,9 +71,9 @@ CAPBOARD_PARTS = {
                 pos=(*E.PINS[0], 0), side="B", desc="Under the 5 V board's GND sensor spring pin (P1)"),
     "TP2": dict(sym="TestPoint", fp=FP_PAD, value="+5V pin pad", nets={"1": "+5V"}, in_bom=False, label="+5V",
                 pos=(*E.PINS[1], 0), side="B", desc="Under the 5 V board's +5V sensor spring pin (P2)"),
-    "C1": dict(label="22uF 10V X5R 1206", sym="C", fp=sp.FP_C1206, value="22uF 10V X5R", nets={"1": "+5V", "2": "GND"},
-               pos=(31.0, -2.0, 90), mfr="Samsung Electro-Mechanics", mpn="CL31A226KPHNNNE",
-               desc="Ceramic 22 uF 10 V X5R 1206 at the pin pads", ds="https://www.samsungsem.com"),
+    "C1": dict(label="22uF 16V X5R 1206", sym="C", fp=sp.FP_C1206, value="22uF 16V X5R", nets={"1": "+5V", "2": "GND"},
+               pos=(31.0, -2.0, 90), mfr="KEMET", mpn="C1206C226M4PACTU",
+               desc="Ceramic 22 uF 16 V X5R 1206 at the pin pads, 1.8 mm max", ds="https://yageogroup.com/content/datasheet/asset/file/KEM_C1006_X5R_SMD"),
     "J2": dict(sym="Conn_02x12_Odd_Even", fp=sp.FP_B2B, value="55909-2474", label="Molex 55909-2474",
                nets=dict(sp.CN2_MAP), pos=(E.MSR_CN2_X, E.MSR_Y, 0), mfr="Molex", mpn="55909-2474",
                desc="SlimStack plug 24 contacts, 0.4 mm, 2 rows, mating the MSR-2's CN2 (assumed Molex 51338-2474, "

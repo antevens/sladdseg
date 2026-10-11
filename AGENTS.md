@@ -98,7 +98,7 @@ make print       # OrcaSlicer projects + G-code (SLICER=... overrides the pin)
 make renders     # docs/renders/*.png: every group whose sources changed (sections, 3D views, EU, boards)
 make check-renders  # no render older than its sources, every render used by a doc - must pass
 make eu          # EU variant: CAD to build/eu, EU checks, EU renders
-make order       # DigiKey / Mouser CSVs for test plates (NA_PLATES, EU_PLATES)
+make order       # DigiKey / Mouser CSVs: one NA, one EU plate, a devkit of each (DEVKIT_SETS); PCBWay devkit packs
 make stock       # live DigiKey / Mouser stock and lifecycle, parts rule D-84 (keys: pcb/order/README.md)
 make order-push  # DigiKey myLists link + Mouser cart: 1 NA plate by default (VARIANT=na|eu|both, PLATES, PRIMARY)
 ```

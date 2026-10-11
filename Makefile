@@ -107,12 +107,11 @@ $(STAMP)/eu_mains_board $(STAMP)/eu_5v_board: $(STAMP)/%: pcb/eu/kicad/%.kicad_p
 	$(BARE) $< $* --copper-only
 	touch $@
 
-NA_PLATES ?= 3
-EU_PLATES ?= 2
+DEVKIT_SETS ?= 4
 KICAD_PYTHON ?= python3
-order:          ## DigiKey / Mouser lists for the test plates and PCBWay order packs (pcb/order/), NA_PLATES / EU_PLATES
-	python3 pcb/tools/order_bom.py $(NA_PLATES) $(EU_PLATES)
-	$(KICAD_PYTHON) pcb/tools/order_pcbway.py $(NA_PLATES) $(EU_PLATES)
+order:          ## DigiKey / Mouser lists (pcb/order/): one NA, one EU plate, a devkit of each (DEVKIT_SETS, default 4); PCBWay devkit packs
+	python3 pcb/tools/order_bom.py $(DEVKIT_SETS)
+	$(KICAD_PYTHON) pcb/tools/order_pcbway.py $(DEVKIT_SETS)
 	@if [ -n "$$DIGIKEY_CLIENT_ID$$MOUSER_SEARCH_KEY" ]; then python3 pcb/tools/distributors.py stock; \
 	else echo "stock not checked: no DigiKey / Mouser keys in the environment (pcb/order/README.md)"; fi
 

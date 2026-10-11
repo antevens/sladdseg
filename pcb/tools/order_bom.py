@@ -1,9 +1,10 @@
-"""Distributor order lists (DigiKey BOM Manager, Mouser BOM Import) for hand-soldered test plates.
+"""Distributor order lists (DigiKey BOM Manager, Mouser BOM Import): one plate of each variant and a devkit.
 
-Usage: python3 pcb/tools/order_bom.py [NA_PLATES] [EU_PLATES]   (defaults 3 and 2)
-Writes pcb/order/{na,eu,all}_{digikey,mouser}.csv from the boards' part tables (parts.py, eu_parts.py,
-sensor_parts.py, eu_capboard_parts.py) and the NA mechanical parts (EXTRA_NA). Lines merge by MPN; the quantity is the per-plate count times the plates plus
-spares. Parts without an MPN yet (the CN2 plug) are listed on stdout, not in the files.
+Usage: python3 pcb/tools/order_bom.py [DEVKIT_SETS]   (default 4)
+Writes pcb/order/{unit_na,unit_eu,devkit_na,devkit_eu}_{digikey,mouser}.csv (and the _rest_ files for parts one
+distributor does not carry) from the boards' part tables (parts.py, eu_parts.py, sensor_parts.py,
+eu_capboard_parts.py) and the parts not on a board (EXTRA_NA, EXTRA_EU). Lines merge by MPN; the quantity is
+exactly the per-plate count times the plates (no spares). Parts without an MPN yet are listed on stdout.
 """
 import csv
 import math
@@ -28,7 +29,7 @@ DIGIKEY = {
     "1802.2504": None,
     "IRM-03-5": "1866-3020-ND",
     "B72660M0271K093": "495-1467-1-ND",
-    "CL31A226KPHNNNE": "1276-1287-1-ND",
+    "C1206C226M4PACTU": "399-12290-1-ND",             # DigiKey API 2026-10-11 (D-95)
     "FH12-6S-0.5SH(55)": "HFJ106CT-ND",
     "S7081-42R": "952-1734-1-ND",
     "SHT45-AD1B-R2": "1649-SHT45-AD1B-R2CT-ND",
@@ -42,6 +43,7 @@ DIGIKEY = {
     "55909-2474": "WM3787CT-ND",               # DigiKey lists it as 0559092474 (API 2026-10-11)
     "25503": "36-25503-ND",                    # bare 25503 is ambiguous at DigiKey (API 2026-10-11)
     "RA412C1100": "EG5628-ND",                 # DigiKey API 2026-10-11 (584, 9 wk)
+    "221-412": "2946-221-412-ND",              # DigiKey API 2026-10-11 (bulk)
     "ADAU7002ACBZ-R7": "505-ADAU7002ACBZ-R7CT-ND",   # cut tape (DigiKey cart, API 2026-10-11)
     "C1206C104J3GACTU": "399-C1206C104J3GACTUCT-ND", # cut tape (DigiKey cart, API 2026-10-11)
 }
@@ -53,10 +55,13 @@ MOUSER = {
     "TSM-102-02-L-SV": "",                     # TODO distributor PN (imports by MPN until then)
     "2604-3102": None,
     "P70-2200045": None,
+    "ADAU7002ACBZ-R7": None,                   # Mouser: not restocked once sold out (human, 2026-10-11)
 }
-# second sources on the same footprint, used by distributors.py push for a distributor that does not carry the part
-ALTERNATES = {"1802.2504": ("E-Switch", "RA412C1100", "Rocker switch DPST, 4.8 mm tabs into the slots, ENEC 10(4) A 250 V~, "
-                            "UL/cUL 16 A 125 VAC (second source, D-88)")}
+# parts ordered as their second source on the same footprint, per variant (D-97): both plates take the E-Switch
+# RA412C1100 (UL/cUL 10 A 250 VAC, ENEC 10(4) A 250 V~; at DigiKey, a fraction of the Marquardt's price)
+_RA4 = ("E-Switch", "RA412C1100", "Rocker switch DPST, 4.8 mm tabs into the slots, UL/cUL 16 A 125 VAC and 10 A 250 VAC, "
+        "ENEC 10(4) A 250 V~ (second source, D-88, D-97)")
+PREFERRED = {"NA": {"1802.2504": _RA4}, "EU": {"1802.2504": _RA4}}
 SMALL = ("0402", "1206", "SOT-23", "DFN", "SPK0641", "WLCSP", "S7081", "P70-", "FH12", "UMT250", "CU4032", "SMD", "WA-SMSI",
          "WA-SBRIE")
 # NA parts that are not on a board (D-50, D-57): the spacer posts' studs, the board standoffs and the 5 V FFC
@@ -69,6 +74,11 @@ EXTRA_NA = {
                       "5.0 mm hex: wiring board to the insert (D-57)") for i in range(1, 5)},
     "W1": dict(mfr="Wurth Elektronik", mpn="687606152002", fp="FFC", desc="FFC 0.5 mm, 6 contacts, 152 mm, Type 1: "
                "wiring board J2 to the ring board J1"),
+}
+# EU parts that are not on a board (D-94): the lights' protective earth, joined in the box
+EXTRA_EU = {
+    "PE1": dict(mfr="WAGO", mpn="221-412", fp="lever connector", desc="Lever splicing connector, 2 conductors, "
+                "0.2-4 mm2: PE in from the supply to PE out to the lights, in the box (no PE on the boards)"),
 }
 # bought locally: no MPN in the lists (printed on stdout)
 LOCAL = {"NA": ["M2 x 5 pan head screw ISO 7045, steel: 2 per plate (riser onto the spacer posts)",
@@ -92,7 +102,7 @@ def tables():
             ("NA", "mechanical", EXTRA_NA),
             ("EU", "mains board", eu.MAINS_PARTS), ("EU", "5 V board", eu.LV_PARTS),
             ("EU", "cap board", euc.CAPBOARD_PARTS),
-            ("EU", "cover flex", sen.COVER_PARTS)]
+            ("EU", "cover flex", sen.COVER_PARTS), ("EU", "mechanical", EXTRA_EU)]
 
 
 def short(desc, n=90):
@@ -117,6 +127,8 @@ def collect(plates, keep=None):
                 continue
             if mpn in SUBST:
                 mfr, mpn, desc = SUBST[mpn]
+            if mpn in PREFERRED.get(variant, {}):
+                mfr, mpn, desc = PREFERRED[variant][mpn]
             line = lines.setdefault(mpn, dict(mfr=mfr, desc=short(desc), fp=p["fp"], per={}, refs=[]))
             line["per"][variant] = line["per"].get(variant, 0) + 1
             line["refs"].append(f"{variant} {board} {ref}")
@@ -131,10 +143,10 @@ def quantity(line, plates):
     return need + 1
 
 
-def write(name, lines, plates, out=OUT):
+def write(name, lines, plates, out=OUT, spares=False):
     rows = []
     for mpn, line in lines.items():
-        q = quantity(line, plates)
+        q = quantity(line, plates) if spares else sum(n * plates[v] for v, n in line["per"].items())
         per = ", ".join(f"{n}/plate {v}" for v, n in line["per"].items())
         ref = "WP " + " ".join(sorted({r.split()[0] for r in line["refs"]})) + " " + line["refs"][0].split()[-1]
         rows.append((q, mpn, line["mfr"], ref[:48], f'{line["desc"]} ({per}; {"; ".join(line["refs"])})'))
@@ -166,14 +178,16 @@ def write(name, lines, plates, out=OUT):
 
 
 def main():
-    na = int(sys.argv[1]) if len(sys.argv) > 1 else 3
-    eu = int(sys.argv[2]) if len(sys.argv) > 2 else 2
+    devkit = int(sys.argv[1]) if len(sys.argv) > 1 else 4
     OUT.mkdir(parents=True, exist_ok=True)
-    for name, plates in (("na", {"NA": na}), ("eu", {"EU": eu}), ("all", {"NA": na, "EU": eu})):
+    open_all = set()
+    for name, plates in (("unit_na", {"NA": 1}), ("unit_eu", {"EU": 1}), ("devkit_na", {"NA": devkit}),
+                         ("devkit_eu", {"EU": devkit})):
         lines, open_parts = collect(plates)
         write(name, lines, plates)
-    print(f"plates: NA {na}, EU {eu}")
-    for o in sorted(set(open_parts)):
+        open_all.update(open_parts)
+    print(f"unit: 1 plate each; devkit: {devkit} sets of parts per variant")
+    for o in sorted(open_all):
         print("not in the lists (no part yet):", o)
     for v, items in LOCAL.items():
         for o in items:

@@ -1071,7 +1071,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "22uF 10V X5R"
+		(property "Value" "22uF 16V X5R"
 			(at 79.2 99.94 0)
 			(effects
 				(font
@@ -1089,7 +1089,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://www.samsungsem.com"
+		(property "Datasheet" "https://yageogroup.com/content/datasheet/asset/file/KEM_C1006_X5R_SMD"
 			(at 76.2 91.44 0)
 			(effects
 				(font
@@ -1098,7 +1098,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Ceramic 22 uF 10 V X5R 1206, 1.8 mm max (or equivalent)"
+		(property "Description" "Ceramic 22 uF 16 V X5R 1206, 1.8 mm max"
 			(at 76.2 91.44 0)
 			(effects
 				(font
@@ -1107,7 +1107,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung Electro-Mechanics"
+		(property "Manufacturer" "KEMET"
 			(at 76.2 91.44 0)
 			(effects
 				(font
@@ -1116,7 +1116,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL31A226KPHNNNE"
+		(property "MPN" "C1206C226M4PACTU"
 			(at 76.2 91.44 0)
 			(effects
 				(font

@@ -48,6 +48,9 @@ depth is still to be tried in a real box (D-36).
 - [ ] Spring pin working height on a printed cap (6.4–7.2 mm, designed 6.8 ± 0.3).
 - [ ] EU stack depth tried in the printed test socket (D-76), then a real 47 mm box (−43.8 mm deepest part).
 - [ ] Approvals of S1, J1, J2, PS1, F1 and RV1 adequate for the installation.
+- [ ] PE (D-94): joined in the box in a WAGO 221-412, not on the boards; the steel piece in the cap's pocket floor
+      is the one metal part a user can touch with the remote out, insulated from mains only by the V-0 cap: whether
+      that is double / reinforced insulation (no PE needed) is for review.
 - [ ] Second-source rocker E-Switch RA412C1100 (D-88): its tab rows on a sample, tabs soldered into the
       slots outside the maker's listed terminations (D-86), its 10(4) A ENEC rating accepted; S1's slot pads
       reach the WAGO bodies' edge (0.05 mm), 3.85 mm from their pins.

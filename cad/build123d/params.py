@@ -278,7 +278,7 @@ RING_NUT = (4.35, 1.5)                    # DATASHEET Wurth WA-SMSI M2 L1.5 9774
                                           # height; three under the MSR-2's board (D-68)
 RING_NUT_HOLE, RING_NUT_PAD = 3.0, 5.3    # DATASHEET 9774015243R: unplated hole for its spigot, solder pad diameter
 # small parts on the ring board: centre (room x, y), body w, h, max height
-RING_SMALL = {"C1": ((21.0, 50.6), (1.6, 3.2, 1.8)),     # 22 uF 10 V 1206 at J1 (Samsung CL31A226KPHNNNE, 1.6 +-0.2)
+RING_SMALL = {"C1": ((21.0, 50.6), (1.6, 3.2, 1.8)),     # 22 uF 16 V 1206 at J1 (KEMET C1206C226M4PACTU, 1.8 max: DigiKey, D-95)
               "C2": ((2.6, -51.3), (0.5, 1.0, 0.55)),    # SHT45 100 nF 0402 (0.5 +-0.05)
               **{k: ((MIC_AT[0] + dx, MIC_AT[1] + dy), s) for k, ((dx, dy), s) in MIC_PARTS.items()}}
 

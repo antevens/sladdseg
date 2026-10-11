@@ -247,10 +247,6 @@ def push(na, eu, primary, dry):
         ref = ("WP " + " ".join(sorted({r.split()[0] for r in line["refs"]})) + " " + line["refs"][0].split()[-1])[:48]
         dkpn, mspn = dk_pn(mpn), ob.MOUSER.get(mpn, "")
         mfr, note = line["mfr"], line["desc"]
-        if dkpn is None and primary == "digikey" and mpn in ob.ALTERNATES:   # second source DigiKey carries
-            mfr, alt, note = ob.ALTERNATES[mpn]
-            dkpn = dk_pn(alt)
-            print(f"  {mpn} is not at DigiKey: {mfr} {alt} instead ({note})")
         to_dk = dkpn is not None and (primary == "digikey" or mspn is None)
         if to_dk:
             dk_parts.append({"requestedPartNumber": dkpn, "manufacturerName": mfr,

@@ -6,7 +6,7 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 |-----|------|--------------|-------|
 | — | IKEA BILRESA remote, scroll wheel | IKEA 906.174.56 (white) | Kept intact: 2×AAA, or the replacement back cover (no cells). |
 | — | Adhesive steel plate, cut | supplied with the BILRESA | D-43, D-52: cut once across to an 18.5 mm piece from one round end (~47.4 × 17.5, ESTIMATE) in the hacksaw guide (`print/plate_jig_PLA.3mf`, D-81); round end down in the pocket-floor recess (NA insert; EU cap, D-72). |
-| S1 | **Rocker DPST, PCB pins** | **Marquardt 1802.2504** (drawing 1802.2504 rev g); Mouser 979-1802.2504. Second source (NA and EU): **E-Switch RA412C1100** (4.8 mm tabs into the slots, D-88) | ENEC 12(4) A 250 V~; UL-recognized/CSA 15 A 125–250 VAC; cutout 19.4 × 21.9 (1.25–2 mm panel); 5.3 mm above the panel, PCB seat 16.2 mm below. Pinout to be checked with a meter (D-26). |
+| S1 | **Rocker DPST, PCB pins** | **Marquardt 1802.2504** (drawing 1802.2504 rev g); Mouser 979-1802.2504. Second source (NA and EU): **E-Switch RA412C1100** (4.8 mm tabs into the slots, D-88); the order lists take it for both variants (D-97) | ENEC 12(4) A 250 V~; UL-recognized/CSA 15 A 125–250 VAC; cutout 19.4 × 21.9 (1.25–2 mm panel); 5.3 mm above the panel, PCB seat 16.2 mm below. Pinout to be checked with a meter (D-26). |
 | J1 | **Terminal block, push-in lever, 6-pole, 5 mm, 4 mm² / 12 AWG** | **WAGO 2604-1106** | L/N/PE in and out; 400 V (III/2). On the board's back, wire entries face the top edge. |
 | PS1 | **AC-DC 5 V 600 mA** | **Mean Well IRM-03-5** (DigiKey 1866-3020-ND) | 85–305 VAC, 37×24×15 mm, on the board's back. |
 | F1 | **Fuse T1A 250 VAC, SMD** | **Schurter UMT 250 3403.0166.11** (bag of 100; .24 = reel of 2000) | Rating is the designer's choice (Mean Well gives none); 200 A breaking capacity: human review. |
@@ -21,7 +21,7 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | PCB | Ring board, 2-layer FR4 1.6 mm, 66.3 × 125.9 mm with a 53.9 × 79.3 mm window | PCBWay; `pcb/sensor/` ring_board (no fab files until CN2 is confirmed) | D-50, D-68: on the insert's collar (crush ribs), under the face plate. Copper 8 mm from the box opening. |
 | H1–H3 (ring) | SMT steel spacer M2, 1.5 mm, tin | Würth WA-SMSI 9774015243R | D-68: the MSR-2's board rests on them under the face plate's posts. |
 | J1 (ring) | FPC connector, 6 contacts, 0.5 mm | Hirose FH12-6S-0.5SH(55) | D-50: 5 V in from the FFC. |
-| C1 (ring) | 22 µF 10 V X5R 1206 | Samsung CL31A226KPHNNNE or equiv. | At J1 (moved from the wiring board). |
+| C1 (ring, EU cap board, EU 5 V board) | 22 µF 16 V X5R ±20 % 1206, 1.8 mm max | KEMET C1206C226M4PACTU (DigiKey 399-12290-1-ND) | At J1 / the 5 V input (D-95; was Samsung CL31A226KPHNNNE, 61-week maker lead time). |
 | U1 (ring) | SHT45 | Sensirion SHT45-AD1B-R2 (DFN-4 1.5 × 1.5) | On the ring board under its vents, I²C from the MSR-2. |
 | C2, C4, R1 (ring, EU cap board) | 100 nF X7R 0402 ×2; 100 kΩ 1 % 0402 | any (Murata GRM155R71C104KA88J, Yageo RC0402FR-07100KL in the order lists) | SHT45 and ADAU7002 decoupling; I²S SD pull-down (the ADAU7002 tristates SDATA). |
 | C3 (ring, EU cap board) | 100 nF C0G 25 V ±5 % 1206, 3.2 × 1.6 × 1.8 max | KEMET C1206C104J3GACTU | D-85: the mic's decoupling; Knowles: no Class 2 dielectrics near the mic. 100 nF C0G starts at 1206 (KEMET, TDK, AVX, Murata catalogs). |
@@ -49,6 +49,7 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | — | **Filament, NA insert and EU cap: Elegoo PC-FR** (UL 94 V-0 per listing) | see PRINTING.md | ≈ 52 g insert with supports, ≈ 10 g EU cap (PRINTING.md). Keep the TDS on file. |
 | — | Filament: test fits Elegoo PLA; installed trim PETG / ABS / ASA; barrier parts PC-FR | see PRINTING.md | Per part in PRINTING.md (NA trim ≈ 22 g, EU trim ≈ 42 g). |
 | — | EU mains board and 5 V board parts (rocker, WAGO 2604-3102 ×2, Traco TMPS 03-105, F1, RV1, header, socket, C1) | `pcb/eu/README.md`; order lists in `pcb/order/` | D-32, D-36, D-59. |
+| PE1 (EU) | **Lever splicing connector, 2 conductors, 0.2–4 mm²** | **WAGO 221-412** (DigiKey 2946-221-412-ND) | D-94: PE in from the supply to PE out to the lights, joined in the box; the boards carry no PE. A third PE conductor takes a 221-413. |
 
 ## Links
 

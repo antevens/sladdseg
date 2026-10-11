@@ -74,6 +74,9 @@ tape. Nothing here is a compliance statement; mains work is a human decision (SA
    M2 screws (D-36, D-59).
 4. **Now solder the rocker** from the mains board's back, with the board screwed down and the rocker seated in the
    cup.
+5. In the box (breaker off): join the protective earth from the supply and to the lights in the WAGO 221-412
+   lever connector (D-94); the boards carry no PE. Keep whatever PE the box has continuous; a third PE conductor
+   (a looped feed) takes a 221-413. Then L and N into the two 2604-3102 blocks on the mains board's back.
 
 ## Replacement back cover
 

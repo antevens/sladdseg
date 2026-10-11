@@ -29,7 +29,8 @@ of the lights; the PSU is fed from the switched side, so the rocker also turns t
 - A routed relief slot under the PSU, between its input and output rows, cuts off the 5 V island
   (PSU outputs, J3). Mains copper keeps ≥ 8 mm (clearance and creepage) from it.
 - Keep-out areas round the mounting holes: mains copper ≥ 1.0 mm from them.
-- No PE on the board: the lights' protective earth is joined in the box (lever connector).
+- No PE on the board: the lights' protective earth is joined in the box in a WAGO 221-412 lever connector, in the
+  order lists (D-94; a third PE conductor takes a 221-413).
 - Installer labels on the back: L IN / L LOAD, N IN / N LOAD at the WAGO blocks, MAINS 230 VAC.
 
 ## 5 V board (`kicad/eu_5v_board.*`)
