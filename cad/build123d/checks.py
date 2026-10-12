@@ -3,6 +3,7 @@ hacksaw guide, the MSR-2 model; and the helpers the variant checks use (check, o
 the microphone column). na/checks_na.py and eu/checks_eu.py import this module as `base`.
 """
 import sys
+from math import hypot, radians, tan
 import numpy as np
 from build123d import Box, Pos
 from params import *
@@ -235,11 +236,19 @@ def cover_checks():
     check(BC_SIDE_WALL >= 1.2,
           f"side wall {BC_SIDE_WALL:.1f} mm (back {BC_WALL}): {B_W - 2 * BC_SIDE_WALL:.1f} x {B_H - 2 * BC_SIDE_WALL:.1f} "
           f"inside at the rim, 0.1 more all round for the remote's housing (D-75)")
-    k = 1 - sqrt(2) / 2                                    # the round-over's 45 deg point, from its ends
-    was, now = BC_WALL - 0.1 + B_BACK_RUN * k, BC_SIDE_WALL + BC_IN_RUN * k   # in from the outside at that height
-    check(abs((BC_SIDE_WALL + BC_IN_RUN) - (BC_WALL - 0.1 + B_BACK_RUN)) < 1e-6 and (was - now) * sqrt(2) / 2 >= 0.09,
-          f"inside round-over {BC_IN_RUN:.1f} across, walls {BC_SIDE_WALL:.1f}: it leaves the flat back where it did, its "
-          f"middle {(was - now) * sqrt(2) / 2:.2f} mm further from the housing (D-123)")
+    zs = [i * 0.005 for i in range(int(B_SEAM_Z / 0.005) + 1)]
+    steps = [max(abs(f(z + 0.005) - f(z)) for z in zs[:-1]) for f in
+             (lambda z: back_run(z, B_BACK_RUN, B_BACK_RISE), shell_in)]
+    check(max(steps) < 0.01, f"round-over without steps, outside and inside (largest change per 0.005 mm of height "
+                             f"{max(steps):.4f}; D-126)")
+    outside = [(back_run(z, B_BACK_RUN, B_BACK_RISE), z) for z in zs]
+    wall = min(min(hypot(shell_in(z) - r, z - zo) for r, zo in outside[::4]) for z in zs[::10] if z >= BC_WALL)
+    check(wall >= BC_SIDE_WALL - 0.05, f"thinnest shell wall {wall:.2f} mm (side walls {BC_SIDE_WALL})")
+    zb = BC_EASE[1]
+    was = BC_WALL - 0.1 - 0.2 + (B_BACK_RUN + 0.2) * (1 - sqrt(1 - (1 - (zb - BC_WALL) / B_BACK_RISE) ** 2))  # D-123
+    check(was - shell_in(zb) >= 0.3, f"inside eased out through the rubbing band: {was - shell_in(zb):.2f} mm more room "
+                                     f"(horizontal) at {zb} above the back face than D-123, nothing at the floor and "
+                                     f"the straight wall (D-126)")
     win = PIN_BARREL[0] / 2 + BC_WIN_CLR
     check(win - PIN_BARREL[0] / 2 >= 0.2 and BC_PAD_D / 2 >= win + 0.2,
           f"spring pin windows r {win:.2f} round the {PIN_BARREL[0]} barrel, pads r {BC_PAD_D / 2} over them (D-50)")
@@ -386,19 +395,22 @@ def cover_checks():
     check(ear.max.Y < B_H / 2 and reach == sorted(round(r, 2) for r in BC_LATCH_REACH),
           f"snap clip hook tips {reach} mm in from the outside rim, hooks {BC_LATCH_HOOK} mm inwards (bottom, top)")
     tip_z = (BC_WALL + BC_LATCH_CATCH_Z, B_SEAM_Z - BC_LATCH_RIM_GAP - 2 * BC_LATCH_HOOK[1])   # catch / tip face's foot
-    proud = [BC_LATCH_REACH[i] - (B_W / 2 - bc.inner_x(z)) for i, z in enumerate(tip_z)]
-    check(abs(proud[0] - proud[1]) < 0.01, f"clip tips stand {proud[0]:.2f} (bottom, at its catch) and {proud[1]:.2f} mm "
-                                           f"(top) clear of the shell's inner surface: the same (D-118)")
+    proud = [BC_LATCH_REACH[i] - shell_in_base(z) for i, z in enumerate(tip_z)]
+    eased = [BC_LATCH_REACH[i] - shell_in(z) for i, z in enumerate(tip_z)]
+    check(abs(proud[0] - proud[1]) < 0.01, f"clip tips placed {proud[0]:.2f} (bottom, at its catch) and {proud[1]:.2f} mm "
+                                           f"(top) clear of the inner surface before the ease (D-118); with it "
+                                           f"{eased[0]:.2f} and {eased[1]:.2f} (tips kept, D-126)")
     for i, f in enumerate(BC_LATCH_CATCH):                 # flat underside: room under it, proud of the shell
         if f is None:
             continue
         zc = BC_WALL + BC_LATCH_TOPS[i] - BC_LATCH_HOOK[i] - f
         tip = B_H / 2 - BC_LATCH_REACH[i]
         ledge = BC_LATCH_REACH[i] - (B_W / 2 - bc.inner_x(zc))   # tip beyond the shell's inside face at zc (same round-over)
-        probe = Pos(0, -(tip + 0.1), zc - 0.15) * Box(0.6, 0.15, 0.2)
+        under = 0.1 * tan(radians(BC_LATCH_RAMP)) if i == 0 else 0.0     # the ramp's drop 0.1 behind the tip
+        probe = Pos(0, -(tip + 0.1), zc - under - 0.15) * Box(0.6, 0.15, 0.2)
         r = probe & ps["cover"]
         check(ledge >= BC_LATCH_LEDGE_MIN and (r is None or r.volume < 1e-6),
-              f"{'bottom' if i == 0 else 'top'} clip: flat underside {zc - BC_WALL:.2f} above the inside floor, "
+              f"{'bottom' if i == 0 else 'top'} clip: catch {zc - BC_WALL:.2f} above the inside floor, a {BC_LATCH_RAMP:.0f} deg ramp under the hook, "
               f"{ledge:.2f} mm proud of the shell's inner surface (>= {BC_LATCH_LEDGE_MIN}), clear under the tip")
     widths = [round(e.bounding_box().size.X, 2) for e in sorted(bc.latches().solids(), key=lambda e: e.bounding_box().center().Y)]
     check(all(abs(w - BC_LATCH_W[i]) < 0.01 for i, w in enumerate(widths)), f"snap clips {widths} mm wide (bottom, top)")
@@ -419,7 +431,7 @@ def cover_checks():
     zs = (round(B_SEAM_Z - max(t.bounding_box().max.Z for t in tb.solids()), 2),
           round(B_SEAM_Z - min(t.bounding_box().min.Z for t in tb.solids()), 2))
     check(len(tb.solids()) == 4 and ys[0] >= gi / 2 + BC_TAB_CLR - 1e-3 and ys[-1] <= go / 2 - BC_TAB_CLR + 1e-3
-          and abs(bc.inner_x(B_SEAM_Z - top - h / 2) - xin - prot) < 1e-3 and zs == (round(top, 2), round(top + h, 2)),
+          and abs(B_W / 2 - shell_in_base(B_SEAM_Z - top - h / 2) - xin - prot) < 1e-3 and zs == (round(top, 2), round(top + h, 2)),
           f"tabs inside both long side walls: y {ys[0]:.2f}..{ys[-1]:.2f} either side of mid-length ({BC_TAB_CLR} clear "
           f"of the housing's slots {gi / 2}..{go / 2}), {zs[0]}..{zs[1]} below the rim, {prot} in from the wall (D-90)")
     for name, part in (("snap clips", bc.latches()), ("side ribs", bc.side_tabs())):

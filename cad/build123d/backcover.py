@@ -17,7 +17,7 @@ hard stop sets the spring pins' working height.
 Remote coordinates: origin = remote centre, x / y as the front view, z = 0 the back's outer face.
 Sizes marked MEASURE / REF in params.py.
 """
-from math import acos, atan2, cos, degrees, pi, sin, sqrt
+from math import atan, atan2, cos, degrees, pi, radians, sin, sqrt, tan
 from build123d import Axis, Box, Cylinder, Plane, Pos, Rot, chamfer, loft
 from params import *
 from common import stadium, slab
@@ -97,19 +97,20 @@ def strip_boxes(clr=0.0):
 
 def back_shape(inset=0.0, lift=0.0, round_run=B_BACK_RUN):
     """The remote's back (flat pad, round-over `round_run` across and B_BACK_RISE up, straight sides) inset by
-    `inset` all round and raised by `lift`. Below the curve's 45 deg point the round-over is replaced by its
-    45 deg tangent (a frustum), so the cover prints back down without supports."""
+    `inset` all round and raised by `lift`. Below the point where the curve's slope is 45 deg the round-over is
+    replaced by its 45 deg tangent (a frustum), so the cover prints back down without supports; the two meet without
+    a step (params.back_run)."""
+    t45 = atan(round_run / B_BACK_RISE)
+    r45, z45 = round_run * (1 - sin(t45)), B_BACK_RISE * (1 - cos(t45))
     n = bilresa.N_SECT
     secs = []
-    for i in range(n // 2, n + 1):                        # from the 45 deg point up
-        t = (pi / 2) * i / n
+    for i in range(n // 2 + 1):                           # from the 45 deg slope point up
+        t = t45 + (pi / 2 - t45) * i / (n // 2)
         run = round_run * (1 - sin(t)) + inset
         secs.append(Plane.XY.offset(lift + B_BACK_RISE * (1 - cos(t))) * stadium(B_W - 2 * run, B_H - 2 * run))
     w, h = B_W - 2 * inset, B_H - 2 * inset
-    edge_c = 2 * round_run * (1 - sqrt(2) / 2)            # 45 deg chamfer tangent to the round-over
-    zt = edge_c / 2                                       # height of the 45 deg point (n even)
-    frustum = chamfer(slab(stadium(w, h), lift, lift + B_SEAM_Z).edges().group_by(Axis.Z)[0], edge_c)
-    frustum &= Pos(0, 0, lift + zt / 2) * Box(B_W + 2, B_H + 2, zt)
+    frustum = chamfer(slab(stadium(w, h), lift, lift + B_SEAM_Z).edges().group_by(Axis.Z)[0], r45 + z45)
+    frustum &= Pos(0, 0, lift + z45 / 2) * Box(B_W + 2, B_H + 2, z45)
     top = slab(stadium(w, h), lift + B_BACK_RISE - 0.01, lift + B_SEAM_Z + 5)
     return frustum + loft(secs, ruled=False) + top
 
@@ -118,10 +119,21 @@ def outer():
     return back_shape() & Pos(0, 0, B_SEAM_Z / 2) * Box(B_W + 2, B_H + 2, B_SEAM_Z)
 
 
+def cavity(n=24):
+    """The shell's inside: params.shell_in (the round-over BC_IN_RUN across, eased out through the rubbing band,
+    BC_EASE) from the inside floor up, straight to above the rim."""
+    secs = []
+    for i in range(n + 1):
+        z = BC_WALL + B_BACK_RISE * i / n
+        s = shell_in(z)
+        secs.append(Plane.XY.offset(z) * stadium(B_W - 2 * s, B_H - 2 * s))
+    s = shell_in(BC_WALL + B_BACK_RISE)
+    return loft(secs, ruled=False) + slab(stadium(B_W - 2 * s, B_H - 2 * s), BC_WALL + B_BACK_RISE - 0.01, B_SEAM_Z + 5)
+
+
 def shell():
-    """Cover shell: back_shape hollowed by BC_SIDE_WALL sideways and BC_WALL at the back, the inside round-over
-    BC_IN_RUN across, open at the seam."""
-    return outer() - back_shape(BC_SIDE_WALL, BC_WALL, BC_IN_RUN)
+    """Cover shell: back_shape less the cavity (BC_SIDE_WALL sideways, BC_WALL at the back), open at the seam."""
+    return outer() - cavity()
 
 
 def corner_cuts():
@@ -138,7 +150,7 @@ def latches():
     """Snap clips at both ends (x = 0): columns standing on the shell's curved inner surface, tops BC_LATCH_TOPS
     above the inside floor, a hook at the tip pointing inwards over the housing's wall (45 deg top, so the cover
     prints back down without supports), hook tip BC_LATCH_REACH in from the outside rim; underside flat under a
-    BC_LATCH_CATCH tip face, or 45 deg back to the column (None)."""
+    BC_LATCH_CATCH tip face, then BC_LATCH_RAMP deg down to the column (bottom), or 45 deg back to the column (None)."""
     from build123d import Polyline, Plane, extrude, make_face
     out = None
     t = BC_LATCH_T
@@ -148,7 +160,8 @@ def latches():
         yo = yi + t                                     # outer face
         top = BC_WALL + top_in
         f = BC_LATCH_CATCH[i]
-        under = [(yi - h, top - 2 * h), (yi, top - 3 * h)] if f is None else [(yi - h, top - h - f), (yi, top - h - f)]
+        under = [(yi - h, top - 2 * h), (yi, top - 3 * h)] if f is None else \
+            [(yi - h, top - h - f), (yi, top - h - f - h * tan(radians(BC_LATCH_RAMP)))]
         pts = [(yi, 0.3), (yo, 0.3), (yo, top), (yi - h, top - h)] + under + [(yi, 0.3)]
         prof = extrude(Plane.YZ * make_face(Polyline(*pts)), BC_LATCH_W[i] / 2, both=True)   # profile y / z, along x
         prof &= back_shape(0.0, 0.0)                    # not through the outside
@@ -172,12 +185,8 @@ def side_tabs():
 
 
 def inner_x(z):
-    """Long side wall's inside face (x) at height z: the shell's inner round-over, straight above it."""
-    zr = z - BC_WALL
-    if zr >= B_BACK_RISE:
-        return B_W / 2 - BC_SIDE_WALL
-    t = acos(max(-1.0, min(1.0, 1 - zr / B_BACK_RISE)))
-    return B_W / 2 - BC_SIDE_WALL - BC_IN_RUN * (1 - sin(t))
+    """Long side wall's inside face (x) at height z (params.shell_in)."""
+    return B_W / 2 - shell_in(z)
 
 
 def tabs():
@@ -187,7 +196,7 @@ def tabs():
     gi, go, top, h, prot = BC_TAB
     y0, y1 = gi / 2 + BC_TAB_CLR, go / 2 - BC_TAB_CLR
     z0, z1 = B_SEAM_Z - top - h, B_SEAM_Z - top
-    x_in = inner_x((z0 + z1) / 2)
+    x_in = B_W / 2 - shell_in_base((z0 + z1) / 2)        # tips placed before the ease (D-126)
     x0, x1 = x_in - prot, B_W / 2 - BC_SIDE_WALL + 0.3
     out = None
     for sx in (-1, 1):

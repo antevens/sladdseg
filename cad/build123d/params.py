@@ -16,7 +16,7 @@ Tags:
   DATASHEET value that must come from a cited datasheet (see docs/BOM.md).
   derived   computed below - do not edit, change the inputs instead.
 """
-from math import sqrt
+from math import atan, cos, log, pi, sin, sqrt
 
 # ---- face plates (both variants) ----
 PR = 6.0                                  # face plate corner radius
@@ -206,28 +206,58 @@ BC_LATCH_HOOK = (0.8 + 0.3 + 0.2 + 0.2 + 0.2, 0.7)   # hook at the clip's tip, i
                                           # bottom 0.2 more (human 2026-10-12, D-108), and 0.2 more (D-110), and 0.2
                                           # more (D-112)
 BC_LATCH_RIM_GAP = 1.0                    # MEASURED top clip's top below the rim (human, 2026-10-09)
-# hook underside: bottom clip flat (a ledge that catches the housing's slot) under a tip face this tall; top clip
-# None = 45 deg back to the column. The bottom hook sits in the shell's round-over (D-113)
+# hook underside: bottom clip flat under a tip face this tall, then a ramp BC_LATCH_RAMP deg below horizontal back to
+# the column (it carries the hook; D-126); top clip None = 45 deg back to the column. The bottom hook sits in the
+# shell's round-over (D-113)
 BC_LATCH_CATCH = (0.3, None)
-BC_LATCH_CATCH_Z = 3.22                   # bottom clip's flat underside above the inside floor (human 2026-10-12: 0.15
-                                          # higher than D-117's 3.07, D-118)
+BC_LATCH_RAMP = 30.0                      # bottom clip: ramp under the hook, deg below horizontal (human 2026-10-12, D-126)
+BC_LATCH_CATCH_Z = 3.32                   # bottom clip's catch (tip face's lower end) above the inside floor (human
+                                          # 2026-10-12: 0.1 nearer the rim than D-118's 3.22, D-126)
+# inside eased out through the band where the housing rubbed (prints 2026-10-12, D-126): up to BC_EASE[0] (horizontal)
+# at BC_EASE[1] above the back face, tapering to nothing at the floor and at the straight wall
+BC_EASE = (0.42, 4.0)
+
+
+def back_run(zr, run, rise):
+    """Round-over (run across, rise up) of the remote's back, in from its outline at height zr above the back: the
+    curve down to the point where its slope is 45 deg, the 45 deg tangent below it (prints back down without
+    supports, no step where the two meet), straight above the curve."""
+    t = atan(run / rise)
+    r45, z45 = run * (1 - sin(t)), rise * (1 - cos(t))
+    if zr <= z45:
+        return r45 + (z45 - max(zr, 0.0))
+    if zr >= rise:
+        return 0.0
+    return run * (1 - sqrt(1 - (1 - zr / rise) ** 2))
+
+
+def shell_in_base(z):
+    """The shell's inner surface in from the outside rim at height z, before the ease (BC_EASE): the clips' and tabs'
+    tips are placed from it."""
+    return BC_SIDE_WALL + back_run(z - BC_WALL, BC_IN_RUN, B_BACK_RISE)
+
+
+def ease(z):
+    """How far BC_EASE moves the inner surface out at height z (horizontal): sin^2, smooth at both ends."""
+    u = (z - BC_WALL) / B_BACK_RISE
+    if u <= 0.0 or u >= 1.0:
+        return 0.0
+    p = log(0.5) / log((BC_EASE[1] - BC_WALL) / B_BACK_RISE)
+    return BC_EASE[0] * sin(pi * u ** p) ** 2
 
 
 def shell_in(z):
-    """Distance of the shell's inner surface in from the outside rim at height z (round-over, then straight)."""
-    zr = z - BC_WALL
-    if zr >= B_BACK_RISE:
-        return BC_SIDE_WALL
-    return BC_SIDE_WALL + BC_IN_RUN * (1 - sqrt(1 - (1 - zr / B_BACK_RISE) ** 2))
+    """Distance of the shell's inner surface in from the outside rim at height z."""
+    return shell_in_base(z) - ease(z)
 
 
 # top clip: top from BC_LATCH_RIM_GAP, hook tip 2.7 in from the outside rim (human 2026-10-12, D-107); its tip
-# stands BC_LATCH_PROUD clear of the shell's inner surface at the tip face's lower end. The bottom clip's tip stands
-# out the same at its catch, wherever the catch sits (D-118). Where reach - hook - thickness < BC_WALL the clip's
-# back merges into the end wall.
+# stands BC_LATCH_PROUD clear of the shell's inner surface (before the ease) at the tip face's lower end, the bottom
+# clip's tip the same at its catch (D-118). The ease does not move the tips (human 2026-10-12, D-126). Where
+# reach - hook - thickness < BC_WALL the clip's back merges into the end wall.
 _top_tip_z = B_SEAM_Z - BC_LATCH_RIM_GAP - 2 * BC_LATCH_HOOK[1]
-BC_LATCH_PROUD = 2.7 - shell_in(_top_tip_z)
-BC_LATCH_REACH = (shell_in(BC_WALL + BC_LATCH_CATCH_Z) + BC_LATCH_PROUD, 2.7)
+BC_LATCH_PROUD = 2.7 - shell_in_base(_top_tip_z)
+BC_LATCH_REACH = (shell_in_base(BC_WALL + BC_LATCH_CATCH_Z) + BC_LATCH_PROUD, 2.7)
 # clip tops above the inside floor: bottom from its catch, hook and tip face; top end from BC_LATCH_RIM_GAP
 BC_LATCH_TOPS = (BC_LATCH_CATCH_Z + BC_LATCH_HOOK[0] + BC_LATCH_CATCH[0], B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
 BC_LATCH_LEDGE_MIN = 0.4                  # flat underside proud of the shell's inner surface, at least

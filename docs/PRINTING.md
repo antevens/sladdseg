@@ -14,8 +14,8 @@ every part is single-material.
 | `print/na_barrier_PLA_testfit.3mf` | NA barrier (fit check only, **not for mains**), on supports | PLA | 2 h 19 m / 59.0 g |
 | `print/na_face_plate_PLA.3mf` | NA face plate (face plate, passive) | PLA | 38 m / 22.4 g |
 | `print/na_barrier_PC-FR.3mf` | NA barrier, **final**, on supports | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 2 h 19 m / 51.9 g |
-| `print/backcover_PETG.3mf` | replacement back cover for the battery-free BILRESA (D-35), back down; PETG: its clips broke in PLA (D-44) | PETG | 21 m / 8.5 g |
-| `print/backcover_ABS.3mf` | the same cover in ABS, to test before the PETG arrives (shrinks more: check the fit first) | ABS | 17 m / 7.5 g |
+| `print/backcover_PETG.3mf` | replacement back cover for the battery-free BILRESA (D-35), back down; PETG: its clips broke in PLA (D-44) | PETG | 21 m / 7.7 g |
+| `print/backcover_ABS.3mf` | the same cover in ABS, to test before the PETG arrives (shrinks more: check the fit first) | ABS | 17 m / 6.7 g |
 | `print/plate_jig_PLA.3mf` | steel plate hacksaw guide (D-52, D-81), floor down | PLA | 18 m / 7.8 g |
 | `print/eu_barrier_PLA_testfit.3mf` | EU barrier (fit check only, **not for mains**), face down | PLA | 28 m / 10.9 g |
 | `print/eu_barrier_PC-FR.3mf` | EU barrier, **final** (the EU barrier), face down | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 37 m / 9.8 g |
