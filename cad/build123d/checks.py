@@ -531,8 +531,8 @@ def board_fit(ins):
               f"KiCad board {slab_.size.X:.2f} x {slab_.size.Y:.2f} matches params WB {WB[0]} x {WB[1]}")
 
 
-def barrier(ins, plain=False):
-    print("barrier" + (" (plain insert, D-109)" if plain else ""))
+def barrier(ins, plain=False, switch=False):
+    print("barrier" + (" (switch-only insert, D-122)" if switch else " (plain insert, D-109)" if plain else ""))
     room = slab(rr(PW + 20, PH + 20, 5), 0, PT + 10)
     box = slab(Rectangle(BOX_W, BOX_H), -BOX_D, 0)
     # plug the openings that are closed by something else when installed: the 5 V pass-through (FFC; the plain insert
@@ -540,7 +540,9 @@ def barrier(ins, plain=False):
     # (the pins, D-50)
     rocker = Pos(0, SW_Y, 0) * slab(Rectangle(*SW_CUT), PANEL_BOT_Z - 1, WELL_FLOOR_Z + 1)
     import ring
-    air = (room + box) - ins - rocker - ring.pin_holes()   # pins fill their holes (D-50)
+    air = (room + box) - ins - rocker
+    if not switch:
+        air -= ring.pin_holes()                            # pins fill their holes (D-50)
     if not plain:
         air -= insert.pass_through()
     parts = air.solids()
@@ -1003,6 +1005,29 @@ def edge_chamfer(tr):
           f"face plate: front edge chamfer {c} mm all round, also over the MSR-2 and SHT40 bays")
 
 
+def switch_checks():
+    """Switch-only plate (D-122): the insert without spring-pin holes, riser pocket or cable bore, the plain face plate;
+    the wiring board carries only the rocker switch and the terminal block."""
+    print("switch-only plate (rocker switch and terminal block, D-122)")
+    ins, tr = insert.build(switch=True), trim.build(plain=True)
+    check(ins.is_valid and len(ins.solids()) == 1, "switch-only insert: one valid solid")
+    r = ins & tr
+    check(r is None or r.volume < 0.01, f"switch-only insert and plain face plate do not overlap "
+                                        f"({r.volume if r else 0.0:.3f} mm3)")
+    from build123d import Cylinder
+    open_ = []
+    for x, y in BC_FINGERS:                                 # through the pocket floor, under the seat
+        probe = Pos(x, y, SEAT_Z - 0.5) * Cylinder(0.3, 0.4)
+        r = probe & ins
+        if r is None or r.volume < 0.99 * probe.volume:
+            open_.append((x, y))
+    check(not open_, "switch-only insert: the pocket floor is solid where the spring pins would pass"
+                     + (f" (open at {open_})" if open_ else ""))
+    barrier(ins, plain=True, switch=True)
+    from export import PRINT_ORIENT
+    overhangs("switch-only insert", PRINT_ORIENT["insert_switch"](ins), supported=(0.0,))   # seal lip on the wall
+
+
 def plain_checks():
     """Plain plate (D-109): the insert without the 5 V cable bore and the standard-size face plate, on the same wiring
     board, riser and spring pins as the full plate."""
@@ -1072,6 +1097,7 @@ def main():
     overhangs("back cover", backcover.cover())                 # printed back down
     jig_checks()
     plain_checks()
+    switch_checks()
     print("FAILED: " + "; ".join(FAILS) if FAILS else "all checks passed")
     return 1 if FAILS else 0
 

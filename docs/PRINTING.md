@@ -31,6 +31,10 @@ every part is single-material.
 | `print/eu_plain_cap_PLA_testfit.3mf` | EU plain cap (battery-free pins' holes only, D-109; fit check only, **not for mains**), face down | PLA | 28 m / 10.9 g |
 | `print/eu_plain_cap_PC-FR.3mf` | EU plain cap, **final**, face down | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 36 m / 9.8 g |
 | `print/eu_plain_trim_PLA.3mf` | EU plain face plate, 80 × 80 mm (D-109), face down | PLA | 40 m / 26.6 g |
+| `print/switch_insert_PLA_testfit.3mf` | NA switch-only insert (no spring-pin holes, riser pocket or cable bore, D-122; fit check only, **not for mains**), on supports | PLA | 2 h 12 m / 58.2 g |
+| `print/switch_insert_PC-FR.3mf` | NA switch-only insert, **final**, on supports | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 2 h 12 m / 51.3 g |
+| `print/eu_switch_cap_PLA_testfit.3mf` | EU switch-only cap (no pin holes or 5 V board bosses, D-122; fit check only, **not for mains**), face down | PLA | 26 m / 10.8 g |
+| `print/eu_switch_cap_PC-FR.3mf` | EU switch-only cap, **final**, face down | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 35 m / 9.7 g |
 | `print/eu_plain_carrier_PLA.3mf` | EU plain carrier (lip and snap windows, no cap board, D-109), bottom down | PLA | 15 m / 4.5 g |
 
 Open a `.3mf` in OrcaSlicer, check the plate, slice, send. The projects carry the

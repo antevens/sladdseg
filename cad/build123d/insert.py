@@ -35,9 +35,11 @@ def outline_solid():
     return body
 
 
-def build(plain=False):
-    """Box insert; plain: without the 5 V cable's channel and bore (no ring board, D-109)."""
+def build(plain=False, switch=False):
+    """Box insert; plain (battery-free edition): without the 5 V cable's channel and bore (no ring board, D-109);
+    switch (switch-only edition): also without the spring pins' holes, the riser pocket and its clips (D-122)."""
     import ring
+    plain = plain or switch
     body = outline_solid()
     # ---------------- cuts ----------------
     cut = slab(stadium(*POCKET_IN), SEAT_Z, PT + 5)                                       # remote pocket
@@ -50,11 +52,14 @@ def build(plain=False):
         cut += Pos(0, s * SCREW_PITCH / 2, DECK_Z / 2) * Cylinder(SCREW_D / 2, DECK_Z + 2)
     if not plain:
         cut += ffc_channel()
-    cut += ring.pin_holes() + ring.riser_pocket()                                         # battery-free remote (D-50)
-    clip_relief, clip_hooks = ring.riser_clips()                                          # riser snap clips (D-91)
-    cut += clip_relief
+    clip_hooks = None
+    if not switch:
+        cut += ring.pin_holes() + ring.riser_pocket()                                     # battery-free remote (D-50)
+        clip_relief, clip_hooks = ring.riser_clips()                                      # riser snap clips (D-91)
+        cut += clip_relief
     body -= cut
-    body += clip_hooks
+    if clip_hooks is not None:
+        body += clip_hooks
     for kx, ky in KEY_POS:                                                                # locating pins
         body += Pos(kx, ky, DECK_Z + KEY_H / 2 - 0.01) * Cylinder(KEY_D / 2, KEY_H + 0.02)
     body += mount_bosses()                                                                # after the pocket cut
@@ -173,8 +178,8 @@ if __name__ == "__main__":
     from build123d import export_step, export_stl
     out = Path(__file__).resolve().parents[2] / "build"
     out.mkdir(exist_ok=True)
-    for name, plain in (("insert", False), ("insert_plain", True)):
-        p = build(plain)
+    for name, plain, switch in (("insert", False, False), ("insert_plain", True, False), ("insert_switch", True, True)):
+        p = build(plain, switch)
         bb = p.bounding_box()
         print(f"{name} bbox x {bb.min.X:.1f}..{bb.max.X:.1f} y {bb.min.Y:.1f}..{bb.max.Y:.1f} z {bb.min.Z:.1f}..{bb.max.Z:.1f}"
               f"  vol {p.volume/1000:.1f} cm3 valid={p.is_valid} solids={len(p.solids())}")

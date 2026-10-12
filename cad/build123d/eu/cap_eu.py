@@ -102,19 +102,22 @@ def pin_holes(plain=False):
     return out
 
 
-def build(plain=False):
-    """Cap; plain: without the sensor pins' holes (no cap board, D-109)."""
+def build(plain=False, switch=False):
+    """Cap; plain (battery-free edition): without the sensor pins' holes (no cap board, D-109); switch (switch-only
+    edition): no pin holes and no 5 V board bosses (D-122)."""
     body = Pos(0, 0, CAP_T / 2) * Cylinder(CAP_R, CAP_T)
     body += cup()
     body += magnet_cup()
-    body += board_bosses()
+    if not switch:
+        body += board_bosses()
     body += mains_bosses()
     body -= cup_cut()
     body -= magnet_recess()
     for x, y in SCREWS:
         body -= screw_hole(x, y)
     body -= rebate()
-    body -= pin_holes(plain)
+    if not switch:
+        body -= pin_holes(plain)
     return body
 
 

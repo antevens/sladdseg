@@ -7,8 +7,8 @@ editions:
 
 | Edition | Contents | North American single-gang / Decora (NA): 2 × 3 in box | European round flush box, DIN 49073 (EU): Ø60 / 68 mm |
 | --- | --- | --- | --- |
-| **1. Switch only** | rocker switch; the remote on its own cells and back cover | not modelled yet | not modelled yet |
-| **2. Battery-free** | rocker switch; 5 V power circuit; replacement back cover, so the remote stays in place without cells | standard-size face plate 69.85 × 114.3 mm | face plate 80 × 80 mm |
+| **1. Switch only** | rocker switch and terminal blocks on the mains board, nothing else; the remote on its own cells and back cover | standard-size face plate 69.85 × 114.3 mm | face plate 80 × 80 mm |
+| **2. Battery-free** | the mains board fully populated (rocker switch, terminal blocks, 5 V power supply); the parts that bring 5 V to the spring pins; the replacement back cover with its flex, so the remote stays in place without cells | standard-size face plate 69.85 × 114.3 mm | face plate 80 × 80 mm |
 | **3. Full** | as 2, plus Apollo MSR-2 (mmWave presence, optional CO2), SHT40 temperature and humidity, push-to-talk microphone | face plate 72.2 × 131.75 mm | face plate 84.6 × 122.4 mm |
 
 - **Remote:** stands 2.6 mm proud of the face. In editions 2 and 3 a printed replacement back cover runs it from the
@@ -85,6 +85,12 @@ nylon standoffs, wiring board.
 
 ![NA exploded](docs/renders/v0.6_exploded.png)
 
+Switch-only edition (1):
+
+| Remote in place | Remote out, rocker switch exposed |
+| --- | --- |
+| ![NA switch-only plate](docs/renders/switch_front.png) | ![NA switch-only plate, remote out](docs/renders/switch_remote_out.png) |
+
 Battery-free edition (2):
 
 | Remote in place | Remote out, rocker switch exposed |
@@ -108,6 +114,12 @@ between it and the cap.
 ![EU back](docs/renders/eu_back.png)
 
 ![EU exploded](docs/renders/eu_exploded.png)
+
+Switch-only edition (1):
+
+| Remote in place | Remote out, rocker switch exposed |
+| --- | --- |
+| ![EU switch-only plate](docs/renders/eu_switch_front.png) | ![EU switch-only plate, remote out](docs/renders/eu_switch_remote_out.png) |
 
 Battery-free edition (2):
 
@@ -147,32 +159,37 @@ Parts and PCBs per plate, USD.
 | NA full | 111.65 | 60.03 | 37.74 | 34.31 | 32.59 |
 | NA full + MSR-2 | 149.64 | 98.02 | 75.73 | 72.30 | 70.58 |
 | NA full + MSR-2 with CO2 | 169.64 | 118.02 | 95.73 | 92.30 | 90.58 |
-| NA battery-free | 66.80 | 36.72 | 23.49 | 21.36 | 20.30 |
+| NA switch only | 20.68 | 15.96 | 10.00 | 9.06 | 8.60 |
+| NA battery-free | 68.71 | 38.63 | 24.87 | 22.61 | 21.47 |
 | EU full | 102.61 | 48.95 | 31.13 | 28.37 | 26.99 |
 | EU full + MSR-2 | 140.60 | 86.94 | 69.12 | 66.36 | 64.98 |
 | EU full + MSR-2 with CO2 | 160.60 | 106.94 | 89.12 | 86.36 | 84.98 |
+| EU switch only | 15.59 | 9.18 | 6.64 | 6.04 | 5.74 |
 | EU battery-free | 60.83 | 29.26 | 19.24 | 17.55 | 16.70 |
 
 Sources and assumptions:
 
 - **Parts at 1, 5 and 100 (sourced):** DigiKey US list prices for the order lists' parts (`pcb/order/`), cheapest
   packaging and price break for the total need, read 2026-10-12. Per plate:
-  - 1 plate: NA full 51.72, NA battery-free 31.80, EU full 42.17, EU battery-free 25.83.
-  - 5 plates: NA full 48.04, NA battery-free 29.72, EU full 36.86, EU battery-free 22.26.
-  - 100 plates: NA full 34.33, NA battery-free 21.26, EU full 27.60, EU battery-free 16.92.
+  - 1 plate: NA full 51.72, NA battery-free 33.71, NA switch only 15.68; EU full 42.17, EU battery-free 25.83,
+    EU switch only 10.59.
+  - 5 plates: NA full 48.04, NA battery-free 31.63, NA switch only 14.96; EU full 36.86, EU battery-free 22.26,
+    EU switch only 8.18.
+  - 100 plates: NA full 34.33, NA battery-free 22.64, NA switch only 9.36; EU full 27.60, EU battery-free 16.92,
+    EU switch only 6.00.
 - **Parts at 1,000 and 10,000 (assumption):** 10 % and 15 % below the 100-plate price. DigiKey shows no prices
   above about 100 without a quote.
 - **PCBs at 1 and 5 (sourced):** PCBWay's 5-piece minimum order, 2026-10-12; one plate pays for the whole order.
   - Wiring board, riser, EU mains board, EU 5 V board: 5.00 each order.
   - Ring board 24.93, EU cap board 25.44.
   - Cover flex: about 25 (prototype price, given by the human).
-  - Per plate: 1 plate NA full 59.93, NA battery-free 35.00, EU full 60.44, EU battery-free 35.00; 5 plates one
-    fifth of that.
+  - Per plate: 1 plate NA full 59.93, NA battery-free 35.00, EU full 60.44, EU battery-free 35.00, switch only
+    5.00 (the mains board alone); 5 plates one fifth of that.
 - **PCBs at 100 (sourced):** PCBWay quotes for 100 pieces, 2026-10-12.
   - Wiring board 0.64, ring board 1.17, riser 0.36.
   - EU mains board 0.64, EU 5 V board 0.45, EU cap board 1.21.
   - Cover flex 1.24.
-  - Per plate: NA full 3.41, NA battery-free 2.23, EU full 3.53, EU battery-free 2.32.
+  - Per plate: NA full 3.41, NA battery-free 2.23, EU full 3.53, EU battery-free 2.32, switch only 0.64.
 - **PCBs at 1,000 and 10,000 (assumption):** the 100-piece price (no quote). This is cautious: board prices
   usually fall at volume.
 - **MSR-2 (assumption):** Apollo's retail price at every quantity, 37.99 base and 57.99 with CO2. No volume price
@@ -199,8 +216,10 @@ in Elegoo PETG. Grams and times come from the OrcaSlicer projects (`make print`)
 | Package | Printed parts | Filament | Print time | Filament cost | Electricity | Printer wear | **Total** |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | NA full | insert 51.9 g PC-FR; face plate 23.2 g, back cover 8.3 g PETG | 83.4 g | 3.3 h | 1.54 | 0.08 | 0.29 | **1.91** |
+| NA switch only | insert 51.3 g PC-FR; face plate 16.0 g PETG | 67.2 g | 2.6 h | 1.36 | 0.06 | 0.23 | **1.65** |
 | NA battery-free | insert 51.7 g PC-FR; face plate 16.0 g, back cover 8.3 g PETG | 76.0 g | 3.0 h | 1.46 | 0.07 | 0.27 | **1.80** |
 | EU full | cap 9.8 g PC-FR; face plate 42.9 g, carrier 18.1 g, back cover 8.3 g PETG | 79.1 g | 2.7 h | 0.99 | 0.06 | 0.24 | **1.29** |
+| EU switch only | cap 9.7 g PC-FR; face plate 27.2 g, carrier 4.6 g PETG | 41.5 g | 1.5 h | 0.57 | 0.03 | 0.13 | **0.73** |
 | EU battery-free | cap 9.8 g PC-FR; face plate 27.2 g, carrier 4.6 g, back cover 8.3 g PETG | 49.9 g | 1.9 h | 0.67 | 0.04 | 0.16 | **0.87** |
 
 Sources and assumptions:

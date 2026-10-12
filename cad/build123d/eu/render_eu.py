@@ -21,14 +21,15 @@ def box_shell():
     return outer - Pos(0, 0, -BOX_D / 2 + 0.01) * Cylinder(BOX_R, BOX_D)
 
 
-def parts(lift=0.0, plain=False):
+def parts(lift=0.0, plain=False, switch=False):
     """EU plate; plain: the rocker and battery-free plate (D-109), no cap board, sensors or sensor pins."""
     b = boards_eu.parts()
-    if plain:
-        return {"trim": trim_eu.build(True), "cap": cap_eu.build(True), "carrier": capboard_eu.carrier(True),
+    if plain or switch:
+        keep = ("wago", "magnet", "mains_board") if switch else ("board", "psu", "wago", "magnet", "front", "mains_board",
+                                                                 "mains_front", "header", "socket", "bf_pins")
+        return {"trim": trim_eu.build(True), "cap": cap_eu.build(True, switch), "carrier": capboard_eu.carrier(True),
                 "remote": boards_eu.remote(lift), "switch": boards_eu.switch_model(),
-                **{k: b[k] for k in ("board", "psu", "wago", "magnet", "front", "mains_board", "mains_front", "header",
-                                     "socket", "bf_pins")}, "box": box_shell()}
+                **{k: b[k] for k in keep}, "box": box_shell()}
     return {"trim": trim_eu.build(), "cap": cap_eu.build(), "remote": boards_eu.remote(lift),
             "switch": boards_eu.switch_model(), "board": b["board"], "psu": b["psu"], "wago": b["wago"], "magnet": b["magnet"], "front": b["front"],
             "mains_board": b["mains_board"], "mains_front": b["mains_front"], "header": b["header"], "socket": b["socket"],
@@ -40,6 +41,8 @@ def main():
     r3.shot("eu_front", ps, [(130, -170, 260), (0, 8, 0), (0, 1, 0)], hide=("box",))
     r3.shot("eu_plain_front", parts(plain=True), [(130, -170, 260), (0, 0, 0), (0, 1, 0)], hide=("box",))
     r3.shot("eu_plain_remote_out", parts(lift=45, plain=True), [(170, -190, 300), (0, 0, 15), (0, 1, 0)], hide=("box",))
+    r3.shot("eu_switch_front", parts(switch=True), [(130, -170, 260), (0, 0, 0), (0, 1, 0)], hide=("box",))
+    r3.shot("eu_switch_remote_out", parts(lift=45, switch=True), [(170, -190, 300), (0, 0, 15), (0, 1, 0)], hide=("box",))
     r3.shot("eu_remote_out", parts(lift=45), [(170, -190, 300), (0, 8, 15), (0, 1, 0)], hide=("box",))
     keep = Pos(-100, 0, 0) * Box(200, 400, 400)          # half left of the x = 0 plane: cup, rocker, boards, PSU
     cut = {k: v & keep for k, v in ps.items()}

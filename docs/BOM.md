@@ -52,6 +52,17 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | — | EU mains board and 5 V board parts (rocker, WAGO 2604-3102 ×2, Zettler ZPI03S0500WC (D-100), F1, RV1, header, socket, C1) | `pcb/eu/README.md`; order lists in `pcb/order/` | D-32, D-36, D-59. |
 | PE1 (EU) | **Lever splicing connector, 2 conductors, 0.2–4 mm²** | **WAGO 221-412** (DigiKey 2946-221-412-ND) | D-94: PE in from the supply to PE out to the lights, joined in the box; the boards carry no PE. A third PE conductor takes a 221-413. |
 
+## Switch-only plates (D-122)
+
+The rocker switch and the terminal blocks on the mains board, nothing else: the remote on its own cells and back cover.
+
+- NA: wiring board with S1 (rocker switch) and J1 (WAGO 2604-1106) only, its four standoffs; printed: `insert_switch`
+  (no spring-pin holes, riser pocket or cable bore) and `plain_trim`.
+- EU: mains board with S1 and J1 / J2 (WAGO 2604-3102) only, no 5 V board; the PE lever connector; printed:
+  `eu_switch_cap` (no pin holes, no 5 V board bosses), `eu_plain_carrier`, `eu_plain_trim`.
+
+Order: `make order-push VARIANT=na-switch` or `eu-switch` (3 DigiKey lines for one plate).
+
 ## Plain plates (D-109)
 
 Rocker and battery-free remote only. As above, without:

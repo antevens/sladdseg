@@ -2,7 +2,7 @@
 
 Usage:
   python3 pcb/tools/distributors.py stock                       report, build/stock.md; exit 1 if a part breaks D-84
-  python3 pcb/tools/distributors.py push [na|eu|both][-plain] [PLATES] [--primary=digikey|mouser] [--dry-run] [--no-price-breaks]
+  python3 pcb/tools/distributors.py push [na|eu|both][-plain|-switch] [PLATES] [--primary=digikey|mouser] [--dry-run] [--no-price-breaks]
                                                                 exactly the parts for PLATES plates (default: na 1; both:
                                                                 PLATES of each), no spares; the primary distributor gets
                                                                 every part it carries, the other one the rest; with
@@ -236,10 +236,10 @@ def stock():
         sys.exit(1)
 
 
-def push(na, eu, primary, dry, plain=False):
+def push(na, eu, primary, dry, edition=""):
     plates = {"NA": na, "EU": eu}
-    lines, _ = ob.collect(plates, ob.plain_keep if plain else None)
-    name = "smart-wallplate v0.6 " + ("plain " if plain else "") + \
+    lines, _ = ob.collect(plates, {"plain": ob.plain_keep, "switch": ob.switch_keep}.get(edition))
+    name = "sladdseg v0.6 " + (f"{edition} " if edition else "") + \
         " ".join(f"{k}{n}" for k, n in (("NA", na), ("EU", eu)) if n) + f" {date.today().isoformat()}"
     dk_parts, ms_items = [], []
     for mpn, line in lines.items():
@@ -322,13 +322,14 @@ def main():
         if primary not in ("digikey", "mouser"):
             raise SystemExit("--primary must be digikey or mouser")
         variant, _, edition = (args[1] if len(args) > 1 else "na").partition("-")
-        if variant not in ("na", "eu", "both") or edition not in ("", "plain"):
-            raise SystemExit("variant must be na, eu or both, with -plain for the plain plates (D-109)")
+        if variant not in ("na", "eu", "both") or edition not in ("", "plain", "switch"):
+            raise SystemExit("variant must be na, eu or both; -plain for the battery-free plates, -switch for the "
+                             "switch-only plates (D-109, D-122)")
         n = int(args[2]) if len(args) > 2 else 1
         if n < 1:
             raise SystemExit("PLATES must be 1 or more")
         push(n if variant in ("na", "both") else 0, n if variant in ("eu", "both") else 0, primary,
-             "--dry-run" in sys.argv, edition == "plain")
+             "--dry-run" in sys.argv, edition)
 
 
 if __name__ == "__main__":

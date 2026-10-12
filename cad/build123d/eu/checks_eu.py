@@ -434,13 +434,15 @@ def test_socket(cap):
     base.overhangs("test socket plate", pl)
 
 
-def barrier(cap, plain=False):
-    print("barrier" + (" (plain cap, D-109)" if plain else ""))
+def barrier(cap, plain=False, switch=False):
+    print("barrier" + (" (switch-only cap, D-122)" if switch else " (plain cap, D-109)" if plain else ""))
     room = Pos(PC[0], PC[1], 0) * slab(rr(PW + 20, PH + 20, 5), 0, PT + 10)
     box = Pos(0, 0, -BOX_D / 2) * Cylinder(BOX_R, BOX_D)
     for x, y in DOMES:
         box -= Pos(x, y, -BOX_D / 2) * Cylinder(DOME_D / 2, BOX_D + 0.01)
-    plugs = Pos(0, SW_Y, 0) * slab(Rectangle(*SW_CUT), PANEL_BOT_Z - 0.2, PANEL_TOP_Z + 0.2) + cap_eu.pin_holes(plain)
+    plugs = Pos(0, SW_Y, 0) * slab(Rectangle(*SW_CUT), PANEL_BOT_Z - 0.2, PANEL_TOP_Z + 0.2)
+    if not switch:
+        plugs += cap_eu.pin_holes(plain)
     air = (room + box) - cap - plugs
     mains = [s for s in air.solids() if s.is_inside(Vector(0, 0, -BOX_D + 1))]
     check(len(mains) == 1, "found the mains air volume")
@@ -534,6 +536,25 @@ def plain_checks():
     base.overhangs("plain carrier (bottom down)", car)
 
 
+def switch_checks():
+    """Switch-only plate (D-122): the cap without pin holes or 5 V board bosses; the mains board carries only the rocker
+    switch and the terminal blocks; the plain carrier and face plate."""
+    print("switch-only plate (rocker switch and terminal blocks, D-122)")
+    import trim_eu
+    cap, tr, car = cap_eu.build(switch=True), trim_eu.build(plain=True), capboard_eu.carrier(plain=True)
+    check(cap.is_valid and len(cap.solids()) == 1, f"switch-only cap: one valid solid ({cap.volume / 1000:.1f} cm3)")
+    parts = boards_eu.parts()
+    for an, a in (("face plate", tr), ("carrier", car), ("remote", boards_eu.remote()), ("mains board", parts["mains_board"]),
+                  ("terminal blocks", parts["wago"])):
+        r = a & cap
+        check(r is None or r.volume < 0.05, f"switch-only: {an} clears the cap ({r.volume if r else 0.0:.3f} mm3)")
+    sol = cap_eu.pin_holes(True) & cap
+    check(sol is not None and sol.volume > 0.99 * (cap_eu.pin_holes(True) & Pos(0, 0, CAP_T / 2) * Cylinder(CAP_R, CAP_T)).volume,
+          "switch-only cap: solid where the battery-free pins pass")
+    barrier(cap, plain=True, switch=True)
+    base.overhangs("switch-only cap", Rot(180, 0, 0) * cap, bridges=((-MAGNET_Z[0], MAG_BRIDGE),))
+
+
 def main():
     layout()
     board_checks()
@@ -555,6 +576,7 @@ def main():
     cp = capboard_eu.parts()
     base.overhangs("cap board carrier (bottom down)", cp["carrier"])
     plain_checks()
+    switch_checks()
     print("FAILED: " + "; ".join(base.FAILS) if base.FAILS else "all checks passed")
     return 1 if base.FAILS else 0
 

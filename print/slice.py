@@ -72,6 +72,11 @@ JOBS = {
     "eu_plain_cap_PLA_testfit": (["cap_plain_eu"], TEST, dict(BARRIER, brim_type="no_brim")),
     "eu_plain_trim_PLA": (["trim_plain_eu"], TEST, TRIM),
     "eu_plain_carrier_PLA": (["carrier_plain_eu"], TEST, JIG),
+    # switch-only plates: rocker switch and terminal blocks; the plain face plate and carrier (D-122)
+    "switch_insert_PC-FR": (["insert_switch"], "Elegoo PC-FR @ECC2", INSERT),
+    "switch_insert_PLA_testfit": (["insert_switch"], TEST, dict(INSERT, brim_type="no_brim")),
+    "eu_switch_cap_PC-FR": (["cap_switch_eu"], "Elegoo PC-FR @ECC2", BARRIER),
+    "eu_switch_cap_PLA_testfit": (["cap_switch_eu"], TEST, dict(BARRIER, brim_type="no_brim")),
 }
 
 

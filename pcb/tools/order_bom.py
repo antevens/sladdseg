@@ -90,10 +90,19 @@ LOCAL = {"NA": ["M2 x 5 pan head screw ISO 7045, steel: 2 per plate (riser onto 
          "EU": ["M2 x 6 thread-forming screw for plastics: 4 per plate (cap board into the carrier)"]}
 
 
-# plain plates (D-109): rocker and battery-free remote only; these parts are left off (no ring board, cap board or sensor
-# pins: the wiring board's FFC connector J2 and the FFC, the EU 5 V board's sensor pins P1 / P2)
-PLAIN_DROP = {("NA", "ring board"): None, ("EU", "cap board"): None, ("NA", "wiring board"): {"J2"},
-              ("NA", "mechanical"): {"W1"}, ("EU", "5 V board"): {"P1", "P2"}}
+# battery-free edition (D-109, D-122): the mains board fully populated, the 5 V path to the spring pins, the back cover
+# flex; left off: the ring board / cap board, the FFC, the EU 5 V board's sensor pins P1 / P2
+PLAIN_DROP = {("NA", "ring board"): None, ("EU", "cap board"): None, ("NA", "mechanical"): {"W1"},
+              ("EU", "5 V board"): {"P1", "P2"}}
+# switch-only edition (D-122): the rocker switch and the terminal blocks on the mains board, the board's standoffs (NA)
+# and the PE lever connector (EU); nothing else
+SWITCH_KEEP = {("NA", "wiring board"): {"S1", "J1"}, ("NA", "mechanical"): {"SO1", "SO2", "SO3", "SO4"},
+               ("EU", "mains board"): {"S1", "J1", "J2"}, ("EU", "mechanical"): {"PE1"}}
+
+
+def switch_keep(variant, board, ref):
+    """collect() filter for the switch-only plates."""
+    return ref in SWITCH_KEEP.get((variant, board), set())
 
 
 def plain_keep(variant, board, ref):
