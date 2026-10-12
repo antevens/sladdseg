@@ -29,6 +29,10 @@ PW, PH, PT, PR = 72.2, 131.75, 14.4, 6.0  # width (the flange plus clearance and
                                           # D-66, checked)
 PLATE_Y = 7.175                           # plate centre above the box centre (MSR-2 bay top, SHT40 bay bottom)
 SKIN = 2.0                                # face/side wall of the hollow trim
+# plain plate (rocker and battery-free remote only, no sensors; D-109): standard-size single-gang wallplate,
+# 2-3/4 x 4-1/2 in (NEMA WD 6), centred on the box
+PLAIN_PW, PLAIN_PH = 69.85, 114.3
+PLAIN_WALL_MIN = 1.0                      # plain plate's side wall beside the insert's flange, at least
 FACE_CHAMFER = 1.2
 
 # ---- NA single-gang device box ----
@@ -233,7 +237,7 @@ MSR2_CN1_STACK = B2B_STACK                # CN1 + the add-on's 55909 plug: the s
 MSR2_FRONT = max(MSR_BOARD_T + MSR2_CN1_STACK + MSR2_CO2_BOARD[2] + MSR2_SCD[2],
                  MSR2_LD_BACK + MSR2_LD_T + max(MSR2_LD_PARTS, MSR2_LD_PINS[3]))   # front above the board's back
 MSR = (40.0, 24.0, MSR2_FRONT)            # envelope (x, y from Apollo's case outside, height from the model)
-FLEX_T = 0.12                             # single-layer polyimide flex (back cover)
+FLEX_T = 0.10                             # single-layer polyimide flex (back cover): PCBWay default thickness (D-114)
 SHT_CHIP = (1.5, 1.5, 0.5)                # DATASHEET Sensirion SHT40 DFN-4 body
 # spring fingers: Harwin S7081-42R (the back cover's end contacts; EU)
 FINGER = (3.18, 6.25)                     # DATASHEET S7081-42R body w x l (drawing S7081-42R iss. 7)
@@ -335,22 +339,33 @@ BC_PRY = (6.0, 1.2)                       # MEASURE screwdriver notch in the rim
 BC_LATCH_W = (4.0 - 2 * 0.15, 3.1)        # clip width (bottom, top): bottom fills the housing's 4.0 slot less 0.15 each side
                                           # (human 2026-10-11, D-92); top MEASURED 3.1 (human, 2026-10-09)
 BC_LATCH_T = 1.2                          # ESTIMATE ear thickness (radial; photos)
-BC_LATCH_HOOK = (0.8 + 0.3, 0.7)          # hook at the clip's tip, inwards (catches the housing's wall): top 0.2 deeper
-                                          # than the original's 0.5, bottom 0.3 (test prints, human 2026-10-09/10), bottom
-                                          # 0.3 more (it snapped once, then not again: human 2026-10-11, D-92)
+BC_LATCH_HOOK = (0.8 + 0.3 + 0.2 + 0.2 + 0.2, 0.7)   # hook at the clip's tip, inwards (catches the housing's wall): top 0.2
+                                          # deeper than the original's 0.5, bottom 0.3 (test prints, human 2026-10-09/10),
+                                          # bottom 0.3 more (it snapped once, then not again: human 2026-10-11, D-92),
+                                          # bottom 0.2 more (human 2026-10-12, D-108), and 0.2 more (D-110), and 0.2
+                                          # more (D-112)
 BC_LATCH_RIM_GAP = 1.0                    # MEASURED top clip's top below the rim (human, 2026-10-09)
-# clip tops above the inside floor: bottom end (-y) MEASURED 4.7 plus 0.2 towards the rim (test print, human
-# 2026-10-10); top end (+y) from BC_LATCH_RIM_GAP
-BC_LATCH_TOPS = (4.7 + 0.2, B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
-# innermost point (hook tip) in from the outside rim: bottom end 3.25 (human 2026-10-12, D-107; was 4.0), top end
+# clip tops above the inside floor: bottom end (-y) set so its hook's top (where the 45 deg ramp leaves the shell's
+# inner surface) is BC_LATCH_SHOW below the rim (`make check` holds it to 0.02); top end (+y) from BC_LATCH_RIM_GAP
+BC_LATCH_SHOW = 3.25                      # bottom hook's top below the rim (human 2026-10-12, D-115; measured 4.6)
+BC_LATCH_TOPS = (5.572, B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
+# innermost point (hook tip) in from the outside rim: bottom end 3.25 (human 2026-10-12, D-107; was 4.0) plus its
+# 0.2 deeper hook (D-108: the clip stays, the hook stands further in), plus 0.2 deeper again and the clip 0.1 further
+# from the end (D-110), plus 0.2 deeper again (D-112), top end
 # 2.7 (the clip 0.3 nearer the end, human 2026-10-12, D-107; was 3.0). Where reach - hook - thickness < BC_WALL the
 # clip's back merges into the end wall.
-BC_LATCH_REACH = (3.25, 2.7)
+BC_LATCH_REACH = (3.25 + 0.2 + 0.2 + 0.1 + 0.2, 2.7)
+# hook underside: bottom clip flat (a ledge that catches the housing's slot) under a tip face this tall; top clip
+# None = 45 deg back to the column (it stands clear of the wall and holds). The bottom hook sits in the round-over,
+# where a 45 deg underside lies inside the wall (D-113)
+BC_LATCH_CATCH = (0.3, None)
+BC_LATCH_LEDGE_MIN = 0.4                  # flat underside proud of the shell's inner surface, at least
 # small tabs inside both long side walls, two per side either side of mid-length, into slots in the housing's long
 # sides (human, 2026-10-11, D-90): the slots' inside / outside spacing along y, tab top below the rim, tab height,
 # tab protrusion from the wall
-BC_TAB = (18.0, 25.0, 1.0, 0.8, 0.25 + 0.2)   # MEASURED (slots corrected 2026-10-11: 18 / 25, was 23 / 25); protrusion
-                                          # the human's figure: 0.5, halved, then 0.2 more after the first print (D-92)
+BC_TAB = (18.0, 25.0, 1.0 - 0.1, 0.8, 0.25 + 0.2)   # MEASURED (slots corrected 2026-10-11: 18 / 25, was 23 / 25); top
+                                          # 0.1 nearer the rim (human 2026-10-12, D-108); protrusion the human's figure:
+                                          # 0.5, halved, then 0.2 more after the first print (D-92)
 BC_TAB_CLR = 0.15                         # tab ends clear of the slots' ends (along y)
 # side ribs at mid-length (y 0), free-standing on the shell's curved floor, against flex (human, 2026-10-09)
 BC_SIDE_TAB = (6.0, 0.8)                  # length along y (ESTIMATE, photos), thickness (human, 2026-10-09)
@@ -379,9 +394,9 @@ BC_FLEX_SNAP_RELIEF = 0.3                 # relief round each post (sides and be
 BC_END_LIP = (1.2, 1.0, 0.1)              # lip in front of each block's foot: thickness, height above the ledge, gap
 BC_END_SLOT = (0.8, 0.1, 0.5, 0.8, 0.1)   # slot along each block's outer face, the end section slides down it: side wall,
                                           # wall to the section's edge, lip reach over the edge, lip thickness, lip to copper
-BC_STEEL_CLIP = (6.0, 0.48, 0.45)         # clips at both ends of the plate's pocket: width, tab thickness, hook over the
-                                          # plate's edge (broke in PLA; the cover prints in PETG, to verify); tab 0.48
-                                          # (was 0.8): 0.8 shorter with the plate sunk, strain <= 3 % (D-96, D-99)
+BC_STEEL_CLIP = (6.0, 0.8, 0.45)          # clips at both ends of the plate's pocket: width, tab thickness, hook over the
+                                          # plate's edge; tab 0.8 (was 0.48, D-99): they snapped off, flex was no issue
+                                          # (human 2026-10-12, D-111); 2.8 x the bending strength, about 4.8 % strain
 BC_STEEL_CLIP_ROOT = 0.4                  # tab root: shell left under the relief round each tab (the tab flexes)
 BC_STEEL_CLIP_RELIEF = 0.3                # relief round each tab (sides, behind, and towards the plate)
 BC_STEEL_Y = -5.5                         # steel plate centre in the cover (the EU magnet sits under it, clear of the switch cup)

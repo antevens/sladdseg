@@ -111,7 +111,8 @@ def corner_cuts():
 def latches():
     """Snap clips at both ends (x = 0): columns standing on the shell's curved inner surface, tops BC_LATCH_TOPS
     above the inside floor, a hook at the tip pointing inwards over the housing's wall (45 deg top, so the cover
-    prints back down without supports), hook tip BC_LATCH_REACH in from the outside rim."""
+    prints back down without supports), hook tip BC_LATCH_REACH in from the outside rim; underside flat under a
+    BC_LATCH_CATCH tip face, or 45 deg back to the column (None)."""
     from build123d import Polyline, Plane, extrude, make_face
     out = None
     t = BC_LATCH_T
@@ -120,7 +121,9 @@ def latches():
         yi = B_H / 2 - reach + h                        # clip's inner face (the hook stands h further in)
         yo = yi + t                                     # outer face
         top = BC_WALL + top_in
-        pts = [(yi, 0.3), (yo, 0.3), (yo, top), (yi - h, top - h), (yi - h, top - 2 * h), (yi, top - 3 * h), (yi, 0.3)]
+        f = BC_LATCH_CATCH[i]
+        under = [(yi - h, top - 2 * h), (yi, top - 3 * h)] if f is None else [(yi - h, top - h - f), (yi, top - h - f)]
+        pts = [(yi, 0.3), (yo, 0.3), (yo, top), (yi - h, top - h)] + under + [(yi, 0.3)]
         prof = extrude(Plane.YZ * make_face(Polyline(*pts)), BC_LATCH_W[i] / 2, both=True)   # profile y / z, along x
         prof &= back_shape(0.0, 0.0)                    # not through the outside
         e = prof if s > 0 else prof.mirror(Plane.XZ)
@@ -140,6 +143,19 @@ def side_tabs():
         out = tab if out is None else out + tab
     out &= back_shape(0.0, 0.0) + Pos(0, 0, 50 + B_SEAM_Z - 0.01) * Box(200, 200, 100)   # not through the outside
     return out
+
+
+def latch_show(i):
+    """Height (z) where clip i's 45 deg ramp leaves the shell's inner surface: the top of the hook as seen inside."""
+    reach, h = BC_LATCH_REACH[i], BC_LATCH_HOOK[i]
+    top = BC_WALL + BC_LATCH_TOPS[i]
+    d0, d1 = reach - h - BC_LATCH_T, reach                # ramp from the outer face's top to the tip, in from the rim
+    lo, hi = 0.0, 1.0
+    for _ in range(60):
+        m = (lo + hi) / 2
+        z = top - h * m
+        lo, hi = (lo, m) if d0 + (d1 - d0) * m >= B_W / 2 - inner_x(z) else (m, hi)
+    return top - h * hi
 
 
 def inner_x(z):

@@ -531,15 +531,18 @@ def board_fit(ins):
               f"KiCad board {slab_.size.X:.2f} x {slab_.size.Y:.2f} matches params WB {WB[0]} x {WB[1]}")
 
 
-def barrier(ins):
-    print("barrier")
+def barrier(ins, plain=False):
+    print("barrier" + (" (plain insert, D-109)" if plain else ""))
     room = slab(rr(PW + 20, PH + 20, 5), 0, PT + 10)
     box = slab(Rectangle(BOX_W, BOX_H), -BOX_D, 0)
-    # plug the openings that are closed by something else when installed: the 5 V pass-through (FFC), the rocker
-    # cutout (the certified rocker body) and the two spring pins' holes in the pocket floor (the pins, D-50)
+    # plug the openings that are closed by something else when installed: the 5 V pass-through (FFC; the plain insert
+    # has none), the rocker cutout (the certified rocker body) and the two spring pins' holes in the pocket floor
+    # (the pins, D-50)
     rocker = Pos(0, SW_Y, 0) * slab(Rectangle(*SW_CUT), PANEL_BOT_Z - 1, WELL_FLOOR_Z + 1)
     import ring
-    air = (room + box) - ins - insert.pass_through() - rocker - ring.pin_holes()   # pins fill their holes (D-50)
+    air = (room + box) - ins - rocker - ring.pin_holes()   # pins fill their holes (D-50)
+    if not plain:
+        air -= insert.pass_through()
     parts = air.solids()
     mains = [s for s in parts if s.is_inside(Vector(0, 0, -BOX_D + 1))]
     check(len(mains) == 1, "found the mains air volume")
@@ -788,14 +791,28 @@ def cover_checks():
     cw, ct, ch = BC_STEEL_CLIP
     arm = BC_STEEL_FLOOR + BC_STEEL[2] + 0.1 + ch / 2 - BC_STEEL_CLIP_ROOT
     strain = 1.5 * ct * over / arm ** 2                    # cantilever outer-fibre strain as the plate passes the hook
-    check(strain <= 0.03, f"plate clips {cw} wide, {ct} thick, {arm:.1f} mm free from their relief: strain "
-                          f"{strain * 100:.1f} % snapping in (design target <= 3 %; broke in PLA, PETG to verify)")
+    check(strain <= 0.05, f"plate clips {cw} wide, {ct} thick, {arm:.1f} mm free from their relief: strain "
+                          f"{strain * 100:.1f} % snapping in (<= 5 %: strength before flex, D-111)")
     check(over >= 0.3, f"steel plate clips hook {over:.2f} mm over the plate's ends")
     ear = bc.latches().bounding_box()
     reach = sorted(round(B_H / 2 - abs(e.bounding_box().min.Y if e.bounding_box().center().Y > 0
                                        else e.bounding_box().max.Y), 2) for e in bc.latches().solids())
     check(ear.max.Y < B_H / 2 and reach == sorted(round(r, 2) for r in BC_LATCH_REACH),
           f"snap clip hook tips {reach} mm in from the outside rim, hooks {BC_LATCH_HOOK} mm inwards (bottom, top)")
+    show = B_SEAM_Z - bc.latch_show(0)
+    check(abs(show - BC_LATCH_SHOW) < 0.02, f"bottom clip: hook's top (ramp leaving the shell) {show:.2f} mm below the "
+                                            f"rim (target {BC_LATCH_SHOW}, D-115)")
+    for i, f in enumerate(BC_LATCH_CATCH):                 # flat underside: room under it, proud of the shell
+        if f is None:
+            continue
+        zc = BC_WALL + BC_LATCH_TOPS[i] - BC_LATCH_HOOK[i] - f
+        tip = B_H / 2 - BC_LATCH_REACH[i]
+        ledge = BC_LATCH_REACH[i] - (B_W / 2 - bc.inner_x(zc))   # tip beyond the shell's inside face at zc (same round-over)
+        probe = Pos(0, -(tip + 0.1), zc - 0.15) * Box(0.6, 0.15, 0.2)
+        r = probe & ps["cover"]
+        check(ledge >= BC_LATCH_LEDGE_MIN and (r is None or r.volume < 1e-6),
+              f"{'bottom' if i == 0 else 'top'} clip: flat underside {zc - BC_WALL:.2f} above the inside floor, "
+              f"{ledge:.2f} mm proud of the shell's inner surface (>= {BC_LATCH_LEDGE_MIN}), clear under the tip")
     widths = [round(e.bounding_box().size.X, 2) for e in sorted(bc.latches().solids(), key=lambda e: e.bounding_box().center().Y)]
     check(all(abs(w - BC_LATCH_W[i]) < 0.01 for i, w in enumerate(widths)), f"snap clips {widths} mm wide (bottom, top)")
     tops = sorted(round(e.bounding_box().max.Z - BC_WALL, 2) for e in bc.latches().solids())
@@ -815,7 +832,7 @@ def cover_checks():
     zs = (round(B_SEAM_Z - max(t.bounding_box().max.Z for t in tb.solids()), 2),
           round(B_SEAM_Z - min(t.bounding_box().min.Z for t in tb.solids()), 2))
     check(len(tb.solids()) == 4 and ys[0] >= gi / 2 + BC_TAB_CLR - 1e-3 and ys[-1] <= go / 2 - BC_TAB_CLR + 1e-3
-          and abs(bc.inner_x(B_SEAM_Z - top - h / 2) - xin - prot) < 1e-3 and zs == (top, top + h),
+          and abs(bc.inner_x(B_SEAM_Z - top - h / 2) - xin - prot) < 1e-3 and zs == (round(top, 2), round(top + h, 2)),
           f"tabs inside both long side walls: y {ys[0]:.2f}..{ys[-1]:.2f} either side of mid-length ({BC_TAB_CLR} clear "
           f"of the housing's slots {gi / 2}..{go / 2}), {zs[0]}..{zs[1]} below the rim, {prot} in from the wall (D-90)")
     for name, part in (("snap clips", bc.latches()), ("side ribs", bc.side_tabs())):
@@ -963,6 +980,44 @@ def jig_checks():
                                         f"the floor: the blade cuts right through")
 
 
+def plain_checks():
+    """Plain plate (D-109): the insert without the 5 V cable bore and the standard-size face plate, on the same wiring
+    board, riser and spring pins as the full plate."""
+    print("plain plate (rocker and battery-free remote, D-109)")
+    ins, tr = insert.build(plain=True), trim.build(plain=True)
+    check(ins.is_valid and len(ins.solids()) == 1 and tr.is_valid and len(tr.solids()) == 1,
+          "plain insert and plain face plate are one valid solid each")
+    bb = tr.bounding_box()
+    check(abs(bb.size.X - PLAIN_PW) < 0.01 and abs(bb.size.Y - PLAIN_PH) < 0.01 and abs(bb.center().Y) < 0.01,
+          f"plain face plate {bb.size.X:.2f} x {bb.size.Y:.2f} mm, centred on the box (standard single-gang plate)")
+    wall = (PLAIN_PW - FLANGE_OUT[0]) / 2 - SPLIT_CLR
+    check(wall >= PLAIN_WALL_MIN, f"plain face plate side wall beside the insert's flange {wall:.2f} mm "
+                                  f"(>= {PLAIN_WALL_MIN})")
+    check(PLAIN_PH / 2 - SCREW_PITCH / 2 - SCREW_HEAD_D / 2 >= 5.0,
+          f"plain face plate: {PLAIN_PH / 2 - SCREW_PITCH / 2 - SCREW_HEAD_D / 2:.1f} mm beyond each screw head")
+    r = ins & tr
+    ov = r.volume if r is not None else 0.0
+    check(ov < 0.01, f"plain insert and plain face plate do not overlap ({ov:.3f} mm3)")
+    import bilresa
+    r = bilresa.build() & ins
+    ov = r.volume if r is not None else 0.0
+    check(ov < 0.01, f"BILRESA model clears the plain insert's pocket ({ov:.3f} mm3)")
+    env = insert.pass_through() & insert.outline_solid()       # the pass-through within the insert's outline
+    sol = insert.pass_through() & ins
+    v_env, v_sol = env.volume, (sol.volume if sol is not None else 0.0)
+    check(abs(v_env - v_sol) < 0.5, f"plain insert: the 5 V pass-through's space is solid ({v_sol:.1f} of {v_env:.1f} mm3)")
+    import ring, assembly
+    rp = ring.parts()
+    for name, p in {**{k: rp[k] for k in ("riser", "pins", "posts")}, "wiring board": assembly.wiring_board()}.items():
+        d = tr.distance_to(p)
+        check(d >= 0.05, f"plain face plate not touching the {name} (gap {d:.2f} mm)")
+    barrier(ins, plain=True)
+    from export import PRINT_ORIENT
+    overhangs("plain insert", PRINT_ORIENT["insert_plain"](ins),
+              supported=(0.0, RISER_TOP + RISER_CLR, RISER_TOP + M2_HEAD[1] + RISER_CLR))
+    overhangs("plain face plate", PRINT_ORIENT["trim_plain"](tr), limit=3.5)
+
+
 def main():
     dims()
     terminal_entry()
@@ -992,6 +1047,7 @@ def main():
     import backcover
     overhangs("back cover", backcover.cover())                 # printed back down
     jig_checks()
+    plain_checks()
     print("FAILED: " + "; ".join(FAILS) if FAILS else "all checks passed")
     return 1 if FAILS else 0
 

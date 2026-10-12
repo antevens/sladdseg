@@ -228,6 +228,30 @@ Without components:
 
 ![EU 5 V board, bare, angled](docs/renders/eu_5v_board_bare_iso.png)
 
+### Plain plates: rocker and battery-free remote (D-109)
+
+Two editions of each variant. The full plate has the rocker, the battery-free remote, the MSR-2 (mmWave, optional
+CO2 add-on), the SHT40 and the microphone. The plain plate has only the rocker and the battery-free remote. It uses
+the same mains board(s), 5 V parts, spring pins, riser (NA), replacement back cover and cover flex, without the ring
+board / cap board and their sensors.
+
+- NA: a standard-size single-gang face plate, 2-3/4 × 4-1/2 in (69.85 × 114.3 mm), centred on the box. The insert has
+  no 5 V cable channel or bore (its only openings are the two spring-pin holes). No ring board, FFC or FFC connector.
+- EU: an 80 × 80 mm face plate, centred on the box. The cap has only the two battery-free pins' holes. The carrier
+  keeps its lip under the cap and its corners with the snap windows. No cap board; the 5 V board without the sensor
+  pins P1 / P2.
+
+| NA plain | NA plain, remote out |
+| --- | --- |
+| ![NA plain plate](docs/renders/plain_front.png) | ![NA plain plate, remote out](docs/renders/plain_remote_out.png) |
+
+| EU plain | EU plain, remote out |
+| --- | --- |
+| ![EU plain plate](docs/renders/eu_plain_front.png) | ![EU plain plate, remote out](docs/renders/eu_plain_remote_out.png) |
+
+Order lists: `pcb/order/unit_na_plain_*.csv`, `unit_eu_plain_*.csv`; `make order-push VARIANT=na-plain` (or `eu-plain`,
+`both-plain`).
+
 ### Steel plate hacksaw guide (D-52, D-81)
 
 The steel plate that ships with the BILRESA is cut to an 18.5 mm piece for the insert (NA) or the cap (EU) in a hacksaw

@@ -17,10 +17,11 @@ from common import rr, slab, stadium
 import msr2
 
 
-def outline(inset=CB_EDGE):
+def outline(inset=CB_EDGE, plain=False):
     """Outline inside the trim's walls (less `inset`), and the cut-out round the trim's pocket walls."""
-    w, h = PW - 2 * (SKIN + inset), PH - 2 * (SKIN + inset)
-    return Pos(*PC) * rr(w, h, PR - SKIN - inset), stadium(POCKET_OUT[0] + 2 * CB_POCKET_CLR,
+    pw, ph, pc = plate(plain)
+    w, h = pw - 2 * (SKIN + inset), ph - 2 * (SKIN + inset)
+    return Pos(*pc) * rr(w, h, PR - SKIN - inset), stadium(POCKET_OUT[0] + 2 * CB_POCKET_CLR,
                                                            POCKET_OUT[1] + 2 * CB_POCKET_CLR)
 
 
@@ -67,19 +68,23 @@ def cap_board():
     return b - snap_windows(CB_PAD_Z - 1, CB_TOP + 1, SNAP_WALL_R + SNAP[2])      # the bumps pass through
 
 
-def carrier():
+def carrier(plain=False):
     """Fills from the wall up to the cap board round the cap disc (a bore, so the cap goes in from the front), a lip at
     the wall under the cap's edge with gaps for the cap's teeth (D-71), a rim round the board up to its top (D-70).
+    Plain (D-109): the 80 x 80 plate's outline up to the cap board's level, no rim, pin or screw holes.
     Prints bottom down, no supports."""
     import cap_eu
-    o, pocket = outline()
+    o, pocket = outline(plain=plain)
     r0 = CAP_R + CARRIER_CAP_CLR
     c = slab(o, 0, CB_PAD_Z) - slab(pocket, LIP_T, CB_PAD_Z + 1)
-    ob, _ = outline(CB_INSET - CB_RIM_CLR)
-    c += slab(o, CB_PAD_Z, CB_TOP) - slab(ob, CB_PAD_Z - 1, CB_TOP + 1)          # rim
+    if not plain:
+        ob, _ = outline(CB_INSET - CB_RIM_CLR)
+        c += slab(o, CB_PAD_Z, CB_TOP) - slab(ob, CB_PAD_Z - 1, CB_TOP + 1)      # rim
     c -= Pos(0, 0, (LIP_T + CB_TOP + 1) / 2) * Cylinder(r0, CB_TOP + 1 - LIP_T)    # bore round the cap disc
     c -= Pos(0, 0, LIP_T / 2) * Cylinder(LIP_R, LIP_T + 2)                         # lip's inner edge
     c -= cap_eu.teeth(LIP_R - 1, r0 + 0.01, -1, LIP_T + 0.01, LIP_CLR)             # gaps in the lip for the cap's teeth
+    if plain:
+        return c - snap_windows(-1, CB_TOP + 1) - snap_grooves()
     for x, y in PINS:
         c -= Pos(x, y, CB_PAD_Z / 2) * Cylinder(PIN_CAP_HOLE_D / 2, CB_PAD_Z + 2)
     depth = min(CB_PAD_Z - 0.6, 3.0)

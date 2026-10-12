@@ -2,7 +2,7 @@
 
 Usage:
   python3 pcb/tools/distributors.py stock                       report, build/stock.md; exit 1 if a part breaks D-84
-  python3 pcb/tools/distributors.py push [na|eu|both] [PLATES] [--primary=digikey|mouser] [--dry-run] [--no-price-breaks]
+  python3 pcb/tools/distributors.py push [na|eu|both][-plain] [PLATES] [--primary=digikey|mouser] [--dry-run] [--no-price-breaks]
                                                                 exactly the parts for PLATES plates (default: na 1; both:
                                                                 PLATES of each), no spares; the primary distributor gets
                                                                 every part it carries, the other one the rest; with
@@ -236,11 +236,11 @@ def stock():
         sys.exit(1)
 
 
-def push(na, eu, primary, dry):
+def push(na, eu, primary, dry, plain=False):
     plates = {"NA": na, "EU": eu}
-    lines, _ = ob.collect(plates)
-    name = "smart-wallplate v0.5 " + " ".join(f"{k}{n}" for k, n in (("NA", na), ("EU", eu)) if n) + \
-        f" {date.today().isoformat()}"
+    lines, _ = ob.collect(plates, ob.plain_keep if plain else None)
+    name = "smart-wallplate v0.5 " + ("plain " if plain else "") + \
+        " ".join(f"{k}{n}" for k, n in (("NA", na), ("EU", eu)) if n) + f" {date.today().isoformat()}"
     dk_parts, ms_items = [], []
     for mpn, line in lines.items():
         n = sum(k * plates[v] for v, k in line["per"].items())   # exact: no spares
@@ -321,14 +321,14 @@ def main():
         primary = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--primary=")), "digikey")
         if primary not in ("digikey", "mouser"):
             raise SystemExit("--primary must be digikey or mouser")
-        variant = args[1] if len(args) > 1 else "na"
-        if variant not in ("na", "eu", "both"):
-            raise SystemExit("variant must be na, eu or both")
+        variant, _, edition = (args[1] if len(args) > 1 else "na").partition("-")
+        if variant not in ("na", "eu", "both") or edition not in ("", "plain"):
+            raise SystemExit("variant must be na, eu or both, with -plain for the plain plates (D-109)")
         n = int(args[2]) if len(args) > 2 else 1
         if n < 1:
             raise SystemExit("PLATES must be 1 or more")
         push(n if variant in ("na", "both") else 0, n if variant in ("eu", "both") else 0, primary,
-             "--dry-run" in sys.argv)
+             "--dry-run" in sys.argv, edition == "plain")
 
 
 if __name__ == "__main__":

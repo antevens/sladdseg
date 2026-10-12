@@ -91,19 +91,19 @@ def cup_cut():
     return inner + cutout
 
 
-def pin_holes():
+def pin_holes(plain=False):
     """The cap's pin openings: one round each sensor pin to the cap board's pads (R9) and each battery-free pin to the
-    back cover's pads (D-54), filled by the pins' barrels; the other opening is the rocker's cutout."""
+    back cover's pads (D-54), filled by the pins' barrels; the other opening is the rocker's cutout. Plain (D-109):
+    the battery-free pins only."""
     out = None
-    for x, y in PINS:
+    for x, y in (() if plain else PINS) + tuple(BC_FINGERS):
         h = Pos(x, y, CAP_T / 2) * Cylinder(PIN_CAP_HOLE_D / 2, CAP_T + 2)
         out = h if out is None else out + h
-    for x, y in BC_FINGERS:
-        out += Pos(x, y, CAP_T / 2) * Cylinder(PIN_CAP_HOLE_D / 2, CAP_T + 2)
     return out
 
 
-def build():
+def build(plain=False):
+    """Cap; plain: without the sensor pins' holes (no cap board, D-109)."""
     body = Pos(0, 0, CAP_T / 2) * Cylinder(CAP_R, CAP_T)
     body += cup()
     body += magnet_cup()
@@ -114,7 +114,7 @@ def build():
     for x, y in SCREWS:
         body -= screw_hole(x, y)
     body -= rebate()
-    body -= pin_holes()
+    body -= pin_holes(plain)
     return body
 
 

@@ -207,6 +207,15 @@ PL_Y = (SHT_Y - SHT[1] / 2 - SHT_BAY_CLR - BAY_WALL - SKIN - BAY_EDGE,
         MSR_Y + MSR[1] / 2 + CLR + BAY_WALL + SKIN + BAY_EDGE)
 PH = PL_Y[1] - PL_Y[0]
 PC = (0.0, (PL_Y[0] + PL_Y[1]) / 2)                        # plate centre relative to the box centre
+# plain plate (rocker and battery-free remote only, no cap board or sensors; D-109): 80 x 80, centred on the box; the
+# carrier keeps its lip under the cap and its corners with the snap windows, nothing beside the cap
+PLAIN_PW = PLAIN_PH = 80.0
+PLAIN_PC = (0.0, 0.0)
+
+
+def plate(plain=False):
+    """Face plate outline: width, height, centre (x, y)."""
+    return (PLAIN_PW, PLAIN_PH, PLAIN_PC) if plain else (PW, PH, PC)
 
 # sensors, derived
 MSR_BACK_Z = CB_TOP + B2B_STACK                            # MSR-2's back on CN2 and the spacers on the cap board

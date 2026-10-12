@@ -434,13 +434,13 @@ def test_socket(cap):
     base.overhangs("test socket plate", pl)
 
 
-def barrier(cap):
-    print("barrier")
+def barrier(cap, plain=False):
+    print("barrier" + (" (plain cap, D-109)" if plain else ""))
     room = Pos(PC[0], PC[1], 0) * slab(rr(PW + 20, PH + 20, 5), 0, PT + 10)
     box = Pos(0, 0, -BOX_D / 2) * Cylinder(BOX_R, BOX_D)
     for x, y in DOMES:
         box -= Pos(x, y, -BOX_D / 2) * Cylinder(DOME_D / 2, BOX_D + 0.01)
-    plugs = Pos(0, SW_Y, 0) * slab(Rectangle(*SW_CUT), PANEL_BOT_Z - 0.2, PANEL_TOP_Z + 0.2) + cap_eu.pin_holes()
+    plugs = Pos(0, SW_Y, 0) * slab(Rectangle(*SW_CUT), PANEL_BOT_Z - 0.2, PANEL_TOP_Z + 0.2) + cap_eu.pin_holes(plain)
     air = (room + box) - cap - plugs
     mains = [s for s in air.solids() if s.is_inside(Vector(0, 0, -BOX_D + 1))]
     check(len(mains) == 1, "found the mains air volume")
@@ -480,6 +480,60 @@ def board_checks():
               f"(closest {pin[1]}, >= {S1_WAGO_PIN_GAP})")
 
 
+def plain_checks():
+    """Plain plate (D-109): the cap with the battery-free pins' holes only, the carrier without the cap board, the
+    80 x 80 face plate; the mains board and the 5 V board as the full plate, without the sensor pins P1 / P2."""
+    print("plain plate (rocker and battery-free remote, D-109)")
+    from math import cos, radians, sin
+    import trim_eu
+    cap, tr, car = cap_eu.build(plain=True), trim_eu.build(plain=True), capboard_eu.carrier(plain=True)
+    for name, q in (("cap", cap), ("face plate", tr), ("carrier", car)):
+        check(q.is_valid and len(q.solids()) == 1, f"plain {name}: one valid solid ({q.volume / 1000:.1f} cm3)")
+    bb = tr.bounding_box()
+    check(abs(bb.size.X - PLAIN_PW) < 0.01 and abs(bb.size.Y - PLAIN_PH) < 0.01 and abs(bb.center().X) < 0.01
+          and abs(bb.center().Y) < 0.01, f"plain face plate {bb.size.X:.1f} x {bb.size.Y:.1f} mm, centred on the box")
+    room = PLAIN_PW / 2 - SKIN - (CAP_R + CARRIER_CAP_CLR)
+    check(room >= 0.0, f"cap disc and carrier bore inside the plain plate's walls ({room:.2f} mm to spare at the sides)")
+    parts = boards_eu.parts()
+    rem = boards_eu.remote()
+    pairs = [("cap", cap, "face plate", tr), ("carrier", car, "face plate", tr), ("carrier", car, "cap", cap),
+             ("remote", rem, "cap", cap), ("remote", rem, "face plate", tr)]
+    pairs += [(k, v, "cap", cap) for k, v in parts.items() if k not in ("switch", "pins")]
+    for an, a, bn, b in pairs:
+        r = a & b
+        v = r.volume if r is not None else 0.0
+        check(v < 0.05, f"plain: {an} clears the {bn} ({v:.3f} mm3)")
+    for k in ("board", "bf_pins", "front", "socket", "mains_board", "header"):
+        d = tr.distance_to(parts[k])
+        check(d >= 0.05, f"plain face plate not touching the {k} (gap {d:.2f} mm)")
+    f = trim_eu.snaps()
+    for name, q in (("carrier", car), ("cap", cap)):
+        r = f & q
+        check(r is None or r.volume < 0.001, f"plain: snap fingers clear of the {name} ({r.volume if r else 0.0:.3f} mm3)")
+    web = SNAP_WIN_R - (CAP_R + CARRIER_CAP_CLR)
+    for a, w in SNAPS:
+        u = (cos(radians(a)), sin(radians(a)))
+        rp = CAP_R + CARRIER_CAP_CLR + web / 2
+        probe = Pos(u[0] * rp, u[1] * rp, (LIP_T + CB_PAD_Z) / 2) * Box(0.2, 0.2, CB_PAD_Z - LIP_T - 0.1)
+        r = probe & car
+        check(r is not None and r.volume > 0.99 * probe.volume,
+              f"plain carrier: window at {a:.0f} deg closed towards the bore")
+        g = Pos(u[0] * (SNAP_WALL_R + SNAP[2] / 2), u[1] * (SNAP_WALL_R + SNAP[2] / 2),
+                sum(SNAP_GROOVE) / 2) * Box(0.1, 0.1, 0.1)
+        r = g & car
+        check(r is None or r.volume < 1e-6, f"plain carrier: groove at {a:.0f} deg for the finger's bump")
+    cb = car.bounding_box()
+    d = car.distance_to(cap)
+    check(abs(cb.min.Z) < 1e-6 and d < 0.01, f"plain carrier on the wall, its lip against the cap's rebate (gap {d:.3f})")
+    probe = Pos(0, 0, (LIP_T + CB_TOP + 1) / 2) * Cylinder(CAP_R, CB_TOP + 1 - LIP_T)
+    r = car & probe
+    check(r is None or r.volume < 0.001, "plain carrier clear of the cap disc above the lip: the cap goes in from the front")
+    barrier(cap, plain=True)
+    base.overhangs("plain cap", Rot(180, 0, 0) * cap, bridges=((-MAGNET_Z[0], MAG_BRIDGE),))
+    base.overhangs("plain face plate", Rot(180, 0, 0) * tr, limit=3.5)
+    base.overhangs("plain carrier (bottom down)", car)
+
+
 def main():
     layout()
     board_checks()
@@ -500,6 +554,7 @@ def main():
     base.overhangs("trim", Rot(180, 0, 0) * tr, limit=3.5)
     cp = capboard_eu.parts()
     base.overhangs("cap board carrier (bottom down)", cp["carrier"])
+    plain_checks()
     print("FAILED: " + "; ".join(base.FAILS) if base.FAILS else "all checks passed")
     return 1 if base.FAILS else 0
 

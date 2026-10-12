@@ -57,14 +57,17 @@ def mesh(part, d, name):
     return pv.read(str(f))
 
 
-def parts(lift=0.0, cut=False, pins_out=0.0):
-    """Assembly parts; lift raises the remote, pins_out the spring pins (1.5 = extended with the remote out)."""
+def parts(lift=0.0, cut=False, pins_out=0.0, plain=False):
+    """Assembly parts; lift raises the remote, pins_out the spring pins (1.5 = extended with the remote out); plain:
+    the rocker and battery-free plate (D-109), no ring board, sensors or FFC."""
     rp = ring.parts()
     rp["pin_posts"] = rp.pop("posts")
     rp.pop("keep")
     rp["pins"] = Pos(0, 0, pins_out) * rp["pins"]
-    ps = {"trim": trim.build(), "insert": insert.build(), "remote": bilresa.build(lift), "posts": standoff.placed(),
-          **rp, **jumper.build()}
+    if plain:
+        rp = {k: rp[k] for k in ("riser", "pins", "pin_posts")}
+    ps = {"trim": trim.build(plain), "insert": insert.build(plain), "remote": bilresa.build(lift),
+          "posts": standoff.placed(), **rp, **({} if plain else jumper.build())}
     ps.update(board_parts())
     if cut:  # keep x <= 0 for a half-section (board parts are clipped as meshes in shot())
         keep = Pos(-100, 0, 0) * Box(200, 400, 400)
@@ -113,6 +116,9 @@ def main():
     shot("v0.5_front", parts(), [(150, -170, 260), (0, 0, 0), (0, 1, 0)], hide=BOARD_KEYS)
     shot("v0.5_remote_out", parts(lift=45, pins_out=1.5), [(210, -200, 330), (0, 0, 15), (0, 1, 0)], hide=BOARD_KEYS)
     shot("v0.5_section", parts(cut=True), [(290, 70, 150), (0, 0, -5), (0, 1, 0)])
+    shot("plain_front", parts(plain=True), [(150, -170, 260), (0, 0, 0), (0, 1, 0)], hide=BOARD_KEYS)
+    shot("plain_remote_out", parts(lift=45, pins_out=1.5, plain=True), [(210, -200, 330), (0, 0, 15), (0, 1, 0)],
+         hide=BOARD_KEYS)
     shot("v0.5_back", parts(), [(130, -120, -230), (0, -5, -10), (0, 1, 0)], hide=("trim",), head=1.0,
          alpha={"insert": 0.45})
     # exploded: remote, face plate, insert with the ring board, wiring board pulled apart along z

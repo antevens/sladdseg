@@ -67,7 +67,8 @@ BOARDS = [
          proto=("FIT-TEST PROTOTYPE: pad, contact and regulator positions come from photos and drawings (REF / "
                 "MEASURE) until measured on a remote"),
          layers="F.Cu,F.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts,User.1",
-         notes=["FLEX PCB: one copper layer (F.Cu), polyimide, about 0.12 mm thick without stiffeners; coverlay on "
+         notes=[f"FLEX PCB: one copper layer (F.Cu), polyimide, {sp.FLEX_T:.2f} mm thick without stiffeners (PCBWay's "
+                "default); coverlay on "
                 "F.Mask openings", f"FR4 stiffeners on the non-copper side: {sp.BC_END_T} mm behind the end section, "
                 f"{sp.BC_PAD_STIFF_T} mm on the pad and regulator sections; outlines on the User_1 Gerber and the fab "
                 "drawing", "One 90 deg bend at the marked line, copper outside: no stiffener across it"]),

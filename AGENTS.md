@@ -48,8 +48,8 @@ docs/                DESIGN (requirements + decisions), SAFETY, BOM,
                      MEASUREMENTS (placeholders to fill), PRINTING, ASSEMBLY (what holds each part), renders/
 cad/build123d/       ACTIVE parametric CAD (Python, build123d)
   params.py          single source of truth for ALL geometry
-  insert.py          box insert (ALL barrier geometry, rocker panel, UL94 V-0)
-  trim.py            trim plate (face, MSR-2 / SHT40 bays)
+  insert.py          box insert (ALL barrier geometry, rocker panel, UL94 V-0); plain: no 5 V cable bore (D-109)
+  trim.py            trim plate (face, MSR-2 / SHT40 bays); plain: standard-size plate, no bays (D-109)
   standoff.py        wiring board standoffs: Keystone 25503 nylon M3, screwed into the insert's bosses (D-57)
   ring.py            ring board, its parts and microphone, riser board, spring pins, spacer posts (D-50)
   jumper.py          5 V FFC: wiring board J2 (FH12) -> pass-through -> ring board J1 (D-50)
@@ -300,6 +300,10 @@ the ring board, riser, cover flex and EU cap board (ERC/DRC clean; fab pack for 
 microphone on the ring board and the EU cap board, no carrier (D-83); OrcaSlicer projects for every printed part (`print/`); what holds each
 part in `docs/ASSEMBLY.md`.
 
+Editions (D-109): full (above) and plain (rocker and battery-free remote only), NA and EU: plain insert / cap, plain
+face plates (NA 69.85 × 114.3 mm, EU 80 × 80 mm), EU plain carrier; same boards less the sensor parts; checks, print
+jobs and order lists for both.
+
 Not done: caliper readings for the `MEASURE` and `ESTIMATE` values (several measured
 by the human 2026-10-09, see `docs/MEASUREMENTS.md`), test prints (under way),
 human review of the PCB checklists (`pcb/fab/README.md`, `pcb/eu/fab/README.md`),
@@ -327,9 +331,8 @@ the cover flex's fab files (`COVER_CONFIRMED`), PC-FR datasheet (`V0_RATED_T`), 
    dual-button remote (E2489, outline and cells recorded from IKEA's drawing);
    jumbo-plate option; the EU stack in a real 47 mm box (the printed test socket, D-76,
    has markers at 40, 43, 60 and 63 mm).
-8. Once the full plates are done (human, 2026-10-11): plain versions, NA and EU, without the
-   microphone, the temperature sensor and the MSR-2: only the switches (rocker, remote) and
-   the space for the remote. Components stay as they are until then.
+8. Plain plates (D-109, modelled): test prints of the plain insert / face plate (NA) and the plain cap, carrier and
+   face plate (EU); the NA plate's 1.11 mm side wall beside the insert's flange on the print.
 
 ## Open questions for the human
 

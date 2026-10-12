@@ -64,6 +64,14 @@ JOBS = {
     "eu_trim_PLA": (["trim_eu"], TEST, TRIM),
     "eu_carrier_PLA": (["carrier_eu"], TEST, JIG),   # cap board carrier (D-70)
     "eu_testbox_PLA": (["testbox_eu", "testbox_plate_eu"], TEST, JIG),   # test socket (D-76)
+    # plain plates: rocker and battery-free remote only (D-109)
+    "plain_insert_PC-FR": (["insert_plain"], "Elegoo PC-FR @ECC2", INSERT),
+    "plain_insert_PLA_testfit": (["insert_plain"], TEST, dict(INSERT, brim_type="no_brim")),
+    "plain_trim_PLA": (["trim_plain"], TEST, TRIM),
+    "eu_plain_cap_PC-FR": (["cap_plain_eu"], "Elegoo PC-FR @ECC2", BARRIER),
+    "eu_plain_cap_PLA_testfit": (["cap_plain_eu"], TEST, dict(BARRIER, brim_type="no_brim")),
+    "eu_plain_trim_PLA": (["trim_plain_eu"], TEST, TRIM),
+    "eu_plain_carrier_PLA": (["carrier_plain_eu"], TEST, JIG),
 }
 
 

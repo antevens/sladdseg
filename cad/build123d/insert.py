@@ -5,7 +5,8 @@ The ring board presses onto crush ribs on the collar's outside; in the box a fla
 Print: UL94 V-0 filament, as modelled (z up, lowest face Z_BOT = the switch panel's underside and the
 mounting bosses on the bed). The wiring board hangs on four nylon standoffs (standoff.py) screwed into the bosses'
 tapped M3 holes (D-57).
-Run:  python insert.py  -> ../../build/insert.step / .stl
+Plain insert (D-109, no ring board): no 5 V cable channel or bore, so its only openings are the spring-pin holes.
+Run:  python insert.py  -> ../../build/insert.step / .stl, insert_plain.step / .stl
 """
 from math import hypot
 from build123d import Box, Cone, Cylinder, Rectangle, Pos, Rot
@@ -34,7 +35,8 @@ def outline_solid():
     return body
 
 
-def build():
+def build(plain=False):
+    """Box insert; plain: without the 5 V cable's channel and bore (no ring board, D-109)."""
     import ring
     body = outline_solid()
     # ---------------- cuts ----------------
@@ -46,7 +48,8 @@ def build():
         cut += Pos(s * SCOOP_X, 0, SCOOP_ZC) * ellipsoid(*SCOOP)
     for s in (-1, 1):                                                                     # #6 screw clearance
         cut += Pos(0, s * SCREW_PITCH / 2, DECK_Z / 2) * Cylinder(SCREW_D / 2, DECK_Z + 2)
-    cut += ffc_channel()
+    if not plain:
+        cut += ffc_channel()
     cut += ring.pin_holes() + ring.riser_pocket()                                         # battery-free remote (D-50)
     clip_relief, clip_hooks = ring.riser_clips()                                          # riser snap clips (D-91)
     cut += clip_relief
@@ -56,7 +59,8 @@ def build():
         body += Pos(kx, ky, DECK_Z + KEY_H / 2 - 0.01) * Cylinder(KEY_D / 2, KEY_H + 0.02)
     body += mount_bosses()                                                                # after the pocket cut
     body -= mount_holes()
-    body -= pass_through()                                                                # after the bosses: past MH3's side
+    if not plain:
+        body -= pass_through()                                                            # after the bosses: past MH3's side
     return body
 
 
@@ -169,9 +173,10 @@ if __name__ == "__main__":
     from build123d import export_step, export_stl
     out = Path(__file__).resolve().parents[2] / "build"
     out.mkdir(exist_ok=True)
-    p = build()
-    bb = p.bounding_box()
-    print(f"insert bbox x {bb.min.X:.1f}..{bb.max.X:.1f} y {bb.min.Y:.1f}..{bb.max.Y:.1f} z {bb.min.Z:.1f}..{bb.max.Z:.1f}"
-          f"  vol {p.volume/1000:.1f} cm3 valid={p.is_valid} solids={len(p.solids())}")
-    export_step(p, str(out / "insert.step"))
-    export_stl(p, str(out / "insert.stl"), tolerance=0.02, angular_tolerance=0.1)
+    for name, plain in (("insert", False), ("insert_plain", True)):
+        p = build(plain)
+        bb = p.bounding_box()
+        print(f"{name} bbox x {bb.min.X:.1f}..{bb.max.X:.1f} y {bb.min.Y:.1f}..{bb.max.Y:.1f} z {bb.min.Z:.1f}..{bb.max.Z:.1f}"
+              f"  vol {p.volume/1000:.1f} cm3 valid={p.is_valid} solids={len(p.solids())}")
+        export_step(p, str(out / f"{name}.step"))
+        export_stl(p, str(out / f"{name}.stl"), tolerance=0.02, angular_tolerance=0.1)

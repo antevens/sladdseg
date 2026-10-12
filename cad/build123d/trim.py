@@ -5,7 +5,9 @@ ring board on the insert's collar (D-68).
 
 Low-voltage side only: it carries no barrier duty. Any filament (PETG/ASA).
 Print: face down (the exported print STL is already flipped), no supports.
-Run:  python trim.py  -> ../../build/trim.step / .stl
+Plain plate (D-109): the standard-size single-gang outline, no MSR-2 / SHT40 bays, vents or microphone; same insert
+clearances, keys and screws.
+Run:  python trim.py  -> ../../build/trim.step / .stl, trim_plain.step / .stl
 """
 from math import radians, tan
 from build123d import Box, Cylinder, Cone, Pos, Axis, chamfer
@@ -29,17 +31,20 @@ def msr_posts():
     return msr2.posts(0, MSR_Y, MSR_BACK_Z, PT - RADAR_WALL)
 
 
-def build():
-    shell = Pos(0, PLATE_Y, 0) * slab(rr(PW, PH, PR), 0, PT)
+def build(plain=False):
+    """Face plate; plain: the standard-size plate without the sensor bays (D-109)."""
+    pw, ph, py = (PLAIN_PW, PLAIN_PH, 0.0) if plain else (PW, PH, PLATE_Y)
+    shell = Pos(0, py, 0) * slab(rr(pw, ph, PR), 0, PT)
     shell = chamfer(shell.edges().group_by(Axis.Z)[-1], FACE_CHAMFER)
-    shell -= Pos(0, PLATE_Y, 0) * slab(rr(PW - 2 * SKIN, PH - 2 * SKIN, PR - SKIN), -1, PT - SKIN)
+    shell -= Pos(0, py, 0) * slab(rr(pw - 2 * SKIN, ph - 2 * SKIN, PR - SKIN), -1, PT - SKIN)
     body = shell
-    # MSR-2 and SHT40 bay frames, down to just over the ring board's parts
-    z0 = FRAME_Z0                                       # over the ring board's parts (D-68)
     sb = (SHT[0] + 2 * SHT_BAY_CLR, SHT[1] + 2 * SHT_BAY_CLR)
-    body += frame(MSR_BAY[0], MSR_BAY[1], BAY_WALL, MSR_BAY_R, z0, PT, MSR_Y)
-    body += frame(*sb, BAY_WALL, SHT_BAY_R, z0, PT, SHT_AT[1])
-    body += mic_tube()
+    if not plain:
+        # MSR-2 and SHT40 bay frames, down to just over the ring board's parts
+        z0 = FRAME_Z0                                   # over the ring board's parts (D-68)
+        body += frame(MSR_BAY[0], MSR_BAY[1], BAY_WALL, MSR_BAY_R, z0, PT, MSR_Y)
+        body += frame(*sb, BAY_WALL, SHT_BAY_R, z0, PT, SHT_AT[1])
+        body += mic_tube()
 
     # ---------------- cuts ----------------
     # clearance envelope of the insert: island window through the face, flange underneath
@@ -55,6 +60,8 @@ def build():
         body -= Pos(0, y, PT / 2) * Cylinder(SCREW_D / 2, PT + 2)
         d = (SCREW_HEAD_D - SCREW_D) / 2 / tan(radians(SCREW_CSK / 2))   # countersink depth
         body -= Pos(0, y, PT - d / 2 + 0.005) * Cone(SCREW_D / 2, SCREW_HEAD_D / 2 + 0.01, d + 0.01)
+    if plain:
+        return body
     body -= Pos(0, MSR_Y, 0) * slab(rr(*MSR_BAY, 1), -0.01, PT - RADAR_WALL)
     body += msr_posts()                                 # in the hollowed bay (D-66)
     body -= msr2.scd_vents(0, MSR_Y, PT, RADAR_WALL)      # grille: CO2 sensor and light sensor (D-65, D-69)
@@ -77,9 +84,10 @@ if __name__ == "__main__":
     from build123d import export_step, export_stl
     out = Path(__file__).resolve().parents[2] / "build"
     out.mkdir(exist_ok=True)
-    p = build()
-    bb = p.bounding_box()
-    print(f"trim bbox x {bb.min.X:.1f}..{bb.max.X:.1f} y {bb.min.Y:.1f}..{bb.max.Y:.1f} z {bb.min.Z:.1f}..{bb.max.Z:.1f}"
-          f"  vol {p.volume/1000:.1f} cm3 valid={p.is_valid} solids={len(p.solids())}")
-    export_step(p, str(out / "trim.step"))
-    export_stl(p, str(out / "trim.stl"), tolerance=0.02, angular_tolerance=0.1)
+    for name, plain in (("trim", False), ("trim_plain", True)):
+        p = build(plain)
+        bb = p.bounding_box()
+        print(f"{name} bbox x {bb.min.X:.1f}..{bb.max.X:.1f} y {bb.min.Y:.1f}..{bb.max.Y:.1f} z {bb.min.Z:.1f}..{bb.max.Z:.1f}"
+              f"  vol {p.volume/1000:.1f} cm3 valid={p.is_valid} solids={len(p.solids())}")
+        export_step(p, str(out / f"{name}.step"))
+        export_stl(p, str(out / f"{name}.stl"), tolerance=0.02, angular_tolerance=0.1)

@@ -51,6 +51,17 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | — | EU mains board and 5 V board parts (rocker, WAGO 2604-3102 ×2, Zettler ZPI03S0500WC (D-100), F1, RV1, header, socket, C1) | `pcb/eu/README.md`; order lists in `pcb/order/` | D-32, D-36, D-59. |
 | PE1 (EU) | **Lever splicing connector, 2 conductors, 0.2–4 mm²** | **WAGO 221-412** (DigiKey 2946-221-412-ND) | D-94: PE in from the supply to PE out to the lights, joined in the box; the boards carry no PE. A third PE conductor takes a 221-413. |
 
+## Plain plates (D-109)
+
+Rocker and battery-free remote only. As above, without:
+
+- NA: the ring board and its parts (MSR-2, SHT40, microphone, ADAU7002, spacers, CN2 mate), the FFC (W1) and the
+  wiring board's FFC connector J2; printed: `plain_insert` and `plain_trim` instead of the insert and the trim.
+- EU: the cap board and its parts, the 5 V board's sensor pins P1 / P2, the four M2 cap board screws; printed:
+  `eu_plain_cap`, `eu_plain_carrier`, `eu_plain_trim`.
+
+Lists for one plate: `pcb/order/unit_na_plain_*.csv` (12 DigiKey lines), `unit_eu_plain_*.csv` (13).
+
 ## Links
 
 - PCB order pack + human-review checklist: `pcb/fab/README.md`

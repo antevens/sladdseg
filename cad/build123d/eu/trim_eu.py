@@ -1,7 +1,8 @@
 """EU TRIM PLATE (D-30, D-56): a passive cover: face, remote pocket walls (standing on the cap), finger scoops both sides (D-73),
 MSR-2 bay (radar skin, vents over the CO2 sensor, posts onto the MSR-2's board) above, SHT40 bay below, the microphone's sound hole and column. No electronics and no contacts:
 the sensors sit on the cap board (capboard_eu.py). Four snap fingers at the corners catch grooves in the carrier's
-windows (D-70, D-77). Low-voltage side only; any filament (PETG/ASA). Print face-down, no supports.
+windows (D-70, D-77). Plain plate (D-109): 80 x 80, centred on the box, pocket walls, scoops and snap fingers only.
+Low-voltage side only; any filament (PETG/ASA). Print face-down, no supports.
 Run:  python trim_eu.py  -> ../../../build/eu/trim.step / .stl
 """
 from math import sqrt
@@ -63,10 +64,10 @@ def scoop(sx, grow=0.0):
     return Pos(sx * SCOOP_X_EU, 0, 0) * loft(faces)
 
 
-def scoop_block(sx):
+def scoop_block(sx, plain=False):
     """Solid trim round a scoop, up to the face."""
-    pc = Pos(PC[0], PC[1], 0)
-    return scoop(sx, SCOOP_WALL) & (pc * slab(rr(PW, PH, PR), 0, PT))
+    pw, ph, c = plate(plain)
+    return scoop(sx, SCOOP_WALL) & (Pos(c[0], c[1], 0) * slab(rr(pw, ph, PR), 0, PT))
 
 
 def mic_tube():
@@ -74,15 +75,22 @@ def mic_tube():
     return sound_column(MIC_AT, MIC, MIC_PORT_IN, CB_TOP, SKIN_Z + 0.01, *MIC_TUBE, MIC_BOOT)
 
 
-def build():
-    pc = Pos(PC[0], PC[1], 0)
-    shell = pc * slab(rr(PW, PH, PR), 0, PT)
+def build(plain=False):
+    """Face plate; plain: the 80 x 80 plate without the sensor bays (D-109)."""
+    pw, ph, c = plate(plain)
+    pc = Pos(c[0], c[1], 0)
+    shell = pc * slab(rr(pw, ph, PR), 0, PT)
     shell = chamfer(shell.edges().group_by(Axis.Z)[-1], FACE_CHAMFER)
-    shell -= pc * slab(rr(PW - 2 * SKIN, PH - 2 * SKIN, PR - SKIN), -1, DECK_Z)
+    shell -= pc * slab(rr(pw - 2 * SKIN, ph - 2 * SKIN, PR - SKIN), -1, DECK_Z)
     body = shell
     body += slab(stadium(*POCKET_OUT), CAP_T, PT)                                   # pocket walls
     for sx in (-1, 1):
-        body += scoop_block(sx)
+        body += scoop_block(sx, plain)
+    if plain:
+        body -= slab(stadium(*POCKET_IN), CAP_T, PT + 1)                           # remote pocket
+        for sx in (-1, 1):
+            body -= scoop(sx)
+        return body + snaps()
     z0 = CB_TOP + SPLIT_CLR                                                          # bay frames down to the cap board
     body += Pos(0, MSR_Y, 0) * frame(MSR_FRAME[0], MSR_FRAME[1], MSR_FRAME[2], MSR_BAY_R, z0, PT)
     sb = (SHT[0] + 2 * SHT_BAY_CLR, SHT[1] + 2 * SHT_BAY_CLR)

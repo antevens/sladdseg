@@ -1,0 +1,13 @@
+Digi-Key Part Number,Manufacturer Part Number,Manufacturer,Quantity,Customer Reference,Description
+EG5628-ND,RA412C1100,E-Switch,1,WP NA S1,"Rocker switch DPST, 4.8 mm tabs into the slots, UL/cUL 16 A 125 VAC and 10 A 250 VAC, (1/plate NA; NA wiring board S1)"
+,2604-1106,WAGO,1,WP NA J1,"PCB terminal block, push-in, lever, 6-pole, 5 mm pitch, 4 mm2 / 12 AWG, entry parallel to (1/plate NA; NA wiring board J1)"
+1866-3020-ND,IRM-03-5,Mean Well,1,WP NA PS1,"AC-DC module 85-305 VAC in, 5 V 600 mA, 37x24x15 mm (1/plate NA; NA wiring board PS1)"
+,3403.0166.11,Schurter,1,WP NA F1,"SMD fuse UMT 250, time-lag 1 A 250 VAC (1/plate NA; NA wiring board F1)"
+495-1467-1-ND,B72660M0271K093,TDK,1,WP NA RV1,"SMD varistor SIOV-CU4032K275G2K1, 275 VAC (1/plate NA; NA wiring board RV1)"
+,9774070243R,Wurth Elektronik,2,WP NA P1,"SMT steel spacer, internal thread M2, 7 mm, tin (2/plate NA; NA wiring board P1; NA wiring board P2)"
+952-3124-ND,P70-2200045,Harwin,2,WP NA J1,"SMT spring pin with peg, 2 A, gold (2/plate NA; NA riser J1; NA riser J2)"
+952-1734-1-ND,S7081-42R,Harwin,2,WP NA J3,"SMT spring finger, gold, 4 A, working height 2.0 mm (2/plate NA; NA cover flex J3; NA cover flex J4)"
+296-50411-1-ND,TLV75533PDBVR,Texas Instruments,1,WP NA U1,"LDO 3.3 V 500 mA, 1.45-5.5 V in, SOT-23-5 (1/plate NA; NA cover flex U1)"
+,CL05A105KO5NNNC,Samsung Electro-Mechanics,2,WP NA C3,"LDO input capacitor, 1 uF 16 V X5R 0402 (2/plate NA; NA cover flex C3; NA cover flex C4)"
+,971100244,Wurth Elektronik,2,WP NA ST1,"Brass spacer stud M2 male-female, 10 mm, 4 mm hex (2/plate NA; NA mechanical ST1; NA mechanical ST2)"
+36-25503-ND,25503,Keystone,4,WP NA SO1,"Nylon M3 male-female hex standoff, 15 mm, 5.0 mm hex (4/plate NA; NA mechanical SO1; NA mechanical SO2; NA mechanical SO3; NA mechanical SO4)"

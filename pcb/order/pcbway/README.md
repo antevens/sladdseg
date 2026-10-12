@@ -23,7 +23,7 @@ Do the human reviews in `pcb/fab/README.md` and `pcb/eu/fab/README.md` (fuse rat
 | eu_5v_board | 4 (EU) | 5 (assemble 4) | 58.0 × 27.9 mm | 2 layers FR4 / 1.60 mm | ENIG | C1, P1, P2, P3, P4 | J1 |
 | ring_board (prototype) | 4 (NA) | 5 (assemble 4) | 66.4 × 125.9 mm | 2 layers FR4 / 1.60 mm | ENIG | J1, C1, U1, C2, MK1, U2, C4, R1, C3, H1, H2, H3 | - (not fitted: J2) |
 | eu_cap_board (prototype) | 4 (EU) | 5 (assemble 4) | 76.0 × 113.8 mm | 2 layers FR4 / 1.60 mm | ENIG | C1, MK1, U2, C4, R1, C3, U1, C2, H5, H6, H7 | - (not fitted: J2) |
-| cover_flex (prototype) | 8 (NA, EU) | 8 (assemble 8) | 31.2 × 29.1 mm | 1 layer flex / 0.12 mm | ENIG | J3, J4, U1, C3, C4 | - |
+| cover_flex (prototype) | 8 (NA, EU) | 8 (assemble 8) | 31.2 × 29.1 mm | 1 layer flex / 0.10 mm | ENIG | J3, J4, U1, C3, C4 | - |
 
 Order settings common to the rigid boards: FR4 TG150 or standard (the two mains boards: high-CTI FR4, see their notes), 1 oz copper (see the wiring board's note), green solder mask and white silkscreen both sides, no impedance control, no V-cut. Gerbers are RS-274X with Excellon drills in mm; Gerbers, drills and centroid share the board's drill / aux origin.
 
@@ -35,7 +35,7 @@ Per board (add to the order remarks):
 - **eu_5v_board** (`eu_5v_board_v0.5_gerbers.zip`): Plated 1.2 mm holes for the spring pins' pegs.
 - **ring_board** (`ring_board_v0.5_PROTOTYPE_gerbers.zip`): Copper keeps 8 mm from the box opening (do not let PCBWay add copper fill there); Fit test: outline, crush-rib window, spacers H1-H3, SHT40, FFC connector J1; microphone MK1 and the ADAU7002 U2 (WLCSP 0.4 mm pitch: order this board with PCBWay assembly, option A, either way).
 - **eu_cap_board** (`eu_cap_board_v0.5_PROTOTYPE_gerbers.zip`): Closed snap windows at the corners (routed cut-outs inside the outline): do not omit; Fit test: outline, snap windows, screws, spacers H5-H7, SHT40, sensor pin pads; microphone MK1 and the ADAU7002 U2 (WLCSP 0.4 mm pitch: order this board with PCBWay assembly, option A, either way).
-- **cover_flex** (`cover_flex_v0.5_PROTOTYPE_gerbers.zip`): FLEX PCB: one copper layer (F.Cu), polyimide, about 0.12 mm thick without stiffeners; coverlay on F.Mask openings; FR4 stiffeners on the non-copper side: 0.4 mm behind the end section, 0.8 mm on the pad and regulator sections; outlines on the User_1 Gerber and the fab drawing; One 90 deg bend at the marked line, copper outside: no stiffener across it.
+- **cover_flex** (`cover_flex_v0.5_PROTOTYPE_gerbers.zip`): FLEX PCB: one copper layer (F.Cu), polyimide, 0.10 mm thick without stiffeners (PCBWay's default); coverlay on F.Mask openings; FR4 stiffeners on the non-copper side: 0.4 mm behind the end section, 0.8 mm on the pad and regulator sections; outlines on the User_1 Gerber and the fab drawing; One 90 deg bend at the marked line, copper outside: no stiffener across it.
 
 ## Option A: PCB + SMD assembly by PCBWay
 

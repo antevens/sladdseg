@@ -25,6 +25,13 @@ every part is single-material.
 | `print/eu_trim_PLA.3mf` | EU trim plate, face down | PLA | 1 h 5 m / 41.6 g |
 | `print/eu_carrier_PLA.3mf` | EU cap board carrier, bottom down: the rim up, the 0.8 mm lip under the cap on the bed (D-71) | PLA | 39 m / 17.6 g |
 | `print/eu_testbox_PLA.3mf` | EU test socket: the box floor down, the wall plate flat (D-76) | PLA | 3 h 12 m / 102.7 g |
+| `print/plain_insert_PLA_testfit.3mf` | NA plain insert (no 5 V cable bore, D-109; fit check only, **not for mains**), on supports | PLA | 2 h 16 m / 58.8 g |
+| `print/plain_insert_PC-FR.3mf` | NA plain insert, **final**, on supports | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 2 h 16 m / 51.7 g |
+| `print/plain_trim_PLA.3mf` | NA plain face plate, 69.85 × 114.3 mm (D-109), face down | PLA | 24 m / 15.6 g |
+| `print/eu_plain_cap_PLA_testfit.3mf` | EU plain cap (battery-free pins' holes only, D-109; fit check only, **not for mains**), face down | PLA | 28 m / 10.9 g |
+| `print/eu_plain_cap_PC-FR.3mf` | EU plain cap, **final**, face down | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 36 m / 9.8 g |
+| `print/eu_plain_trim_PLA.3mf` | EU plain face plate, 80 × 80 mm (D-109), face down | PLA | 40 m / 26.6 g |
+| `print/eu_plain_carrier_PLA.3mf` | EU plain carrier (lip and snap windows, no cap board, D-109), bottom down | PLA | 15 m / 4.5 g |
 
 Open a `.3mf` in OrcaSlicer, check the plate, slice, send. The projects carry the
 printer (CC2 0.4 nozzle), filament and process settings; the parts are already
@@ -68,6 +75,8 @@ time/material lands in `build/print/gcode/`.
 7. EU: `eu_testbox_PLA` (test socket, D-76), then `eu_cap_PLA_testfit`, `eu_carrier_PLA` and
    `eu_trim_PLA` in it (domes, the carrier clamp, the snaps, the depth of the board stack against
    the depth markers); then `eu_cap_PC-FR`.
+8. Plain plates (D-109): `plain_insert_PLA_testfit` + `plain_trim_PLA` (NA), `eu_plain_cap_PLA_testfit`,
+   `eu_plain_carrier_PLA` + `eu_plain_trim_PLA` (EU), as the full plates; then the PC-FR barrier parts.
 
 Many BILRESA dimensions are `ESTIMATE` (from photos and drawings, `docs/MEASUREMENTS.md`): the
 first prints of the trim pockets and the back cover are for measuring and

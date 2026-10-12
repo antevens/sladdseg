@@ -1,12 +1,12 @@
 G04 #@! TF.GenerationSoftware,KiCad,Pcbnew,9.0.9-9.0.9~ubuntu24.04.1*
-G04 #@! TF.CreationDate,2026-10-12T00:55:59+00:00*
+G04 #@! TF.CreationDate,2026-10-12T04:25:01+00:00*
 G04 #@! TF.ProjectId,eu_mains_board,65755f6d-6169-46e7-935f-626f6172642e,rev?*
 G04 #@! TF.SameCoordinates,Original*
 G04 #@! TF.FileFunction,Copper,L2,Bot*
 G04 #@! TF.FilePolarity,Positive*
 %FSLAX46Y46*%
 G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
-G04 Created by KiCad (PCBNEW 9.0.9-9.0.9~ubuntu24.04.1) date 2026-10-12 00:55:59*
+G04 Created by KiCad (PCBNEW 9.0.9-9.0.9~ubuntu24.04.1) date 2026-10-12 04:25:01*
 %MOMM*%
 %LPD*%
 G01*
@@ -36,17 +36,6 @@ G04 #@! TO.N,/N_SW*
 X-5100000Y5450000D03*
 G04 #@! TD*
 D11*
-G04 #@! TO.P,J1,1*
-G04 #@! TO.N,/L_SW*
-X13150000Y5000000D03*
-D12*
-X21350000Y5000000D03*
-D11*
-G04 #@! TO.P,J1,2*
-G04 #@! TO.N,/L_IN*
-X13150000Y10000000D03*
-X21350000Y10000000D03*
-G04 #@! TD*
 G04 #@! TO.P,J2,1*
 G04 #@! TO.N,/N_IN*
 X-13150000Y10000000D03*
@@ -57,6 +46,17 @@ G04 #@! TO.P,J2,2*
 G04 #@! TO.N,/N_SW*
 X-13150000Y5000000D03*
 X-21350000Y5000000D03*
+G04 #@! TD*
+G04 #@! TO.P,J1,1*
+G04 #@! TO.N,/L_SW*
+X13150000Y5000000D03*
+D12*
+X21350000Y5000000D03*
+D11*
+G04 #@! TO.P,J1,2*
+G04 #@! TO.N,/L_IN*
+X13150000Y10000000D03*
+X21350000Y10000000D03*
 G04 #@! TD*
 D12*
 G04 #@! TO.P,PS1,1*

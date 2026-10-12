@@ -121,7 +121,7 @@ PLATES ?= 1
 stock:          ## live DigiKey / Mouser stock and lifecycle of every listed part (build/stock.md); fails on the parts rule (D-84)
 	python3 pcb/tools/distributors.py stock
 
-order-push:     ## DigiKey myLists link + Mouser cart for PLATES plates (default 1) of VARIANT=na|eu|both (default na); PRIMARY=digikey|mouser
+order-push:     ## DigiKey myLists link + Mouser cart for PLATES plates (default 1) of VARIANT=na|eu|both, -plain for the plain plates (default na); PRIMARY=digikey|mouser
 	python3 pcb/tools/distributors.py push $(VARIANT) $(PLATES) --primary=$(PRIMARY)
 
 eu:             ## EU variant (D-30, cad/build123d/eu/): STEP/STL to build/eu, checks, its renders (docs/renders/eu_*.png)

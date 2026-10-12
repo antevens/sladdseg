@@ -88,6 +88,20 @@ LOCAL = {"NA": ["M2 x 5 pan head screw ISO 7045, steel: 2 per plate (riser onto 
          "EU": ["M2 x 6 thread-forming screw for plastics: 4 per plate (cap board into the carrier)"]}
 
 
+# plain plates (D-109): rocker and battery-free remote only; these parts are left off (no ring board, cap board or sensor
+# pins: the wiring board's FFC connector J2 and the FFC, the EU 5 V board's sensor pins P1 / P2)
+PLAIN_DROP = {("NA", "ring board"): None, ("EU", "cap board"): None, ("NA", "wiring board"): {"J2"},
+              ("NA", "mechanical"): {"W1"}, ("EU", "5 V board"): {"P1", "P2"}}
+
+
+def plain_keep(variant, board, ref):
+    """collect() filter for the plain plates."""
+    if (variant, board) not in PLAIN_DROP:
+        return True
+    refs = PLAIN_DROP[(variant, board)]
+    return refs is not None and ref not in refs
+
+
 def tables():
     """(variant, board, part table) for every board of each variant."""
     def load(path, mod):
@@ -182,12 +196,13 @@ def main():
     devkit = int(sys.argv[1]) if len(sys.argv) > 1 else 4
     OUT.mkdir(parents=True, exist_ok=True)
     open_all = set()
-    for name, plates in (("unit_na", {"NA": 1}), ("unit_eu", {"EU": 1}), ("devkit_na", {"NA": devkit}),
-                         ("devkit_eu", {"EU": devkit})):
-        lines, open_parts = collect(plates)
+    for name, plates, keep in (("unit_na", {"NA": 1}, None), ("unit_eu", {"EU": 1}, None),
+                               ("unit_na_plain", {"NA": 1}, plain_keep), ("unit_eu_plain", {"EU": 1}, plain_keep),
+                               ("devkit_na", {"NA": devkit}, None), ("devkit_eu", {"EU": devkit}, None)):
+        lines, open_parts = collect(plates, keep)
         write(name, lines, plates)
         open_all.update(open_parts)
-    print(f"unit: 1 plate each; devkit: {devkit} sets of parts per variant")
+    print(f"unit: 1 plate each (full, plain); devkit: {devkit} sets of parts per variant")
     for o in sorted(open_all):
         print("not in the lists (no part yet):", o)
     for v, items in LOCAL.items():

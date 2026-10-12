@@ -78,6 +78,16 @@ tape. Nothing here is a compliance statement; mains work is a human decision (SA
    lever connector (D-94); the boards carry no PE. Keep whatever PE the box has continuous; a third PE conductor
    (a looped feed) takes a 221-413. Then L and N into the two 2604-3102 blocks on the mains board's back.
 
+## Plain plates (D-109)
+
+As the full plates, without the sensors' parts:
+
+- NA: no ring board and no FFC; the plain insert has no cable bore. The plain face plate (69.85 × 114.3 mm) is clamped
+  by the same two screws and keyed by the same two pins. The riser, its spacer posts and the spring pins as the full plate.
+- EU: no cap board and no sensor pins (P1 / P2 left off the 5 V board); the plain cap has only the battery-free pins'
+  holes. The plain carrier's lip goes under the cap's edge as before; the plain face plate (80 × 80 mm) snaps into the
+  carrier's four corner windows.
+
 ## Replacement back cover
 
 | Part | Held by | Notes |
