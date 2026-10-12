@@ -663,6 +663,11 @@ def cover_checks():
     check(BC_SIDE_WALL >= 1.2,
           f"side wall {BC_SIDE_WALL:.1f} mm (back {BC_WALL}): {B_W - 2 * BC_SIDE_WALL:.1f} x {B_H - 2 * BC_SIDE_WALL:.1f} "
           f"inside at the rim, 0.1 more all round for the remote's housing (D-75)")
+    k = 1 - sqrt(2) / 2                                    # the round-over's 45 deg point, from its ends
+    was, now = BC_WALL - 0.1 + B_BACK_RUN * k, BC_SIDE_WALL + BC_IN_RUN * k   # in from the outside at that height
+    check(abs((BC_SIDE_WALL + BC_IN_RUN) - (BC_WALL - 0.1 + B_BACK_RUN)) < 1e-6 and (was - now) * sqrt(2) / 2 >= 0.09,
+          f"inside round-over {BC_IN_RUN:.1f} across, walls {BC_SIDE_WALL:.1f}: it leaves the flat back where it did, its "
+          f"middle {(was - now) * sqrt(2) / 2:.2f} mm further from the housing (D-123)")
     win = PIN_BARREL[0] / 2 + BC_WIN_CLR
     check(win - PIN_BARREL[0] / 2 >= 0.2 and BC_PAD_D / 2 >= win + 0.2,
           f"spring pin windows r {win:.2f} round the {PIN_BARREL[0]} barrel, pads r {BC_PAD_D / 2} over them (D-50)")
