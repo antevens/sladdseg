@@ -162,7 +162,7 @@ def fillet(pts, r, closed):
         lu, lv = math.hypot(ux, uy), math.hypot(vx, vy)
         ux, uy, vx, vy = ux / lu, uy / lu, vx / lv, vy / lv
         turn = math.acos(max(-1.0, min(1.0, ux * vx + uy * vy)))
-        if turn < math.radians(2):
+        if turn < math.radians(2) or radii[i] <= 0:          # straight on, or a sharp corner asked for
             continue
         t = min(radii[i] * math.tan(turn / 2), 0.45 * min(lu, lv))
         rr = t / math.tan(turn / 2)

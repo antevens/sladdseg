@@ -23,6 +23,7 @@ COL = {"trim": "#f2f1ee", "insert": "#8d949b", "remote": "#fbfaf6", "rocker": "#
        "esp": "#b9bcc0", "usb": "#c9ccd1", "radar": "#1d4f91", "cn1": "#222222", "co2": "#3f9a5a", "scd": "#55585c",
        "sw": "#e9e6df", "riser": "#2f7a46", "pins": "#c9a227", "pin_posts": "#b8860b", "sleeves": "#2b2b2b", "screws": "#9aa0a6", "pin_pads": "#c9a227"}
 BOARD_KEYS = ("board", "rocker", "irm", "wago", "small")
+NO_ROCKER = tuple(k for k in BOARD_KEYS if k != "rocker")   # the wiring board hidden, its rocker shown
 
 
 def board_parts():
@@ -114,11 +115,11 @@ def main():
     R.mkdir(parents=True, exist_ok=True)
     ring_keys = ("ring", "spacers", "cn2", "msr", "j1", "sht45", "passives", "mic")
     shot("v0.5_front", parts(), [(150, -170, 260), (0, 0, 0), (0, 1, 0)], hide=BOARD_KEYS)
-    shot("v0.5_remote_out", parts(lift=45, pins_out=1.5), [(210, -200, 330), (0, 0, 15), (0, 1, 0)], hide=BOARD_KEYS)
+    shot("v0.5_remote_out", parts(lift=45, pins_out=1.5), [(210, -200, 330), (0, 0, 15), (0, 1, 0)], hide=NO_ROCKER)
     shot("v0.5_section", parts(cut=True), [(290, 70, 150), (0, 0, -5), (0, 1, 0)])
     shot("plain_front", parts(plain=True), [(150, -170, 260), (0, 0, 0), (0, 1, 0)], hide=BOARD_KEYS)
     shot("plain_remote_out", parts(lift=45, pins_out=1.5, plain=True), [(210, -200, 330), (0, 0, 15), (0, 1, 0)],
-         hide=BOARD_KEYS)
+         hide=NO_ROCKER)
     shot("v0.5_back", parts(), [(130, -120, -230), (0, -5, -10), (0, 1, 0)], hide=("trim",), head=1.0,
          alpha={"insert": 0.45})
     # exploded: remote, face plate, insert with the ring board, wiring board pulled apart along z

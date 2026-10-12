@@ -98,6 +98,8 @@ $(STAMP)/ring_board: $(RING_PCB) pcb/tools/render_bare.py | $(STAMP)
 	touch $@
 
 $(STAMP)/riser_board $(STAMP)/cover_flex $(STAMP)/eu_cap_board: $(STAMP)/%: pcb/sensor/kicad/%.kicad_pcb pcb/tools/render_bare.py | $(STAMP)
+	$(RENDER_PCB) --side top -o docs/renders/$*_front.png $<
+	$(RENDER_PCB) --side bottom -o docs/renders/$*_back.png $<
 	$(BARE) $< $*
 	touch $@
 
@@ -107,9 +109,9 @@ $(STAMP)/eu_mains_board $(STAMP)/eu_5v_board: $(STAMP)/%: pcb/eu/kicad/%.kicad_p
 	$(BARE) $< $*
 	touch $@
 
-DEVKIT_SETS ?= 4
+DEVKIT_SETS ?= 5
 KICAD_PYTHON ?= python3
-order:          ## DigiKey / Mouser lists (pcb/order/): one NA, one EU plate, a devkit of each (DEVKIT_SETS, default 4); PCBWay devkit packs
+order:          ## DigiKey / Mouser lists (pcb/order/): one NA plate, one EU plate, a devkit of DEVKIT_SETS (5) of each; PCBWay devkit packs
 	python3 pcb/tools/order_bom.py $(DEVKIT_SETS)
 	$(KICAD_PYTHON) pcb/tools/order_pcbway.py $(DEVKIT_SETS)
 	@if [ -n "$$DIGIKEY_CLIENT_ID$$MOUSER_SEARCH_KEY" ]; then python3 pcb/tools/distributors.py stock; \

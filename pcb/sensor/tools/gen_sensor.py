@@ -5,7 +5,7 @@ Libraries, project and rules, schematics and boards, all from sensor_parts.py (w
 geometry from cad/build123d/params.py). Run with the Python that ships pcbnew.
 """
 import copy
-from math import cos, radians, sin
+from math import cos, hypot, radians, sin
 import json
 import sys
 from pathlib import Path
@@ -28,9 +28,9 @@ POWER = ("+5V", "+3V3", "GND")
 SYMBOLS = [("Connector_Generic", "Conn_02x12_Odd_Even"), ("Connector_Generic", "Conn_01x01"),
            ("Connector_Generic", "Conn_01x06"), ("Mechanical", "MountingHole"),
            ("Sensor_Humidity", "SHT4x"), ("Device", "C"), ("Device", "R"), ("Connector", "TestPoint"),
-           ("Regulator_Linear", "TLV75533PDBV"),
+           ("Regulator_Linear", "TLV75533PDBV"), ("Device", "D_TVS"),
            ("power", "+5V"), ("power", "+3V3"), ("power", "GND"), ("power", "PWR_FLAG")]
-STOCK_FP = {sp.FP_SHT: "Sensor_Humidity", sp.FP_C: "Capacitor_SMD", sp.FP_R: "Resistor_SMD",
+STOCK_FP = {sp.FP_SHT: "Sensor_Humidity", sp.FP_C: "Capacitor_SMD", sp.FP_C0603: "Capacitor_SMD", sp.FP_R: "Resistor_SMD",
             sp.FP_SOT: "Package_TO_SOT_SMD", sp.FP_C1206: "Capacitor_SMD", sp.FP_FH12: "Connector_FFC-FPC",
             eu.FP_HOLE: "MountingHole"}
 # SPK0641HT4H-1 pins (datasheet rev A) from the stock SPH0641LU4H-1 symbol's pins; GND 6-8 stacked on GND 5
@@ -85,6 +85,16 @@ def fp_finger():
              courtyard(sp.FINGER_PAD[1] + 0.5, sp.FINGER_PAD[0] + 0.5), gl.model3d(sp.FP_FINGER)]
     return gl._fp(sp.FP_FINGER, f"Harwin S7081-42R SMT spring finger, gold, 4 A, bend end at -x, {sp.HARWIN_DS}",
                   "spring finger contact", "smd", items)
+
+
+def fp_tvs():
+    """TI TPD1E10B06 SOD-523 (DYA0002A): the datasheet's example land pattern (SLLSEB1G), pads 0.4 x 0.67, 1.48 across."""
+    (w, h), span = sp.TVS_PAD, sp.TVS_SPAN
+    x = (span - w) / 2
+    items = [pad("1", -x, 0, w, h, ("F.Cu", "F.Paste", "F.Mask")), pad("2", x, 0, w, h, ("F.Cu", "F.Paste", "F.Mask")),
+             gl.rect(-0.5, -0.3, 0.5, 0.3, "F.Fab", 0.05), courtyard(span + 0.3, h + 0.3)]
+    return gl._fp(sp.FP_TVS, f"TI SOD-523 (DYA0002A), example land pattern, {sp.TVS_DS}", "SOD-523 TVS ESD",
+                  "smd allow_soldermask_bridges", items)
 
 
 def fp_mic():
@@ -173,10 +183,15 @@ def adau_symbol():
              S("symbol", f"{name}_1_1", *pins))
 
 
-def fp_round_pad(name, d, descr):
-    """Bare gold (ENIG) round pad, no paste."""
-    return gl._fp(name, descr, "pad target contact", "smd", [pad("1", 0, 0, d, d, shape="circle"),
-                                                             courtyard(d + 0.25, d + 0.25)])
+def fp_round_pad(name, d, descr, cu=None):
+    """Bare gold (ENIG) round pad, no paste; cu: larger copper under a d opening (mask-defined, the edge held)."""
+    if cu is None:
+        return gl._fp(name, descr, "pad target contact", "smd", [pad("1", 0, 0, d, d, shape="circle"),
+                                                                 courtyard(d + 0.25, d + 0.25)])
+    p = pad("1", 0, 0, cu, cu, shape="circle")
+    p.append(S("solder_mask_margin", round((d - cu) / 2, 3)))
+    return gl._fp(name, f"{descr}; {cu} mm copper, {d} mm opening", "pad target contact", "smd",
+                  [p, courtyard(cu + 0.25, cu + 0.25)])
 
 
 def fp_post_pad():
@@ -201,11 +216,13 @@ def build_libs():
         f.unlink()
     for name, lib in STOCK_FP.items():
         fp = gl.localize_models(loads((gl.FP_DIR / f"{lib}.pretty" / f"{name}.kicad_mod").read_text()), PRJ)
+        if name == sp.FP_SOT:                                # cover flex: one coverlay opening over each pin row
+            next(n for n in fp if isinstance(n, list) and n and n[0] == Sym("attr")).append(Sym("allow_soldermask_bridges"))
         (d / f"{name}.kicad_mod").write_text(dumps(fp) + "\n")
-    for fp in (fp_b2b(), fp_finger(), fp_mic(), fp_adau(), fp_post_pad(),
+    for fp in (fp_b2b(), fp_finger(), fp_mic(), fp_adau(), fp_post_pad(), fp_tvs(),
                gl.fp_smsi(sp.FP_NUT, 1.5, sp.RING_NUT_HOLE, sp.RING_NUT_PAD, sp.NUT_DS, silk=False),
                gl.fp_p70(sp.FP_PIN, sp.PIN_PAD_D, sp.PIN_HOLE_D, sp.PIN_FLANGE[0], sp.PIN_DS),
-               fp_round_pad(sp.FP_PIN_PAD, sp.BC_PAD_D, "Gold pad under a spring pin (back cover flex)"),
+               fp_round_pad(sp.FP_PIN_PAD, sp.BC_PAD_D, "Gold pad under a spring pin (back cover flex)", sp.BC_PAD_CU),
                fp_round_pad(eu.FP_PAD, eu.E.CB_PAD_D, "Gold pad under a spring pin (EU cap board)"),
                gl.fp_ant_logo(), gl.fp_kicad_logo()):
         (d / f"{fp[1]}.kicad_mod").write_text(dumps(fp) + "\n")
@@ -416,15 +433,31 @@ def build_eu_capboard():
     bd.save()
 
 
+def closed_path(bd, pts, r, layer, width=0.1):
+    """Closed polyline with filleted corners (kigen.fillet) on a drawing layer."""
+    for piece in kigen.fillet(pts, r, closed=True):
+        if piece[0] == "seg":
+            bd.shape(P.SHAPE_T_SEGMENT, layer, width, piece[1], piece[2])
+        else:
+            bd.shape(P.SHAPE_T_ARC, layer, width, piece[1], piece[2], piece[3])
+
+
 def build_cover():
     bd = Board(CTX, sp.COVER, 1, sp.FLEX_T, 0.15, sp.COVER_TRACK)
-    bd.outline(sp.COVER_OUTLINE, 0.5)
+    ds = bd.b.GetDesignSettings()
+    ds.m_SolderMaskExpansion = P.FromMM(0.1)                # coverlay openings 0.1 beyond the pads (D-116)
+    ds.m_SolderMaskMinWidth = P.FromMM(0.25)                # webs under 0.25 merge (gang openings)
+    tb = bd.b.GetTitleBlock()
+    tb.SetTitle("Sladdseg - back cover flex")
+    tb.SetRevision(sp.REV)
+    tb.SetDate(sp.REV_DATE)
+    bd.outline(sp.COVER_OUTLINE, sp.COVER_OUTLINE_R)
     for ref, p in sp.COVER_PARTS.items():
         bd.place(ref, p, False)
     w = sp.COVER_TRACK
     f1, f2, vbat, gnd = (bd.pad_xy(r, "1") for r in ("J1", "J2", "J3", "J4"))
     x_in, x_out = sp.COVER_LANES
-    y_band = sp.COVER_BEND_Y - sp.BC_LANE_H
+    y_band = sp.COVER_LANE_Y
     # end fingers: long axis across the bend line, bend end away from it (up in the cover)
     for ref in ("J3", "J4"):
         f = bd.fps[ref]
@@ -444,34 +477,55 @@ def build_cover():
     xm = kigen.mm(xm)[0]                                 # under the body, between the two columns
     c3_gnd, c3_5v = bd.pad_xy("C3", "1"), bd.pad_xy("C3", "2")
     c4_gnd, c4_3v3 = bd.pad_xy("C4", "1"), bd.pad_xy("C4", "2")
+    d1_gnd, d1_5v = bd.pad_xy("D1", "1"), bd.pad_xy("D1", "2")
     xg = sp.COVER_GND_X
     y_up = sp._yt + 0.1                                  # just inside the regulator section
-    # +5V: straight up from the upper pad, under U1 to IN, EN on the way, C3 beside it
+    # +5V: straight up from the upper pad, under U1 to IN, EN on the way, C3 and the ESD diode beside it
     bd.track("+5V", w, [f1, (f1[0], y_up - 0.4), (xm, y_up), (xm, p_in[1]), p_in])
     bd.track("+5V", w, [(xm, p_en[1]), p_en])
     bd.track("+5V", w, [c3_5v, (xm, c3_5v[1])])
-    # GND: lower pad up the outer edge to U1's GND pin, C3 and C4; and down into the run to J4
+    bd.track("+5V", w, [d1_5v, (xm, d1_5v[1])])
+    # GND: lower pad up the outer edge to U1's GND pin, C3, D1 and C4; and down into the run to J4
     bd.track("GND", w, [f2, (xg, f2[1]), (xg, c4_gnd[1]), c4_gnd])
     bd.track("GND", w, [p_gnd, (xg, p_gnd[1])])
     bd.track("GND", w, [c3_gnd, (xg, c3_gnd[1])])
+    bd.track("GND", w, [d1_gnd, (xg, d1_gnd[1])])
     bd.track("GND", w, [f2, (f2[0], sp._yb + 0.5), (x_out, sp._yb + 0.5), (x_out, gnd[1] + 2.0), gnd])
     # +3V3: OUT up to C4, down the pad section's inner edge past both pads, across the jog above the GND lane (D-79),
-    # down the run's inner lane, across the band, into VBAT
+    # down the run's inner lane straight through the bend zone, across the band BC_BEND_CLR past it, into VBAT
     x_e = sp._xs1 - 0.65
     y_j = sp._yb + 1.3
     bd.track("+3V3", w, [p_out, (p_out[0], c4_3v3[1] - 0.7), c4_3v3, (x_e, c4_3v3[1]), (x_e, y_j), (x_in, y_j),
                          (x_in, y_band), (vbat[0], y_band), vbat])
-    bd.shape(P.SHAPE_T_SEGMENT, P.Cmts_User, 0.1, (sp._xr0, sp.COVER_BEND_Y), (sp._xr1, sp.COVER_BEND_Y))
-    bd.text("BEND 90 deg, copper outside", 0.0, sp.COVER_BEND_Y + 1.2, P.Cmts_User, 0.6)
-    for (a0, b0), (a1, b1) in sp.COVER_STIFF:
-        bd.polyline([(a0, b0), (a1, b0), (a1, b1), (a0, b1)], P.User_1, 0.1)
-        bd.text(f"STIFFENER FR4 {sp.BC_END_T} mm, back side (cut to the outline)", (a0 + a1) / 2, b0 - 1.0, P.User_1, 0.6)
-    for (a0, b0), (a1, b1) in sp.COVER_PAD_STIFF:
-        bd.polyline([(a0, b0), (a1, b0), (a1, b1), (a0, b1)], P.User_1, 0.1)
-    bd.text(f"STIFFENER FR4 {sp.BC_PAD_STIFF_T} mm, back side, flush with the long edges (snap hooks)",
-            sp._xs0 - 4.0, sp._yb + 2.0, P.User_1, 0.6, 90)
+    # teardrops: a 0.5 mm wide first stretch from each pad along its track (flex: no sharp neck at the pad)
+    for ref, num, toward, net in (("J1", "1", (f1[0], y_up - 0.4), "+5V"), ("J2", "1", (xg, f2[1]), "GND"),
+                                  ("J2", "1", (f2[0], sp._yb + 0.5), "GND"), ("J3", "1", (vbat[0], y_band), "+3V3"),
+                                  ("J4", "1", (x_out, gnd[1] + 2.0), "GND"), ("C3", "1", (xg, c3_gnd[1]), "GND"),
+                                  ("C3", "2", (xm, c3_5v[1]), "+5V"), ("C4", "1", (xg, c4_gnd[1]), "GND"),
+                                  ("D1", "1", (xg, d1_gnd[1]), "GND"), ("D1", "2", (xm, d1_5v[1]), "+5V")):
+        c = bd.pad_xy(ref, num)
+        pd = [q for q in bd.fps[ref].Pads() if q.GetNumber() == num][0]
+        half = max(kigen.mm(pd.GetSize())) / 2
+        dx, dy = toward[0] - c[0], toward[1] - c[1]
+        n = hypot(dx, dy)
+        reach = min(half + 0.5, n)
+        bd.track(net, 0.5, [c, (c[0] + dx / n * reach, c[1] + dy / n * reach)])
+    # bend zone, stiffeners, fab notes
+    for yb in sp.COVER_BEND:
+        bd.shape(P.SHAPE_T_SEGMENT, P.Cmts_User, 0.1, (sp._xr0 - 0.5, yb), (sp._xr1 + 0.5, yb))
+    bd.text(f"BEND ZONE 90 deg, inside r {sp.BC_BEND_R} mm, copper outside", 0.0, sp.COVER_BEND[0] + 0.9, P.Cmts_User, 0.6)
+    closed_path(bd, sp.COVER_STIFF, 0.5, P.User_1)
+    bd.text(f"BOTTOM STIFFENER FR4 {sp.BC_END_T} mm", 0.0, sp.COVER_Y_END + 1.6, P.User_1, 0.6)
+    closed_path(bd, sp.COVER_PAD_STIFF, [0.76, 0.76, 0.0, 0.76], P.User_1)
+    bd.text(f"BOTTOM STIFFENER FR4 {sp.BC_PAD_STIFF_T} mm", sp._xs0 - 1.2, (sp._yb + sp._yr) / 2, P.User_1, 0.6, 90)
+    notes = ["1 copper layer flex: polyimide, 0.10 mm without stiffeners, 1/2 oz Cu, yellow coverlay, ENIG",
+             f"FR4 stiffeners on the bottom (non-copper) side: {sp.BC_PAD_STIFF_T} mm and {sp.BC_END_T} mm, outlines on User_1",
+             f"One 90 deg bend in the run, inside r {sp.BC_BEND_R} mm, copper outside, installed once",
+             "Coverlay openings 0.1 mm beyond the pads; no holes"]
+    for i, s in enumerate(notes):
+        bd.text(s, 0.0, sp._yr - 3.0 - 1.0 * i, P.Cmts_User, 0.6)
     if not sp.COVER_CONFIRMED:
-        bd.text("POSITIONS REF / MEASURE - DO NOT FABRICATE", 0.0, 2.0, P.Cmts_User, 0.9)
+        bd.text("FIT-TEST PROTOTYPE: positions REF / MEASURE", 0.0, 2.0, P.Cmts_User, 0.9)
     bd.save()
 
 
@@ -629,7 +683,7 @@ def main():
     gen = "Generated by pcb/sensor/tools/gen_sensor.py - edit sensor_parts.py"
 
     def schematic(name, parts, flags, title, comments, notes):
-        build_schematic(CTX, name, parts, flags, f"Smart wall plate - {title}", sp.REV, sp.REV_DATE, comments, notes)
+        build_schematic(CTX, name, parts, flags, f"Sladdseg - {title}", sp.REV, sp.REV_DATE, comments, notes)
     schematic(sp.RING, sp.RING_PARTS, ("+5V", "+3V3", "GND"), "ring board", [status, gen],
               "Ring board (docs/DESIGN.md D-50): FR4 1.6 mm round the insert's plug, against the wall.\n"
               "J1: 5 V from the wiring board's J2 over a 6-way 0.5 mm FFC (pinout mirror-symmetric).\n"

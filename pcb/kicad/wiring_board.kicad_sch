@@ -5,7 +5,7 @@
 	(uuid "1022eee3-7e6b-5d4f-9083-3fb91e1766f8")
 	(paper "A4")
 	(title_block
-		(title "Smart wall plate - wiring board")
+		(title "Sladdseg - wiring board")
 		(date "2026-10-12")
 		(rev "v0.5")
 		(company "smart-wallplate")

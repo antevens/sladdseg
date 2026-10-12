@@ -18,5 +18,6 @@ WM3787CT-ND,55909-2474,Molex,1,WP EU J2,"SlimStack plug 24 contacts, 0.4 mm, 2 r
 ,9774015243R,Wurth Elektronik,3,WP EU H5,"SMT steel spacer M2, 1.5 mm, tin (3/plate EU; EU cap board H5; EU cap board H6; EU cap board H7)"
 952-1734-1-ND,S7081-42R,Harwin,2,WP EU J3,"SMT spring finger, gold, 4 A, working height 2.0 mm (2/plate EU; EU cover flex J3; EU cover flex J4)"
 296-50411-1-ND,TLV75533PDBVR,Texas Instruments,1,WP EU U1,"LDO 3.3 V 500 mA, 1.45-5.5 V in, SOT-23-5 (1/plate EU; EU cover flex U1)"
-,CL05A105KO5NNNC,Samsung Electro-Mechanics,2,WP EU C3,"LDO input capacitor, 1 uF 16 V X5R 0402 (2/plate EU; EU cover flex C3; EU cover flex C4)"
+1276-1034-1-ND,CL10A105KO8NNNC,Samsung Electro-Mechanics,2,WP EU C3,"LDO input capacitor, 1 uF 16 V X5R 0603 (2/plate EU; EU cover flex C3; EU cover flex C4)"
+296-TPD1E10B06DYARCT-ND,TPD1E10B06DYAR,Texas Instruments,1,WP EU D1,"ESD protection, bidirectional TVS, 5.5 V working, SOD-523 (1/plate EU; EU cover flex D1)"
 2946-221-412-ND,221-412,WAGO,1,WP EU PE1,"Lever splicing connector, 2 conductors, 0.2-4 mm2 (1/plate EU; EU mechanical PE1)"

@@ -3,7 +3,7 @@
 	(generator "gen_libs")
 	(generator_version "9.0")
 	(layer "F.Cu")
-	(descr "Gold pad under a spring pin (back cover flex)")
+	(descr "Gold pad under a spring pin (back cover flex); 3.0 mm copper, 2.6 mm opening")
 	(tags "pad target contact")
 	(property "Reference" "REF**"
 		(at 0 0 0)
@@ -28,12 +28,13 @@
 	(attr smd)
 	(pad "1" smd circle
 		(at 0 0)
-		(size 2.6 2.6)
+		(size 3 3)
 		(layers "F.Cu" "F.Mask")
+		(solder_mask_margin -0.2)
 	)
 	(fp_rect
-		(start -1.425 -1.425)
-		(end 1.425 1.425)
+		(start -1.625 -1.625)
+		(end 1.625 1.625)
 		(stroke
 			(width 0.05)
 			(type solid)

@@ -193,3 +193,19 @@ The script runs these steps:
   BOM and the centroid; S1 is not fitted).
 
 All part data, nets and geometry live in `tools/parts.py`.
+
+## Renders
+
+With components, then without (every trace and pour), then the copper layers (back seen from behind).
+
+| Front | Back |
+| --- | --- |
+| ![Wiring board, front](../docs/renders/wiring_board_front.png) | ![Wiring board, back](../docs/renders/wiring_board_back.png) |
+| ![Wiring board, bare front](../docs/renders/wiring_board_bare_front.png) | ![Wiring board, bare back](../docs/renders/wiring_board_bare_back.png) |
+| ![Wiring board, front copper](../docs/renders/wiring_board_copper_front.png) | ![Wiring board, back copper](../docs/renders/wiring_board_copper_back.png) |
+
+| Front, angled | Back, angled |
+| --- | --- |
+| ![Wiring board, front, angled](../docs/renders/wiring_board_iso_front.png) | ![Wiring board, back, angled](../docs/renders/wiring_board_iso_back.png) |
+
+![Wiring board, bare, angled](../docs/renders/wiring_board_bare_iso.png)

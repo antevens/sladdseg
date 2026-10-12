@@ -6,7 +6,7 @@ options.
                          yourself (THT parts, the rockers, the mechanical parts) as DigiKey / Mouser lists.
   option_b_self_solder/  PCBWay makes bare boards (stencils optional); every part as DigiKey / Mouser lists.
 
-Usage: python3 pcb/tools/order_pcbway.py [DEVKIT_SETS]   (default 4; needs kicad-cli and pcbnew)
+Usage: python3 pcb/tools/order_pcbway.py [DEVKIT_SETS]   (default 5; needs kicad-cli and pcbnew)
 Writes pcb/order/pcbway/ (and its README.md) from the boards' KiCad files, their part tables and fab packs. Boards
 whose design is not confirmed yet (ring board and EU cap board: CN2; cover flex: positions REF / MEASURE) are packed
 as fit-test prototypes: their Gerbers are exported here (not into the fab packs) and named _PROTOTYPE.
@@ -66,12 +66,16 @@ BOARDS = [
          tables=[("NA", "cover flex"), ("EU", "cover flex")], finish="ENIG",
          proto=("FIT-TEST PROTOTYPE: pad, contact and regulator positions come from photos and drawings (REF / "
                 "MEASURE) until measured on a remote"),
-         layers="F.Cu,F.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts,User.1",
+         layers="F.Cu,F.Mask,F.Paste,F.Silkscreen,Edge.Cuts,User.1", flex=True,
          notes=[f"FLEX PCB: one copper layer (F.Cu), polyimide, {sp.FLEX_T:.2f} mm thick without stiffeners (PCBWay's "
-                "default); coverlay on "
-                "F.Mask openings", f"FR4 stiffeners on the non-copper side: {sp.BC_END_T} mm behind the end section, "
-                f"{sp.BC_PAD_STIFF_T} mm on the pad and regulator sections; outlines on the User_1 Gerber and the fab "
-                "drawing", "One 90 deg bend at the marked line, copper outside: no stiffener across it"]),
+                "default), 1/2 oz copper, yellow coverlay, ENIG; no holes (no drill files)",
+                "Coverlay openings as F_Mask: 0.1 mm beyond the pads; one opening over each pin row of U1 / D1; the "
+                f"two {sp.BC_PAD_CU} mm pin pads open {sp.BC_PAD_D} mm (the coverlay holds their edges)",
+                f"FR4 stiffeners on the bottom (non-copper) side: {sp.BC_PAD_STIFF_T} mm on the pad and regulator "
+                f"sections, {sp.BC_END_T} mm on the end section (notched round the run); outlines on the User_1 "
+                "Gerber and the fab drawing",
+                f"One 90 deg bend in the run, inside r {sp.BC_BEND_R} mm, copper outside, installed once: bend zone "
+                "marked on the fab drawing, no stiffener or track turn within it"]),
 ]
 # fitted by hand in both options: the rocker snaps into the printed insert / cap before it is soldered (D-26)
 HAND = {"S1": "rocker: snapped into the printed insert / cap first, then soldered by hand"}
@@ -82,8 +86,10 @@ def board_info(pcb_path):
     b = pcbnew.LoadBoard(str(pcb_path))
     bb = b.GetBoardEdgesBoundingBox()
     smd = {f.GetReference(): bool(f.GetAttributes() & pcbnew.FP_SMD) for f in b.GetFootprints()}
+    holes = sum(1 for f in b.GetFootprints() for q in f.Pads() if q.GetDrillSizeX() > 0) + \
+        sum(1 for tr in b.GetTracks() if tr.GetClass() == "PCB_VIA")
     return dict(w=bb.GetWidth() / 1e6, h=bb.GetHeight() / 1e6, layers=b.GetCopperLayerCount(),
-                t=b.GetDesignSettings().GetBoardThickness() / 1e6, smd=smd)
+                t=b.GetDesignSettings().GetBoardThickness() / 1e6, smd=smd, holes=holes)
 
 
 def centroid(pcb_path, refs):
@@ -139,9 +145,13 @@ def export_prototype(bd, folder, drawing):
         g = Path(t)
         subprocess.run(["kicad-cli", "pcb", "export", "gerbers", "-o", f"{g}/", "--use-drill-file-origin", "--layers",
                         bd["layers"], "--subtract-soldermask", "--no-x2", str(pcb)], check=True, capture_output=True)
-        subprocess.run(["kicad-cli", "pcb", "export", "drill", "-o", f"{g}/", "--format", "excellon", "--drill-origin",
-                        "plot", "--excellon-units", "mm", "--excellon-separate-th", "--generate-map", "--map-format",
-                        "gerberx2", str(pcb)], check=True, capture_output=True)
+        if board_info(pcb)["holes"]:                       # a board without holes gets no (empty) drill files
+            subprocess.run(["kicad-cli", "pcb", "export", "drill", "-o", f"{g}/", "--format", "excellon",
+                            "--drill-origin", "plot", "--excellon-units", "mm", "--excellon-separate-th",
+                            "--generate-map", "--map-format", "gerberx2", str(pcb)], check=True, capture_output=True)
+        if bd.get("flex"):                                 # the job file describes a 2-layer FR4 board (KiCad's minimum)
+            for j in g.glob("*.gbrjob"):
+                j.unlink()
         shutil.make_archive(str(folder / f"{name}_gerbers"), "zip", g)
     if drawing:
         subprocess.run(["kicad-cli", "pcb", "export", "pdf", "-o", str(folder / f"{name}_fab.pdf"), "--mode-single",
@@ -165,7 +175,7 @@ def copy_fab(bd, folder, drawing):
 
 
 def main():
-    devkit = int(sys.argv[1]) if len(sys.argv) > 1 else 4
+    devkit = int(sys.argv[1]) if len(sys.argv) > 1 else 5
     plates = {"NA": devkit, "EU": devkit}                # a devkit per variant: MIN_PCB boards, devkit sets of parts
     if OUT.exists():
         shutil.rmtree(OUT)
@@ -244,8 +254,8 @@ def write_readme(rows, plates):
           "rockers and the prototypes' placeholder CN2 mates are not in it (do not fit). Safety-critical parts "
           "(F1, RV1) must be the listed MPN: no substitutes without review.",
           "4. Add the board's notes above to the order remarks.",
-          "5. Buy the rest from DigiKey or Mouser: `parts_digikey.csv` / `parts_mouser.csv` (and the `_rest_` file "
-          "for parts the other distributor does not carry), imported as described in `pcb/order/README.md`. "
+          "5. Buy the rest from DigiKey or Mouser: `parts_digikey.csv` / `parts_mouser.csv` (the lines marked NOT AT … "
+          "go to the other distributor), imported as described in `pcb/order/README.md`. "
           "They hold the THT parts, the rockers and the parts not on a board (NA: studs, standoffs, FFC; EU: the PE "
           "lever connector).", "",
           "## Option B: bare boards, you solder", "",
@@ -256,7 +266,7 @@ def write_readme(rows, plates):
           "the Gerbers. The microphone (LGA), the SHT40 (DFN), the WA-SMSI posts and spacers and the P70 spring "
           "pins are reflow parts (hot plate or hot air with paste). The ADAU7002 (WLCSP-8, 0.4 mm pitch) is not a "
           "hand part: order the ring board and the EU cap board with PCBWay assembly (option A) even here.",
-          "3. Buy every part: `parts_digikey.csv` / `parts_mouser.csv` (and the `_rest_` file).", "",
+          "3. Buy every part: `parts_digikey.csv` / `parts_mouser.csv` (the lines marked NOT AT … go to the other distributor).", "",
           "## Quantities", "",
           f"Part quantities are exactly {plates['NA']} sets per variant, no spares (`pcb/order/README.md`). "
           f"PCBWay's minimum is {MIN_PCB} boards per design; the spare board costs little and covers a failed "

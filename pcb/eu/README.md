@@ -69,3 +69,23 @@ make pcb        # or pcb/eu/tools/build.sh
 
 PCBWay packs for both boards in `fab/` (`fab/README.md`: order settings and the review checklist).
 Order only after the review and a dry fit of the stack in a real box.
+
+## Renders
+
+Each board with components, without them, and its copper layers (back seen from behind).
+
+| Mains board, front | Mains board, back |
+| --- | --- |
+| ![EU mains board, front](../../docs/renders/eu_mains_board_front.png) | ![EU mains board, back](../../docs/renders/eu_mains_board_back.png) |
+| ![EU mains board, bare front](../../docs/renders/eu_mains_board_bare_front.png) | ![EU mains board, bare back](../../docs/renders/eu_mains_board_bare_back.png) |
+| ![EU mains board, front copper](../../docs/renders/eu_mains_board_copper_front.png) | ![EU mains board, back copper](../../docs/renders/eu_mains_board_copper_back.png) |
+
+![EU mains board, bare, angled](../../docs/renders/eu_mains_board_bare_iso.png)
+
+| 5 V board, front | 5 V board, back |
+| --- | --- |
+| ![EU 5 V board, front](../../docs/renders/eu_5v_board_front.png) | ![EU 5 V board, back](../../docs/renders/eu_5v_board_back.png) |
+| ![EU 5 V board, bare front](../../docs/renders/eu_5v_board_bare_front.png) | ![EU 5 V board, bare back](../../docs/renders/eu_5v_board_bare_back.png) |
+| ![EU 5 V board, front copper](../../docs/renders/eu_5v_board_copper_front.png) | ![EU 5 V board, back copper](../../docs/renders/eu_5v_board_copper_back.png) |
+
+![EU 5 V board, bare, angled](../../docs/renders/eu_5v_board_bare_iso.png)

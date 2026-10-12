@@ -672,9 +672,16 @@ def cover_checks():
     pw, ph = FINGER_PAD[0], FINGER_PAD[1]                    # contact finger pad on the end section (x, z): vertical
     check(BC_CELL_X - pw / 2 >= xi + 0.5, f"contact finger pads clear of the remote's PCB strip "
                                           f"({BC_CELL_X - pw / 2 - xi:.2f} mm beyond the notch)")
-    lane = BC_FLEX_Z + BC_LANE_H + 0.15                      # +3V3 trace (0.3) across the band
-    check(BC_CELL_Z - ph / 2 - lane >= 0.3, f"+3V3 lane across the band {BC_CELL_Z - ph / 2 - lane:.2f} "
-                                            f"mm below the contact finger pads")
+    lane0, lane1 = BC_LANE_H - 0.15, BC_LANE_H + 0.15        # +3V3 trace (0.3) across the band, above the flex plane
+    tr = FLEX_T + BC_BEND_R                                  # the bend zone ends this high
+    check(lane0 - tr >= BC_BEND_CLR - 0.15 - 1e-6 and BC_BRIDGE_H - lane1 >= 0.3 - 1e-6,
+          f"+3V3 lane across the band: it turns {BC_LANE_H - tr:.2f} mm past the bend zone (>= {BC_BEND_CLR}), "
+          f"{BC_BRIDGE_H - lane1:.2f} mm under the band's top edge (>= 0.3)")
+    check(BC_BEND_R >= 6 * FLEX_T - 1e-6, f"run's bend: inside r {BC_BEND_R} mm >= 6 x the {FLEX_T} mm flex "
+                                          "(IPC-2223 single-sided, bend to install; D-116)")
+    zn = tr + BC_BEND_CLR                                    # end stiffener's notch top above the flex plane
+    check(BC_CELL_Z - BC_FLEX_Z - ph / 2 >= zn - 1e-6, f"contact finger pads start {BC_CELL_Z - BC_FLEX_Z - ph / 2:.3f} "
+                                                       f"above the flex plane, on the stiffener (notch to {zn:.2f})")
     check(BC_FLEX_Z + BC_END_H >= BC_CELL_Z + ph / 2 + 0.5, "contact finger pads within the end section")
     edge = BC_END_XO - (BC_CELL_X + pw / 2)
     check(edge >= 0.5, f"contact finger pads {edge:.2f} mm inside the end section's outer edges")
@@ -708,12 +715,12 @@ def cover_checks():
     n = len(snaps.solids())
     check(n == len(bc.flex_snap_spots()), f"{n} snap hooks on the flex section's long edges (beside each finger and "
                                           f"the regulator, none where the jog leaves the GND pad's inner edge)")
-    check(lip - clr >= 0.15 and BC_FLEX_SNAP_GAP <= 0.1, f"snap lips {lip - clr:.2f} mm over the stiffener's edges, "
+    check(lip - clr >= 0.25 and BC_FLEX_SNAP_GAP <= 0.2, f"snap lips {lip - clr:.2f} mm over the stiffener's edges, "
                                                          f"{BC_FLEX_SNAP_GAP} mm above it")
     for k in ("flex", "pad_stiffener", "pin_pads", "regulator", "steel"):
         r = snaps & ps[k]
         check(r is None or r.volume < 0.001, f"snap hooks clear the {k}")
-    zl = BC_FLEX_Z + FLEX_T + BC_PAD_STIFF_T + BC_FLEX_SNAP_GAP
+    zl = BC_FLEX_Z + FLEX_T + BC_STIFF_ADH + BC_PAD_STIFF_T + BC_FLEX_SNAP_GAP
     root = max(e.bounding_box().min.Z for e in bc.flex_snap_reliefs().solids())
     arm = zl + lip / 2 - root                                 # post bends from the relief floor to the lip
     strain = 1.5 * t * (lip - clr) / arm ** 2                 # cantilever outer-fibre strain: the lip clears the edge
@@ -799,9 +806,10 @@ def cover_checks():
                                        else e.bounding_box().max.Y), 2) for e in bc.latches().solids())
     check(ear.max.Y < B_H / 2 and reach == sorted(round(r, 2) for r in BC_LATCH_REACH),
           f"snap clip hook tips {reach} mm in from the outside rim, hooks {BC_LATCH_HOOK} mm inwards (bottom, top)")
-    show = B_SEAM_Z - bc.latch_show(0)
-    check(abs(show - BC_LATCH_SHOW) < 0.02, f"bottom clip: hook's top (ramp leaving the shell) {show:.2f} mm below the "
-                                            f"rim (target {BC_LATCH_SHOW}, D-115)")
+    tip_z = (BC_WALL + BC_LATCH_CATCH_Z, B_SEAM_Z - BC_LATCH_RIM_GAP - 2 * BC_LATCH_HOOK[1])   # catch / tip face's foot
+    proud = [BC_LATCH_REACH[i] - (B_W / 2 - bc.inner_x(z)) for i, z in enumerate(tip_z)]
+    check(abs(proud[0] - proud[1]) < 0.01, f"clip tips stand {proud[0]:.2f} (bottom, at its catch) and {proud[1]:.2f} mm "
+                                           f"(top) clear of the shell's inner surface: the same (D-118)")
     for i, f in enumerate(BC_LATCH_CATCH):                 # flat underside: room under it, proud of the shell
         if f is None:
             continue
@@ -843,7 +851,7 @@ def cover_checks():
         check(r is None or r.volume < 0.001, f"snap clips clear the {k}")
     x0, x1, y0, y1 = BC_REG_RECESS
     for ref, (x, y) in BC_REG.items():
-        w, h, t = BC_REG_BODY if ref == "U1" else BC_CAP0402
+        w, h, t = {"U1": BC_REG_BODY, "D1": BC_TVS}.get(ref, BC_CAP0603)
         inside = x0 + 0.1 <= x - w / 2 and x + w / 2 <= x1 - 0.1 and y0 + 0.1 <= y - h / 2 and y + h / 2 <= y1 - 0.1
         check(inside and BC_FLEX_Z - t >= BC_REG_FLOOR + 0.1, f"regulator part {ref} inside its recess "
                                                                  f"({BC_FLEX_Z - t - BC_REG_FLOOR:.2f} mm above the floor)")

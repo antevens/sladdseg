@@ -1,331 +1,217 @@
-# Smart wall plate
+# Sladdseg
 
-Replacement for a single-gang light switch: recessed IKEA BILRESA remote, hidden
-emergency rocker, Apollo MSR-2 mmWave presence + SHT40 climate + a push-to-talk
-microphone for Home Assistant voice, powered by a Mean Well IRM-03-5 on the wiring board.
+Sladdseg is a wall plate that replaces a traditional light switch where all bulbs on its circuit are smart bulbs (here IKEA
+Matter-over-Thread). The bulbs stay powered; an IKEA BILRESA scroll-wheel remote sits recessed in the plate and lifts
+out. Behind it is a hidden emergency rocker switch that cuts line and neutral to the fixtures. Two variants, three
+editions:
 
-Start with `AGENTS.md` (for people too), then `docs/SAFETY.md`. `docs/PRINTING.md` lists the print
-jobs in order, `docs/ASSEMBLY.md` what holds each part, `docs/MEASUREMENTS.md` what is measured and
-what is still an estimate.
+| Edition | Contents | North American single-gang / Decora (NA): 2 × 3 in box | European round flush box, DIN 49073 (EU): Ø60 / 68 mm |
+| --- | --- | --- | --- |
+| **1. Switch only** | rocker switch; the remote on its own cells and back cover | not modelled yet | not modelled yet |
+| **2. Battery-free** | rocker switch; 5 V power circuit; replacement back cover, so the remote stays in place without cells | standard-size face plate 69.85 × 114.3 mm | face plate 80 × 80 mm |
+| **3. Full** | as 2, plus Apollo MSR-2 (mmWave presence, optional CO2), SHT40 temperature and humidity, push-to-talk microphone | face plate 72.2 × 131.75 mm | face plate 84.6 × 122.4 mm |
 
-Two variants: **NA** (single-gang Decora box, this page's main renders) and **EU** (round DIN 49073
-box, `cad/build123d/eu/`, `pcb/eu/`). Both can run the BILRESA without batteries through a
-replacement back cover powered from the plate.
+- **Remote:** stands 2.6 mm proud of the face. In editions 2 and 3 a printed replacement back cover runs it from the
+  plate's 5 V through spring pins, without cells: for fixed installs, the remote stays in the plate.
+- **Mains:** house wiring lands on the board in WAGO push-in blocks.
+  - Rocker switch: E-Switch RA412C1100 (Marquardt 1802.2504 fits the same footprint).
+  - 5 V power supply (editions 2 and 3), two parts:
+    - NA: Mean Well IRM-03-5 (5 V, 600 mA);
+    - EU: Zettler ZPI03S0500WC (5 V, 600 mA).
+- **Sensors (edition 3):** on a board under the face plate (NA ring board, EU cap board), 5 V from the mains board.
+- **Printed parts:** the barrier between mains and low voltage (NA insert, EU cap) in flame-retardant PC-FR; the face
+  plate, EU carrier and back cover in PETG. Printed on an Elegoo Centauri Carbon 2.
 
-The plate is two printed parts: a **box insert** (all mains/low-voltage barrier
-geometry, UL94 V-0 PC-FR) and a passive **trim plate** (PLA for tests; PETG/ABS/ASA installed), for an Elegoo Centauri
-Carbon 2. The sensors sit on a **ring board** pressed onto the insert's collar, under the face plate (v0.4, D-50, D-68).
+Nothing here is certified or code-compliant; see `docs/SAFETY.md`.
 
-The house wiring lands on one board: L/N/PE in and out on a WAGO push-in block,
-the Marquardt 1802.2504 DPST emergency rocker, and the PSU, all in a 2.5"
-single-gang box. The KiCad project is in `pcb/`.
+| Document | Contents |
+| --- | --- |
+| `AGENTS.md` | project overview, rules, status, backlog |
+| `docs/SAFETY.md` | safety notes and limits |
+| `docs/DESIGN.md` | requirements and decision log |
+| `docs/BOM.md` | parts per plate |
+| `docs/ASSEMBLY.md` | what holds each part, assembly order, detail views |
+| `docs/PRINTING.md` | print jobs, settings, order of work |
+| `docs/MEASUREMENTS.md` | measured values and the ones still estimated |
+| `pcb/README.md`, `pcb/sensor/README.md`, `pcb/eu/README.md` | boards, nets, rules, board renders |
+| `pcb/order/README.md` | DigiKey / Mouser order lists and PCBWay packs |
 
 ```bash
 make system-deps     # once, Ubuntu 24.04 (KiCad 9, headless slicer libs)
 make setup           # once (venv + pinned OrcaSlicer)
-make cad check       # CAD -> build/, all checks must pass
-make print           # OrcaSlicer projects -> print/*.3mf
-make pcb             # all boards and flexes: ERC/DRC, STEP, PCBWay packs -> pcb/fab/, pcb/sensor/fab/, pcb/eu/fab/
+make pcb             # boards: ERC / DRC, STEP, fab packs
+make cad check       # CAD to build/, all checks
 make eu              # EU variant: CAD, checks, renders
+make print           # OrcaSlicer projects in print/
 make renders         # docs/renders/*.png
+make order           # DigiKey / Mouser lists, PCBWay packs
 ```
 
-Nothing here is certified or code-compliant; see `docs/SAFETY.md`.
+## Use
 
-## How it is meant to be used
+Day-to-day the lights are controlled wirelessly: the remote, Home Assistant, the IKEA app or a voice assistant. The
+rocker switch is for two cases:
 
-The design assumes every light bulb and device on the switched circuit is a smart
-device that turns itself on and off (here IKEA Matter-over-Thread bulbs). The circuit
-stays powered; day-to-day control is wireless: the BILRESA remote in the plate, Home
-Assistant, the IKEA app, or Alexa / Google / other assistants.
+- **Controller or network down:** turn the rocker switch off and on. The bulbs restart and come on at their power-on
+  setting, which must be set to "On" in each bulb.
+- **Safety:** off cuts line and neutral to the fixtures on this circuit and powers down the plate's electronics.
 
-The rocker hidden behind the remote is not the everyday light switch. It is there for
-two cases:
+> **Warning: the rocker switch does not replace the breaker.** Turn the circuit's breaker off, and check with a
+> tester that the wires are dead, before working on any wiring, the plate or the fixtures.
 
-- **Controller or cloud down.** When Home Assistant, the IKEA hub or the voice
-  assistant is unavailable, turn the rocker off and on again. The bulbs restart and come
-  on by themselves at their built-in power-on brightness. This needs each bulb's power-on
-  behaviour set to "On" (D-8); check it per bulb.
-- **Safety.** Off cuts line and neutral to the fixtures on this circuit (and powers down
-  the plate's sensors), for example when a bulb or fixture misbehaves or needs changing.
-  It is not a substitute for the breaker: turn the breaker off before working on any
-  wiring (`docs/SAFETY.md`).
+> **Warning: polarity matters.** Connect the supply's line to **L IN** and its neutral to **N IN**, as marked on the
+> board, with the load wires on **L SW / N SW** (NA) or **L LOAD / N LOAD** (EU). Earth goes to **PE** on the NA board;
+> on the EU plate it is joined in the box with a WAGO 221-412 lever connector. The PSU's fuse is
+> in the line; with line and neutral swapped, the fuse sits in the neutral and line stays on the PSU when it blows.
+> Confirm which supply wire is line with a tester before connecting.
 
-Voice: the plate's microphone streams to Home Assistant's Assist pipeline only when
-listening is started from Home Assistant, for example by an automation on a BILRESA button
-(D-29). There is no wake word and no speaker in the plate; replies go to another device.
+The microphone (full edition) streams to Home Assistant's Assist pipeline only when listening is started from Home
+Assistant, for example by an automation on a remote button. There is no wake word and no speaker.
 
-Plain (non-smart) bulbs on this circuit would just follow the rocker, and the remote,
-the sensors and the automations could not control them.
+## North American single-gang / Decora
 
-## Renders
+Full edition (3):
 
-### v0.5
-
-Shaded views of the assembly: face plate (white), box insert (grey), BILRESA remote (model), Marquardt
-1802.2504 rocker (red), wiring board (green, KiCad model), ring board (green) on the insert's collar
-with the MSR-2 (black), the microphone and the SHT40, nylon board standoffs. Regenerate with `make renders`.
-
-| Front | Remote lifted out |
+| Remote in place | Remote out, rocker switch exposed |
 | --- | --- |
-| ![v0.5 front](docs/renders/v0.5_front.png) | ![v0.5 remote out](docs/renders/v0.5_remote_out.png) |
+| ![NA full plate](docs/renders/v0.5_front.png) | ![NA full plate, remote out](docs/renders/v0.5_remote_out.png) |
 
-| Half-section | Back, mains side |
+| Half-section | Back, box side |
 | --- | --- |
-| ![v0.5 half-section](docs/renders/v0.5_section.png) | ![v0.5 back](docs/renders/v0.5_back.png) |
+| ![NA half-section](docs/renders/v0.5_section.png) | ![NA back](docs/renders/v0.5_back.png) |
 
-Exploded: remote, face plate, insert, ring board with the MSR-2, riser with the spring pins on the spacer
-posts, the four nylon board standoffs (D-57), wiring board.
+Full edition (3), exploded: remote, face plate, insert, ring board with the MSR-2, riser with the spring pins on two spacer posts, four
+nylon standoffs, wiring board.
 
-![v0.5 exploded assembly](docs/renders/v0.5_exploded.png)
+![NA exploded](docs/renders/v0.5_exploded.png)
 
-Face plate lifted off (see-through): it carries nothing but plastic; the ring board, the MSR-2, the
-microphone and the SHT40 stay on the insert (D-50, D-68).
+Battery-free edition (2):
 
-![v0.5 face plate lifted off](docs/renders/v0.5_face_off.png)
-
-Ring board from the front, red where copper may not go (8 mm along the wall from the box opening): the
-MSR-2 on CN2 and three SMT spacers, J1 for the FFC, the microphone and its ADAU7002 at the top right, the SHT40 at
-the bottom.
-
-![v0.5 ring board](docs/renders/v0.5_ring.png)
-
-5 V power path (insert cut at the pass-through, seen from the right): a stock 6-way FFC from J2 on the
-wiring board runs between the rocker and the top-right standoff to a straight bore in the insert's top-right corner
-(an open groove in the corner taper, then closed from 4.4 mm under the wall plane, D-74), one bend into a flat slot and
-out of the flange onto the ring board to J1; its spare
-length lies folded flat beside J1 (D-68). Both ends latch (Hirose FH12, slide lock).
-
-![v0.5 5 V power path](docs/renders/v0.5_power.png)
-
-Battery-free remote: two spring pins on the riser board, which stands on the two spacer posts from the
-wiring board's 5 V area, through the pocket floor onto the pads of the replacement back cover.
-
-| Exploded | Section through the pins |
+| Remote in place | Remote out, rocker switch exposed |
 | --- | --- |
-| ![v0.5 battery-free](docs/renders/v0.5_battery_free.png) | ![v0.5 spring pins](docs/renders/v0.5_pins.png) |
+| ![NA battery-free plate](docs/renders/plain_front.png) | ![NA battery-free plate, remote out](docs/renders/plain_remote_out.png) |
 
-Microphone (D-29, D-83): the top-port PDM mic on the ring board, the ADAU7002 beside it turning its PDM into I²S for
-the MSR-2; the face plate's sound column stands on a gasket on the board round the mic, hollow over it, its bore over
-the port.
+## European round flush box (DIN 49073)
 
-![v0.5 microphone sections](docs/renders/v0.5_mic_section.png)
+The cap closes the box and carries the remote; the mains board sits at the rocker switch's seat under it, the 5 V board just
+under the cap, the cap board in a printed carrier on the wall, and the face plate snaps into the carrier.
 
-BILRESA model: stadium outline, wheel with its gap ring, three LEDs, side
-parting line, and a back that curves from a flat central pad out to the sides.
+Full edition (3):
 
-| Front | Back |
+| Remote in place | Remote out, rocker switch exposed |
 | --- | --- |
-| ![BILRESA model, front](docs/renders/bilresa_model.png) | ![BILRESA model, back](docs/renders/bilresa_back.png) |
+| ![EU full plate](docs/renders/eu_front.png) | ![EU full plate, remote out](docs/renders/eu_remote_out.png) |
 
-MSR-2 model with the SCD40 CO2 add-on (`cad/build123d/msr2.py`, D-64): board, ESP32-C3-MINI-1 over its antenna
-notch, USB-C, LD2410B radar on its header, CN1 with the add-on and the SCD4x, Boot / RST switches on the back. Sizes
-from the datasheets, the board plane and limits from Apollo's case; part positions are estimates from Apollo's photos.
+Back, box side: the mains board with its two WAGO push-in blocks (grey) and the PSU (black); the 5 V board sits
+between it and the cap.
 
-| Front | Back |
-| --- | --- |
-| ![MSR-2 model, front](docs/renders/msr2_front.png) | ![MSR-2 model, back](docs/renders/msr2_back.png) |
-
-Cross-sections of every v0.5 part (legend under the sheet, each panel titled with what it shows). The dashed
-line is the wall surface.
-
-![v0.5 assembly cross-sections](docs/renders/v0.5_sections.png)
-
-### v0.5 wiring board
-
-KiCad renders of `pcb/`. The front faces the plate (rocker, SMD
-fuse and MOV, 5 V connector J2, the two SMT spacer posts below it); the back faces the box (WAGO block, PSU). The four
-corner holes take the insert's nylon standoffs (M3 screws from the back); they are unplated with no copper round
-them, and the PE ring detours round them, so earth continuity never depends on the standoffs or on vias.
-
-| Front | Back |
-| --- | --- |
-| ![Wiring board, front](docs/renders/wiring_board_front.png) | ![Wiring board, back](docs/renders/wiring_board_back.png) |
-| ![Wiring board, front, angled](docs/renders/wiring_board_iso_front.png) | ![Wiring board, back, angled](docs/renders/wiring_board_iso_back.png) |
-
-Without components, so every trace and pour shows:
-
-| Front | Back |
-| --- | --- |
-| ![Wiring board, bare front](docs/renders/wiring_board_bare_front.png) | ![Wiring board, bare back](docs/renders/wiring_board_bare_back.png) |
-| ![Wiring board, front copper](docs/renders/wiring_board_copper_front.png) | ![Wiring board, back copper, seen from behind](docs/renders/wiring_board_copper_back.png) |
-
-![Wiring board, bare, angled](docs/renders/wiring_board_bare_iso.png)
-
-### EU variant (concept, D-30, D-36)
-
-A separate design for a round EU flush box (68 mm hole saw, Ø60 inside); `make eu`, `cad/build123d/eu/`,
-`pcb/eu/`. The remote sits on a V-0 cap over the box, 2.6 mm proud of the face as on the NA plate (D-70); the emergency rocker (Marquardt 1802.2504,
-as on the NA plate) under it is hidden until the remote is lifted out. Two boards: a mains board at
-the rocker's PCB seat (rocker, two WAGO push-in blocks, fuse, MOV, PSU over a routed relief slot,
-5 V island with a header) and a 5 V board just under the cap (pin socket on the header, four spring pins
-up through the cap: two for the battery-free back cover, two onto a cap board). The sensors sit on the
-cap side, nothing in the face plate and no flex (D-56, D-59, D-70): a 1.6 mm FR4 cap board in a printed
-carrier with the MSR-2 on its CN2 mate and three SMT spacers, the microphone and the SHT40, as on the NA ring
-board. The carrier goes on the wall first; the cap's edge pins its lip to the wall and the cap's teeth stop it
-turning (D-71). The face plate snaps into the carrier: four fingers at the corners catch grooves in closed, keyed
-windows (D-77). The plate is 84.6 × 122.4 mm, 19.0 mm thick (D-70, D-78). Box values are catalogue placeholders
-until measured; the stack reaches 43.8 mm deep, to be tried in the printed test socket (D-76) and a real box.
-
-| Remote in place | Remote lifted: rocker |
-| --- | --- |
-| ![EU plate](docs/renders/eu_front.png) | ![EU plate, remote out](docs/renders/eu_remote_out.png) |
-| ![EU section](docs/renders/eu_section.png) | ![EU box from behind](docs/renders/eu_box.png) |
+![EU back](docs/renders/eu_back.png)
 
 ![EU exploded](docs/renders/eu_exploded.png)
 
-The sensors' side with the face plate and remote off: the carrier round the cap, the cap board in it with the MSR-2 on
-CN2 and its spacers, the microphone, the SHT40.
+Battery-free edition (2):
 
-![EU sensors](docs/renders/eu_sensors.png)
-
-The carrier clamp (D-71) from the wall side: the cap's teeth at the snap angles in the gaps of the carrier's lip;
-section at the top: the lip under the cap's rebate, outside the seal band.
-
-| Wall side | Section |
+| Remote in place | Remote out, rocker switch exposed |
 | --- | --- |
-| ![EU carrier clamp](docs/renders/eu_carrier_clamp.png) | ![EU carrier lip](docs/renders/eu_carrier_lip.png) |
+| ![EU battery-free plate](docs/renders/eu_plain_front.png) | ![EU battery-free plate, remote out](docs/renders/eu_plain_remote_out.png) |
 
-| Sensor pins onto the cap board's pads | Face plate snap: finger, bump in the groove of the carrier's window |
+## Battery-free back cover
+
+For fixed installs only: the printed cover replaces the remote's own back cover and runs it from the plate with no
+cells. The remote works only while it sits in the plate; lifted out, it is off. Two gold pads behind windows in the
+cover's back take 5 V from the plate's spring pins, and a 3.3 V regulator on the cover's flex feeds two spring
+fingers on the remote's battery contacts. It is not a charging circuit and holds no energy. A version with a battery
+and a charger would be welcome as a merge or pull request.
+
+| Cover with its flex | Exploded in the EU plate |
 | --- | --- |
-| ![EU sensor pins](docs/renders/eu_sensor_pins.png) | ![EU snap](docs/renders/eu_snaps.png) |
+| ![Back cover, inside](docs/renders/bc_inside.png) | ![Back cover, exploded](docs/renders/bc_exploded.png) |
 
-| Cap board, front copper | Cap board, back copper |
-| --- | --- |
-| ![EU cap board, front copper](docs/renders/eu_cap_board_copper_front.png) | ![EU cap board, back copper](docs/renders/eu_cap_board_copper_back.png) |
+## Status
 
-Without components:
+- **Ready to order:**
+  - wiring board (NA), mains and 5 V boards (EU): PCBWay packs, after the review in `pcb/fab/README.md` and
+    `pcb/eu/fab/README.md`;
+  - riser.
+- **Prototype only:**
+  - ring board and EU cap board: the MSR-2's CN2 pinout is not confirmed;
+  - back cover flex: contact positions not yet measured on a remote.
+- **To measure:** the `MEASURE` and `ESTIMATE` values in `docs/MEASUREMENTS.md`, from test prints and a real box.
 
-| Front | Back |
-| --- | --- |
-| ![EU cap board, bare front](docs/renders/eu_cap_board_bare_front.png) | ![EU cap board, bare back](docs/renders/eu_cap_board_bare_back.png) |
+## Cost (2026-10-12)
 
-![EU cap board, bare, angled](docs/renders/eu_cap_board_bare_iso.png)
+Parts and PCBs per plate, USD.
 
-| Mains board, front | Mains board, back |
-| --- | --- |
-| ![EU mains board, front](docs/renders/eu_mains_board_front.png) | ![EU mains board, back](docs/renders/eu_mains_board_back.png) |
-| ![EU mains board, front copper](docs/renders/eu_mains_board_copper_front.png) | ![EU mains board, back copper](docs/renders/eu_mains_board_copper_back.png) |
+| Package | 1 plate | 5 plates | 100 plates | 1,000 plates | 10,000 plates |
+| --- | --- | --- | --- | --- | --- |
+| NA full | 111.65 | 60.03 | 37.74 | 34.31 | 32.59 |
+| NA full + MSR-2 | 149.64 | 98.02 | 75.73 | 72.30 | 70.58 |
+| NA full + MSR-2 with CO2 | 169.64 | 118.02 | 95.73 | 92.30 | 90.58 |
+| NA battery-free | 66.80 | 36.72 | 23.49 | 21.36 | 20.30 |
+| EU full | 102.61 | 48.95 | 31.13 | 28.37 | 26.99 |
+| EU full + MSR-2 | 140.60 | 86.94 | 69.12 | 66.36 | 64.98 |
+| EU full + MSR-2 with CO2 | 160.60 | 106.94 | 89.12 | 86.36 | 84.98 |
+| EU battery-free | 60.83 | 29.26 | 19.24 | 17.55 | 16.70 |
 
-Without components:
+Sources and assumptions:
 
-| Front | Back |
-| --- | --- |
-| ![EU mains board, bare front](docs/renders/eu_mains_board_bare_front.png) | ![EU mains board, bare back](docs/renders/eu_mains_board_bare_back.png) |
+- **Parts at 1, 5 and 100 (sourced):** DigiKey US list prices for the order lists' parts (`pcb/order/`), cheapest
+  packaging and price break for the total need, read 2026-10-12. Per plate:
+  - 1 plate: NA full 51.72, NA battery-free 31.80, EU full 42.17, EU battery-free 25.83.
+  - 5 plates: NA full 48.04, NA battery-free 29.72, EU full 36.86, EU battery-free 22.26.
+  - 100 plates: NA full 34.33, NA battery-free 21.26, EU full 27.60, EU battery-free 16.92.
+- **Parts at 1,000 and 10,000 (assumption):** 10 % and 15 % below the 100-plate price. DigiKey shows no prices
+  above about 100 without a quote.
+- **PCBs at 1 and 5 (sourced):** PCBWay's 5-piece minimum order, 2026-10-12; one plate pays for the whole order.
+  - Wiring board, riser, EU mains board, EU 5 V board: 5.00 each order.
+  - Ring board 24.93, EU cap board 25.44.
+  - Cover flex: about 25 (prototype price, given by the human).
+  - Per plate: 1 plate NA full 59.93, NA battery-free 35.00, EU full 60.44, EU battery-free 35.00; 5 plates one
+    fifth of that.
+- **PCBs at 100 (sourced):** PCBWay quotes for 100 pieces, 2026-10-12.
+  - Wiring board 0.64, ring board 1.17, riser 0.36.
+  - EU mains board 0.64, EU 5 V board 0.45, EU cap board 1.21.
+  - Cover flex 1.24.
+  - Per plate: NA full 3.41, NA battery-free 2.23, EU full 3.53, EU battery-free 2.32.
+- **PCBs at 1,000 and 10,000 (assumption):** the 100-piece price (no quote). This is cautious: board prices
+  usually fall at volume.
+- **MSR-2 (assumption):** Apollo's retail price at every quantity, 37.99 base and 57.99 with CO2. No volume price
+  is published.
 
-![EU mains board, bare, angled](docs/renders/eu_mains_board_bare_iso.png)
+Known gaps:
 
-| 5 V board, front | 5 V board, back |
-| --- | --- |
-| ![EU 5 V board, front](docs/renders/eu_5v_board_front.png) | ![EU 5 V board, back](docs/renders/eu_5v_board_back.png) |
-| ![EU 5 V board, front copper](docs/renders/eu_5v_board_copper_front.png) | ![EU 5 V board, back copper](docs/renders/eu_5v_board_copper_back.png) |
+- **Quote specs differ from the design:**
+  - The mains boards were quoted in standard FR4 with 1 oz copper; the design calls for high-CTI FR4 and 2 oz.
+  - The riser was quoted at 1.6 mm, not 0.8.
+- **Not included:**
+  - PCB assembly (the ring board, the EU cap board and the cover flex need it);
+  - the IKEA remote;
+  - printed parts, screws and heatshrink;
+  - shipping and duties.
+- **Cheaper terminal blocks:** Same Sky TBL-0021-500-06GR (NA) and TBL-0020-500-02GR (EU), push-in without a lever,
+  fit the WAGO 2604 footprint and cost about 5–6 (NA) and 3 (EU) less per plate at 100. Not in the design.
 
-Without components:
+### Printed parts (own printer, 2026-10-12)
 
-| Front | Back |
-| --- | --- |
-| ![EU 5 V board, bare front](docs/renders/eu_5v_board_bare_front.png) | ![EU 5 V board, bare back](docs/renders/eu_5v_board_bare_back.png) |
+The barrier part (NA insert, EU cap) is printed in Elegoo PC-FR; the face plate, the EU carrier and the back cover
+in Elegoo PETG. Grams and times come from the OrcaSlicer projects (`make print`). USD per plate.
 
-![EU 5 V board, bare, angled](docs/renders/eu_5v_board_bare_iso.png)
+| Package | Printed parts | Filament | Print time | Filament cost | Electricity | Printer wear | **Total** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| NA full | insert 51.9 g PC-FR; face plate 23.2 g, back cover 8.3 g PETG | 83.4 g | 3.3 h | 1.54 | 0.08 | 0.29 | **1.91** |
+| NA battery-free | insert 51.7 g PC-FR; face plate 16.0 g, back cover 8.3 g PETG | 76.0 g | 3.0 h | 1.46 | 0.07 | 0.27 | **1.80** |
+| EU full | cap 9.8 g PC-FR; face plate 42.9 g, carrier 18.1 g, back cover 8.3 g PETG | 79.1 g | 2.7 h | 0.99 | 0.06 | 0.24 | **1.29** |
+| EU battery-free | cap 9.8 g PC-FR; face plate 27.2 g, carrier 4.6 g, back cover 8.3 g PETG | 49.9 g | 1.9 h | 0.67 | 0.04 | 0.16 | **0.87** |
 
-### Plain plates: rocker and battery-free remote (D-109)
+Sources and assumptions:
 
-Two editions of each variant. The full plate has the rocker, the battery-free remote, the MSR-2 (mmWave, optional
-CO2 add-on), the SHT40 and the microphone. The plain plate has only the rocker and the battery-free remote. It uses
-the same mains board(s), 5 V parts, spring pins, riser (NA), replacement back cover and cover flex, without the ring
-board / cap board and their sensors.
-
-- NA: a standard-size single-gang face plate, 2-3/4 × 4-1/2 in (69.85 × 114.3 mm), centred on the box. The insert has
-  no 5 V cable channel or bore (its only openings are the two spring-pin holes). No ring board, FFC or FFC connector.
-- EU: an 80 × 80 mm face plate, centred on the box. The cap has only the two battery-free pins' holes. The carrier
-  keeps its lip under the cap and its corners with the snap windows. No cap board; the 5 V board without the sensor
-  pins P1 / P2.
-
-| NA plain | NA plain, remote out |
-| --- | --- |
-| ![NA plain plate](docs/renders/plain_front.png) | ![NA plain plate, remote out](docs/renders/plain_remote_out.png) |
-
-| EU plain | EU plain, remote out |
-| --- | --- |
-| ![EU plain plate](docs/renders/eu_plain_front.png) | ![EU plain plate, remote out](docs/renders/eu_plain_remote_out.png) |
-
-Order lists: `pcb/order/unit_na_plain_*.csv`, `unit_eu_plain_*.csv`; `make order-push VARIANT=na-plain` (or `eu-plain`,
-`both-plain`).
-
-### Steel plate hacksaw guide (D-52, D-81)
-
-The steel plate that ships with the BILRESA is cut to an 18.5 mm piece for the insert (NA) or the cap (EU) in a hacksaw
-guide: clamp it in a vise, saw down the slot. Red: the cut line.
-
-![Steel plate hacksaw guide](docs/renders/plate_jigs.png)
-
-### Replacement back cover (D-35, D-40, D-41, D-44, D-45)
-
-Runs the remote without cells. The printed cover snaps onto the remote like the original (clips at
-the top and bottom, side ribs, a pry notch) and carries the remote's magnet plate inside a ridge, clipped at both ends,
-and a flex: two gold pads behind windows in its back take +5 V and GND from the plate (NA: the spring pins
-through the pocket floor, D-50; EU: two spring pins from the 5 V board through the cap, D-54), a 3.3 V regulator on the flex feeds the
-remote, and at the terminal end two spring fingers press on the remote's VBAT plate and GND spring. The flex is
-held by a 0.8 mm stiffener under five snap hooks on its long edges, its run lies in a notch along the GND contact
-post (D-79) and, at the end, a lip at the foot of each contact block and a slot along each block's outer face that it
-slides down into hold it. Several remote dimensions are still estimates
-(`docs/MEASUREMENTS.md`).
-
-| Cover, inside | Cover, back (pin windows) |
-| --- | --- |
-| ![Back cover, inside](docs/renders/bc_inside.png) | ![Back cover, back](docs/renders/bc_back.png) |
-
-Exploded in the EU plate: remote, cover, the battery-free pins through the cap:
-
-![Back cover, exploded](docs/renders/bc_exploded.png)
-
-Cut through a pin pad: the spring pin at mid-stroke through its window onto the pad, ledge, flex. And
-through the VBAT contact: the finger on the end section, its dome on the remote's battery plate.
-
-![Back cover, pin section](docs/renders/bc_pin_section.png)
-
-![Back cover, VBAT contact section](docs/renders/bc_contact_section.png)
-
-![Back cover flex, copper](docs/renders/cover_flex_copper_front.png)
-
-Without components:
-
-| Front | Back |
-| --- | --- |
-| ![Back cover flex, bare front](docs/renders/cover_flex_bare_front.png) | ![Back cover flex, bare back](docs/renders/cover_flex_bare_back.png) |
-
-![Back cover flex, bare, angled](docs/renders/cover_flex_bare_iso.png)
-
-### Ring board, riser
-
-KiCad projects in `pcb/sensor/` (D-50). Ring board: the microphone and the ADAU7002 at the top right (D-83), I²S and
-+5V on the front, SDA, SCL and +3V3 across the
-top band on the back to the right rail, down the rail on the front round the box's corner keep-out to the
-SHT40; GND pours (the left rail carries GND). The CN2 mate and its map are placeholders: no fab files yet.
-
-| Ring board, front | Ring board, back |
-| --- | --- |
-| ![Ring board, front](docs/renders/ring_board_front.png) | ![Ring board, back](docs/renders/ring_board_back.png) |
-| ![Ring board, front copper](docs/renders/ring_board_copper_front.png) | ![Ring board, back copper](docs/renders/ring_board_copper_back.png) |
-
-Without components:
-
-| Front | Back |
-| --- | --- |
-| ![Ring board, bare front](docs/renders/ring_board_bare_front.png) | ![Ring board, bare back](docs/renders/ring_board_bare_back.png) |
-
-![Ring board, bare, angled](docs/renders/ring_board_bare_iso.png)
-
-Riser board (two spring pins, two M2 post pads):
-
-| Riser, front | Riser, back |
-| --- | --- |
-| ![Riser, front copper](docs/renders/riser_board_copper_front.png) | ![Riser, back copper](docs/renders/riser_board_copper_back.png) |
-
-Without components:
-
-| Front | Back |
-| --- | --- |
-| ![Riser, bare front](docs/renders/riser_board_bare_front.png) | ![Riser, bare back](docs/renders/riser_board_bare_back.png) |
-
-![Riser, bare, angled](docs/renders/riser_board_bare_iso.png)
+- **Filament (sourced):** Elegoo US store, 10 kg packs, read 2026-10-12.
+  - PC-FR: 229.99, 23.00 / kg (1 kg spool 34.99).
+  - PETG Pro: 109.99, 11.00 / kg (1 kg spool 13.99).
+- **PETG weights (assumption):** the face plates and carriers are sliced in PLA only. Their weight is scaled by
+  the density ratio (PETG 1.27 / PLA 1.24) at the same print time.
+- **Electricity (assumption):** 150 W average at 0.15 / kWh.
+- **Printer wear (assumption):** about 440 for the CC2 Combo (Elegoo's bundles list at 435–499) over 5,000 print
+  hours.
+- **Not included:** labour, failed prints, bed adhesive.
+- **Print services:** not quoted.

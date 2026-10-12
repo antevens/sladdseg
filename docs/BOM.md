@@ -37,7 +37,8 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | — | Replacement back cover (BILRESA E2490): printed cover + single-layer flex with 0.4 mm FR4 stiffener, ENIG; the remote's own magnet plate | printed; PCBWay flex, `pcb/sensor/` cover_flex (no fab files yet) | D-35: replaces the remote's back cover; no cells. |
 | — | SMT spring fingers ×2 (back cover) | **Harwin S7081-42R** | D-35, D-40: on the cover flex, VBAT and GND onto the remote's battery contacts. The +5V / GND inputs are Ø2.6 gold pads under the plate's spring pins (D-50). |
 | U1 (cover flex) | LDO 3.3 V 500 mA, SOT-23-5 | **TI TLV75533PDBVR** | D-41: the remote's 3.3 V from the pins' +5 V, on the cover flex. Datasheet: https://www.ti.com/lit/ds/symlink/tlv755p.pdf |
-| C3, C4 (cover flex) | 1 µF 16 V X5R 0402 | Samsung CL05A105KO5NNNC (Murata GRM155R61A105KE15D: obsolete; CL05A105KP5NNNC: out of stock at both, 2026-10-11) | LDO input / output (TLV755P: ≥ 1 µF). |
+| C3, C4 (cover flex) | 1 µF 16 V X5R 0603 | **Samsung CL10A105KO8NNNC** (DigiKey 1276-1034-1-ND) | LDO input / output: 0.85 µF at 5 V, 0.93 µF at 3.3 V (Samsung DC-bias data); TLV755P needs ≥ 0.47 µF effective. The 0402 CL05A105KO5NNNC kept only 0.31 µF at 5 V (D-116). |
+| D1 (cover flex) | ESD protection, bidirectional TVS, 5.5 V, SOD-523 | **TI TPD1E10B06DYAR** (DigiKey 296-TPD1E10B06DYARCT-ND) | On +5V at the regulator: the pin pads are exposed when the cover is off (D-116). |
 | — | Cover flex stiffener, FR4 0.8 mm, flush with the flex's long edges | PCBWay (with the cover flex) | D-45: on the pad and regulator sections; the cover's snap hooks hold it by its long edges. |
 | PCB | EU cap board, 2-layer FR4 1.6 mm, round the remote pocket | PCBWay; `pcb/sensor/` eu_cap_board (no fab files until CN2 is confirmed) | D-56, D-70: pin pads underneath, CN2 mate (MSR-2 straight on it), three 1.5 mm SMT spacers H5–H7 (Würth 9774015243R), SHT40, the microphone and the ADAU7002 (D-83). |
 | — | EU cap board carrier | printed, `print/eu_carrier_PLA.3mf` | D-56: the carrier under the cap board, its lip pinned to the wall by the cap's edge, the cap's teeth stop it turning (D-71). |
@@ -60,7 +61,7 @@ Rocker and battery-free remote only. As above, without:
 - EU: the cap board and its parts, the 5 V board's sensor pins P1 / P2, the four M2 cap board screws; printed:
   `eu_plain_cap`, `eu_plain_carrier`, `eu_plain_trim`.
 
-Lists for one plate: `pcb/order/unit_na_plain_*.csv` (12 DigiKey lines), `unit_eu_plain_*.csv` (13).
+Order: `make order-push VARIANT=na-plain` (12 DigiKey lines for one NA plate) or `eu-plain` (13).
 
 ## Links
 

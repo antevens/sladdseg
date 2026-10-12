@@ -101,17 +101,25 @@ the C3's RAM / CPU headroom next to the radar, Wi-Fi and BLE.
 Single copper layer, polyimide, for the replacement back cover that powers a BILRESA E2490
 without cells (`cad/build123d/backcover.py`, DESIGN D-35). Drawn flat, seen from the copper side.
 
-- J1, J2: Ø2.6 gold pads (+5V, GND) on the pad section, which lies copper down on a ledge in the
-  cover, behind Ø2.1 windows in its back: the plate's spring pins press on them (NA, D-50).
+- J1, J2: gold pads (+5V, GND) on the pad section, which lies copper down on a ledge in the
+  cover, behind Ø2.1 windows in its back: the plate's spring pins press on them (NA, D-50). Ø3.0 copper
+  under a Ø2.6 coverlay opening: the coverlay holds the pad's edge (D-116).
 - A 2.6 mm run (in a notch along the GND contact post's inner face, D-79) to the terminal end; one 90°
-  bend (copper outside).
-- J1 takes +5 V from the plate (D-41, D-50); U1 TI TLV75533PDBVR (3.3 V, SOT-23-5) with C3 / C4 1 µF on
-  the section below the fingers, copper down in a recess in the cover (0.4 mm wall left), feeds VBAT.
+  bend, inside r 0.6 mm (6 × the 0.10 mm flex), copper outside, with a relief slit either side of the
+  run so the rest of the end section reaches down to the ledge (D-116). The tracks cross the bend zone
+  straight; the +3V3 lane turns 0.85 mm past it.
+- J1 takes +5 V from the plate (D-41, D-50); D1 TI TPD1E10B06DYAR (ESD) on +5V; U1 TI TLV75533PDBVR (3.3 V,
+  SOT-23-5) with C3 / C4 1 µF 0603 X5R (0.85 µF or more at their working voltages) on the regulator section,
+  copper down in a recess in the cover (0.4 mm wall left), feeds VBAT (D-116).
 - A 0.8 mm FR4 stiffener (back side) on the pad and regulator sections, flush with their long
-  edges: five snap hooks in the cover hold it down against the pins' push (D-45, D-79). No holes.
+  edges: five snap hooks in the cover hold it down against the pins' push (D-45, D-79); 0.15 mm under
+  the hooks for the stiffener's tolerance and adhesive (D-116). No holes.
+- Coverlay openings 0.1 mm beyond the pads, one opening over each pin row of U1 / D1; teardrops where the
+  tracks leave the pads (D-116).
 - J3, J4: Harwin S7081-42R spring fingers (VBAT, GND) on the end section, on the cell axes, long
   axis vertical with the bend end up (the battery contacts ride down the arm's ramp as the cover
-  goes on), on a 0.4 mm FR4 stiffener (back side); it slides down slots along the contact blocks (D-55). The end section stands 2.0 mm (the fingers'
+  goes on), on a 0.4 mm FR4 stiffener (back side), notched round the run 0.76 mm past the bend zone; it slides
+  down slots along the contact blocks (D-55). The end section stands 2.0 mm (the fingers'
   working height) in from the cell end plane: J3 presses the remote's fixed VBAT plate, J4 its GND
   leaf spring (finger and leaf share the travel). Between them only a band passes under the
   remote's PCB strip.
@@ -150,3 +158,40 @@ board, the cover flex and the EU boards once confirmed). Reports go to `build/`.
 - The FFC passes through the mains volume in the pass-through (SAFETY item 4).
 - MK1 and U2 pin 1 against parts (footprints from the datasheets' top views).
 - Microphone firmware test on an MSR-2 (sample rate, I²S slot, load).
+
+## Renders
+
+Each board with components, without them, and its copper layers (back seen from behind).
+
+| Ring board, front | Ring board, back |
+| --- | --- |
+| ![Ring board, front](../../docs/renders/ring_board_front.png) | ![Ring board, back](../../docs/renders/ring_board_back.png) |
+| ![Ring board, bare front](../../docs/renders/ring_board_bare_front.png) | ![Ring board, bare back](../../docs/renders/ring_board_bare_back.png) |
+| ![Ring board, front copper](../../docs/renders/ring_board_copper_front.png) | ![Ring board, back copper](../../docs/renders/ring_board_copper_back.png) |
+
+![Ring board, bare, angled](../../docs/renders/ring_board_bare_iso.png)
+
+| Riser, front | Riser, back |
+| --- | --- |
+| ![Riser, front](../../docs/renders/riser_board_front.png) | ![Riser, back](../../docs/renders/riser_board_back.png) |
+| ![Riser, bare front](../../docs/renders/riser_board_bare_front.png) | ![Riser, bare back](../../docs/renders/riser_board_bare_back.png) |
+| ![Riser, front copper](../../docs/renders/riser_board_copper_front.png) | ![Riser, back copper](../../docs/renders/riser_board_copper_back.png) |
+
+![Riser, bare, angled](../../docs/renders/riser_board_bare_iso.png)
+
+| Back cover flex, copper side | Back cover flex, stiffener side |
+| --- | --- |
+| ![Cover flex, front](../../docs/renders/cover_flex_front.png) | ![Cover flex, back](../../docs/renders/cover_flex_back.png) |
+| ![Cover flex, bare front](../../docs/renders/cover_flex_bare_front.png) | ![Cover flex, bare back](../../docs/renders/cover_flex_bare_back.png) |
+
+![Cover flex, copper](../../docs/renders/cover_flex_copper_front.png)
+
+![Cover flex, bare, angled](../../docs/renders/cover_flex_bare_iso.png)
+
+| EU cap board, front | EU cap board, back |
+| --- | --- |
+| ![EU cap board, front](../../docs/renders/eu_cap_board_front.png) | ![EU cap board, back](../../docs/renders/eu_cap_board_back.png) |
+| ![EU cap board, bare front](../../docs/renders/eu_cap_board_bare_front.png) | ![EU cap board, bare back](../../docs/renders/eu_cap_board_bare_back.png) |
+| ![EU cap board, front copper](../../docs/renders/eu_cap_board_copper_front.png) | ![EU cap board, back copper](../../docs/renders/eu_cap_board_copper_back.png) |
+
+![EU cap board, bare, angled](../../docs/renders/eu_cap_board_bare_iso.png)

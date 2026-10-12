@@ -5,7 +5,7 @@
 	(uuid "b53ed5b7-46c8-5996-a3fb-579e9f592242")
 	(paper "A4")
 	(title_block
-		(title "Smart wall plate - back cover flex")
+		(title "Sladdseg - back cover flex")
 		(date "2026-10-12")
 		(rev "v0.5")
 		(company "smart-wallplate")
@@ -512,6 +512,164 @@
 						)
 					)
 					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "sensor:D_TVS"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "D"
+				(at 0 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "D_TVS"
+				(at 0 -2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Bidirectional transient-voltage-suppression diode"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "diode TVS thyrector"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "TO-???* *_Diode_* *SingleDiode* D_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "D_TVS_0_1"
+				(polyline
+					(pts
+						(xy -2.54 1.27)
+						(xy -2.54 -1.27)
+						(xy 2.54 1.27)
+						(xy 2.54 -1.27)
+						(xy -2.54 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.508 1.27)
+						(xy 0 1.27)
+						(xy 0 -1.27)
+						(xy -0.508 -1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 0)
+						(xy -1.27 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "D_TVS_1_1"
+				(pin passive line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "A1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 2.54)
+					(name "A2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2010,7 +2168,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1uF"
+		(property "Value" "1uF 16V X5R 0603"
 			(at 241.76 99.94 0)
 			(effects
 				(font
@@ -2019,7 +2177,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:C_0402_1005Metric"
+		(property "Footprint" "sensor:C_0603_1608Metric"
 			(at 238.76 91.44 0)
 			(effects
 				(font
@@ -2028,7 +2186,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://product.samsungsem.com/mlcc/CL10A105KO8NNN.do"
 			(at 238.76 91.44 0)
 			(effects
 				(font
@@ -2037,7 +2195,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "LDO input capacitor, 1 uF 16 V X5R 0402 (TLV755P: >= 1 uF)"
+		(property "Description" "LDO input capacitor, 1 uF 16 V X5R 0603: 0.85 uF at 5 V (TLV755P: >= 0.47 uF effective, D-116)"
 			(at 238.76 91.44 0)
 			(effects
 				(font
@@ -2055,7 +2213,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL05A105KO5NNNC"
+		(property "MPN" "CL10A105KO8NNNC"
 			(at 238.76 91.44 0)
 			(effects
 				(font
@@ -2231,7 +2389,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1uF"
+		(property "Value" "1uF 16V X5R 0603"
 			(at 38.56 165.98 0)
 			(effects
 				(font
@@ -2240,7 +2398,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "sensor:C_0402_1005Metric"
+		(property "Footprint" "sensor:C_0603_1608Metric"
 			(at 35.56 157.48 0)
 			(effects
 				(font
@@ -2249,7 +2407,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://product.samsungsem.com/mlcc/CL10A105KO8NNN.do"
 			(at 35.56 157.48 0)
 			(effects
 				(font
@@ -2258,7 +2416,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "LDO output capacitor, 1 uF 16 V X5R 0402 (TLV755P: >= 1 uF)"
+		(property "Description" "LDO output capacitor, 1 uF 16 V X5R 0603: 0.93 uF at 3.3 V (TLV755P: >= 0.47 uF effective, D-116)"
 			(at 35.56 157.48 0)
 			(effects
 				(font
@@ -2276,7 +2434,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL05A105KO5NNNC"
+		(property "MPN" "CL10A105KO8NNNC"
 			(at 35.56 157.48 0)
 			(effects
 				(font
@@ -2435,6 +2593,227 @@
 		)
 	)
 	(symbol
+		(lib_id "sensor:D_TVS")
+		(at 76.2 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "82e39023-35ff-557b-b5cd-2b4aa1ee2dde")
+		(property "Reference" "D1"
+			(at 79.2 149.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TPD1E10B06DYAR"
+			(at 79.2 165.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "sensor:D_SOD-523_TI_DYA0002A"
+			(at 76.2 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.ti.com/lit/ds/symlink/tpd1e10b06.pdf"
+			(at 76.2 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "ESD protection, bidirectional TVS, 5.5 V working, SOD-523: +5V at the exposed pin pads (D-116)"
+			(at 76.2 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Texas Instruments"
+			(at 76.2 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "TPD1E10B06DYAR"
+			(at 76.2 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6acad48a-7b26-5ff0-98ae-20dd4333b856")
+		)
+		(pin "2"
+			(uuid "8326252f-a046-54dd-9ba5-baf0cc3f5ebb")
+		)
+		(instances
+			(project "cover_flex"
+				(path "/b53ed5b7-46c8-5996-a3fb-579e9f592242"
+					(reference "D1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:GND")
+		(at 72.39 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "d2616768-7a0a-505d-af27-447b1a1caa26")
+		(property "Reference" "#PWR013"
+			(at 75.39 149.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 75.39 165.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 72.39 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 72.39 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 72.39 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a7e17d3c-c225-58c6-8af4-442868893918")
+		)
+		(instances
+			(project "cover_flex"
+				(path "/b53ed5b7-46c8-5996-a3fb-579e9f592242"
+					(reference "#PWR013")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "sensor:+5V")
+		(at 80.01 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "f8018fb0-6643-5687-9703-8d39f8ced486")
+		(property "Reference" "#PWR014"
+			(at 83.01 149.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 83.01 165.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 80.01 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 80.01 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 80.01 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "37682a20-de96-540e-b2ac-410893b07fcd")
+		)
+		(instances
+			(project "cover_flex"
+				(path "/b53ed5b7-46c8-5996-a3fb-579e9f592242"
+					(reference "#PWR014")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "sensor:PWR_FLAG")
 		(at 35.56 50.8 0)
 		(unit 1)
@@ -2509,8 +2888,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "d2616768-7a0a-505d-af27-447b1a1caa26")
-		(property "Reference" "#PWR013"
+		(uuid "e5978c35-9e0c-5ab5-a958-b0f6c58e1663")
+		(property "Reference" "#PWR015"
 			(at 38.56 42.8 0)
 			(effects
 				(font
@@ -2557,12 +2936,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "a7e17d3c-c225-58c6-8af4-442868893918")
+			(uuid "3c9f5c21-930f-58b3-b0cd-fdd8839f6a03")
 		)
 		(instances
 			(project "cover_flex"
 				(path "/b53ed5b7-46c8-5996-a3fb-579e9f592242"
-					(reference "#PWR013")
+					(reference "#PWR015")
 					(unit 1)
 				)
 			)
@@ -2643,8 +3022,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "f8018fb0-6643-5687-9703-8d39f8ced486")
-		(property "Reference" "#PWR014"
+		(uuid "877e9a4f-2318-5de6-8962-8bcaedf5e41d")
+		(property "Reference" "#PWR016"
 			(at 69.04 42.8 0)
 			(effects
 				(font
@@ -2691,12 +3070,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "37682a20-de96-540e-b2ac-410893b07fcd")
+			(uuid "5dffb29f-f6cc-5cc3-af37-754a7b695122")
 		)
 		(instances
 			(project "cover_flex"
 				(path "/b53ed5b7-46c8-5996-a3fb-579e9f592242"
-					(reference "#PWR014")
+					(reference "#PWR016")
 					(unit 1)
 				)
 			)

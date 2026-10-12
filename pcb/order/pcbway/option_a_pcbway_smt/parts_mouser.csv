@@ -1,11 +1,12 @@
 Mouser Part Number,Mfr Part Number,Manufacturer,Quantity,Customer Part Number,Description
-,RA412C1100,E-Switch,8,WP EU NA S1,"Rocker switch DPST, 4.8 mm tabs into the slots, UL/cUL 16 A 125 VAC and 10 A 250 VAC, (1/plate NA, 1/plate EU; NA wiring board S1; EU mains board S1)"
-,2604-1106,WAGO,4,WP NA J1,"PCB terminal block, push-in, lever, 6-pole, 5 mm pitch, 4 mm2 / 12 AWG, entry parallel to (1/plate NA; NA wiring board J1)"
-,IRM-03-5,Mean Well,4,WP NA PS1,"AC-DC module 85-305 VAC in, 5 V 600 mA, 37x24x15 mm (1/plate NA; NA wiring board PS1)"
-,55909-2474,Molex,8,WP EU NA J2,"SlimStack plug 24 contacts, 0.4 mm, 2 rows, mating the MSR-2's CN2 (1/plate NA, 1/plate EU; NA ring board J2; EU cap board J2)"
-,971100244,Wurth Elektronik,8,WP NA ST1,"Brass spacer stud M2 male-female, 10 mm, 4 mm hex (2/plate NA; NA mechanical ST1; NA mechanical ST2)"
-,25503,Keystone,16,WP NA SO1,"Nylon M3 male-female hex standoff, 15 mm, 5.0 mm hex (4/plate NA; NA mechanical SO1; NA mechanical SO2; NA mechanical SO3; NA mechanical SO4)"
-,05-06-A-0152-A-4-06-4-G,GCT,4,WP NA W1,"FFC 0.5 mm, 6 contacts, 152 mm, Type 1 (1/plate NA; NA mechanical W1)"
-,ZPI03S0500WC,Zettler Magnetics,4,WP EU PS1,"AC-DC module 90-264 VAC in, 5 V 600 mA, 25x25x16 mm, I/P-O/P 3600 VAC, UL/EN 62368-1 (1/plate EU; EU mains board PS1)"
-,SSW-102-01-G-S,Samtec,4,WP EU J1,5 V from the mains board's header (1/plate EU; EU 5 V board J1)
-,221-412,WAGO,4,WP EU PE1,"Lever splicing connector, 2 conductors, 0.2-4 mm2 (1/plate EU; EU mechanical PE1)"
+,RA412C1100,E-Switch,10,WP EU NA S1,"Rocker switch DPST, 4.8 mm tabs into the slots, UL/cUL 16 A 125 VAC and 10 A 250 VAC, (1/plate NA, 1/plate EU; NA wiring board S1; EU mains board S1)"
+,2604-1106,WAGO,5,WP NA J1,"PCB terminal block, push-in, lever, 6-pole, 5 mm pitch, 4 mm2 / 12 AWG, entry parallel to (1/plate NA; NA wiring board J1)"
+,IRM-03-5,Mean Well,5,WP NA PS1,"AC-DC module 85-305 VAC in, 5 V 600 mA, 37x24x15 mm (1/plate NA; NA wiring board PS1)"
+,55909-2474,Molex,10,WP EU NA J2,"SlimStack plug 24 contacts, 0.4 mm, 2 rows, mating the MSR-2's CN2 (1/plate NA, 1/plate EU; NA ring board J2; EU cap board J2)"
+,971100244,Wurth Elektronik,10,WP NA ST1,"Brass spacer stud M2 male-female, 10 mm, 4 mm hex (2/plate NA; NA mechanical ST1; NA mechanical ST2)"
+,25503,Keystone,20,WP NA SO1,"Nylon M3 male-female hex standoff, 15 mm, 5.0 mm hex (4/plate NA; NA mechanical SO1; NA mechanical SO2; NA mechanical SO3; NA mechanical SO4)"
+,05-06-A-0152-A-4-06-4-G,GCT,5,WP NA W1,"FFC 0.5 mm, 6 contacts, 152 mm, Type 1 (1/plate NA; NA mechanical W1)"
+,ZPI03S0500WC,Zettler Magnetics,5,WP EU PS1,"AC-DC module 90-264 VAC in, 5 V 600 mA, 25x25x16 mm, I/P-O/P 3600 VAC, UL/EN 62368-1 (1/plate EU; EU mains board PS1)"
+,SSW-102-01-G-S,Samtec,5,WP EU J1,5 V from the mains board's header (1/plate EU; EU 5 V board J1)
+,221-412,WAGO,5,WP EU PE1,"Lever splicing connector, 2 conductors, 0.2-4 mm2 (1/plate EU; EU mechanical PE1)"
+,2604-3102,WAGO,10,WP EU J1,"NOT AT MOUSER: order from DigiKey 2604-3102. PCB terminal block, push-in, 2-pole, 4 mm2, entry 90 deg to the PCB, 400 V III/2 (2/plate EU; EU mains board J1; EU mains board J2)"

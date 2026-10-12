@@ -1,8 +1,8 @@
 """Distributor order lists (DigiKey BOM Manager, Mouser BOM Import): one plate of each variant and a devkit.
 
-Usage: python3 pcb/tools/order_bom.py [DEVKIT_SETS]   (default 4)
-Writes pcb/order/{unit_na,unit_eu,devkit_na,devkit_eu}_{digikey,mouser}.csv (and the _rest_ files for parts one
-distributor does not carry) from the boards' part tables (parts.py, eu_parts.py, sensor_parts.py,
+Usage: python3 pcb/tools/order_bom.py [DEVKIT_SETS]   (default 5)
+Writes pcb/order/{unit_na,unit_eu,devkit}_{digikey,mouser}.csv (the devkit: DEVKIT_SETS NA and DEVKIT_SETS EU plates;
+parts a distributor does not carry are listed last in its file, to buy from the other) from the boards' part tables (parts.py, eu_parts.py, sensor_parts.py,
 eu_capboard_parts.py) and the parts not on a board (EXTRA_NA, EXTRA_EU). Lines merge by MPN; the quantity is
 exactly the per-plate count times the plates (no spares). Parts without an MPN yet are listed on stdout.
 """
@@ -23,8 +23,8 @@ SUBST = {
 # hand-soldered small parts: half again as spares (at least 2); 0402 passives rounded up to tens
 # DigiKey part numbers, cut tape where the part comes on tape (the import otherwise picks a full reel or rejects
 # an MPN sold in several packagings); from DigiKey's listings and its -1-ND / CT-ND cut-tape convention,
-# 2026-10-09. None: not carried by DigiKey (import: invalid part number), those go to
-# <name>_digikey_rest_mouser.csv. MPNs not listed import as they are.
+# 2026-10-09. None: not carried by DigiKey (import: invalid part number), listed last in the DigiKey file to buy
+# from Mouser. MPNs not listed import as they are.
 DIGIKEY = {
     "1802.2504": None,
     "IRM-03-5": "1866-3020-ND",
@@ -37,6 +37,8 @@ DIGIKEY = {
     "SPK0641HT4H-1": "6017-SPK0641HT4H-1CT-ND",           # DigiKey listing, 2026-10-11
     "RC0402FR-07100KL": "311-100KLRCT-ND",
     "TLV75533PDBVR": "296-50411-1-ND",
+    "CL10A105KO8NNNC": "1276-1034-1-ND",        # DigiKey API 2026-10-12 (D-116)
+    "TPD1E10B06DYAR": "296-TPD1E10B06DYARCT-ND",  # DigiKey API 2026-10-12 (D-116)
     "TSM-102-02-L-SV": "SAM10268-ND",          # DigiKey API 2026-10-11 (bulk)
     "SSW-102-01-G-S": "612-SSW-102-01-G-S-ND",
     "P70-2200045": "952-3124-ND",
@@ -50,7 +52,7 @@ DIGIKEY = {
     "05-06-A-0152-A-4-06-4-G": "2073-05-06-A-0152-A-4-06-4-G-ND",   # DigiKey API 2026-10-11 (D-98)
 }
 # Mouser's own numbers where its BOM import does not match the MPN (search results 2026-10-09); None: not
-# carried by Mouser (import reported no match), those go to <name>_mouser_rest_digikey.csv
+# carried by Mouser (import reported no match), listed last in the Mouser file to buy from DigiKey
 MOUSER = {
     "1802.2504": "979-1802.2504",               # in stock 2026-10-11 (01802.2504-03: non-stocked)
     "TSM-102-02-L-SV": "",                     # TODO distributor PN (imports by MPN until then)
@@ -63,7 +65,7 @@ MOUSER = {
 _RA4 = ("E-Switch", "RA412C1100", "Rocker switch DPST, 4.8 mm tabs into the slots, UL/cUL 16 A 125 VAC and 10 A 250 VAC, "
         "ENEC 10(4) A 250 V~ (second source, D-88, D-97)")
 PREFERRED = {"NA": {"1802.2504": _RA4}, "EU": {"1802.2504": _RA4}}
-SMALL = ("0402", "1206", "SOT-23", "DFN", "SPK0641", "WLCSP", "S7081", "P70-", "FH12", "UMT250", "CU4032", "SMD", "WA-SMSI",
+SMALL = ("0402", "0603", "1206", "SOT-23", "SOD-523", "DFN", "SPK0641", "WLCSP", "S7081", "P70-", "FH12", "UMT250", "CU4032", "SMD", "WA-SMSI",
          "WA-SBRIE")
 # NA parts that are not on a board (D-50, D-57): the spacer posts' studs, the board standoffs and the 5 V FFC
 EXTRA_NA = {
@@ -170,39 +172,33 @@ def write(name, lines, plates, out=OUT, spares=False):
     ms_head = ["Mouser Part Number", "Mfr Part Number", "Manufacturer", "Quantity", "Customer Part Number",
                "Description"]
     files = []
+    names = {"digikey": "DigiKey", "mouser": "Mouser"}
     for dist, table, head in (("digikey", DIGIKEY, dk_head), ("mouser", MOUSER, ms_head)):
-        other, other_table, other_head = (("mouser", MOUSER, ms_head) if dist == "digikey"
-                                          else ("digikey", DIGIKEY, dk_head))
+        other, other_table = ("mouser", MOUSER) if dist == "digikey" else ("digikey", DIGIKEY)
         here = [r for r in rows if table.get(r[1], "") is not None]
         rest = [r for r in rows if table.get(r[1], "") is None]
         with (out / f"{name}_{dist}.csv").open("w", newline="") as f:
             w = csv.writer(f)
             w.writerow(head)
             w.writerows((table.get(mpn, ""), mpn, mfr, q, ref, desc) for q, mpn, mfr, ref, desc in here)
-        files.append(f"_{dist}.csv ({len(here)})")
-        rest_path = out / f"{name}_{dist}_rest_{other}.csv"
-        if rest:
-            with rest_path.open("w", newline="") as f:
-                w = csv.writer(f)
-                w.writerow(other_head)
-                w.writerows((other_table.get(mpn, ""), mpn, mfr, q, ref, desc) for q, mpn, mfr, ref, desc in rest)
-            files.append(f"_{dist}_rest_{other}.csv ({len(rest)}: not at {dist})")
-        elif rest_path.exists():
-            rest_path.unlink()
+            # parts this distributor does not carry: listed last, to buy from the other one (its part number)
+            w.writerows(("", mpn, mfr, q, ref, f"NOT AT {names[dist].upper()}: order from {names[other]} "
+                         f"{other_table.get(mpn, '') or mpn}. {desc}") for q, mpn, mfr, ref, desc in rest)
+        files.append(f"_{dist}.csv ({len(here)} lines" + (f", {len(rest)} from {names[other]})" if rest else ")"))
     print(f"wrote {out / name}: " + ", ".join(files))
 
 
 def main():
-    devkit = int(sys.argv[1]) if len(sys.argv) > 1 else 4
+    devkit = int(sys.argv[1]) if len(sys.argv) > 1 else 5
     OUT.mkdir(parents=True, exist_ok=True)
     open_all = set()
-    for name, plates, keep in (("unit_na", {"NA": 1}, None), ("unit_eu", {"EU": 1}, None),
-                               ("unit_na_plain", {"NA": 1}, plain_keep), ("unit_eu_plain", {"EU": 1}, plain_keep),
-                               ("devkit_na", {"NA": devkit}, None), ("devkit_eu", {"EU": devkit}, None)):
-        lines, open_parts = collect(plates, keep)
+    for f in OUT.glob("*.csv"):                         # only the lists written below stay
+        f.unlink()
+    for name, plates in (("unit_na", {"NA": 1}), ("unit_eu", {"EU": 1}), ("devkit", {"NA": devkit, "EU": devkit})):
+        lines, open_parts = collect(plates)
         write(name, lines, plates)
         open_all.update(open_parts)
-    print(f"unit: 1 plate each (full, plain); devkit: {devkit} sets of parts per variant")
+    print(f"unit: 1 plate per variant; devkit: {devkit} NA and {devkit} EU plates")
     for o in sorted(open_all):
         print("not in the lists (no part yet):", o)
     for v, items in LOCAL.items():

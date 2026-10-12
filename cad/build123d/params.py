@@ -329,8 +329,10 @@ AAA_D, AAA_L = 10.5, 44.5                 # DATASHEET IEC 60086-2 LR03 / IEC 619
 BC_CELL_X = 11.2                          # ESTIMATE cell axes at +-x (label drawing bays +-10.95, contacts +-11.4)
 BC_CELL_Y0 = 0.0                          # REF compartment centre along y (FCC photos: centred; MEASURE)
 BC_CELL_Z = 6.8                           # ESTIMATE cell axis above the back's outer face (wall + clearance + r)
-BC_TERM_Y = -1                            # REF terminal end (VBAT / GND contacts) at -y, the LED end (FCC photos)
-BC_VBAT_X = -1                            # REF VBAT contact on the -x cell, GND on the +x cell (FCC photos; check on a unit)
+BC_TERM_Y = -1                            # MEASURED terminal end (VBAT / GND contacts) at -y, the LED end (FCC photos;
+                                          # checked on a unit, human 2026-10-12)
+BC_VBAT_X = -1                            # MEASURED VBAT contact on the -x cell, GND on the +x cell (FCC photos; checked on
+                                          # a unit, human 2026-10-12: from the back, wheel end up, + bottom right)
 BC_WALL = 1.6                             # MEASURED cover shell thickness (human, 2026-10-09)
 BC_SIDE_WALL = BC_WALL - 0.1              # side wall: 0.1 more room inside all round for the remote's housing (D-75)
 BC_PRY = (6.0, 1.2)                       # MEASURE screwdriver notch in the rim at the bottom end (-y): width, depth
@@ -345,20 +347,30 @@ BC_LATCH_HOOK = (0.8 + 0.3 + 0.2 + 0.2 + 0.2, 0.7)   # hook at the clip's tip, i
                                           # bottom 0.2 more (human 2026-10-12, D-108), and 0.2 more (D-110), and 0.2
                                           # more (D-112)
 BC_LATCH_RIM_GAP = 1.0                    # MEASURED top clip's top below the rim (human, 2026-10-09)
-# clip tops above the inside floor: bottom end (-y) set so its hook's top (where the 45 deg ramp leaves the shell's
-# inner surface) is BC_LATCH_SHOW below the rim (`make check` holds it to 0.02); top end (+y) from BC_LATCH_RIM_GAP
-BC_LATCH_SHOW = 3.25                      # bottom hook's top below the rim (human 2026-10-12, D-115; measured 4.6)
-BC_LATCH_TOPS = (5.572, B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
-# innermost point (hook tip) in from the outside rim: bottom end 3.25 (human 2026-10-12, D-107; was 4.0) plus its
-# 0.2 deeper hook (D-108: the clip stays, the hook stands further in), plus 0.2 deeper again and the clip 0.1 further
-# from the end (D-110), plus 0.2 deeper again (D-112), top end
-# 2.7 (the clip 0.3 nearer the end, human 2026-10-12, D-107; was 3.0). Where reach - hook - thickness < BC_WALL the
-# clip's back merges into the end wall.
-BC_LATCH_REACH = (3.25 + 0.2 + 0.2 + 0.1 + 0.2, 2.7)
 # hook underside: bottom clip flat (a ledge that catches the housing's slot) under a tip face this tall; top clip
-# None = 45 deg back to the column (it stands clear of the wall and holds). The bottom hook sits in the round-over,
-# where a 45 deg underside lies inside the wall (D-113)
+# None = 45 deg back to the column. The bottom hook sits in the shell's round-over (D-113)
 BC_LATCH_CATCH = (0.3, None)
+BC_LATCH_CATCH_Z = 3.22                   # bottom clip's flat underside above the inside floor (human 2026-10-12: 0.15
+                                          # higher than D-117's 3.07, D-118)
+
+
+def shell_in(z):
+    """Distance of the shell's inner surface in from the outside rim at height z (round-over, then straight)."""
+    zr = z - BC_WALL
+    if zr >= B_BACK_RISE:
+        return BC_SIDE_WALL
+    return BC_SIDE_WALL + B_BACK_RUN * (1 - sqrt(1 - (1 - zr / B_BACK_RISE) ** 2))
+
+
+# top clip: top from BC_LATCH_RIM_GAP, hook tip 2.7 in from the outside rim (human 2026-10-12, D-107); its tip
+# stands BC_LATCH_PROUD clear of the shell's inner surface at the tip face's lower end. The bottom clip's tip stands
+# out the same at its catch, wherever the catch sits (D-118). Where reach - hook - thickness < BC_WALL the clip's
+# back merges into the end wall.
+_top_tip_z = B_SEAM_Z - BC_LATCH_RIM_GAP - 2 * BC_LATCH_HOOK[1]
+BC_LATCH_PROUD = 2.7 - shell_in(_top_tip_z)
+BC_LATCH_REACH = (shell_in(BC_WALL + BC_LATCH_CATCH_Z) + BC_LATCH_PROUD, 2.7)
+# clip tops above the inside floor: bottom from its catch, hook and tip face; top end from BC_LATCH_RIM_GAP
+BC_LATCH_TOPS = (BC_LATCH_CATCH_Z + BC_LATCH_HOOK[0] + BC_LATCH_CATCH[0], B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
 BC_LATCH_LEDGE_MIN = 0.4                  # flat underside proud of the shell's inner surface, at least
 # small tabs inside both long side walls, two per side either side of mid-length, into slots in the housing's long
 # sides (human, 2026-10-11, D-90): the slots' inside / outside spacing along y, tab top below the rim, tab height,
@@ -386,9 +398,12 @@ BC_REG_FLOOR = 0.4                        # cover wall left under the regulator 
 # block) and snaps under a hook on the block's top
 BC_PAD_STIFF_T = 0.8                      # FR4 stiffener on the pad and regulator sections (non-copper side, up)
 BC_PAD_END = 1.0                          # flex beyond the upper finger's body
-BC_FLEX_SNAP = (3.0, 0.7, 0.3, 0.1)       # snap hooks: width along y, post thickness, lip over the stiffener, post to
+BC_FLEX_SNAP = (3.0, 0.7, 0.4, 0.1)       # snap hooks: width along y, post thickness, lip over the stiffener, post to
                                           # the stiffener's edge
-BC_FLEX_SNAP_GAP = 0.05                   # lip underside above the stiffener's top
+BC_FLEX_SNAP_GAP = 0.15                   # lip underside above the stiffener's top: stiffener thickness tolerance (FR4
+                                          # 0.8 +-10 %) and adhesive variation (D-116)
+BC_STIFF_ADH = 0.05                       # adhesive between the flex and its FR4 stiffeners (fab: not stated; 0.025-0.05
+                                          # is usual, D-116)
 BC_FLEX_SNAP_ROOT = 0.4                   # post root: shell left under the relief round each post (the post flexes)
 BC_FLEX_SNAP_RELIEF = 0.3                 # relief round each post (sides and behind)
 BC_END_LIP = (1.2, 1.0, 0.1)              # lip in front of each block's foot: thickness, height above the ledge, gap
@@ -406,18 +421,22 @@ BC_FINGERS = ((13.2, -8.9), (13.2, -13.5))    # +5V, GND pads on the cover flex 
                                           # through windows in the back onto them, either side of the posts' line (D-53)
 BC_DOME_DY = 0.0                          # DATASHEET contact dome 3.15 +-0.25 from the bend end of the 6.25 body (~centred)
 BC_WIN_CLR = 0.3                          # window round the spring pin's barrel (it enters the window)
-BC_PAD_D = 2.6                            # gold pad under each spring pin (cover flex)
+BC_PAD_D = 2.6                            # gold pad under each spring pin (cover flex): the coverlay opening; the copper
+BC_PAD_CU = 3.0                           # under it is BC_PAD_CU, its edge held by the coverlay (flex pad anchoring, D-116)
 BC_STRIP = (10.7, 16.5)                   # pad and regulator sections across x: +3V3 lane left of the pads, GND right
 BC_RUN = (7.2, 9.8)                       # flex run across x to the terminal end: past the GND contact post's inner face,
                                           # clear of the steel plate's ridge (D-79)
 BC_RUN_JOG = 2.0                          # jog from the pad section's inner edge across to the run, at its bottom
-BC_JOG = 6.6                              # y length of the regulator section, above the pad section (D-53)
+BC_JOG = 8.0                              # y length of the regulator section, above the pad section (D-53; 6.6 -> 8.0
+                                          # for the 0603 capacitors and the ESD diode, D-116)
 BC_PAD_LOW = 0.6                          # flex below the lower pad (the pad section ends just above the terminal bend)
 # 3.3 V regulator on the cover flex (D-41), copper down in a recess in the cover: TI TLV75533PDBVR + 1 uF in / out
-BC_REG = {"U1": (13.6, -3.3), "C3": (15.0, -5.7), "C4": (13.2, -0.7)}    # part centres (remote x, y)
+BC_REG = {"U1": (13.6, -1.95), "C3": (14.8, -5.7), "C4": (13.2, 0.55), "D1": (14.8, -4.4)}   # part centres
+                                          # (remote x, y); D1 the ESD diode on +5V beside C3 (D-116)
 BC_REG_BODY = (3.0, 3.0, 1.45)            # DATASHEET TLV755P DBV (SOT-23-5): body + leads <= 3.0 x 3.0, 1.45 max high
-BC_CAP0402 = (1.0, 0.5, 0.55)             # DATASHEET 0402 capacitor (CL05A105KO5NNNC): 1.0 x 0.5, 0.55 max high
-BC_REG_RECESS = (11.4, 16.4, -6.5, -0.3) # recess under the regulator section (x0, x1, y0, y1), down to BC_REG_FLOOR
+BC_CAP0603 = (1.6, 0.8, 0.9)              # DATASHEET 0603 capacitor (Samsung CL10A105KO8NNNC): 1.6 x 0.8, 0.9 max high (D-116)
+BC_TVS = (1.0, 0.6, 0.43)                 # DATASHEET onsemi ESD9B5.0ST5G SOD-923: 1.0 x 0.6 body, 0.43 max high (D-116)
+BC_REG_RECESS = (11.4, 16.4, -6.5, 1.1)  # recess under the regulator section (x0, x1, y0, y1), down to BC_REG_FLOOR
 BC_END_T = 0.4                            # FR4 stiffener behind the flex's end section
 BC_END_H = 8.8                            # flex end section height above the flex plane: the contact pads plus 0.5
 BC_END_R = AAA_D / 2 - 0.25               # above the rim, blocks and end section stay inside this circle round each cell
@@ -428,7 +447,14 @@ BC_END_CORNER = 1.5                       # 45 deg cut at the end section's lowe
 BC_PCB_W = 11.6                           # ESTIMATE the plastic divider between the cells (drawing; the PCB is 11.1)
 BC_PCB_CLR = 0.5                          # flex end section to the PCB strip
 BC_BRIDGE_H = 2.0                         # MEASURE flex band passing under the PCB strip (below its back-side parts)
-BC_LANE_H = 0.6                           # +3V3 lane across the band, above the bend line (below the contact fingers)
+BC_LANE_H = 1.55                          # +3V3 lane across the band, above the flex plane: past the bend zone by
+                                          # BC_BEND_CLR, 0.3 under the band's top edge (D-116)
+BC_BEND_R = 0.6                           # inside radius of the run's 90 deg bend: 6 x FLEX_T (IPC-2223 single-sided,
+                                          # bend to install; PCBWay 3-6 x), copper outside (D-116)
+BC_BEND_CLR = 0.76                        # stiffener edges, outline width changes and track turns this far from the bend
+                                          # zone (30 mil, flex design guides, D-116)
+BC_SLIT = (0.9, 0.4)                      # relief slits beside the run (the end section's lower edge stays on the ledge):
+                                          # width (full-round end), length past the bend zone (D-116)
 BC_BLOCK_T = 4.0                          # contact block depth behind the end section (along the cell axis)
 BC_BLOCK_XO = BC_CELL_X + BC_CONTACT_W / 2 + 0.5            # contact blocks' outer faces (|x|)
 BC_END_XO = BC_BLOCK_XO - BC_END_SLOT[0] - BC_END_SLOT[1]   # end section's outer edges (|x|), inside the slots

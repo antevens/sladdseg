@@ -10,7 +10,7 @@ import capboard_eu
 r3.COL.update({"cap": "#8d949b", "switch": "#b23a32", "magnet": "#4a4a4a", "box": "#d9822b", "pins": "#e3c565",
                "pads": "#e3c565", "bf_pins": "#c9a227", "wago": "#9aa0a6", "psu": "#2b2b2b",
                "front": "#c8a03a", "mains_board": "#2f7a46", "mains_front": "#c8a03a", "header": "#2b2b2b",
-               "socket": "#2b2b2b", "carrier": "#c9a86a", "capboard": "#2c6fbb", "cb_pads": "#e3c565",
+               "socket": "#2b2b2b", "carrier": "#c9a86a", "capboard": "#2f7a46", "cb_pads": "#e3c565",
                "cn2": "#e9e6df", "spacers": "#c9ccd1", "passives": "#2f9e5b", "mic": "#d9534f", "sht45": "#5b2a86",
                "cb_screws": "#5a6068", "snaps": "#e07b1f"})
 
@@ -85,6 +85,7 @@ def main():
     # into the box from behind: mains board with the WAGO blocks and the PSU, rocker, 5 V board, bosses
     r3.shot("eu_box", ps, [(90, -110, -170), (0, -2, -8), (0, 1, 0)], size=(1300, 1100),
             hide=("trim", "remote", "msr", "box"), head=1.0)
+    r3.shot("eu_back", ps, [(110, -140, -210), (0, 8, -8), (0, 1, 0)], size=(1300, 1100), hide=("box",), head=1.0)
 
 
 if __name__ == "__main__":

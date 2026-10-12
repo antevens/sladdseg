@@ -33,8 +33,8 @@ MAINS, LV = "eu_mains_board", "eu_5v_board"
 # silkscreen logos and the project URL: footprint, (x, y), side, rotation; URL (x, y, side)
 FP_ANT, FP_KICAD = "Ant_Logo_8mm_SilkScreen", "KiCad-Logo2_5mm_SilkScreen"
 URL = "github.com/antevens/smart-wallplate"
-BRAND = {"eu_mains_board": ([(FP_ANT, (0.0, -9.95), "F", 0), (FP_KICAD, (15.0, -10.5), "F", 0)], (-0.4, 23.7, "B")),
-         "eu_5v_board": ([(FP_ANT, (-9.9, -6.7), "B", 0), (FP_KICAD, (2.4, -5.7), "B", 0)], (-2.1, -12.6, "B"))}
+BRAND = {"eu_mains_board": ([(FP_ANT, (0.0, -9.95), "B", 0), (FP_KICAD, (15.0, -10.5), "F", 0)], (-0.4, 23.7, "B")),
+         "eu_5v_board": ([(FP_ANT, (-9.9, -6.7), "F", 0), (FP_KICAD, (2.4, -5.7), "B", 0)], (-2.1, -12.6, "B"))}
 REV = "v0.5"
 REV_DATE = "2026-10-12"                    # title blocks
 NS = uuid.UUID("8d2f4a8e-0b3c-4e7a-9f1d-6c5b2a1e3d40")

@@ -34,7 +34,32 @@ def copper_y():
 
 def stiffener_y():
     """y of the stiffener's far face (towards the cells): the contact blocks start here."""
-    return copper_y() - BC_TERM_Y * (FLEX_T + BC_END_T)
+    return copper_y() - BC_TERM_Y * (FLEX_T + BC_STIFF_ADH + BC_END_T)
+
+
+def bend_z():
+    """Height where the run, bent up from the ledge with inside radius BC_BEND_R, stands vertical (D-116)."""
+    return BC_FLEX_Z + FLEX_T + BC_BEND_R
+
+
+def bend_arc():
+    """The run's 90 deg bend: a quarter ring (inside BC_BEND_R, FLEX_T thick) from the ledge up into the end section."""
+    sy = -BC_TERM_Y                                      # +1: cells side is +y
+    xr0, xr1 = BC_RUN
+    yc, zc = copper_y() + sy * (FLEX_T + BC_BEND_R), bend_z()   # bend centre (inside of the bend)
+    ring = Pos((xr0 + xr1) / 2, yc, zc) * Rot(0, 90, 0) * (Cylinder(BC_BEND_R + FLEX_T, xr1 - xr0)
+                                                          - Cylinder(BC_BEND_R, xr1 - xr0 + 1))
+    quad = Pos((xr0 + xr1) / 2, yc - sy * 5, zc - 5) * Box(xr1 - xr0, 10, 10)
+    return ring & quad
+
+
+def slit_cuts(z_top):
+    """Room in the end section, (x, z) boxes as end_section(): the relief slits beside the run up to BC_SLIT[1] past
+    the bend zone, and the run's own width below the bend (its arc instead)."""
+    w = BC_SLIT[0]
+    xr0, xr1 = BC_RUN
+    zs = bend_z() + BC_SLIT[1]
+    return [(xr0 - w, xr0, BC_FLEX_Z - 1, zs), (xr1, xr1 + w, BC_FLEX_Z - 1, zs), (xr0, xr1, BC_FLEX_Z - 1, z_top)]
 
 
 def end_blocks(xo=BC_BLOCK_XO):
@@ -145,19 +170,6 @@ def side_tabs():
     return out
 
 
-def latch_show(i):
-    """Height (z) where clip i's 45 deg ramp leaves the shell's inner surface: the top of the hook as seen inside."""
-    reach, h = BC_LATCH_REACH[i], BC_LATCH_HOOK[i]
-    top = BC_WALL + BC_LATCH_TOPS[i]
-    d0, d1 = reach - h - BC_LATCH_T, reach                # ramp from the outer face's top to the tip, in from the rim
-    lo, hi = 0.0, 1.0
-    for _ in range(60):
-        m = (lo + hi) / 2
-        z = top - h * m
-        lo, hi = (lo, m) if d0 + (d1 - d0) * m >= B_W / 2 - inner_x(z) else (m, hi)
-    return top - h * hi
-
-
 def inner_x(z):
     """Long side wall's inside face (x) at height z: the shell's inner round-over, straight above it."""
     zr = z - BC_WALL
@@ -214,7 +226,7 @@ def cover():
     body -= steel_clip_reliefs()
     body += steel_clips()
     z0 = BC_FLEX_Z + FLEX_T                              # room for the pad stiffener up to the snap lips
-    z1 = z0 + BC_PAD_STIFF_T + BC_FLEX_SNAP_GAP
+    z1 = z0 + BC_STIFF_ADH + BC_PAD_STIFF_T + BC_FLEX_SNAP_GAP
     for x0, x1, y0, y1 in strip_boxes(0.1)[:2]:
         body -= Pos((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2) * Box(x1 - x0, y1 - y0, z1 - z0)
     body -= flex_snap_reliefs()
@@ -239,7 +251,7 @@ def flex_snaps():
     bottom of its relief, a lip over the stiffener, a 45 deg lead-in on top (the section presses in from above)."""
     from build123d import Polyline, Plane, extrude, make_face
     w, t, lip, clr = BC_FLEX_SNAP
-    zl = BC_FLEX_Z + FLEX_T + BC_PAD_STIFF_T + BC_FLEX_SNAP_GAP          # lip underside
+    zl = BC_FLEX_Z + FLEX_T + BC_STIFF_ADH + BC_PAD_STIFF_T + BC_FLEX_SNAP_GAP   # lip underside
     out = None
     for xe, s, y in flex_snap_spots():
         xi, xo = xe + s * clr, xe + s * (clr + t)                         # post faces (inner, outer)
@@ -263,8 +275,8 @@ def flex_snap_reliefs():
 
 
 def pad_stiffener():
-    """FR4 on the flex's pad and regulator sections (non-copper side)."""
-    z0 = BC_FLEX_Z + FLEX_T
+    """FR4 on the flex's pad and regulator sections (non-copper side), on BC_STIFF_ADH of adhesive."""
+    z0 = BC_FLEX_Z + FLEX_T + BC_STIFF_ADH
     out = None
     for x0, x1, y0, y1 in strip_boxes()[:2]:
         s = Pos((x0 + x1) / 2, (y0 + y1) / 2, z0 + BC_PAD_STIFF_T / 2) * Box(x1 - x0, y1 - y0, BC_PAD_STIFF_T)
@@ -330,24 +342,38 @@ def run_notch():
 
 
 def flex():
-    """The flex in place (FLEX_T thick): pad section and strip on the ledge, end section up the blocks."""
+    """The flex in place (FLEX_T thick): pad section and strip on the ledge, the run bent up (BC_BEND_R) into the end
+    section standing up the blocks, relief slits either side of the run (D-116)."""
     yc = copper_y()
-    yf = yc - BC_TERM_Y * FLEX_T / 2
+    sy = -BC_TERM_Y
+    yf = yc + sy * FLEX_T / 2
+    boxes = strip_boxes()
+    x0, x1, _, yb = boxes[2]
+    boxes[2] = (x0, x1, yc + sy * (FLEX_T + BC_BEND_R), yb)     # the run leaves the ledge at the bend
     out = None
-    for x0, x1, y0, y1 in strip_boxes():
-        b = Pos((x0 + x1) / 2, (y0 + y1) / 2, Z_BEND) * Box(x1 - x0, y1 - y0, FLEX_T)
+    for x0, x1, y0, y1 in boxes:
+        b = Pos((x0 + x1) / 2, (y0 + y1) / 2, Z_BEND) * Box(x1 - x0, abs(y1 - y0), FLEX_T)
         out = b if out is None else out + b
+    end = None
     for a, b, z0, z1 in end_section():
-        out += Pos((a + b) / 2, yf, (z0 + z1) / 2) * Box(b - a, FLEX_T, z1 - z0)
-    return (out - corner_cuts()) & end_round()
+        e = Pos((a + b) / 2, yf, (z0 + z1) / 2) * Box(b - a, FLEX_T, z1 - z0)
+        end = e if end is None else end + e
+    for a, b, z0, z1 in slit_cuts(bend_z()):
+        end -= Pos((a + b) / 2, yf, (z0 + z1) / 2) * Box(b - a, FLEX_T + 1, z1 - z0)
+    return (out + end + bend_arc() - corner_cuts()) & end_round()
 
 
 def stiffener():
-    ys = copper_y() - BC_TERM_Y * (FLEX_T + BC_END_T / 2)
+    """FR4 behind the end section (BC_STIFF_ADH of adhesive on the flex), notched round the run and its slits up to
+    BC_BEND_CLR past the bend zone (D-116)."""
+    ys = copper_y() - BC_TERM_Y * (FLEX_T + BC_STIFF_ADH + BC_END_T / 2)
     out = None
     for a, b, z0, z1 in end_section():
         s = Pos((a + b) / 2, ys, (z0 + z1) / 2) * Box(b - a, BC_END_T, z1 - z0)
         out = s if out is None else out + s
+    w, (xr0, xr1) = BC_SLIT[0], BC_RUN
+    zn = bend_z() + BC_BEND_CLR
+    out -= Pos((xr0 + xr1) / 2, ys, (BC_FLEX_Z - 1 + zn) / 2) * Box(xr1 - xr0 + 2 * (w + 0.2), BC_END_T + 1, zn - BC_FLEX_Z + 1)
     return (out - corner_cuts()) & end_round()
 
 
@@ -395,10 +421,10 @@ def pin_pads():
 
 
 def regulator():
-    """TLV75533 and its two capacitors hanging from the flex underside (copper down) into the recess."""
+    """TLV75533, its two capacitors and the ESD diode hanging from the flex underside (copper down) into the recess."""
     out = None
     for ref, (x, y) in BC_REG.items():
-        w, h, t = BC_REG_BODY if ref == "U1" else BC_CAP0402
+        w, h, t = {"U1": BC_REG_BODY, "D1": BC_TVS}.get(ref, BC_CAP0603)
         p = Pos(x, y, BC_FLEX_Z - t / 2) * Box(w, h, t)
         out = p if out is None else out + p
     return out

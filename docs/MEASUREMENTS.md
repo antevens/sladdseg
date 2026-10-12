@@ -86,7 +86,7 @@ the IKEA UK product page (height 20 mm).
 | BC_CELL_X | 11.2 | 0.5 | label drawing bays ±10.95; PCB contacts ±11.4 | yes |
 | BC_CELL_Z | 6.8 | 0.8 | inferred: cover wall + clearance + cell radius | yes |
 | BC_PCB_W | 11.6 (divider) | 0.3 | label drawing: divider 11.1 / 11.6 over its outer edges; the PCB strip is 11.1 | yes (divider) |
-| BC_TERM_Y / BC_VBAT_X | −1 / −1 | — | FCC PCB photo: at the terminal end VBAT (P1) is the fixed dimple plate at −x, GND (P2) the leaf spring at +x | confirmed |
+| BC_TERM_Y / BC_VBAT_X | −1 / −1 | — | FCC PCB photo: at the terminal end VBAT (P1) is the fixed dimple plate at −x, GND (P2) the leaf spring at +x; checked on a unit (human, 2026-10-12): seen from the back, wheel end up, + bottom right, − bottom left | confirmed |
 | Fixed plate pocket | ~5.6 across × 3.5 along | 0.7 | FCC internal photo 1; depth (BC_TERM_SETBACK) not visible | the S7081 dome (Ø1.3) fits |
 | Leaf spring protrusion | ~2–3.5 from the end wall | low | FCC internal photo 1; travel not visible | — |
 | MAGNET (supplied steel plate) | ~47.4 × 17.5, full round ends (R8.75), t 1.5–2.5 | 1.0 | label drawing back-view rings, FCC external photo 2 | yes: cut to an 18.5 mm piece (D-43) |
@@ -108,3 +108,14 @@ user cuts it once across (human decision 2026-10-08): an 18.5 mm piece measured 
 (`MAGNET`), round end down into the recess's round end, straight cut edge up. Check the real size
 before cutting; the piece length follows from `MAGNET_REC_Y` and the switch well.
 
+## Models built from these values
+
+BILRESA remote (`cad/build123d/bilresa.py`) and Apollo MSR-2 with the SCD40 CO2 add-on (`cad/build123d/msr2.py`).
+
+| BILRESA, front | BILRESA, back |
+| --- | --- |
+| ![BILRESA model, front](renders/bilresa_model.png) | ![BILRESA model, back](renders/bilresa_back.png) |
+
+| MSR-2, front | MSR-2, back |
+| --- | --- |
+| ![MSR-2 model, front](renders/msr2_front.png) | ![MSR-2 model, back](renders/msr2_back.png) |

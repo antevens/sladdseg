@@ -87,7 +87,7 @@ function main() {
   fi
   export_gerbers riser_board "F.Cu,B.Cu,F.Mask,B.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"
   if cover_confirmed; then
-    export_gerbers cover_flex "F.Cu,F.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"
+    export_gerbers cover_flex "F.Cu,F.Mask,F.Paste,F.Silkscreen,Edge.Cuts,User.1"
   else
     rm -rf "${FAB}/cover_flex"
     err "cover_flex: positions are REF / MEASURE (sensor_parts.COVER_CONFIRMED); no fab files written"

@@ -1,4 +1,4 @@
-# AGENTS.md — Smart wall plate (BILRESA + MSR-2 + emergency switch)
+# AGENTS.md — Sladdseg, a smart wall plate (BILRESA + MSR-2 + emergency switch)
 
 Read this whole file before changing anything. Then read `docs/SAFETY.md`.
 `docs/DESIGN.md` has the requirements and the decision log; `docs/BOM.md` the
@@ -98,7 +98,7 @@ make print       # OrcaSlicer projects + G-code (SLICER=... overrides the pin)
 make renders     # docs/renders/*.png: every group whose sources changed (sections, 3D views, EU, boards)
 make check-renders  # no render older than its sources, every render used by a doc - must pass
 make eu          # EU variant: CAD to build/eu, EU checks, EU renders
-make order       # DigiKey / Mouser CSVs: one NA, one EU plate, a devkit of each (DEVKIT_SETS); PCBWay devkit packs
+make order       # DigiKey / Mouser CSVs: one NA plate, one EU plate, a devkit (5 NA + 5 EU); PCBWay devkit packs
 make stock       # live DigiKey / Mouser stock and lifecycle, parts rule D-84 (keys: pcb/order/README.md)
 make order-push  # DigiKey myLists link + Mouser cart: 1 NA plate by default (VARIANT=na|eu|both, PLATES, PRIMARY)
 ```
@@ -275,7 +275,8 @@ Do not violate these; ask the human if a task seems to require it.
    These are design targets, not a compliance claim — flag them for human
    review, don't certify.
 4. **Bought-in, certified parts carry the safety-critical jobs**: rocker
-   (CSA/UL; ENEC to be confirmed), IRM-03-5 (cURus/CB/TÜV). Don't substitute
+   (CSA/UL; ENEC to be confirmed), the PSUs Mean Well IRM-03-5 (NA, cURus/CB/TÜV) and Zettler
+   ZPI03S0500WC (EU, UL/EN 62368-1). Don't substitute
    uncertified parts on the mains side.
 5. Never describe the device as code-compliant, certified, or safe to install.
    Say what was checked. Energising anything mains-side is a human decision.
@@ -330,7 +331,8 @@ the cover flex's fab files (`COVER_CONFIRMED`), PC-FR datasheet (`V0_RATED_T`), 
 7. Later: UK (86 mm, shallow back box) variant; versions for the BILRESA
    dual-button remote (E2489, outline and cells recorded from IKEA's drawing);
    jumbo-plate option; the EU stack in a real 47 mm box (the printed test socket, D-76,
-   has markers at 40, 43, 60 and 63 mm).
+   has markers at 40, 43, 60 and 63 mm). If the face plates are ever injection moulded: a front edge rounded
+   into the window / remote cutout (human, 2026-10-12; FDM face-down cannot print a round tangent to the bed).
 8. Plain plates (D-109, modelled): test prints of the plain insert / face plate (NA) and the plain cap, carrier and
    face plate (EU); the NA plate's 1.11 mm side wall beside the insert's flange on the print.
 

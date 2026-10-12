@@ -121,3 +121,52 @@ along each contact block (D-55), the run lies in the notch along the GND contact
 | Cover | End section |
 | --- | --- |
 | ![Back cover and flex](renders/bc_flex.png) | ![Back cover end section](renders/bc_flex_end.png) |
+
+## Detail views
+
+NA plate: the face plate lifted off (it carries no electronics), the 5 V path (FFC from the wiring board through the
+insert's bore to the ring board), the spring pins of the battery-free remote, the microphone's sound column, and a
+section of every printed part (dashed line: the wall surface).
+
+| Face plate off | 5 V path |
+| --- | --- |
+| ![NA face plate lifted off](renders/v0.5_face_off.png) | ![NA 5 V path](renders/v0.5_power.png) |
+
+| Battery-free remote | Spring pins, section |
+| --- | --- |
+| ![NA battery-free remote](renders/v0.5_battery_free.png) | ![NA spring pins](renders/v0.5_pins.png) |
+
+| Ring board (red: copper keep-out round the box opening) | Microphone sections |
+| --- | --- |
+| ![NA ring board](renders/v0.5_ring.png) | ![NA microphone sections](renders/v0.5_mic_section.png) |
+
+![NA cross-sections](renders/v0.5_sections.png)
+
+EU plate: the sensors' side (carrier, cap board, MSR-2, microphone, SHT40), the carrier clamp from the wall side and
+its lip in section, the sensor pins onto the cap board's pads, a face plate snap, a section and the box from behind.
+
+| Sensors | Box from behind |
+| --- | --- |
+| ![EU sensors](renders/eu_sensors.png) | ![EU box from behind](renders/eu_box.png) |
+
+| Carrier clamp | Carrier lip |
+| --- | --- |
+| ![EU carrier clamp](renders/eu_carrier_clamp.png) | ![EU carrier lip](renders/eu_carrier_lip.png) |
+
+| Sensor pins | Face plate snap |
+| --- | --- |
+| ![EU sensor pins](renders/eu_sensor_pins.png) | ![EU face plate snap](renders/eu_snaps.png) |
+
+![EU section](renders/eu_section.png)
+
+Back cover: its back with the two pin windows, a section through a pin pad and one through the VBAT contact.
+
+| Back | Pin pad, section |
+| --- | --- |
+| ![Back cover, back](renders/bc_back.png) | ![Back cover, pin section](renders/bc_pin_section.png) |
+
+![Back cover, VBAT contact section](renders/bc_contact_section.png)
+
+Steel plate hacksaw guide (red: the cut line).
+
+![Steel plate hacksaw guide](renders/plate_jigs.png)

@@ -5,7 +5,7 @@
 	(uuid "979883c3-4cd8-5453-82f0-caa66612f8f5")
 	(paper "A4")
 	(title_block
-		(title "Smart wall plate - riser board")
+		(title "Sladdseg - riser board")
 		(date "2026-10-12")
 		(rev "v0.5")
 		(company "smart-wallplate")

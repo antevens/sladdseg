@@ -5,7 +5,7 @@
 	(uuid "5f764a30-4dec-57c4-b2d1-c93ae2ff2774")
 	(paper "A4")
 	(title_block
-		(title "Smart wall plate - EU cap board")
+		(title "Sladdseg - EU cap board")
 		(date "2026-10-12")
 		(rev "v0.5")
 		(company "smart-wallplate")

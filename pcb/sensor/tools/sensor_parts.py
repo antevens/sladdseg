@@ -14,7 +14,7 @@ Back cover flex: see below.
 """
 import sys
 import uuid
-from math import atan2, cos, degrees, radians, sin, sqrt
+from math import atan2, cos, degrees, pi, radians, sin, sqrt
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -24,7 +24,8 @@ from params import (FINGER, FINGER_PAD, FLEX_T, MIC, MIC_PORT_IN, MIC_AT, MIC_PA
                     SHT_AT, RISER, RISER_C, POSTS, PIN_PAD_D, PIN_HOLE_D, PIN_FLANGE, MSR_SW_CUTS, RING_NOTCH_R,
                     BC_CELL_X, BC_CELL_Z, BC_VBAT_X, BC_FLEX_Z, BC_END_T, BC_END_H,
                     BC_FINGERS, BC_STRIP, BC_RUN, BC_RUN_JOG, BC_JOG, BC_COPPER_Y, BC_REG, BC_PCB_W, BC_PCB_CLR,
-                    BC_BRIDGE_H, BC_LANE_H, BC_END_CORNER, BC_END_XO, BC_PAD_END, BC_PAD_LOW, BC_PAD_STIFF_T, BC_PAD_D, end_top)
+                    BC_BRIDGE_H, BC_LANE_H, BC_END_CORNER, BC_END_XO, BC_PAD_END, BC_PAD_LOW, BC_PAD_STIFF_T, BC_PAD_D, end_top,
+                    BC_BEND_R, BC_BEND_CLR, BC_SLIT, BC_REG_RECESS, BC_PAD_CU)
 
 LIB = "sensor"
 REV = "v0.5"
@@ -56,6 +57,8 @@ FP_B2B = "Molex_SlimStack_55909-2474_2x12_P0.40mm_Vertical"
 FP_FINGER = "Harwin_S7081-42R"
 FP_SHT = "Sensirion_DFN-4_1.5x1.5mm_P0.8mm_SHT4x_NoCentralPad"
 FP_C = "C_0402_1005Metric"
+FP_C0603 = "C_0603_1608Metric"
+FP_TVS = "D_SOD-523_TI_DYA0002A"
 FP_C1206 = "C_1206_3216Metric"
 C0G_DS = "https://pim.murata.com/asset/pim4/ceramicCapacitorSMD/GRM3195C1H104JA05-01A-EN_PDF_CERAMICCAPACITORSMD"
 FP_R = "R_0402_1005Metric"
@@ -69,6 +72,10 @@ FP_POST_PAD = "M2_Post_Pad_D3.8mm"
 POST_PAD = (3.8, 2.2)                                       # riser pad under the M2 pan head (head 4.0), plated hole
 FP_PIN_PAD = "Contact_Pad_D2.6mm"
 TLV_DS = "https://www.ti.com/lit/ds/symlink/tlv755p.pdf"
+TVS_DS = "https://www.ti.com/lit/ds/symlink/tpd1e10b06.pdf"
+CAP0603_DS = "https://product.samsungsem.com/mlcc/CL10A105KO8NNN.do"
+# TI TPD1E10B06 SOD-523 (DYA0002A) land pattern example (SLLSEB1G, Aug 2024): pads 0.4 x 0.67, 1.48 across
+TVS_PAD, TVS_SPAN = (0.4, 0.67), 1.48
 HARWIN_DS = ("https://content.harwin.com/asset/8cd5d0a8-d578-46b3-8278-7289045a1613/"
              "DRG-02322-Technical-Drawing-Datasheet-S7081R-pdf.pdf")
 SHT_DS = "https://sensirion.com/media/documents/33FD6951/624C4357/Datasheet_SHT4x.pdf"
@@ -228,7 +235,7 @@ RISER_RECT = (RISER_C[0], RISER_C[1], RISER[0], RISER[1])
 # Y = y on the ledge; on the end section a point h above the bend line maps to Y = y_copper - h.
 COVER_CONFIRMED = False                                     # positions are REF / MEASURE (FCC photos)
 COVER_TRACK = 0.3
-_y_c = BC_COPPER_Y                                          # end section copper face (room y) = bend line
+_y_c = BC_COPPER_Y                                          # end section copper face (room y)
 _yt = max(y for _, y in BC_FINGERS) + BC_PAD_D / 2 + BC_PAD_END   # pad section top = regulator section bottom
 _yb = min(y for _, y in BC_FINGERS) - BC_PAD_D / 2 - BC_PAD_LOW   # pad section bottom, the run below it
 _yr = _yt + BC_JOG                                          # regulator section top
@@ -237,18 +244,44 @@ _xr0, _xr1 = -BC_RUN[1], -BC_RUN[0]                         # run in flat X
 _xo = BC_END_XO                                             # end section half width (inside the cover's slots)
 _xi = BC_PCB_W / 2 + BC_PCB_CLR                             # notch round the remote's PCB strip
 _c = BC_END_CORNER
-COVER_Y_BAND = _y_c - BC_BRIDGE_H                           # band under the PCB strip
-COVER_Y_END = _y_c - BC_END_H
-COVER_Y_PAD = _y_c - (BC_CELL_Z - BC_FLEX_Z)                # contact fingers on the cell axes
-COVER_BEND_Y = _y_c
-_top = [(x, _y_c - (z - BC_FLEX_Z)) for x, z in end_top(_xo, _xi)]  # rounded to the cell above the rim
+# the run's 90 deg bend (D-116): inside radius BC_BEND_R, the flex's mid-plane sets the developed length. The run
+# leaves the ledge FLEX_T + BC_BEND_R short of the copper face and stands up from that height; the rest of the end
+# section reaches down to the ledge beside it, cut free by a relief slit either side of the run.
+_tr = FLEX_T + BC_BEND_R
+_arc = pi / 2 * (BC_BEND_R + FLEX_T / 2)                     # bend zone's developed length
+
+
+def flat_y(h):
+    """Flat Y of the end section h above the flex plane (h >= 0; on the run only above the bend zone)."""
+    return _y_c + 2 * _tr - _arc - h
+
+
+COVER_BEND = (_y_c + _tr, _y_c + _tr - _arc)               # bend zone in flat Y: from the ledge, to the end section
+_ys = flat_y(_tr + BC_SLIT[1])                              # relief slits' ends
+_w = BC_SLIT[0]
+COVER_Y_BAND = flat_y(BC_BRIDGE_H)                          # band under the PCB strip
+COVER_Y_END = flat_y(BC_END_H)
+COVER_Y_PAD = flat_y(BC_CELL_Z - BC_FLEX_Z)                 # contact fingers on the cell axes
+COVER_LANE_Y = flat_y(BC_LANE_H)                            # +3V3 lane across the band
+_top = [(x, flat_y(z - BC_FLEX_Z)) for x, z in end_top(_xo, _xi)]  # rounded to the cell above the rim
 _yj = _yb + BC_RUN_JOG                                     # top of the jog from the pad section to the run (D-79)
-COVER_OUTLINE = ([(_xs0, _yr), (_xs1, _yr), (_xs1, _yj), (_xr1, _yj)]
-                 + [(_xr1, _y_c), (_xo - _c, _y_c), (_xo, _y_c - _c)]
+_y0 = flat_y(0)                                             # the end section's lower edge (on the ledge)
+_slit_r = 0.45 * _w                                         # full-round slit ends (fillet() caps a corner at 0.45 of a side)
+COVER_OUTLINE = ([(_xs0, _yr), (_xs1, _yr), (_xs1, _yj), (_xr1, _yj), (_xr1, _ys), (_xr1 + _w, _ys), (_xr1 + _w, _y0),
+                  (_xo - _c, _y0), (_xo, flat_y(_c))]
                  + _top + [(_xi, COVER_Y_BAND), (-_xi, COVER_Y_BAND)] + [(-x, y) for x, y in reversed(_top)]
-                 + [(-_xo, _y_c - _c), (-_xo + _c, _y_c), (_xr0, _y_c), (_xr0, _yb), (_xs0, _yb)])
-COVER_STIFF = [((-_xo, COVER_Y_END), (_xo, _y_c))]          # FR4 BC_END_T behind the end section (non-copper side)
-COVER_PAD_STIFF = [((_xs0, _yb), (_xs1, _yr))]                # FR4 BC_PAD_STIFF_T on the pad and regulator sections
+                 + [(-_xo, flat_y(_c)), (-_xo + _c, _y0), (_xr0 - _w, _y0), (_xr0 - _w, _ys), (_xr0, _ys), (_xr0, _yb),
+                    (_xs0, _yb)])
+COVER_OUTLINE_R = [_slit_r if y == _ys else 0.76 for _, y in COVER_OUTLINE]   # inside corners >= 0.76 (tear stops)
+# FR4 stiffeners (non-copper side). End section (BC_END_T): its outline, less a notch round the run and the slits up to
+# BC_BEND_CLR past the bend zone. Pad and regulator sections (BC_PAD_STIFF_T): flush with their long edges (snap
+# hooks), corners as the outline.
+_yn = COVER_BEND[1] - BC_BEND_CLR
+_xn0, _xn1 = _xr0 - _w - 0.2, _xr1 + _w + 0.2
+COVER_STIFF = ([(-_xo, flat_y(_c)), (-_xo + _c, _y0), (_xn0, _y0), (_xn0, _yn), (_xn1, _yn), (_xn1, _y0),
+                (_xo - _c, _y0), (_xo, flat_y(_c))]
+               + _top + [(_xi, COVER_Y_BAND), (-_xi, COVER_Y_BAND)] + [(-x, y) for x, y in reversed(_top)])
+COVER_PAD_STIFF = [(_xs0, _yr), (_xs1, _yr), (_xs1, _yb), (_xs0, _yb)]
 COVER_LANES = (_xr1 - 0.75, _xr0 + 0.75)                    # +3V3 (inner), GND (outer) down the run
 COVER_GND_X = _xs0 + 0.7                                    # GND lane up the pad section's outer edge to the regulator
 COVER_PARTS = {
@@ -271,10 +304,16 @@ COVER_PARTS = {
                pos=(-BC_REG["U1"][0], BC_REG["U1"][1], 0),
                mfr="Texas Instruments", mpn="TLV75533PDBVR",
                desc="LDO 3.3 V 500 mA, 1.45-5.5 V in, SOT-23-5: the remote's supply from +5 V", ds=TLV_DS),
-    "C3": dict(label="1uF", sym="C", fp=FP_C, value="1uF", nets={"1": "GND", "2": "+5V"},
-               pos=(-BC_REG["C3"][0], BC_REG["C3"][1], 0), mfr="Samsung Electro-Mechanics", mpn="CL05A105KO5NNNC",
-               desc="LDO input capacitor, 1 uF 16 V X5R 0402 (TLV755P: >= 1 uF)", ds=""),
-    "C4": dict(label="1uF", sym="C", fp=FP_C, value="1uF", nets={"1": "GND", "2": "+3V3"},
-               pos=(-BC_REG["C4"][0], BC_REG["C4"][1], 0), mfr="Samsung Electro-Mechanics", mpn="CL05A105KO5NNNC",
-               desc="LDO output capacitor, 1 uF 16 V X5R 0402 (TLV755P: >= 1 uF)", ds=""),
+    "C3": dict(label="1uF", sym="C", fp=FP_C0603, value="1uF 16V X5R 0603", nets={"1": "GND", "2": "+5V"},
+               pos=(-BC_REG["C3"][0], BC_REG["C3"][1], 0), mfr="Samsung Electro-Mechanics", mpn="CL10A105KO8NNNC",
+               desc="LDO input capacitor, 1 uF 16 V X5R 0603: 0.85 uF at 5 V (TLV755P: >= 0.47 uF effective, D-116)",
+               ds=CAP0603_DS),
+    "C4": dict(label="1uF", sym="C", fp=FP_C0603, value="1uF 16V X5R 0603", nets={"1": "GND", "2": "+3V3"},
+               pos=(-BC_REG["C4"][0], BC_REG["C4"][1], 0), mfr="Samsung Electro-Mechanics", mpn="CL10A105KO8NNNC",
+               desc="LDO output capacitor, 1 uF 16 V X5R 0603: 0.93 uF at 3.3 V (TLV755P: >= 0.47 uF effective, D-116)",
+               ds=CAP0603_DS),
+    "D1": dict(label="ESD", sym="D_TVS", fp=FP_TVS, value="TPD1E10B06DYAR", nets={"1": "GND", "2": "+5V"},
+               pos=(-BC_REG["D1"][0], BC_REG["D1"][1], 0), mfr="Texas Instruments", mpn="TPD1E10B06DYAR",
+               desc="ESD protection, bidirectional TVS, 5.5 V working, SOD-523: +5V at the exposed pin pads (D-116)",
+               ds=TVS_DS),
 }
