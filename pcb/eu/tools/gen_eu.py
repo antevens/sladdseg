@@ -1,8 +1,8 @@
 """Generate the EU KiCad projects in pcb/eu/kicad/ (docs/DESIGN.md D-30, D-36): the mains board and
-the 5 V board.
+the pin board.
 
 Libraries, projects with net classes and isolation rules, schematics and boards, all from
-eu_parts.py (geometry from cad/build123d/eu/params_eu.py). Run with the Python that ships pcbnew.
+parts_eu.py (geometry from cad/build123d/eu/params_eu.py). Run with the Python that ships pcbnew.
 """
 import json
 import math
@@ -13,9 +13,9 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(1, str(HERE.parents[1] / "tools"))           # pcb/tools: sexpr, gen_libs, kigen
 import pcbnew as P
-import eu_parts as ep
+import parts_eu as ep
 from sexpr import dumps, loads, find, first, Sym, S
-import gen_libs as gl
+import fplib as gl
 import kigen
 from kigen import Board, build_schematic
 
@@ -50,8 +50,8 @@ def fp_wago():
         for y in (y1, y1 + ep.WAGO_ROW):
             shape = "rect" if i == 0 and y == y1 else "circle"
             items.append(gl.tht(str(i + 1), x, y, shape, *ep.WAGO_PAD, ep.WAGO_DRILL))
-    items += gl.body(ep.WAGO_EU[0], ep.WAGO_EU[1], silk=False)
-    x1, y1 = ep.WAGO_EU[0] / 2 + 0.12, ep.WAGO_EU[1] / 2 + 0.12
+    items += gl.body(ep.WAGO2[0], ep.WAGO2[1], silk=False)
+    x1, y1 = ep.WAGO2[0] / 2 + 0.12, ep.WAGO2[1] / 2 + 0.12
     items += [gl.line(-x1, y1, -x1, -y1, "F.SilkS", 0.12), gl.line(-x1, -y1, x1, -y1, "F.SilkS", 0.12),
               gl.line(x1, -y1, x1, y1, "F.SilkS", 0.12)]                # open on the lever side (the rocker's slots)
     items.append(gl.model3d(ep.FP_WAGO))
@@ -147,8 +147,8 @@ def net_class(name, track):
             "via_drill": 0.3, "wire_width": 6}
 
 
-LV_DRU = """(version 1)
-# 5 V board (no mains): fab limits only.
+PB_DRU = """(version 1)
+# pin board (no mains): fab limits only.
 (rule "Board edge clearance"
     (constraint edge_clearance (min 0.5mm)))
 """
@@ -181,7 +181,7 @@ def board_outline(cut_y=None):
             a = 2 * math.pi * k / n
             poly.Append(P.FromMM(cx + r * math.cos(a)), P.FromMM(-(cy + r * math.sin(a))))
         return poly
-    board = circle(0, 0, ep.WB_R, 360)
+    board = circle(0, 0, ep.PB_R, 360)
     if cut_y is not None:
         keep = P.SHAPE_POLY_SET()
         keep.NewOutline()
@@ -209,7 +209,7 @@ def pads_of(bd, ref, num):
 
 
 def build_mains():
-    bd = Board(CTX, ep.MAINS, 2, 1.6, 0.2, 0.25, on_save=lambda: build_project(ep.MAINS, DRU))
+    bd = Board(CTX, ep.MB, 2, 1.6, 0.2, 0.25, on_save=lambda: build_project(ep.MB, DRU))
     bd.polyline(board_outline())
     x0, x1, ys, w = ep.MB_SLOT                               # routed relief slot under the PSU
     r = w / 2
@@ -217,14 +217,14 @@ def build_mains():
     bd.shape(P.SHAPE_T_SEGMENT, P.Edge_Cuts, 0.05, (x0, ys - r), (x1, ys - r))
     bd.shape(P.SHAPE_T_ARC, P.Edge_Cuts, 0.05, (x1, ys + r), (x1 + r, ys), (x1, ys - r))
     bd.shape(P.SHAPE_T_ARC, P.Edge_Cuts, 0.05, (x0, ys - r), (x0 - r, ys), (x0, ys + r))
-    for ref, p in ep.MAINS_PARTS.items():
+    for ref, p in ep.MB_PARTS.items():
         bd.place(ref, p, False)
     c = ep.MB_PSU_C
     orient(bd, "PS1", lambda q: min(q["1"][1], q["2"][1]) > c[1] and q["2"][0] > q["1"][0])
     for ref in ("J1", "J2"):                       # poles along y, in above switched, levers towards the board centre
-        nets = ep.MAINS_PARTS[ref]["nets"]
+        nets = ep.MB_PARTS[ref]["nets"]
         pin, psw = (next(n for n, v in nets.items() if v.endswith(e)) for e in ("_IN", "_SW"))
-        cx = ep.MAINS_PARTS[ref]["pos"][0]
+        cx = ep.MB_PARTS[ref]["pos"][0]
         orient(bd, ref, lambda q: abs(q[pin][0] - q[psw][0]) < 0.01 and q[pin][1] > q[psw][1]
                and abs(sum(p[0] for p in pads_of(bd, ref, pin)) / 2) > abs(cx))
     orient(bd, "F1", lambda q: q["1"][0] > q["2"][0])          # L_SW pad towards the L block
@@ -235,9 +235,9 @@ def build_mains():
     # load paths: L pours on F.Cu (right), N pours on B.Cu (left); in above, switched below. The split
     # between them runs between the rocker's poles, then steps to between the WAGO block's poles.
     split_s = (s1["1"][1] + s1["1a"][1]) / 2
-    top, bot = ep.WB_R + 2, ep.MB_PSU_C[1] + ep.PSU[1] / 2 - 4.5
+    top, bot = ep.PB_R + 2, ep.MB_PSU_C[1] + ep.PSU[1] / 2 - 4.5
     for ref, layer, sx, (n_in, n_sw) in (("J1", P.F_Cu, 1, ("L_IN", "L_SW")), ("J2", P.B_Cu, -1, ("N_IN", "N_SW"))):
-        nets = ep.MAINS_PARTS[ref]["nets"]
+        nets = ep.MB_PARTS[ref]["nets"]
         p_in, p_sw = (pads_of(bd, ref, next(n for n, v in nets.items() if v == net)) for net in (n_in, n_sw))
         split_w = (p_in[0][1] + p_sw[0][1]) / 2
         step = (abs(s1["1"][0]) + min(abs(p[0]) for p in p_in)) / 2
@@ -267,23 +267,23 @@ def build_mains():
     sy = sorted({round(y, 3) for n in ("1", "1a") for _, y in pads_of(bd, "S1", n)})
     band = (sy[0] + ep.SW_PAD[1] / 2, sy[-1] - ep.SW_PAD[1] / 2)
     for ref, side in (("J1", "L"), ("J2", "N")):
-        x = ep.MAINS_PARTS[ref]["pos"][0]
+        x = ep.MB_PARTS[ref]["pos"][0]
         xo = ep.SW_PIN_GRID[0] / 2 * (1 if x > 0 else -1)                   # on the rocker's pole beside the block
         bd.text(f"{side} IN", xo, band[1] - 0.9, P.B_SilkS, 0.8)
         bd.text(f"{side} LOAD", xo, band[0] + 0.9, P.B_SilkS, 0.8)
     bd.text("MAINS 230 VAC", 0.0, -27.0 + 2.5, P.B_SilkS, 0.9)
     bd.branding(*ep.BRAND["eu_mains_board"], ep.URL)
     bd.save()
-    hx = ep.MAINS_PARTS["J3"]["pos"][0]                       # SMT header: posts on the footprint's centre line
+    hx = ep.MB_PARTS["J3"]["pos"][0]                       # SMT header: posts on the footprint's centre line
     return {n: (hx, xy("J3", n)[1]) for n in ("1", "2")}
 
 
-def build_lv(header):
-    bd = Board(CTX, ep.LV, 2, 1.6, 0.2, 0.25, on_save=lambda: build_project(ep.LV, LV_DRU))
-    bd.polyline(board_outline(ep.WB_CUT_Y))
-    for (x, y), r in ep.LV_BOSS_HOLES:                       # the mains board's long boss passes through
+def build_pin_board(header):
+    bd = Board(CTX, ep.PB, 2, 1.6, 0.2, 0.25, on_save=lambda: build_project(ep.PB, PB_DRU))
+    bd.polyline(board_outline(ep.PB_CUT_Y))
+    for (x, y), r in ep.PB_BOSS_HOLES:                       # the mains board's long boss passes through
         bd.shape(P.SHAPE_T_CIRCLE, P.Edge_Cuts, 0.05, (x, y), (x + r, y))
-    for ref, p in ep.LV_PARTS.items():
+    for ref, p in ep.PB_PARTS.items():
         bd.place(ref, p, False)
     orient(bd, "J1", lambda q: all(abs(q[n][0] - header[n][0]) < 0.01 and abs(q[n][1] - header[n][1]) < 0.01
                                    for n in ("1", "2")))      # socket pins on the header's pins
@@ -299,27 +299,27 @@ def build_lv(header):
     bd.track("+5V", w, [c_p, (c_p[0] + 1.0, p1[1]), p1], P.F_Cu)
     bd.track("GND", w, [c_g, (p2[0] - 1.5, p2[1]), p2], P.F_Cu)
     bd.track("GND", w, [sg, (sg[0] + 3.0, sg[1]), (sg[0] + 3.0, p2[1] + 2.0), (p2[0] - 2.0, p2[1] + 2.0), p2], P.B_Cu)
-    bd.text(f"EU 5V {ep.REV}", -12.0, -17.0, P.F_SilkS, 0.9)
-    bd.branding(*ep.BRAND["eu_5v_board"], ep.URL)
+    bd.text(f"EU PIN {ep.REV}", -12.0, -17.0, P.F_SilkS, 0.9)
+    bd.branding(*ep.BRAND["eu_pin_board"], ep.URL)
     bd.save()
 
 
 def main():
     build_libs()
-    build_project(ep.MAINS, DRU)
-    build_project(ep.LV, LV_DRU)
-    build_schematic(CTX, ep.MAINS, ep.MAINS_PARTS, ("L_F", "N_SW", "L_IN", "N_IN"), "Sladdseg - EU mains board",
-                    ep.REV, ep.REV_DATE, ["Generated by pcb/eu/tools/gen_eu.py - edit eu_parts.py"],
+    build_project(ep.MB, DRU)
+    build_project(ep.PB, PB_DRU)
+    build_schematic(CTX, ep.MB, ep.MB_PARTS, ("L_F", "N_SW", "L_IN", "N_IN"), "Sladdseg - EU mains board",
+                    ep.REV, ep.REV_DATE, ["Generated by pcb/eu/tools/gen_eu.py - edit parts_eu.py"],
                     "EU mains board (docs/DESIGN.md D-36): S1 (Marquardt 1802.2504) breaks line and neutral of the\n"
                     "load between the WAGO blocks J1 (L) and J2 (N). F1 / RV1 / PS1 (Zettler ZPI03S0500WC) from the switched side;\n"
-                    "PS1's outputs on the 5 V island (relief slot), J3 header to the 5 V board.")
-    build_schematic(CTX, ep.LV, ep.LV_PARTS, ("+5V", "GND"), "Sladdseg - EU 5 V board", ep.REV, ep.REV_DATE,
-                    ["Generated by pcb/eu/tools/gen_eu.py - edit eu_parts.py"],
-                    "EU 5 V board (docs/DESIGN.md D-36, D-54, D-56): J1 socket on the mains board's header;\n"
-                    "P1 / P2 spring pins up through the cap to the cap board's pads, P3 / P4 to the battery-free\n"
+                    "PS1's outputs on the 5 V island (relief slot), J3 header to the pin board.")
+    build_schematic(CTX, ep.PB, ep.PB_PARTS, ("+5V", "GND"), "Sladdseg - EU pin board", ep.REV, ep.REV_DATE,
+                    ["Generated by pcb/eu/tools/gen_eu.py - edit parts_eu.py"],
+                    "EU pin board (docs/DESIGN.md D-36, D-54, D-56): J1 socket on the mains board's header;\n"
+                    "P1 / P2 spring pins up through the barrier to the sensor board's pads, P3 / P4 to the battery-free\n"
                     "back cover's pads (no wires).")
     header = build_mains()
-    build_lv(header)
+    build_pin_board(header)
 
 
 if __name__ == "__main__":

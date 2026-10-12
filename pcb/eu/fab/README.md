@@ -21,17 +21,17 @@ depth is still to be tried in a real box (D-36).
   confirm in the thermal review.
 - **The outline has a routed relief slot under the PSU.** It is part of Edge.Cuts, not a drill: add
   "routed isolation slot in outline, do not omit" to the order remarks.
-- Three Ø2.2 holes for the cap's long bosses (M2), no copper within 1.0 mm.
+- Three Ø2.2 holes for the barrier's long bosses (M2), no copper within 1.0 mm.
 - Front (F): F1, RV1, J3 (SMD). Back (B): J1, J2 (WAGO 2604-3102), PS1 (Zettler ZPI03S0500WC), THT.
-- S1 (Marquardt 1802.2504) is **not fitted** by PCBWay: it snaps into the cap's cup first. **Solder it by
-  hand only after the mains board is screwed onto the cap's bosses**: its holes are 5.2 mm plated slots
+- S1 (Marquardt 1802.2504) is **not fitted** by PCBWay: it snaps into the barrier's cup first. **Solder it by
+  hand only after the mains board is screwed onto the barrier's bosses**: its holes are 5.2 mm plated slots
   (D-88), so the cup's panel cutout, not the board, locates the rocker.
 
-## 5 V board (`eu_5v_board/`)
+## pin board (`eu_pin_board/`)
 
 - D-shaped, 57.9 × 27.9 mm, notched round the domes and the mains board's boss; 2 layers, FR-4, 1.6 mm,
   1 oz.
-- Front (F): C1 and four Harwin P70-2200045 SMT spring pins with pegs (D-59): P1 (GND) and P2 (+5V) onto the cap
+- Front (F): C1 and four Harwin P70-2200045 SMT spring pins with pegs (D-59): P1 (GND) and P2 (+5V) onto the barrier
   board's pads, P3 (+5V) and P4 (GND) onto the battery-free back cover's pads (D-54). Back (B): J1, Samtec
   SSW-102-01-G-S socket (THT, gold contacts) onto the mains board's TSM header.
 
@@ -48,11 +48,11 @@ depth is still to be tried in a real box (D-36).
 - [ ] WAGO 2604-3102 pin rows checked on a part (from WAGO's 3D model).
 - [ ] Header / socket stack: TSM-102-02-L-SV post 8.13 mm into the SSW socket (body 8.5 mm), 16.1 mm
       between the boards; 3.07 mm engagement as designed (D-59).
-- [ ] Spring pin working height on a printed cap (6.4–7.2 mm, designed 6.8 ± 0.3).
+- [ ] Spring pin working height on a printed barrier (6.4–7.2 mm, designed 6.8 ± 0.3).
 - [ ] EU stack depth tried in the printed test socket (D-76), then a real 47 mm box (−43.8 mm deepest part).
 - [ ] Approvals of S1, J1, J2, PS1, F1 and RV1 adequate for the installation.
-- [ ] PE (D-94): joined in the box in a WAGO 221-412, not on the boards; the steel piece in the cap's pocket floor
-      is the one metal part a user can touch with the remote out, insulated from mains only by the V-0 cap: whether
+- [ ] PE (D-94): joined in the box in a WAGO 221-412, not on the boards; the steel piece in the barrier's pocket floor
+      is the one metal part a user can touch with the remote out, insulated from mains only by the V-0 barrier: whether
       that is double / reinforced insulation (no PE needed) is for review.
 - [ ] Second-source rocker E-Switch RA412C1100 (D-88): its tab rows on a sample, tabs soldered into the
       slots outside the maker's listed terminations (D-86), its 10(4) A ENEC rating accepted; S1's slot pads

@@ -3,7 +3,7 @@
 Board frame (params.py): origin at the board's centre on its back face, x along the board (+x: the CN1 / CN2 end),
 y across (+y: the radar's edge), z out of the front. Front: USB-C at the -x end, ESP32-C3-MINI-1 with its antenna over
 a notch at the -y edge, the LD2410B radar along the +y edge on a 5-pin header at its +x end and a support at its -x
-end, CN1 at the +x / -y corner with the CO2 add-on (SCD4x) on it. Back: CN2 at the +x end (its mated stack is drawn with the mate: ring.py, capboard_eu.py), Boot / RST side-push
+end, CN1 at the +x / -y corner with the CO2 add-on (SCD4x) on it. Back: CN2 at the +x end (its mated stack is drawn with the mate: sensor_board_na.py, sensor_board_eu.py), Boot / RST side-push
 switches at the +y edge; two small plated holes on CN2's axis, one past each end.
 Run:  python msr2.py  -> ../../build/msr2.step
 """

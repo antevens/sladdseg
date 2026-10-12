@@ -2,7 +2,7 @@
 
 Stadium outline, rounded back edge, wheel disc with its gap ring, three LED dots
 and the side parting line. All sizes are MEASURE placeholders in params.py.
-build() returns it seated in the pocket (back on SEAT_Z).
+build(seat_z, lift) returns it with its back at seat_z + lift.
 """
 from math import cos, sin, pi
 from build123d import Axis, Cylinder, Plane, Pos, fillet, loft
@@ -30,7 +30,7 @@ def body():
     return b
 
 
-def build(lift=0.0):
+def build(seat_z=0.0, lift=0.0):
     b = body()
     # wheel gap ring on the front face
     ring = Pos(0, B_WHEEL_Y, B_D - 0.5) * (Cylinder(B_WHEEL_D / 2 + B_WHEEL_GAP, 1.2)
@@ -42,7 +42,7 @@ def build(lift=0.0):
     seam_outer = slab(stadium(B_W + 2, B_H + 2), B_SEAM_Z - 0.2, B_SEAM_Z + 0.2)
     seam_inner = slab(stadium(B_W - 0.6, B_H - 0.6), B_SEAM_Z - 0.3, B_SEAM_Z + 0.3)
     b -= seam_outer - seam_inner
-    return Pos(0, 0, SEAT_Z + lift) * b
+    return Pos(0, 0, seat_z + lift) * b
 
 
 if __name__ == "__main__":

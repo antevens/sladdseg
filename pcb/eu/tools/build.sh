@@ -1,8 +1,10 @@
 #!/bin/bash
 #
-# Regenerate the EU boards (docs/DESIGN.md D-30, D-36): mains board and 5 V board; libraries, projects,
-# schematics and boards, then run ERC and DRC (all severities, schematic parity) and write each board's
-# PCBWay pack into pcb/eu/fab/<board>/ (review pcb/eu/fab/README.md before ordering).
+# Regenerate the EU boards (docs/DESIGN.md D-30, D-36): the mains board and the pin board (gen_eu.py) and the sensor
+# board (pcb/shared/tools/gen_lv.py eu); libraries, projects, schematics and boards, then run ERC and DRC (all
+# severities, schematic parity) and write the mains and pin boards' PCBWay packs into pcb/eu/fab/<board>/ (review
+# pcb/eu/fab/README.md before ordering). The sensor board's fab files are withheld while the CN2 mate and contact map
+# are placeholders.
 #
 # Usage: pcb/eu/tools/build.sh
 # Environment: KICAD_PYTHON (python with pcbnew, default python3),
@@ -19,7 +21,8 @@ readonly REPO
 readonly PRJ="${EU_DIR}/kicad"
 readonly OUT="${REPO}/build"
 readonly FAB="${EU_DIR}/fab"
-readonly BOARDS=(eu_mains_board eu_5v_board)
+readonly BOARDS=(eu_mains_board eu_pin_board eu_sensor_board)
+readonly FAB_BOARDS=(eu_mains_board eu_pin_board)
 
 function err() {
   echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" >&2
@@ -51,7 +54,7 @@ function export_fab() {
   local dir="${FAB}/${board}"
   local rev
 
-  rev="$("$(kicad_python)" -c "import sys; sys.path.insert(0, '${TOOLS}'); import eu_parts; print(eu_parts.REV)")"
+  rev="$("$(kicad_python)" -c "import sys; sys.path.insert(0, '${TOOLS}'); import parts_eu; print(parts_eu.REV)")"
   rm -rf "${dir}"
   mkdir -p "${dir}/gerbers"
   # board-centre (aux) origin for Gerbers, drill and centroid alike
@@ -77,18 +80,56 @@ function export_fab() {
   echo "fab pack in ${dir}"
 }
 
+function rev_of() {
+  local module="$1"
+  local dir="$2"
+
+  "$(kicad_python)" -c "import sys; sys.path[0:0] = ['${dir}', '${REPO}/pcb/tools', '${REPO}/pcb/shared/tools']; \
+import ${module} as m; print(m.REV)"
+}
+
+function export_gerbers() {
+  local board="$1"
+  local dir="${FAB}/${board}"
+  local lv_layers="F.Cu,B.Cu,F.Mask,B.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"
+  local rev
+
+  rev="$(rev_of lv_parts "${REPO}/pcb/shared/tools")"
+  rm -rf "${dir}"
+  mkdir -p "${dir}/gerbers"
+  kicad-cli pcb export gerbers -o "${dir}/gerbers/" --use-drill-file-origin --layers "${lv_layers}" \
+    --subtract-soldermask --no-x2 "${PRJ}/${board}.kicad_pcb" >/dev/null
+  kicad-cli pcb export drill -o "${dir}/gerbers/" --format excellon --drill-origin plot \
+    --excellon-units mm --excellon-separate-th --generate-map --map-format gerberx2 \
+    "${PRJ}/${board}.kicad_pcb" >/dev/null
+  (cd "${dir}/gerbers" && zip -q -j "${dir}/${board}_${rev}_gerbers.zip" ./*)
+  kicad-cli pcb export pdf -o "${dir}/${board}_${rev}_fab.pdf" --mode-single \
+    --layers "${lv_layers},Cmts.User,User.1" --include-border-title "${PRJ}/${board}.kicad_pcb" >/dev/null
+  cp "${OUT}/${board}_erc.rpt" "${dir}/erc.rpt"
+  cp "${OUT}/${board}_drc.rpt" "${dir}/drc.rpt"
+  echo "fab files in ${dir}"
+}
+
 function main() {
   local board
 
   "${CAD_PYTHON:-${REPO}/.venv/bin/python}" "${REPO}/pcb/tools/gen_3d.py"
   "$(kicad_python)" "${TOOLS}/gen_eu.py"
+  "$(kicad_python)" "${REPO}/pcb/shared/tools/gen_lv.py" eu
   if ! check; then
     err "ERC or DRC reported violations; see ${OUT}/eu_*_erc.rpt and eu_*_drc.rpt"
     exit 1
   fi
-  for board in "${BOARDS[@]}"; do
+  for board in "${FAB_BOARDS[@]}"; do
     export_fab "${board}"
   done
+  if "$(kicad_python)" -c "import sys; sys.path[0:0] = ['${REPO}/pcb/shared/tools', '${REPO}/pcb/tools']; \
+import lv_parts as p; sys.exit(0 if p.CN2_CONFIRMED else 1)"; then
+    export_gerbers eu_sensor_board
+  else
+    rm -rf "${FAB}/eu_sensor_board"
+    err "eu_sensor_board: CN2 mate and contact map are placeholders (lv_parts.CN2_CONFIRMED); no fab files written"
+  fi
 }
 
 main "$@"

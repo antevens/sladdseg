@@ -1,0 +1,60 @@
+(footprint "D_SOD-523_TI_DYA0002A"
+	(version 20241229)
+	(generator "gen_libs")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "TI SOD-523 (DYA0002A), example land pattern, https://www.ti.com/lit/ds/symlink/tpd1e10b06.pdf")
+	(tags "SOD-523 TVS ESD")
+	(property "Reference" "REF**"
+		(at 0 0 0)
+		(layer "F.SilkS")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "D_SOD-523_TI_DYA0002A"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd allow_soldermask_bridges)
+	(pad "1" smd rect
+		(at -0.54 0)
+		(size 0.4 0.67)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+	)
+	(pad "2" smd rect
+		(at 0.54 0)
+		(size 0.4 0.67)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+	)
+	(fp_rect
+		(start -0.5 -0.3)
+		(end 0.5 0.3)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+	)
+	(fp_rect
+		(start -0.89 -0.485)
+		(end 0.89 0.485)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+	)
+	(embedded_fonts no)
+)

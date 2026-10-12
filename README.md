@@ -18,8 +18,8 @@ editions:
   - 5 V power supply (editions 2 and 3), two parts:
     - NA: Mean Well IRM-03-5 (5 V, 600 mA);
     - EU: Zettler ZPI03S0500WC (5 V, 600 mA).
-- **Sensors (edition 3):** on a board under the face plate (NA ring board, EU cap board), 5 V from the mains board.
-- **Printed parts:** the barrier between mains and low voltage (NA insert, EU cap) in flame-retardant PC-FR; the face
+- **Sensors (edition 3):** on a board under the face plate (both variants), 5 V from the mains board.
+- **Printed parts:** the barrier between mains and low voltage (NA barrier, EU barrier) in flame-retardant PC-FR; the face
   plate, EU carrier and back cover in PETG. Printed on an Elegoo Centauri Carbon 2.
 
 Nothing here is certified or code-compliant; see `docs/SAFETY.md`.
@@ -33,15 +33,16 @@ Nothing here is certified or code-compliant; see `docs/SAFETY.md`.
 | `docs/ASSEMBLY.md` | what holds each part, assembly order, detail views |
 | `docs/PRINTING.md` | print jobs, settings, order of work |
 | `docs/MEASUREMENTS.md` | measured values and the ones still estimated |
-| `pcb/README.md` | all seven boards: what each carries, editions, status; the wiring board in detail |
-| `pcb/sensor/README.md`, `pcb/eu/README.md` | the other boards in detail: parts, nets, rules, board renders |
+| `pcb/README.md` | all seven boards: what each carries, editions, status |
+| `pcb/na/README.md`, `pcb/eu/README.md`, `pcb/shared/README.md` | each variant's boards and the shared cover flex in detail: parts, nets, rules, board renders |
 | `pcb/order/README.md` | DigiKey / Mouser order lists and PCBWay packs |
 
 ```bash
 make system-deps     # once, Ubuntu 24.04 (KiCad 9, headless slicer libs)
 make setup           # once (venv + pinned OrcaSlicer)
 make pcb             # boards: ERC / DRC, STEP, fab packs
-make cad check       # CAD to build/, all checks
+make cad check       # CAD to build/, all checks (shared parts, NA, EU)
+make na              # NA variant: CAD, checks, renders
 make eu              # EU variant: CAD, checks, renders
 make print           # OrcaSlicer projects in print/
 make renders         # docs/renders/*.png
@@ -75,33 +76,33 @@ Full edition (3):
 
 | Remote in place | Remote out, rocker switch exposed |
 | --- | --- |
-| ![NA full plate](docs/renders/v0.6_front.png) | ![NA full plate, remote out](docs/renders/v0.6_remote_out.png) |
+| ![NA full plate](docs/renders/na_front.png) | ![NA full plate, remote out](docs/renders/na_remote_out.png) |
 
 | Half-section | Back, box side |
 | --- | --- |
-| ![NA half-section](docs/renders/v0.6_section.png) | ![NA back](docs/renders/v0.6_back.png) |
+| ![NA half-section](docs/renders/na_section.png) | ![NA back](docs/renders/na_back.png) |
 
-Full edition (3), exploded: remote, face plate, insert, ring board with the MSR-2, riser with the spring pins on two spacer posts, four
-nylon standoffs, wiring board.
+Full edition (3), exploded: remote, face plate, barrier, sensor board with the MSR-2, pin board with the spring pins on two spacer posts, four
+nylon standoffs, mains board.
 
-![NA exploded](docs/renders/v0.6_exploded.png)
+![NA exploded](docs/renders/na_exploded.png)
 
 Switch-only edition (1):
 
 | Remote in place | Remote out, rocker switch exposed |
 | --- | --- |
-| ![NA switch-only plate](docs/renders/switch_front.png) | ![NA switch-only plate, remote out](docs/renders/switch_remote_out.png) |
+| ![NA switch-only plate](docs/renders/na_switch_front.png) | ![NA switch-only plate, remote out](docs/renders/na_switch_remote_out.png) |
 
 Battery-free edition (2):
 
 | Remote in place | Remote out, rocker switch exposed |
 | --- | --- |
-| ![NA battery-free plate](docs/renders/plain_front.png) | ![NA battery-free plate, remote out](docs/renders/plain_remote_out.png) |
+| ![NA battery-free plate](docs/renders/na_plain_front.png) | ![NA battery-free plate, remote out](docs/renders/na_plain_remote_out.png) |
 
 ## European round flush box (DIN 49073)
 
-The cap closes the box and carries the remote; the mains board sits at the rocker switch's seat under it, the 5 V board just
-under the cap, the cap board in a printed carrier on the wall, and the face plate snaps into the carrier.
+The barrier closes the box and carries the remote; the mains board sits at the rocker switch's seat under it, the pin board just
+under the barrier, the sensor board in a printed carrier on the wall, and the face plate snaps into the carrier.
 
 Full edition (3):
 
@@ -109,8 +110,8 @@ Full edition (3):
 | --- | --- |
 | ![EU full plate](docs/renders/eu_front.png) | ![EU full plate, remote out](docs/renders/eu_remote_out.png) |
 
-Back, box side: the mains board with its two WAGO push-in blocks (grey) and the PSU (black); the 5 V board sits
-between it and the cap.
+Back, box side: the mains board with its two WAGO push-in blocks (grey) and the PSU (black); the pin board sits
+between it and the barrier.
 
 ![EU back](docs/renders/eu_back.png)
 
@@ -143,11 +144,11 @@ and a charger would be welcome as a merge or pull request.
 ## Status
 
 - **Ready to order:**
-  - wiring board (NA), mains and 5 V boards (EU): PCBWay packs, after the review in `pcb/fab/README.md` and
+  - mains board (NA), mains and pin boards (EU): PCBWay packs, after the review in `pcb/na/fab/README.md` and
     `pcb/eu/fab/README.md`;
-  - riser.
+  - pin board.
 - **Prototype only:**
-  - ring board and EU cap board: the MSR-2's CN2 pinout is not confirmed;
+  - NA and EU sensor boards: the MSR-2's CN2 pinout is not confirmed;
   - back cover flex: contact positions not yet measured on a remote.
 - **To measure:** the `MEASURE` and `ESTIMATE` values in `docs/MEASUREMENTS.md`, from test prints and a real box.
 
@@ -181,14 +182,14 @@ Sources and assumptions:
 - **Parts at 1,000 and 10,000 (assumption):** 10 % and 15 % below the 100-plate price. DigiKey shows no prices
   above about 100 without a quote.
 - **PCBs at 1 and 5 (sourced):** PCBWay's 5-piece minimum order, 2026-10-12; one plate pays for the whole order.
-  - Wiring board, riser, EU mains board, EU 5 V board: 5.00 each order.
-  - Ring board 24.93, EU cap board 25.44.
+  - Mains board, pin board, EU mains board, EU pin board: 5.00 each order.
+  - Sensor board 24.93, EU sensor board 25.44.
   - Cover flex: about 25 (prototype price, given by the human).
   - Per plate: 1 plate NA full 59.93, NA battery-free 35.00, EU full 60.44, EU battery-free 35.00, switch only
     5.00 (the mains board alone); 5 plates one fifth of that.
 - **PCBs at 100 (sourced):** PCBWay quotes for 100 pieces, 2026-10-12.
-  - Wiring board 0.64, ring board 1.17, riser 0.36.
-  - EU mains board 0.64, EU 5 V board 0.45, EU cap board 1.21.
+  - Mains board 0.64, sensor board 1.17, pin board 0.36.
+  - EU mains board 0.64, EU pin board 0.45, EU sensor board 1.21.
   - Cover flex 1.24.
   - Per plate: NA full 3.41, NA battery-free 2.23, EU full 3.53, EU battery-free 2.32, switch only 0.64.
 - **PCBs at 1,000 and 10,000 (assumption):** the 100-piece price (no quote). This is cautious: board prices
@@ -200,9 +201,9 @@ Known gaps:
 
 - **Quote specs differ from the design:**
   - The mains boards were quoted in standard FR4 with 1 oz copper; the design calls for high-CTI FR4 and 2 oz.
-  - The riser was quoted at 1.6 mm, not 0.8.
+  - The pin board was quoted at 1.6 mm, not 0.8.
 - **Not included:**
-  - PCB assembly (the ring board, the EU cap board and the cover flex need it);
+  - PCB assembly (the sensor board, the EU sensor board and the cover flex need it);
   - the IKEA remote;
   - printed parts, screws and heatshrink;
   - shipping and duties.
@@ -211,17 +212,17 @@ Known gaps:
 
 ### Printed parts (own printer, 2026-10-12)
 
-The barrier part (NA insert, EU cap) is printed in Elegoo PC-FR; the face plate, the EU carrier and the back cover
+The barrier part (NA barrier, EU barrier) is printed in Elegoo PC-FR; the face plate, the EU carrier and the back cover
 in Elegoo PETG. Grams and times come from the OrcaSlicer projects (`make print`). USD per plate.
 
 | Package | Printed parts | Filament | Print time | Filament cost | Electricity | Printer wear | **Total** |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| NA full | insert 51.9 g PC-FR; face plate 23.2 g, back cover 8.3 g PETG | 83.4 g | 3.3 h | 1.54 | 0.08 | 0.29 | **1.91** |
-| NA switch only | insert 51.3 g PC-FR; face plate 16.0 g PETG | 67.2 g | 2.6 h | 1.36 | 0.06 | 0.23 | **1.65** |
-| NA battery-free | insert 51.7 g PC-FR; face plate 16.0 g, back cover 8.3 g PETG | 76.0 g | 3.0 h | 1.46 | 0.07 | 0.27 | **1.80** |
-| EU full | cap 9.8 g PC-FR; face plate 42.9 g, carrier 18.1 g, back cover 8.3 g PETG | 79.1 g | 2.7 h | 0.99 | 0.06 | 0.24 | **1.29** |
-| EU switch only | cap 9.7 g PC-FR; face plate 27.2 g, carrier 4.6 g PETG | 41.5 g | 1.5 h | 0.57 | 0.03 | 0.13 | **0.73** |
-| EU battery-free | cap 9.8 g PC-FR; face plate 27.2 g, carrier 4.6 g, back cover 8.3 g PETG | 49.9 g | 1.9 h | 0.67 | 0.04 | 0.16 | **0.87** |
+| NA full | barrier 51.9 g PC-FR; face plate 23.2 g, back cover 8.3 g PETG | 83.4 g | 3.3 h | 1.54 | 0.08 | 0.29 | **1.91** |
+| NA switch only | barrier 51.3 g PC-FR; face plate 16.0 g PETG | 67.2 g | 2.6 h | 1.36 | 0.06 | 0.23 | **1.65** |
+| NA battery-free | barrier 51.7 g PC-FR; face plate 16.0 g, back cover 8.3 g PETG | 76.0 g | 3.0 h | 1.46 | 0.07 | 0.27 | **1.80** |
+| EU full | barrier 9.8 g PC-FR; face plate 42.9 g, carrier 18.1 g, back cover 8.3 g PETG | 79.1 g | 2.7 h | 0.99 | 0.06 | 0.24 | **1.29** |
+| EU switch only | barrier 9.7 g PC-FR; face plate 27.2 g, carrier 4.6 g PETG | 41.5 g | 1.5 h | 0.57 | 0.03 | 0.13 | **0.73** |
+| EU battery-free | barrier 9.8 g PC-FR; face plate 27.2 g, carrier 4.6 g, back cover 8.3 g PETG | 49.9 g | 1.9 h | 0.67 | 0.04 | 0.16 | **0.87** |
 
 Sources and assumptions:
 

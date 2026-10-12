@@ -21,7 +21,7 @@ import pcbnew
 
 ROOT = Path(__file__).resolve().parents[2]
 ARGS = sys.argv[1:]
-BOARD = Path(ARGS[0]).resolve() if ARGS else ROOT / "pcb" / "kicad" / "wiring_board.kicad_pcb"
+BOARD = Path(ARGS[0]).resolve() if ARGS else ROOT / "pcb" / "na" / "kicad" / "na_mains_board.kicad_pcb"
 NAME = ARGS[1] if len(ARGS) > 1 else BOARD.stem
 OUT = ROOT / "docs" / "renders"
 RENDER = ["kicad-cli", "pcb", "render", "--quality", "high", "--width", "1600", "--height", "1200"]
@@ -52,7 +52,7 @@ def has_back_copper(board):
 
 
 def crop(png, pad=40):
-    """Trim the plotted page down to the board."""
+    """Face plate the plotted page down to the board."""
     from PIL import Image, ImageChops
     im = Image.open(png).convert("RGB")
     bbox = ImageChops.difference(im, Image.new("RGB", im.size, "white")).getbbox()

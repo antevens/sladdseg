@@ -1,24 +1,23 @@
 """EU bought-in parts and boards as envelopes (D-30, D-36), for clearance checks and renders only:
 the BILRESA model, the supplied steel piece in the pocket floor's recess, the emergency rocker, the mains board
 (rocker, WAGO blocks, fuse, MOV, PSU over its relief slot, header on the 5 V island) and the 5 V
-board (socket, capacitor, spring pins up through the cap onto the cap board's and the back cover's pads, R9).
+board (socket, capacitor, spring pins up through the barrier onto the sensor board's and the back cover's pads, R9).
 """
 from build123d import Box, Cylinder, Pos
 from params_eu import *
-import params as na
 
 
 def remote(lift=0.0):
-    """BILRESA model (bilresa.py seats it at the NA SEAT_Z) moved onto the cap."""
+    """BILRESA model on the barrier's pocket floor."""
     import bilresa
-    return Pos(0, 0, SEAT_Z - na.SEAT_Z + lift) * bilresa.build()
+    return bilresa.build(SEAT_Z, lift)
 
 
 def magnet():
     """The cut steel piece in the pocket floor's recess: round end down (-y), the cut edge up towards the switch cup."""
     t, r = MAGNET[2] - 0.01, MAGNET_END_R
     z = (MAGNET_Z[0] + MAGNET_Z[1]) / 2 - 0.005
-    y0, y1 = EU_MAGNET_Y - MAGNET[1] / 2, EU_MAGNET_Y + MAGNET[1] / 2
+    y0, y1 = MAGNET_REC_Y - MAGNET[1] / 2, MAGNET_REC_Y + MAGNET[1] / 2
     body = Pos(0, (y0 + r + y1) / 2, z) * Box(MAGNET[0], y1 - y0 - r, t)
     return body + Pos(0, y0 + r, z) * Cylinder(r, t)
 
@@ -49,18 +48,18 @@ def _notched(disc, z0, t):
     return disc
 
 
-def board():
-    """5 V board: the box circle less clearance, cut straight below the switch cup, notched round
+def pin_board():
+    """pin board: the box circle less clearance, cut straight below the switch cup, notched round
     the domes; holes for its screws and for the mains board's long boss."""
-    z = WB_FRONT - WB_T / 2
-    disc = Pos(0, 0, z) * Cylinder(WB_R, WB_T)
-    disc &= Pos(0, WB_CUT_Y - 50, z) * Box(100, 100, WB_T + 1)
-    disc = _notched(disc, WB_FRONT, WB_T)
-    for x, y in WB_MOUNT:
-        disc -= Pos(x, y, z) * Cylinder(WB_MOUNT_D / 2, WB_T + 1)
+    z = PB_FRONT - PB_T / 2
+    disc = Pos(0, 0, z) * Cylinder(PB_R, PB_T)
+    disc &= Pos(0, PB_CUT_Y - 50, z) * Box(100, 100, PB_T + 1)
+    disc = _notched(disc, PB_FRONT, PB_T)
+    for x, y in PB_MOUNT:
+        disc -= Pos(x, y, z) * Cylinder(PB_MOUNT_D / 2, PB_T + 1)
     for x, y in MB_BOSS:
-        if y < WB_CUT_Y:
-            disc -= Pos(x, y, z) * Cylinder(MB_BOSS_D / 2 + MB_BOSS_CLR, WB_T + 1)
+        if y < PB_CUT_Y:
+            disc -= Pos(x, y, z) * Cylinder(MB_BOSS_D / 2 + MB_BOSS_CLR, PB_T + 1)
     return disc
 
 
@@ -68,13 +67,13 @@ def mains_board():
     """Mains board: the box circle less clearance, notched round the domes, the relief slot under the
     PSU, holes for the long bosses."""
     z = MB_FRONT - MB_T / 2
-    disc = _notched(Pos(0, 0, z) * Cylinder(WB_R, MB_T), MB_FRONT, MB_T)
+    disc = _notched(Pos(0, 0, z) * Cylinder(PB_R, MB_T), MB_FRONT, MB_T)
     x0, x1, ys, w = MB_SLOT
     disc -= Pos((x0 + x1) / 2, ys, z) * Box(x1 - x0, w, MB_T + 1)
     for x in (x0, x1):
         disc -= Pos(x, ys, z) * Cylinder(w / 2, MB_T + 1)
     for x, y in MB_BOSS:
-        disc -= Pos(x, y, z) * Cylinder(WB_MOUNT_D / 2, MB_T + 1)
+        disc -= Pos(x, y, z) * Cylinder(PB_MOUNT_D / 2, MB_T + 1)
     return disc
 
 
@@ -88,22 +87,22 @@ def domes():
 
 
 def pins():
-    """Sensor spring pins (P70-2200045) on the 5 V board's front at the design working height, tips on the cap board's
+    """Sensor spring pins (P70-2200045) on the pin board's front at the design working height, tips on the sensor board's
     pads."""
     from common import pogo
     out = None
     for x, y in PINS:
-        p = pogo(x, y, WB_FRONT, CB_PAD_Z, PIN_FLANGE, PIN_BARREL, PIN_PLUNGER_D)
+        p = pogo(x, y, PB_FRONT, SB_PAD_Z, PIN_FLANGE, PIN_BARREL, PIN_PLUNGER_D)
         out = p if out is None else out + p
     return out
 
 
 def bf_pins():
-    """Battery-free spring pins (P70-2200045) on the 5 V board's front, tips on the back cover's pads (D-54, D-59)."""
+    """Battery-free spring pins (P70-2200045) on the pin board's front, tips on the back cover's pads (D-54, D-59)."""
     from common import pogo
     out = None
     for x, y in BC_FINGERS:
-        p = pogo(x, y, WB_FRONT, BF_TIP_Z, PIN_FLANGE, PIN_BARREL, PIN_PLUNGER_D)
+        p = pogo(x, y, PB_FRONT, BF_TIP_Z, PIN_FLANGE, PIN_BARREL, PIN_PLUNGER_D)
         out = p if out is None else out + p
     return out
 
@@ -117,7 +116,7 @@ def wago():
     their far face (90 deg to the PCB)."""
     out = None
     for c in MB_WAGO_C:
-        b = Pos(*c, MB_BACK - WAGO_EU[2] / 2) * Box(WAGO_EU[1], WAGO_EU[0], WAGO_EU[2])
+        b = Pos(*c, MB_BACK - WAGO2[2] / 2) * Box(WAGO2[1], WAGO2[0], WAGO2[2])
         out = b if out is None else out + b
     return out
 
@@ -126,8 +125,8 @@ def _ep():
     import sys
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "pcb" / "eu" / "tools"))
-    import eu_parts
-    return eu_parts
+    import parts_eu
+    return parts_eu
 
 
 def _boxes(sizes, parts, z0):
@@ -142,13 +141,13 @@ def _boxes(sizes, parts, z0):
 
 
 def front_parts():
-    """Capacitor on the 5 V board's front (position from pcb/eu/tools/eu_parts.py)."""
-    return _boxes(FRONT_PARTS, _ep().LV_PARTS, WB_FRONT)
+    """Capacitor on the pin board's front (position from pcb/eu/tools/parts_eu.py)."""
+    return _boxes(FRONT_PARTS, _ep().PB_PARTS, PB_FRONT)
 
 
 def mains_front_parts():
     """Fuse and varistor on the mains board's front."""
-    return _boxes(MB_FRONT_PARTS, _ep().MAINS_PARTS, MB_FRONT)
+    return _boxes(MB_FRONT_PARTS, _ep().MB_PARTS, MB_FRONT)
 
 
 def header_body():
@@ -167,12 +166,12 @@ def header():
 
 
 def socket():
-    """2-pin socket on the 5 V board's back, over the header."""
+    """2-pin socket on the pin board's back, over the header."""
     x, y = MB_HDR
-    return Pos(x, y - HDR[0] / 2, WB_BACK - SOCKET[2] / 2) * Box(SOCKET[0], SOCKET[1], SOCKET[2])
+    return Pos(x, y - HDR[0] / 2, PB_BACK - SOCKET[2] / 2) * Box(SOCKET[0], SOCKET[1], SOCKET[2])
 
 
 def parts():
-    return {"board": board(), "mains_board": mains_board(), "psu": psu(), "wago": wago(), "switch": switch(),
+    return {"board": pin_board(), "mains_board": mains_board(), "psu": psu(), "wago": wago(), "switch": switch(),
             "magnet": magnet(), "front": front_parts(), "mains_front": mains_front_parts(), "header": header(),
             "socket": socket(), "pins": pins(), "bf_pins": bf_pins()}

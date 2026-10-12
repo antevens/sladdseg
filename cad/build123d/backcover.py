@@ -487,7 +487,7 @@ def cover_parts(free=False):
 
 def remote_front():
     """The remote above its parting line (its own back cover removed), z = 0 its back face."""
-    r = Pos(0, 0, -SEAT_Z) * bilresa.build()
+    r = bilresa.build()
     r &= Pos(0, 0, 50 + B_SEAM_Z) * Box(200, 200, 100)
     return r
 

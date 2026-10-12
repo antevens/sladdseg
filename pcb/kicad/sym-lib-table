@@ -1,4 +1,0 @@
-(sym_lib_table
-	(version 7)
-	(lib (name "wiring_board")(type "KiCad")(uri "${KIPRJMOD}/wiring_board.kicad_sym")(options "")(descr "Project symbols"))
-)

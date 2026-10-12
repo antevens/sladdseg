@@ -1,4 +1,6 @@
 (sym_lib_table
 	(version 7)
 	(lib (name "eu")(type "KiCad")(uri "${KIPRJMOD}/eu.kicad_sym")(options "")(descr "EU board symbols"))
+	(lib (name "eu_mains")(type "KiCad")(uri "${KIPRJMOD}/eu_mains.kicad_sym")(options "")(descr "EU board symbols"))
+	(lib (name "lv")(type "KiCad")(uri "${KIPRJMOD}/lv.kicad_sym")(options "")(descr "Low-voltage board symbols"))
 )

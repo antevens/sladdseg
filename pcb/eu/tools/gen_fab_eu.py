@@ -1,20 +1,20 @@
-"""Write the PCBWay BOM and centroid files of an EU board into pcb/eu/fab/<board>/ from eu_parts.py.
+"""Write the PCBWay BOM and centroid files of an EU board into pcb/eu/fab/<board>/ from parts_eu.py.
 
-Usage: python3 gen_fab_eu.py BOARD POS_CSV   (BOARD: eu_mains_board or eu_5v_board; POS_CSV from
+Usage: python3 gen_fab_eu.py BOARD POS_CSV   (BOARD: eu_mains_board or eu_pin_board; POS_CSV from
 `kicad-cli pcb export pos --format csv`). Parts in DNP are left out of the centroid and listed as not
 fitted in the BOM; mounting holes (in_bom False) are left out of both.
 """
 import csv
 import sys
 from pathlib import Path
-import eu_parts as ep
+import parts_eu as ep
 
 FAB = Path(__file__).resolve().parents[1] / "fab"
-PARTS = {ep.MAINS: ep.MAINS_PARTS, ep.LV: ep.LV_PARTS}
-# S1 snaps into the printed cap's cup from the front before it can be soldered (D-36)
-DNP = {ep.MAINS: {"S1": "Do not fit. Soldered by hand after the rocker is snapped into the printed cap"}}
+PARTS = {ep.MB: ep.MB_PARTS, ep.PB: ep.PB_PARTS}
+# S1 snaps into the printed barrier's cup from the front before it can be soldered (D-36)
+DNP = {ep.MB: {"S1": "Do not fit. Soldered by hand after the rocker is snapped into the printed barrier"}}
 NOTES = {
-    ep.MAINS: {
+    ep.MB: {
         "PS1": "Safety-critical, do not substitute. Back (B) side over the routed relief slot, sit flush",
         "J1": "Safety-critical, do not substitute. Back (B) side, levers towards the board centre",
         "J2": "Safety-critical, do not substitute. Back (B) side, levers towards the board centre",
@@ -22,7 +22,7 @@ NOTES = {
         "RV1": "Safety-critical, do not substitute without review",
         "J3": "SMT header on the 5 V island (no pin tails under the PSU)",
     },
-    ep.LV: {
+    ep.PB: {
         "P1": "SMT spring pin, front (F), peg into the 1.2 mm hole",
         "P2": "SMT spring pin, front (F), peg into the 1.2 mm hole",
         "P3": "SMT spring pin, front (F), peg into the 1.2 mm hole",

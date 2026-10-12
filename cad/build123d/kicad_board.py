@@ -1,15 +1,13 @@
-"""Read footprint placement from the wiring board's .kicad_pcb (no pcbnew needed).
+"""Read footprint placement from a board's .kicad_pcb (no pcbnew needed).
 
 Coordinates are returned in the CAD frame: front-view x, y up, origin at the board
-outline's centre shifted by WB_Y.
+outline's centre shifted by y0.
 """
 import math
 import re
 from pathlib import Path
-from params import WB_Y
 
 ROOT = Path(__file__).resolve().parents[2]
-WB_PCB = ROOT / "pcb" / "kicad" / "wiring_board.kicad_pcb"
 _TOKEN = re.compile(r'\(|\)|"(?:[^"\\]|\\.)*"|[^\s()]+')
 
 
@@ -40,8 +38,9 @@ def _xy(node):
 
 
 class Board:
-    def __init__(self, path=None):
-        self.root = _parse(Path(path or WB_PCB).read_text())
+    def __init__(self, path, y0=0.0):
+        self.y0 = y0
+        self.root = _parse(Path(path).read_text())
         pts = []
         for item in self.root:
             if isinstance(item, list) and item[0] in ("gr_line", "gr_arc", "gr_rect"):
@@ -67,7 +66,7 @@ class Board:
         a = math.radians(rot)
         kx = fp_x + lx * math.cos(a) + ly * math.sin(a)
         ky = fp_y - lx * math.sin(a) + ly * math.cos(a)
-        return kx - self.cx, self.cy - ky + WB_Y
+        return kx - self.cx, self.cy - ky + self.y0
 
     def fab_box(self, ref):
         """(xmin, xmax, ymin, ymax) of the footprint's fabrication outline in CAD coordinates."""

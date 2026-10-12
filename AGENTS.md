@@ -6,36 +6,35 @@ parts.
 
 ## What this project is
 
-A replacement for a North American single-gang light switch (Decora/Leviton,
-Canada, BC) in a house where every bulb is an IKEA Matter-over-Thread smart
-bulb. Bulbs stay powered; control is wireless. Each plate holds:
+A replacement for a light switch in a house where every bulb is an IKEA Matter-over-Thread smart bulb. Bulbs stay
+powered; control is wireless. Two variants, equal in every respect: **NA** for a North American single-gang box
+(Decora/Leviton; Canada, BC) and **EU** for a European round flush box (DIN 49073). Each plate holds:
 
-- an **IKEA BILRESA scroll-wheel remote**, kept intact (batteries in), recessed
-  into the box; the adhesive steel plate supplied with it, cut to an 18.5 mm
-  piece (D-43, D-52), sits in a recess in the pocket floor and the remote's
+- an **IKEA BILRESA scroll-wheel remote**, kept intact (batteries in), in a pocket in the barrier; the adhesive steel
+  plate supplied with it, cut to an 18.5 mm piece (D-43, D-52), sits in a recess in the pocket floor and the remote's
   internal magnet holds onto it; the remote lifts out;
-- a **hidden emergency rocker** behind the remote (Marquardt 1802.2504, DPST,
-  PCB pins, D-26) breaking line and neutral of the lighting load. Off = bulbs
-  AND sensor de-powered. Off→on with bulbs set to power-on "On" = lights on when
-  Home Assistant is down;
-- a **wiring board** (D-24, D-25) carrying the rocker, a WAGO 2604-1106 push-in
-  block for L/N/PE in and out, and a **Mean Well IRM-03-5** (5 V / 600 mA) fed
-  from the **switched side**, powering the MSR-2;
-- a **ring board** (D-50, D-68): FR4 round the insert's collar, against the wall,
-  pressed onto crush ribs on the collar and clamped by the flange's land; covered by
-  the face plate; 5 V from the wiring board over a stock FFC. On it:
-  - an **Apollo MSR-2** (ESP32-C3 + LD2410B mmWave, ESPHome over Wi-Fi) on its
-    rear connector (CN2), in a bay above the remote behind a 0.6 mm radar skin (D-51);
-  - an **SHT40** temp/humidity sensor in its own vented bay below the remote
-    (I²C from the MSR-2);
-  - a **top-port PDM MEMS microphone** (Knowles SPK0641HT4H-1) with an **ADAU7002**
-    PDM-to-I²S converter beside it (the ESP32-C3 has no PDM input), under the face
-    plate's sound column to a hole in the face skin, push-to-talk voice to Home
-    Assistant started from HA (D-29, D-83);
-- a passive **face plate** (trim): no electronics, no contacts;
-- for the battery-free remote, two **spring pins** on a riser board on two
-  spacer posts from the wiring board's 5 V area, through the pocket floor onto
-  pads on the replacement back cover (D-35, D-50).
+- a **hidden emergency rocker** behind the remote (Marquardt 1802.2504, DPST, PCB pins, D-26) breaking line and
+  neutral of the lighting load. Off = bulbs AND sensors de-powered. Off→on with bulbs set to power-on "On" = lights
+  on when Home Assistant is down;
+- a printed **barrier** (UL94 V-0) between the mains volume and the low-voltage side: an barrier in the NA box, a barrier
+  over the EU box;
+- a **mains board** (D-24, D-25, D-36) carrying the rocker, WAGO 2604 push-in blocks for the house wiring and a
+  certified 5 V PSU fed from the **switched side** (NA: Mean Well IRM-03-5; EU: Zettler ZPI03S0500WC);
+- a **sensor board** (D-50, D-68, D-70) under the face plate, 5 V from the mains board (NA: stock FFC; EU: spring
+  pins). On it:
+  - an **Apollo MSR-2** (ESP32-C3 + LD2410B mmWave, ESPHome over Wi-Fi) on its rear connector (CN2), in a bay
+    above the remote behind a 0.6 mm radar skin (D-51);
+  - an **SHT40** temp/humidity sensor in its own vented bay below the remote (I²C from the MSR-2);
+  - a **top-port PDM MEMS microphone** (Knowles SPK0641HT4H-1) with an **ADAU7002** PDM-to-I²S converter beside it
+    (the ESP32-C3 has no PDM input), under the face plate's sound column to a hole in the face skin, push-to-talk
+    voice to Home Assistant started from HA (D-29, D-83);
+- a passive **face plate**: no electronics, no contacts (EU: snapped into a printed carrier that holds the sensor
+  board);
+- for the battery-free remote, **spring pins** on a **pin board** (NA: on two spacer posts from the mains board's
+  5 V area; EU: on the 5 V header from the mains board), through the pocket floor onto pads on the replacement back
+  cover (D-35, D-50, D-54).
+
+Three editions of each variant (D-109, D-122): switch only, battery-free, full.
 
 Home Assistant runs on an Nvidia Orin NX. No Shelly / smart relay: deliberately
 removed.
@@ -46,42 +45,37 @@ removed.
 AGENTS.md            this file (CLAUDE.md imports it)
 docs/                DESIGN (requirements + decisions), SAFETY, BOM,
                      MEASUREMENTS (placeholders to fill), PRINTING, ASSEMBLY (what holds each part), renders/
-cad/build123d/       ACTIVE parametric CAD (Python, build123d)
-  params.py          single source of truth for ALL geometry
-  insert.py          box insert (ALL barrier geometry, rocker panel, UL94 V-0); plain: no 5 V cable bore (D-109)
-  trim.py            trim plate (face, MSR-2 / SHT40 bays); plain: standard-size plate, no bays (D-109)
-  standoff.py        wiring board standoffs: Keystone 25503 nylon M3, screwed into the insert's bosses (D-57)
-  ring.py            ring board, its parts and microphone, riser board, spring pins, spacer posts (D-50)
-  jumper.py          5 V FFC: wiring board J2 (FH12) -> pass-through -> ring board J1 (D-50)
+cad/build123d/       ACTIVE parametric CAD (Python, build123d); the parts both variants share at the top
+  params.py          geometry both variants share (remote, back cover, rocker, MSR-2, mic, pins)
   backcover.py       replacement back cover geometry (D-35, D-50, D-79)
-  plate_jig.py       hacksaw guide for cutting the supplied steel plate (D-52, D-81)
-  common.py          small geometry helpers shared by the printed parts
   bilresa.py         BILRESA remote model (rounded back, wheel; MEASURE sizes)
   msr2.py            Apollo MSR-2 + SCD40 CO2 add-on model (datasheets, Apollo's case, photo estimates; D-64)
-  coupons.py         fast test-fit coupons
-  export.py          print-oriented STLs -> build/print/
-  assembly.py        insert + trim + envelopes + board STEP -> build/assembly.step
-  checks.py          `make check`: dims, board fit, barrier continuity,
-                     printability, terminal entry vs. PSU
-  kicad_board.py     reads footprint placement from the wiring board's .kicad_pcb
-  renders.py         2D section sheet; render3d.py shaded 3D views (pyvista)
-  render_backcover.py  back cover renders (with its flex lifted off: bc_flex*.png)
-  eu/                EU variant (D-30, own design for a round DIN 49073 box): params_eu, cap_eu
-                     (V-0 barrier), trim_eu, capboard_eu (cap board, carrier, MSR-2 on CN2),
-                     testbox_eu (printed test socket, D-76), boards_eu, checks_eu, render_eu (`make eu`)
+  plate_jig.py       hacksaw guide for cutting the supplied steel plate (D-52, D-81)
+  common.py          small geometry helpers shared by the printed parts
+  kicad_board.py     reads footprint placement from a board's .kicad_pcb
+  checks.py          checks of the shared parts and the helpers both variants' checks use
+  render.py          pyvista render helpers; render_shared.py the shared parts' renders (bc_*, msr2_*, ...)
+  export.py          print-oriented STLs of every printed part -> build/print/
+  na/                NA variant (single-gang box): params_na, barrier_na (the barrier: ALL barrier geometry,
+                     rocker panel, UL94 V-0), face_plate_na, sensor_board_na (sensor board, its parts, pin board,
+                     spring pins, spacer posts), standoff_na (Keystone 25503 nylon standoffs, D-57), jumper_na
+                     (5 V FFC, D-50), coupons_na (test-fit coupons), assembly_na, checks_na, render_na,
+                     sections_na (`make na`)
+  eu/                EU variant (round DIN 49073 box, D-30): params_eu, barrier_eu (the barrier: V-0 barrier),
+                     face_plate_eu, sensor_board_eu (sensor board, carrier, MSR-2 on CN2), boards_eu (mains and pin
+                     board envelopes), testbox_eu (printed test socket, D-76), checks_eu, render_eu (`make eu`)
 cad/tools/           sections.py (section renders for review), check_renders.py (render inventory)
-pcb/                 all boards (README: overview of every board; the wiring board's parts, nets, rules, open items)
-  kicad/             KiCad 9 project (generated by pcb/tools/), DRC rules
-  tools/             generators + build.sh (edit tools/parts.py)
-  fab/               PCBWay order pack: Gerbers, BOM, centroid, PDFs, checklist
-  sensor/            ring board, riser board, back cover flex, EU cap board (D-50,
-                     D-35, D-56, D-70): kicad/, tools/ (edit sensor_parts.py, eu_capboard_parts.py), fab/
-  eu/                EU mains board + 5 V board (D-30, D-36): kicad/, tools/ (edit eu_parts.py)
+pcb/                 all boards (README: overview)
+  na/                NA mains board, sensor board, pin board: kicad/, tools/ (edit parts_na.py, lv_parts_na.py),
+                     fab/ (PCBWay packs, review checklist)
+  eu/                EU mains board, pin board, sensor board: kicad/, tools/ (edit parts_eu.py, lv_parts_eu.py), fab/
+  shared/            back cover flex (kicad/, tools/lv_parts.py) and the low-voltage board generator (tools/gen_lv.py)
+  tools/             helpers every generator uses (kigen, fplib, common_parts, gen_3d), render_bare, order tools
   order/             DigiKey / Mouser order lists for test plates (`make order`, tools/order_bom.py; stock and
                      upload: tools/distributors.py)
 print/               OrcaSlicer projects (*.3mf) for the CC2, slice.py, profiles/
 reference/v0.1-openscad/  FROZEN first pass (OpenSCAD). Do not edit.
-build/               generated outputs (git-ignored)
+build/               generated outputs (git-ignored): build/na/, build/eu/, build/print/
 scratch/             git-ignored: 3d/ vendor STEP models (read by pcb/tools/gen_3d.py),
                      sources/ datasheets, FCC photos, remote photos
 ```
@@ -91,43 +85,46 @@ scratch/             git-ignored: 3d/ vendor STEP models (read by pcb/tools/gen_
 ```bash
 make system-deps # apt: KiCad 9, venv, headless OrcaSlicer libs (Ubuntu 24.04)
 make setup       # venv + requirements + pinned OrcaSlicer in .tools/ (once)
-make pcb         # wiring board, ring board, riser, cover flex, EU boards: ERC + DRC, fab packs
+make pcb         # every board, NA, EU and shared: ERC + DRC, fab packs
 make cad         # STEP/STL into build/, print STLs into build/print/
-make check       # geometry, barrier, board fit, printability, render inventory - must pass
+make check       # shared parts, NA and EU: geometry, barrier, board fit, printability, render inventory - must pass
 make print       # OrcaSlicer projects + G-code (SLICER=... overrides the pin)
-make renders     # docs/renders/*.png: every group whose sources changed (sections, 3D views, EU, boards)
+make renders     # docs/renders/*.png: every group whose sources changed (NA, EU, shared parts, boards)
 make check-renders  # no render older than its sources, every render used by a doc - must pass
+make na          # NA variant: CAD to build/na, NA checks, NA renders
 make eu          # EU variant: CAD to build/eu, EU checks, EU renders
 make order       # DigiKey / Mouser CSVs: one NA plate, one EU plate, a devkit (5 NA + 5 EU); PCBWay devkit packs
 make stock       # live DigiKey / Mouser stock and lifecycle, parts rule D-84 (keys: pcb/order/README.md)
 make order-push  # DigiKey myLists link + Mouser cart: 1 NA plate by default (VARIANT=na|eu|both, PLATES, PRIMARY)
 ```
 
-KiCad 9.x (`kicad-cli` on PATH). `pcb/tools/build.sh` runs the generators with
-KICAD_PYTHON (default `python3`, needs `import pcbnew`) and the 3D envelopes
-with CAD_PYTHON (default `.venv/bin/python`). It gates on:
+KiCad 9.x (`kicad-cli` on PATH). `pcb/na/tools/build.sh`, `pcb/eu/tools/build.sh` and `pcb/shared/tools/build.sh`
+run the generators with KICAD_PYTHON (default `python3`, needs `import pcbnew`) and the 3D envelopes with CAD_PYTHON
+(default `.venv/bin/python`). Each gates on every board of its folder, for example:
 
 ```bash
-kicad-cli sch erc --severity-all --exit-code-violations pcb/kicad/wiring_board.kicad_sch
-kicad-cli pcb drc --severity-all --schematic-parity --exit-code-violations pcb/kicad/wiring_board.kicad_pcb
+kicad-cli sch erc --severity-all --exit-code-violations pcb/eu/kicad/eu_mains_board.kicad_sch
+kicad-cli pcb drc --severity-all --schematic-parity --exit-code-violations pcb/eu/kicad/eu_mains_board.kicad_pcb
 ```
 
 ## Conventions
 
 - Units: millimetres. Coordinates: X width, Y up, Z out of the wall; z=0 = wall
   surface; z<0 = inside the box = **mains side**.
-- Nothing may be soldered or plugged between the face plate (trim) and the insert / cap: every
+- Nothing may be soldered or plugged between the face plate and the barrier: every
   electrical interface across that split is a spring ("pogo") contact (DESIGN R9).
 - 5 V connections, NA and EU: prefer spring ("pogo") contacts between boards and modules. Use a
   flex with a latching connector and room for hands only where spring contacts cannot reach,
   and record why in DESIGN (R10; NA 5 V stock FFC, D-50).
 - Mains connections: house wiring and every mains lead end in WAGO push-in terminals on the
   board; no soldered mains leads (R10).
-- Every dimension lives in `cad/build123d/params.py`. Never hard-code a number
-  in a model that belongs in params. The KiCad board is generated from
-  `pcb/tools/parts.py`; its size and the J1 / PS1 / J2 positions are mirrored
-  in params (`WB`, `WAGO_*`, `IRM_C`, `J2_POS`), and `make check` compares them
-  with the board file and STEP. Change both together.
+- Every dimension lives in the params files: `cad/build123d/params.py` for what both variants share,
+  `na/params_na.py` and `eu/params_eu.py` for each variant. Never hard-code a number in a model that belongs in
+  params. The boards are generated from the part files in `pcb/<variant>/tools/`; the board positions the CAD uses
+  are mirrored in the params (NA: `MB`, `WAGO_*`, `IRM_C`, `J2_POS`; EU: `PB_MOUNT`, `MB_BOSS`, `MB_HDR`, ...), and
+  `make check` compares them with the board files and STEP. Change both together.
+- Variants are equal: name a file, render, print job or board by what it is with an `na_` / `eu_` prefix or
+  `_na` / `_eu` suffix, never one variant bare; parts both use stay unprefixed (D-125).
 - Values tagged `MEASURE` are placeholders. **Do not replace them with guesses
   or values "found online".** Only use readings recorded in
   `docs/MEASUREMENTS.md` or datasheet values with a cited source. If a task
@@ -244,18 +241,18 @@ General rules for any agent working in this repo.
 
 Do not violate these; ask the human if a task seems to require it.
 
-1. **Mains wiring board (D-23, human decision 2026-10-07).** The lighting
+1. **Mains mains board (D-23, human decision 2026-10-07).** The lighting
    circuit's line, neutral and ground (PE) enter and leave on the PCB through
    listed push-in terminals: L in → certified rocker → switched L out, N in → N
    out, PE in → PE out. Only the rocker switches the load. Every mains path,
    PE included, is sized for 15 A continuous (IPC-2221, ≤10 °C rise) and for
    fault current until the branch breaker trips. Line copper on one side of the
    board, neutral on the other, PE copper along both sides.
-2. **Barrier continuity (D-80).** NA: the box insert's pocket shell + switch
+2. **Barrier continuity (D-80).** NA: the barrier's pocket shell + switch
    well + collar separate the mains volume (box) from the low-voltage volume
    (plate hollow, remote pocket). No openings may be added except the single 5 V
    FFC bore (D-74) and the two spring-pin holes in the pocket floor, each filled
-   by its pin's barrel (D-50, human decision 2026-10-10). EU: the cap is the whole
+   by its pin's barrel (D-50, human decision 2026-10-10). EU: the barrier is the whole
    barrier; its only openings are the four spring-pin holes, each filled by its
    pin's barrel (D-54, D-59), and the two device-screw holes, each filled by its
    screw. On both, the rocker's panel cutout is closed by the rocker body.
@@ -285,56 +282,56 @@ Do not violate these; ask the human if a task seems to require it.
 
 The decision log in `docs/DESIGN.md` (D-50..D-79 for v0.4, D-80..D-119 for v0.5, D-120 on for v0.6) has the history.
 
-NA: box insert (PC-FR barrier) and passive face plate; wiring board (rocker, WAGO block, PSU,
-J2) on four nylon standoffs (D-57), ERC/DRC clean, PCBWay pack in `pcb/fab/`; ring board on the
-insert's collar (crush ribs, D-68) with the MSR-2 on CN2, the SHT40 and the microphone + ADAU7002 (D-83); 5 V over
+NA: barrier (the insert, PC-FR) and passive face plate; mains board (rocker, WAGO block, PSU,
+J2) on four nylon standoffs (D-57), ERC/DRC clean, PCBWay pack in `pcb/na/fab/na_mains_board/`; sensor board on the
+barrier's collar (crush ribs, D-68) with the MSR-2 on CN2, the SHT40 and the microphone + ADAU7002 (D-83); 5 V over
 a stock FFC through one straight bore (D-74); battery-free remote on two Harwin P70 spring pins
-from a riser on two spacer posts (D-59, D-60, D-79).
+from a pin board on two spacer posts (D-59, D-60, D-79).
 
-EU: cap (barrier), mains board and 5 V board (PCBWay packs in `pcb/eu/fab/`); cap board on a
-printed carrier pinned to the wall by the cap (D-70, D-71), the MSR-2 straight on it; face plate
-snapped into the carrier (D-77); steel piece in the cap's pocket floor (D-72); printed test socket
+EU: barrier (the cap, PC-FR), mains board and pin board (PCBWay packs in `pcb/eu/fab/`); sensor board on a
+printed carrier pinned to the wall by the barrier (D-70, D-71), the MSR-2 straight on it; face plate
+snapped into the carrier (D-77); steel piece in the barrier's pocket floor (D-72); printed test socket
 (D-76).
 
-Both: replacement back cover with regulator, pads and spring fingers (D-35, D-41, D-79); KiCad for
-the ring board, riser, cover flex and EU cap board (ERC/DRC clean; fab pack for the riser only); the
-microphone on the ring board and the EU cap board, no carrier (D-83); OrcaSlicer projects for every printed part (`print/`); what holds each
+Both variants: replacement back cover with regulator, pads and spring fingers (D-35, D-41, D-79); KiCad for
+the sensor boards and the cover flex (ERC/DRC clean; fab packs for the pin boards and the mains boards); the
+microphone on both sensor boards, no carrier (D-83); OrcaSlicer projects for every printed part (`print/`); what holds each
 part in `docs/ASSEMBLY.md`.
 
-Editions (D-109): full (above) and plain (rocker and battery-free remote only), NA and EU: plain insert / cap, plain
+Editions (D-109, D-122): full (above), battery-free (rocker and battery-free remote) and switch only, NA and EU: plain barriers, plain
 face plates (NA 69.85 × 114.3 mm, EU 80 × 80 mm), EU plain carrier; same boards less the sensor parts; checks, print
 jobs and order lists for both.
 
 Not done: caliper readings for the `MEASURE` and `ESTIMATE` values (several measured
 by the human 2026-10-09, see `docs/MEASUREMENTS.md`), test prints (under way),
-human review of the PCB checklists (`pcb/fab/README.md`, `pcb/eu/fab/README.md`),
-the MSR-2's CN2 contact map and pin 1 (part assumed: Molex 55909-2474 on a 51338-2474, D-82; land pattern from Molex's drawing, D-89; blocks the ring board's and the EU cap board's fab files),
+human review of the PCB checklists (`pcb/na/fab/README.md`, `pcb/eu/fab/README.md`),
+the MSR-2's CN2 contact map and pin 1 (part assumed: Molex 55909-2474 on a 51338-2474, D-82; land pattern from Molex's drawing, D-89; blocks both sensor boards' fab files),
 the cover flex's fab files (`COVER_CONFIRMED`), PC-FR datasheet (`V0_RATED_T`), ESPHome configuration.
 
 ## Backlog (in order)
 
 1. **Measurements and test prints** – help the human fill `docs/MEASUREMENTS.md`
-   (coupons first: the rocker ladder gives `SW_PANEL_T`, the crush-rib coupon `RING_RIB`; then the
-   PLA insert and trim, the back cover on a remote, the EU cap, carrier and trim in the test socket),
+   (coupons first: the rocker ladder gives `SW_PANEL_T`, the crush-rib coupon `SB_RIB`; then the
+   PLA barrier and face plate, the back cover on a remote, the EU barrier, carrier and face plate in the test socket),
    update params, `make cad check print`. Replace `ESTIMATE` values as readings come in.
 2. **CN2 (D-50, D-51, D-82, D-89)**: part assumed (Molex 55909-2474 plug, 51338-2474 on the MSR-2); land pattern
    from Molex's drawing (D-89); the contact map and pin 1 (from a GPIO add-on or Apollo); until then the
-   ring board and the EU cap board have no fab files. Microphone (D-83): pin 1 of the mic and the
+   sensor board and the EU sensor board have no fab files. Microphone (D-83): pin 1 of the mic and the
    ADAU7002 against parts, firmware test on an MSR-2 (16 kHz, I²S slot, C3 load).
-3. **Human review** of the PCB (`pcb/fab/README.md` checklist: F1 rating,
+3. **Human review** of the PCB (`pcb/na/fab/README.md` checklist: F1 rating,
    isolation, thermal, approvals) before ordering from PCBWay.
-4. Dry-fit prints (PLA insert + trim) in a real box; check the corner taper vs
-   box ears and the wire room behind the board. Then the PC-FR insert.
+4. Dry-fit prints (PLA barrier + face plate) in a real box; check the corner taper vs
+   box ears and the wire room behind the board. Then the PC-FR barrier.
 5. Rocker feel: confirm the panel thickness and that the latches hold.
 6. ESPHome YAML for MSR-2 + SHT40 + microphone (starting point in
-   `pcb/sensor/README.md`), once the CN2 contact map is known.
+   `pcb/shared/README.md`), once the CN2 contact map is known.
 7. Later: UK (86 mm, shallow back box) variant; versions for the BILRESA
    dual-button remote (E2489, outline and cells recorded from IKEA's drawing);
    jumbo-plate option; the EU stack in a real 47 mm box (the printed test socket, D-76,
    has markers at 40, 43, 60 and 63 mm). If the face plates are ever injection moulded: a front edge rounded
    into the window / remote cutout (human, 2026-10-12; FDM face-down cannot print a round tangent to the bed).
-8. Plain plates (D-109, modelled): test prints of the plain insert / face plate (NA) and the plain cap, carrier and
-   face plate (EU); the NA plate's 1.11 mm side wall beside the insert's flange on the print.
+8. Plain plates (D-109, modelled): test prints of the plain barrier / face plate (NA) and the plain barrier, carrier and
+   face plate (EU); the NA plate's 1.11 mm side wall beside the barrier's flange on the print.
 
 ## Open questions for the human
 

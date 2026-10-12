@@ -25,7 +25,7 @@ REF (published or third-party reference value in use until measured).
 | MAGNET | supplied adhesive plate w × h × t (with its tape): steel, rigid (human, 2026-10-10: cut with metal shears, a hacksaw or a grinder) | calipers | | TODO (size) |
 | MAGNET_Y | centre of the magnet inside the remote, from the remote centre | slide a steel piece over the back, mark the strongest pull | | TODO |
 | MAGNET_END_R | corner radius of the supplied steel plate's ends (the recess bottom follows it; the piece is cut straight at the top) | radius gauge or trace on paper | | TODO |
-| SW_PANEL_T | Marquardt 1802.2504 snap-in panel range | drawing 1802.2504 rev g: 0.75–3 mm, cutout length steps 19.2/19.4/19.8; 1.5 mm chosen; confirm on `coupon_rocker` | 1.5 | TODO |
+| SW_PANEL_T | Marquardt 1802.2504 snap-in panel range | drawing 1802.2504 rev g: 0.75–3 mm, cutout length steps 19.2/19.4/19.8; 1.5 mm chosen; confirm on `na_coupon_rocker` | 1.5 | TODO |
 | SW_BEZEL | 1802.2504 flange w × h | drawing 1802.2504 rev g | 21 × 24 (mounted 24 × 21) | DONE (datasheet) |
 | SW_ROCKER_H | rocker top above the panel face | drawing 1802.2504 rev g | 5.3 ± 0.5 | DONE (datasheet) |
 | SW_BODY | body w × h; PCB seat below the panel face | drawing 1802.2504 rev g | 18.6 × 22; 16.2 | DONE (datasheet) |
@@ -37,10 +37,10 @@ REF (published or third-party reference value in use until measured).
 | MSR2_USB_Y, MSR2_SW_X | USB-C centre across the board; Boot / RST button centres along it | Apollo case STL: USB opening y −9.65..1.35 about the cavity centre 1.19; button holes x ±4.0, 0.5..1.5 behind the board | −5.3; ±4.0 | REF |
 | MSR2_ESP_IN, MSR2_NOTCH, MSR2_CN1_IN, MSR2_CO2_BOARD, MSR2_LD_BACK, MSR2_LD_T, MSR2_LD_PARTS, MSR2_LD_PROP, MSR2_USB, MSR2_CN1_STACK | part positions and sizes on the MSR-2 and the CO2 add-on (radar height, add-on board, CN1 stack, antenna notch) | calipers | from Apollo wiki photos (CO2 add-on pics 7, 8, 10; GPIO header pic 3), scaled by the datasheet sizes | ESTIMATE |
 | MSR2_HOLES | the MSR-2's two plated holes on CN2's axis, one past each end of CN2: drill and spacing (locating pins for CN2 if they suit, D-64) | calipers, pin gauge | Ø0.9, CN2 centre ± 4.7 (photo scale) | ESTIMATE |
-| RING_RIB | crush rib interference into the ring board's window edge (holds for handling, no cracking) | coupon_ribs with the ring board or a 1.6 mm FR4 offcut | 0.15 (0.10 / 0.15 / 0.20 on the coupon) | TODO |
+| SB_RIB | crush rib interference into the sensor board's window edge (holds for handling, no cracking) | coupon_ribs with the sensor board or a 1.6 mm FR4 offcut | 0.15 (0.10 / 0.15 / 0.20 on the coupon) | TODO |
 | SNAP, SNAP_GROOVE, SNAP_WEB (EU) | the face plate's snap fingers in the carrier's closed windows (D-77): hold, release by pulling, the bump's 0.4 mm engagement, the 1.6 mm web to the bore | test fit of the PETG carrier and face plate | 2.4 × 6 mm fingers (8 mm key), 0.6 mm groove (design) | TODO |
 | MSR2_POSTS / spacers | the MSR-2's back under the three spacers free of parts; B2B_STACK equals the 1.5 mm spacers | look at the board's back; calipers on CN2 mated | (−9.8, −3.9), (6.35, −3.9), (−17.5, 1.5) | TODO |
-| MSR2_SW | Boot / RST switch body on the back: size and depth behind the board (it is deeper than the CN2 stack: notches in the ring board, D-64) | calipers | 4.0 × 3.0 × 2.0 | ESTIMATE |
+| MSR2_SW | Boot / RST switch body on the back: size and depth behind the board (it is deeper than the CN2 stack: notches in the sensor board, D-64) | calipers | 4.0 × 3.0 × 2.0 | ESTIMATE |
 | — | MSR-2 powered from the mezzanine header 5V/GND | bench test | yes (human, 2026-10-07) | DONE |
 | — | MSR-2 rear connector CN2: maker + MPN | look on the MSR-2 or ask Apollo; with an add-on plugged in, the board gap (1.5 mm: 51338, 1.8 mm: 500913) | assumed Molex 51338-2474; mate Molex 55909-2474 (D-82, human 2026-10-11) | ASSUMED |
 | — | CN2 contact-to-signal map (5V, 3V3, GND, SDA = IO1, SCL = IO0, I²S) on the 24 contacts | Apollo's add-on pinout, or a meter from an add-on's header to its plug | 24 contacts (55909-2474); map TODO | TODO |
@@ -50,17 +50,17 @@ REF (published or third-party reference value in use until measured).
 | — | MSR-2 current draw at 5 V (sizes the sensor board's input protection) | USB meter, radar on | | TODO |
 | LUX_POS | LTR-390 offset from board centre, and which face it is on (Apollo's backplate has a 2.4 mm square window at about (16.7, −8.5) from the centre, at a small windowed part on the board's back) | calipers, look at the board | (12.0, 0.0) placeholder; the grille's middle slot is centred on it (D-69) | TODO |
 | — | MSR-2 radar antenna position on board | photo | | TODO |
-| SHT | face plate bay over the SHT40 (DFN-4, 1.5 × 1.5 × 0.5, datasheet) on the ring board: vents and clearance | on a print with the ring board | 12.0 × 8.0 × 4.0 (bay) | TODO |
+| SHT | face plate bay over the SHT40 (DFN-4, 1.5 × 1.5 × 0.5, datasheet) on the sensor board: vents and clearance | on a print with the sensor board | 12.0 × 8.0 × 4.0 (bay) | TODO |
 | BOX_D | box depth, per room | ruler to back wall | | TODO |
 | BOX_DIA (EU) | DIN 49073 box inside diameter (device opening) | calipers on a box | 60.0 (catalogue, e.g. Kaiser 1555-04) | TODO |
 | BOX_HOLE (EU) | box rim outer diameter (hole in the wall) | calipers on a box | 68.0 (catalogue) | TODO |
 | DOME_PITCH (EU) | device screw domes: spacing of opposite domes | calipers on a box | 60.0 (catalogue) | TODO |
 | BOX_D (EU) | box depth | ruler to the box floor | 47.0 (catalogue) | TODO |
-| SOCKET (EU) | 1x2 2.54 mm pin socket on the 5 V board's back: body height (sets the header engagement, D-59) | part number + datasheet, or calipers | 8.5 (placeholder) | TODO |
+| SOCKET (EU) | 1x2 2.54 mm pin socket on the pin board's back: body height (sets the header engagement, D-59) | part number + datasheet, or calipers | 8.5 (placeholder) | TODO |
 | — | box material per room (metal/plastic) | look | | TODO |
 | — | neutral present per box (Y/N) | look/test with breaker off | | TODO |
-| — | box ear positions / intrusion into opening | calipers; the insert fills the opening corners to ~10 mm deep (45° taper) and the bottom end to 0.75 mm of the wall | | TODO |
-| V0_RATED_T | UL94 V-0 test thickness of the insert filament | filament TDS (cite) | Elegoo PC-FR data sheet states no UL94 class; deferred until a certified spool is chosen (2026-10-08) | TODO |
+| — | box ear positions / intrusion into opening | calipers; the barrier fills the opening corners to ~10 mm deep (45° taper) and the bottom end to 0.75 mm of the wall | | TODO |
+| V0_RATED_T | UL94 V-0 test thickness of the barrier filament | filament TDS (cite) | Elegoo PC-FR data sheet states no UL94 class; deferred until a certified spool is chosen (2026-10-08) | TODO |
 | — | 1802.2504 latch positions / spring-out below the panel | calipers | | TODO |
 | — | wall finish to box face offset | ruler | | TODO |
 

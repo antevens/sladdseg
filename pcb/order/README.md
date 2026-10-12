@@ -8,10 +8,10 @@ parts go up with `make order-push VARIANT=na-plain` (or `eu-plain`, `both-plain`
 
 | File | Contents |
 | --- | --- |
-| `unit_na_digikey.csv`, `unit_na_mouser.csv` | One NA plate: wiring board, ring board, riser, back cover flex; spacer studs, standoffs, FFC |
-| `unit_eu_digikey.csv`, `unit_eu_mouser.csv` | One EU plate: mains board, 5 V board, EU cap board, back cover flex; PE lever connector |
+| `unit_na_digikey.csv`, `unit_na_mouser.csv` | One NA plate: mains board, sensor board, pin board, back cover flex; spacer studs, standoffs, FFC |
+| `unit_eu_digikey.csv`, `unit_eu_mouser.csv` | One EU plate: mains board, pin board, EU sensor board, back cover flex; PE lever connector |
 | `devkit_digikey.csv`, `devkit_mouser.csv` | The devkit: 5 NA and 5 EU plates (`make order DEVKIT_SETS=n`); its 5 PCBs of each design are in `pcbway/` |
-| `pcbway/` | PCBWay packs for the devkit (5 PCBs of every design, 5 sets of parts per variant; ring board, EU cap board and cover flex as fit-test prototypes): option A (PCBWay fits the SMD parts) and option B (bare boards); see `pcbway/README.md` |
+| `pcbway/` | PCBWay packs for the devkit (5 PCBs of every design, 5 sets of parts per variant; NA and EU sensor boards and cover flex as fit-test prototypes): option A (PCBWay fits the SMD parts) and option B (bare boards); see `pcbway/README.md` |
 
 Rocker (D-97): both variants' lists take the E-Switch RA412C1100 (second source on the same footprint, D-88;
 UL/cUL 16 A 125 VAC and 10 A 250 VAC, ENEC 10(4) A 250 V~; datasheet

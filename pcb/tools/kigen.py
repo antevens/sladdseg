@@ -1,4 +1,4 @@
-"""Shared generators for the small KiCad projects (ring board, riser, cover flex, EU boards).
+"""Shared generators for the small KiCad projects (sensor board, pin board, cover flex, EU boards).
 
 Lib holds a project's library context: project directory, library name, a stable uuid
 function and its power nets. Sheet writes a flat schematic, Board builds a board through pcbnew.

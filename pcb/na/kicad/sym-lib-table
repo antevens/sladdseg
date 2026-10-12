@@ -1,0 +1,5 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "lv")(type "KiCad")(uri "${KIPRJMOD}/lv.kicad_sym")(options "")(descr "Low-voltage board symbols"))
+	(lib (name "na_mains_board")(type "KiCad")(uri "${KIPRJMOD}/na_mains_board.kicad_sym")(options "")(descr "Project symbols"))
+)

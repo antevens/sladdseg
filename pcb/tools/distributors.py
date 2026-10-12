@@ -40,7 +40,7 @@ DK_TOKEN = "https://api.digikey.com/v1/oauth2/token"
 DK_DETAILS = "https://api.digikey.com/products/v4/search/{}/productdetails"
 DK_MYLISTS = "https://www.digikey.com/mylists/api/thirdparty"
 MS_SEARCH = "https://api.mouser.com/api/v1/search/partnumber"
-MS_CART = "https://api.mouser.com/api/v1/cart/items/insert"
+MS_CART = "https://api.mouser.com/api/v1/cart/items/barrier"
 MS_PAUSE = 2.1                       # Mouser Search API: 30 calls per minute
 INACTIVE = ("obsolete", "end of life", "eol", "not recommended", "nrnd", "discontinued", "last time buy")
 

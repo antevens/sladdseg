@@ -4,20 +4,20 @@ Mouser Part Number,Mfr Part Number,Manufacturer,Quantity,Customer Part Number,De
 ,B72660M0271K093,TDK,1,WP EU RV1,"SMD varistor SIOV-CU4032K275G2K1, 275 VAC (1/plate EU; EU mains board RV1)"
 ,ZPI03S0500WC,Zettler Magnetics,1,WP EU PS1,"AC-DC module 90-264 VAC in, 5 V 600 mA, 25x25x16 mm, I/P-O/P 3600 VAC, UL/EN 62368-1 (1/plate EU; EU mains board PS1)"
 ,TSM-102-02-L-SV,Samtec,1,WP EU J3,"SMT pin header 1x2, 2.54 mm, 8.13 mm post, gold on post (1/plate EU; EU mains board J3)"
-,SSW-102-01-G-S,Samtec,1,WP EU J1,5 V from the mains board's header (1/plate EU; EU 5 V board J1)
-,C1206C226M4PACTU,KEMET,2,WP EU C1,"Ceramic 22 uF 16 V X5R 1206, 1.8 mm max (2/plate EU; EU 5 V board C1; EU cap board C1)"
-,55909-2474,Molex,1,WP EU J2,"SlimStack plug 24 contacts, 0.4 mm, 2 rows, mating the MSR-2's CN2 (1/plate EU; EU cap board J2)"
-,SPK0641HT4H-1,Knowles,1,WP EU MK1,"PDM MEMS microphone, top port, 1.6-3.6 V; SELECT low (1/plate EU; EU cap board MK1)"
-,GRM155R71C104KA88J,Murata,2,WP EU C4,Ceramic 100 nF 16 V X7R 0402 (2/plate EU; EU cap board C4; EU cap board C2)
-,RC0402FR-07100KL,Yageo,1,WP EU R1,Resistor 100 kOhm 1 % 0402 (1/plate EU; EU cap board R1)
-,GRM3195C1H104JA05D,Murata,1,WP EU C3,"Microphone decoupling, C0G 50 V 1206 (1/plate EU; EU cap board C3)"
-,SHT40-AD1B-R2,Sensirion,1,WP EU U1,"Humidity and temperature sensor, I2C 0x44 (1/plate EU; EU cap board U1)"
-,9774015243R,Wurth Elektronik,3,WP EU H5,"SMT steel spacer M2, 1.5 mm, tin (3/plate EU; EU cap board H5; EU cap board H6; EU cap board H7)"
+,SSW-102-01-G-S,Samtec,1,WP EU J1,5 V from the mains board's header (1/plate EU; EU pin board J1)
+,C1206C226M4PACTU,KEMET,2,WP EU C1,"Ceramic 22 uF 16 V X5R 1206, 1.8 mm max (2/plate EU; EU pin board C1; EU sensor board C1)"
+,55909-2474,Molex,1,WP EU J2,"SlimStack plug 24 contacts, 0.4 mm, 2 rows, mating the MSR-2's CN2 (1/plate EU; EU sensor board J2)"
+,SPK0641HT4H-1,Knowles,1,WP EU MK1,"PDM MEMS microphone, top port, 1.6-3.6 V; SELECT low (1/plate EU; EU sensor board MK1)"
+,GRM155R71C104KA88J,Murata,2,WP EU C4,Ceramic 100 nF 16 V X7R 0402 (2/plate EU; EU sensor board C4; EU sensor board C2)
+,RC0402FR-07100KL,Yageo,1,WP EU R1,Resistor 100 kOhm 1 % 0402 (1/plate EU; EU sensor board R1)
+,GRM3195C1H104JA05D,Murata,1,WP EU C3,"Microphone decoupling, C0G 50 V 1206 (1/plate EU; EU sensor board C3)"
+,SHT40-AD1B-R2,Sensirion,1,WP EU U1,"Humidity and temperature sensor, I2C 0x44 (1/plate EU; EU sensor board U1)"
+,9774015243R,Wurth Elektronik,3,WP EU H5,"SMT steel spacer M2, 1.5 mm, tin (3/plate EU; EU sensor board H5; EU sensor board H6; EU sensor board H7)"
 ,S7081-42R,Harwin,2,WP EU J3,"SMT spring finger, gold, 4 A, working height 2.0 mm (2/plate EU; EU cover flex J3; EU cover flex J4)"
 ,TLV75533PDBVR,Texas Instruments,1,WP EU U1,"LDO 3.3 V 500 mA, 1.45-5.5 V in, SOT-23-5 (1/plate EU; EU cover flex U1)"
 ,CL10A105KO8NNNC,Samsung Electro-Mechanics,2,WP EU C3,"LDO input capacitor, 1 uF 16 V X5R 0603 (2/plate EU; EU cover flex C3; EU cover flex C4)"
 ,TPD1E10B06DYAR,Texas Instruments,1,WP EU D1,"ESD protection, bidirectional TVS, 5.5 V working, SOD-523 (1/plate EU; EU cover flex D1)"
 ,221-412,WAGO,1,WP EU PE1,"Lever splicing connector, 2 conductors, 0.2-4 mm2 (1/plate EU; EU mechanical PE1)"
 ,2604-3102,WAGO,2,WP EU J1,"NOT AT MOUSER: order from DigiKey 2604-3102. PCB terminal block, push-in, 2-pole, 4 mm2, entry 90 deg to the PCB, 400 V III/2 (2/plate EU; EU mains board J1; EU mains board J2)"
-,P70-2200045,Harwin,4,WP EU P1,"NOT AT MOUSER: order from DigiKey 952-3124-ND. Spring pin with peg, 2 A (4/plate EU; EU 5 V board P1; EU 5 V board P2; EU 5 V board P3; EU 5 V board P4)"
-,ADAU7002ACBZ-R7,Analog Devices,1,WP EU U2,"NOT AT MOUSER: order from DigiKey 505-ADAU7002ACBZ-R7CT-ND. Stereo PDM to I2S converter, WLCSP-8 0.4 mm; CONFIG high = I2S (1/plate EU; EU cap board U2)"
+,P70-2200045,Harwin,4,WP EU P1,"NOT AT MOUSER: order from DigiKey 952-3124-ND. Spring pin with peg, 2 A (4/plate EU; EU pin board P1; EU pin board P2; EU pin board P3; EU pin board P4)"
+,ADAU7002ACBZ-R7,Analog Devices,1,WP EU U2,"NOT AT MOUSER: order from DigiKey 505-ADAU7002ACBZ-R7CT-ND. Stereo PDM to I2S converter, WLCSP-8 0.4 mm; CONFIG high = I2S (1/plate EU; EU sensor board U2)"

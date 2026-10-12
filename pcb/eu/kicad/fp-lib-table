@@ -1,4 +1,6 @@
 (fp_lib_table
 	(version 7)
 	(lib (name "eu")(type "KiCad")(uri "${KIPRJMOD}/eu.pretty")(options "")(descr "EU board footprints"))
+	(lib (name "eu_mains")(type "KiCad")(uri "${KIPRJMOD}/eu_mains.pretty")(options "")(descr "EU board footprints"))
+	(lib (name "lv")(type "KiCad")(uri "${KIPRJMOD}/lv.pretty")(options "")(descr "Low-voltage board footprints"))
 )

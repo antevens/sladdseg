@@ -10,29 +10,29 @@ every part is single-material.
 
 | File | Part(s) | Filament | Est. time / mass (OrcaSlicer 2.4.2) |
 |------|---------|----------|------------------------------------------|
-| `print/coupons_PLA.3mf` | pocket+well coupon (with the steel piece's recess), MSR-2 bay coupon, rocker panel ladder, crush-rib coupon (D-68) | PLA | 2 h 18 m / 60.2 g |
-| `print/insert_PLA_testfit.3mf` | NA box insert (fit check only, **not for mains**), on supports | PLA | 2 h 19 m / 59.0 g |
-| `print/trim_PLA.3mf` | NA trim plate (face plate, passive) | PLA | 38 m / 22.4 g |
-| `print/insert_PC-FR.3mf` | NA box insert, **final**, on supports | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 2 h 19 m / 51.9 g |
+| `print/na_coupons_PLA.3mf` | pocket+well coupon (with the steel piece's recess), MSR-2 bay coupon, rocker panel ladder, crush-rib coupon (D-68) | PLA | 2 h 18 m / 60.2 g |
+| `print/na_barrier_PLA_testfit.3mf` | NA barrier (fit check only, **not for mains**), on supports | PLA | 2 h 19 m / 59.0 g |
+| `print/na_face_plate_PLA.3mf` | NA face plate (face plate, passive) | PLA | 38 m / 22.4 g |
+| `print/na_barrier_PC-FR.3mf` | NA barrier, **final**, on supports | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 2 h 19 m / 51.9 g |
 | `print/backcover_PETG.3mf` | replacement back cover for the battery-free BILRESA (D-35), back down; PETG: its clips broke in PLA (D-44) | PETG | 21 m / 8.5 g |
 | `print/backcover_ABS.3mf` | the same cover in ABS, to test before the PETG arrives (shrinks more: check the fit first) | ABS | 17 m / 7.5 g |
 | `print/plate_jig_PLA.3mf` | steel plate hacksaw guide (D-52, D-81), floor down | PLA | 18 m / 7.8 g |
-| `print/eu_cap_PLA_testfit.3mf` | EU cap (fit check only, **not for mains**), face down | PLA | 28 m / 10.9 g |
-| `print/eu_cap_PC-FR.3mf` | EU cap, **final** (the EU barrier), face down | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 37 m / 9.8 g |
-| `print/eu_trim_PLA.3mf` | EU trim plate, face down | PLA | 1 h 5 m / 41.6 g |
-| `print/eu_carrier_PLA.3mf` | EU cap board carrier, bottom down: the rim up, the 0.8 mm lip under the cap on the bed (D-71) | PLA | 39 m / 17.6 g |
+| `print/eu_barrier_PLA_testfit.3mf` | EU barrier (fit check only, **not for mains**), face down | PLA | 28 m / 10.9 g |
+| `print/eu_barrier_PC-FR.3mf` | EU barrier, **final** (the EU barrier), face down | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 37 m / 9.8 g |
+| `print/eu_face_plate_PLA.3mf` | EU face plate, face down | PLA | 1 h 5 m / 41.6 g |
+| `print/eu_carrier_PLA.3mf` | EU sensor board carrier, bottom down: the rim up, the 0.8 mm lip under the barrier on the bed (D-71) | PLA | 39 m / 17.6 g |
 | `print/eu_testbox_PLA.3mf` | EU test socket: the box floor down, the wall plate flat (D-76) | PLA | 3 h 12 m / 102.7 g |
-| `print/plain_insert_PLA_testfit.3mf` | NA plain insert (no 5 V cable bore, D-109; fit check only, **not for mains**), on supports | PLA | 2 h 16 m / 58.8 g |
-| `print/plain_insert_PC-FR.3mf` | NA plain insert, **final**, on supports | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 2 h 16 m / 51.7 g |
-| `print/plain_trim_PLA.3mf` | NA plain face plate, 69.85 × 114.3 mm (D-109), face down | PLA | 24 m / 15.6 g |
-| `print/eu_plain_cap_PLA_testfit.3mf` | EU plain cap (battery-free pins' holes only, D-109; fit check only, **not for mains**), face down | PLA | 28 m / 10.9 g |
-| `print/eu_plain_cap_PC-FR.3mf` | EU plain cap, **final**, face down | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 36 m / 9.8 g |
-| `print/eu_plain_trim_PLA.3mf` | EU plain face plate, 80 × 80 mm (D-109), face down | PLA | 40 m / 26.6 g |
-| `print/switch_insert_PLA_testfit.3mf` | NA switch-only insert (no spring-pin holes, riser pocket or cable bore, D-122; fit check only, **not for mains**), on supports | PLA | 2 h 12 m / 58.2 g |
-| `print/switch_insert_PC-FR.3mf` | NA switch-only insert, **final**, on supports | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 2 h 12 m / 51.3 g |
-| `print/eu_switch_cap_PLA_testfit.3mf` | EU switch-only cap (no pin holes or 5 V board bosses, D-122; fit check only, **not for mains**), face down | PLA | 26 m / 10.8 g |
-| `print/eu_switch_cap_PC-FR.3mf` | EU switch-only cap, **final**, face down | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 35 m / 9.7 g |
-| `print/eu_plain_carrier_PLA.3mf` | EU plain carrier (lip and snap windows, no cap board, D-109), bottom down | PLA | 15 m / 4.5 g |
+| `print/na_plain_barrier_PLA_testfit.3mf` | NA plain barrier (no 5 V cable bore, D-109; fit check only, **not for mains**), on supports | PLA | 2 h 16 m / 58.8 g |
+| `print/na_plain_barrier_PC-FR.3mf` | NA plain barrier, **final**, on supports | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 2 h 16 m / 51.7 g |
+| `print/na_plain_face_plate_PLA.3mf` | NA plain face plate, 69.85 × 114.3 mm (D-109), face down | PLA | 24 m / 15.6 g |
+| `print/eu_plain_barrier_PLA_testfit.3mf` | EU plain barrier (battery-free pins' holes only, D-109; fit check only, **not for mains**), face down | PLA | 28 m / 10.9 g |
+| `print/eu_plain_barrier_PC-FR.3mf` | EU plain barrier, **final**, face down | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 36 m / 9.8 g |
+| `print/eu_plain_face_plate_PLA.3mf` | EU plain face plate, 80 × 80 mm (D-109), face down | PLA | 40 m / 26.6 g |
+| `print/na_switch_barrier_PLA_testfit.3mf` | NA switch-only barrier (no spring-pin holes, pin board pocket or cable bore, D-122; fit check only, **not for mains**), on supports | PLA | 2 h 12 m / 58.2 g |
+| `print/na_switch_barrier_PC-FR.3mf` | NA switch-only barrier, **final**, on supports | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 2 h 12 m / 51.3 g |
+| `print/eu_switch_barrier_PLA_testfit.3mf` | EU switch-only barrier (no pin holes or pin board bosses, D-122; fit check only, **not for mains**), face down | PLA | 26 m / 10.8 g |
+| `print/eu_switch_barrier_PC-FR.3mf` | EU switch-only barrier, **final**, face down | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 35 m / 9.7 g |
+| `print/eu_plain_carrier_PLA.3mf` | EU plain carrier (lip and snap windows, no sensor board, D-109), bottom down | PLA | 15 m / 4.5 g |
 
 Open a `.3mf` in OrcaSlicer, check the plate, slice, send. The projects carry the
 printer (CC2 0.4 nozzle), filament and process settings; the parts are already
@@ -46,15 +46,15 @@ time/material lands in `build/print/gcode/`.
 
 ## Order of work
 
-1. `coupons_PLA`: rocker ladder → find the panel thickness that latches firmly,
+1. `na_coupons_PLA`: rocker ladder → find the panel thickness that latches firmly,
    record it as `SW_PANEL_T` in `docs/MEASUREMENTS.md`. Pocket+well coupon → remote
    drop-in/lift-out, rocker snap-in, key pin, pass-through. MSR-2 coupon → board fit,
    radar skin, the grille for the CO2 and light sensors (D-69), the three Ø1.8 posts onto the MSR-2's board (D-66).
-   Crush-rib coupon → the ring board's fit on the ribs (0.10 / 0.15 / 0.20), record `RING_RIB`.
+   Crush-rib coupon → the sensor board's fit on the ribs (0.10 / 0.15 / 0.20), record `SB_RIB`.
 2. Update `params.py` from the measurements, `make cad check print`.
-3. `insert_PLA_testfit` + `trim_PLA` → full dry fit in the box (breaker off, nothing
+3. `na_barrier_PLA_testfit` + `na_face_plate_PLA` → full dry fit in the box (breaker off, nothing
    connected). Check the corner taper against the box ears.
-4. `insert_PC-FR` for the installed part. Keep the filament datasheet with the build record.
+4. `na_barrier_PC-FR` for the installed part. Keep the filament datasheet with the build record.
 5. `plate_jig_PLA`: saw the supplied steel plate (D-43, D-52: one straight cut, an 18.5 mm piece
    with one round end; check its real size first).
 6. Battery-free remote: `backcover_PETG` on a BILRESA (latches, the remote's magnet plate, contact
@@ -63,14 +63,14 @@ time/material lands in `build/print/gcode/`.
    until the PETG arrives: it typically shrinks 0.5–0.7 % (PETG 0.2–0.4 %), so measure the inside against the
    model (42.0 × 67.0 mm at the rim) and try it on a remote; if it is tight, set OrcaSlicer's filament
    shrinkage from the measured shortfall.
-7. EU: `eu_testbox_PLA` (test socket, D-76), then `eu_cap_PLA_testfit`, `eu_carrier_PLA` and
-   `eu_trim_PLA` in it (domes, the carrier clamp, the snaps, the depth of the board stack against
-   the depth markers); then `eu_cap_PC-FR`.
-8. Plain plates (D-109): `plain_insert_PLA_testfit` + `plain_trim_PLA` (NA), `eu_plain_cap_PLA_testfit`,
-   `eu_plain_carrier_PLA` + `eu_plain_trim_PLA` (EU), as the full plates; then the PC-FR barrier parts.
+7. EU: `eu_testbox_PLA` (test socket, D-76), then `eu_barrier_PLA_testfit`, `eu_carrier_PLA` and
+   `eu_face_plate_PLA` in it (domes, the carrier clamp, the snaps, the depth of the board stack against
+   the depth markers); then `eu_barrier_PC-FR`.
+8. Plain plates (D-109): `na_plain_barrier_PLA_testfit` + `na_plain_face_plate_PLA` (NA), `eu_plain_barrier_PLA_testfit`,
+   `eu_plain_carrier_PLA` + `eu_plain_face_plate_PLA` (EU), as the full plates; then the PC-FR barrier parts.
 
 Many BILRESA dimensions are `ESTIMATE` (from photos and drawings, `docs/MEASUREMENTS.md`): the
-first prints of the trim pockets and the back cover are for measuring and
+first prints of the face plate pockets and the back cover are for measuring and
 adjusting, not final parts.
 
 ## Settings (and why)
@@ -78,18 +78,18 @@ adjusting, not final parts.
 - **Back cover** (`COVER`): back down as modelled, 3 walls (1.2 mm), 2 bottom layers (the 0.4 mm
   floor under the regulator; the magnet plate sits on the full 1.6 mm shell, D-44), 30 % gyroid, no supports (the back's round-over
   is filled to 45° below its 45° point for that).
-- **EU cap**: the EU barrier, `BARRIER` settings like the NA insert, face down. The floor of the steel
+- **EU barrier**: the EU barrier, `BARRIER` settings like the NA barrier, face down. The floor of the steel
   piece's recess prints as an 18.1 mm bridge (D-72); check it for sag.
-- **Insert** (`INSERT`: `BARRIER` plus supports): the whole insert is barrier, so no
+- **Barrier** (`INSERT`: `BARRIER` plus supports): the whole barrier is barrier, so no
   modifiers are needed: 6 walls (≈ 2.7 mm, so every 1.6 mm barrier wall prints solid),
   6 top/bottom layers, 40 % gyroid, 5 mm outer brim for PC-FR (warping). Orientation: as
   modelled, lowest face (the rocker panel's underside) on the bed. Supports (normal, from
-  the plate only, 40°) carry only the seal lip on the wall plane and the riser pocket's
+  the plate only, 40°) carry only the seal lip on the wall plane and the pin board pocket's
   ceiling (D-68: no flat back; the flange's underside is a 45° taper, its land over the
-  ring board 1.8 mm, the FFC channel peaked); `make check` lists those planes and
-  verifies no other overhang is wider than 3 mm. Clear the supports out of the riser pocket
-  and the pin holes completely: the riser and the pins must sit free.
-- **Trim** (`TRIM`): face down on the textured PEI sheet (gives the face its finish).
+  sensor board 1.8 mm, the FFC channel peaked); `make check` lists those planes and
+  verifies no other overhang is wider than 3 mm. Clear the supports out of the pin board pocket
+  and the pin holes completely: the pin board and the pins must sit free.
+- **Face plate** (`TRIM`): face down on the textured PEI sheet (gives the face its finish).
   7 bottom layers keep the face solid; the 0.6 mm radar skin over the MSR-2 (D-51) is three of them; 4 walls, 20 %.
   Only bridges are the 2–3 mm vent windows.
 - Base process: "0.20mm Strength @Elegoo CC2 0.4 nozzle"; bed: Textured PEI Plate.
@@ -106,12 +106,12 @@ adjusting, not final parts.
 - Test fits: Elegoo PLA (human 2026-10-11), except the back cover: PETG (its clips broke in PLA, D-44). On hand: PLA, ABS, TPU 72A, TPU 95A; on
   the way: PC, PC-FR, PETG (all Elegoo). OrcaSlicer has CC2 profiles for all of them but TPU 72A.
 - PLA softens from about 55 °C: fine for fit checks, not for parts in a warm box or in sun.
-- Insert (barrier): Elegoo PC-FR for now. Its data sheet claims flame retardancy and
+- Barrier (NA barrier, EU barrier): Elegoo PC-FR for now. Its data sheet claims flame retardancy and
   rapid self-extinguishing but states no UL94 class or test thickness. Certification is
   out of scope for this stage (human decision 2026-10-08); a spool with a stated UL94 V-0
   rating will be chosen before an installed build, and its rated thickness goes into
   `V0_RATED_T` (`make check` compares it with the thinnest barrier wall, 1.6 mm).
-- Trim: PLA for tests; PETG (or ABS / ASA where it gets warm or sunny) for the installed plate.
+- Face plate: PLA for tests; PETG (or ABS / ASA where it gets warm or sunny) for the installed plate.
 
 ## Checks after printing
 
@@ -122,8 +122,8 @@ adjusting, not final parts.
     reprint with a larger `MAGNET_SETBACK`.
   - Too weak: shim under the steel piece to bring it up to the seat.
 - Rocker snaps in and latches; rocker clears the remote's back in both positions.
-- Trim seats on the flange with the two key pins; island flush with the face.
-- Board standoffs (D-57): tap the insert's four boss holes M3 × 0.5 (8.5 mm deep, the top right 5.5;
+- Face plate seats on the flange with the two key pins; island flush with the face.
+- Board standoffs (D-57): tap the barrier's four boss holes M3 × 0.5 (8.5 mm deep, the top right 5.5;
   keep the tap square, clear the chips), cut the top-right standoff's stud to 5 mm, screw the four
   standoffs in by hand until the hex seats on the boss, then screw the board on with the nylon M3 × 8.
 - MSR-2 detection range compared with and without the radar skin.

@@ -8,7 +8,7 @@ options.
 
 Usage: python3 pcb/tools/order_pcbway.py [DEVKIT_SETS]   (default 5; needs kicad-cli and pcbnew)
 Writes pcb/order/pcbway/ (and its README.md) from the boards' KiCad files, their part tables and fab packs. Boards
-whose design is not confirmed yet (ring board and EU cap board: CN2; cover flex: positions REF / MEASURE) are packed
+whose design is not confirmed yet (NA and EU sensor boards: CN2; cover flex: positions REF / MEASURE) are packed
 as fit-test prototypes: their Gerbers are exported here (not into the fab packs) and named _PROTOTYPE.
 """
 import csv
@@ -23,9 +23,9 @@ import pcbnew
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "pcb" / "order" / "pcbway"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-sys.path.insert(0, str(ROOT / "pcb" / "sensor" / "tools"))
+sys.path.insert(0, str(ROOT / "pcb" / "shared" / "tools"))
 import order_bom  # noqa: E402
-import sensor_parts as sp  # noqa: E402
+import lv_parts as sp  # noqa: E402
 
 MIN_PCB = 5                                   # PCBWay's minimum quantity per design
 RIGID = "F.Cu,B.Cu,F.Mask,B.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts"
@@ -35,14 +35,15 @@ CN2_PROTO = ("FIT-TEST PROTOTYPE: J2 is the Molex 55909-2474 plug for the MSR-2'
 # name, KiCad board, fab pack (None: export here), order_bom.tables() keys it serves (the first gives the part
 # table), finish, order notes, prototype reason (None: ready), Gerber layers for a prototype
 BOARDS = [
-    dict(name="wiring_board", pcb="pcb/kicad/wiring_board.kicad_pcb", fab="pcb/fab", tables=[("NA", "wiring board")],
+    dict(name="na_mains_board", pcb="pcb/na/kicad/na_mains_board.kicad_pcb", fab="pcb/na/fab/na_mains_board",
+         tables=[("NA", "mains board")],
          finish="HASL lead-free or ENIG",
          notes=["Routed isolation slot in the outline (Edge.Cuts), 5 mm wide from the bottom edge up under PS1: "
                 "do not omit", "Copper weight 1 oz as designed; 2 oz is the option under thermal review "
-                "(pcb/fab/README.md)", "Four 3.2 mm unplated mounting holes",
+                "(pcb/na/fab/README.md)", "Four 3.2 mm unplated mounting holes",
                 "Laminate: high-CTI FR4, CTI >= 600 V (PLC 0, IEC 60664-1 material group I): the mains spacing targets assume it (D-102)"]),
-    dict(name="riser_board", pcb="pcb/sensor/kicad/riser_board.kicad_pcb", fab="pcb/sensor/fab/riser_board",
-         tables=[("NA", "riser")], finish="ENIG",
+    dict(name="na_pin_board", pcb="pcb/na/kicad/na_pin_board.kicad_pcb", fab="pcb/na/fab/na_pin_board",
+         tables=[("NA", "pin board")], finish="ENIG",
          notes=["0.8 mm FR4", "Two plated 2.2 mm holes for the M2 screws (P1, P2) and plated 1.2 mm holes for the "
                 "spring pins' pegs", "Small board: let PCBWay panelize it for assembly"]),
     dict(name="eu_mains_board", pcb="pcb/eu/kicad/eu_mains_board.kicad_pcb", fab="pcb/eu/fab/eu_mains_board",
@@ -50,19 +51,19 @@ BOARDS = [
          notes=["Routed relief slot under the PSU in the outline (Edge.Cuts): do not omit",
                 "Mains board: do the review in pcb/eu/fab/README.md before ordering",
                 "Laminate: high-CTI FR4, CTI >= 600 V (PLC 0, IEC 60664-1 material group I): the mains spacing targets assume it (D-102)"]),
-    dict(name="eu_5v_board", pcb="pcb/eu/kicad/eu_5v_board.kicad_pcb", fab="pcb/eu/fab/eu_5v_board",
-         tables=[("EU", "5 V board")], finish="ENIG", notes=["Plated 1.2 mm holes for the spring pins' pegs"]),
-    dict(name="ring_board", pcb="pcb/sensor/kicad/ring_board.kicad_pcb", fab=None, tables=[("NA", "ring board")],
+    dict(name="eu_pin_board", pcb="pcb/eu/kicad/eu_pin_board.kicad_pcb", fab="pcb/eu/fab/eu_pin_board",
+         tables=[("EU", "pin board")], finish="ENIG", notes=["Plated 1.2 mm holes for the spring pins' pegs"]),
+    dict(name="na_sensor_board", pcb="pcb/na/kicad/na_sensor_board.kicad_pcb", fab=None, tables=[("NA", "sensor board")],
          finish="ENIG", proto=CN2_PROTO, layers=RIGID, skip={"J2"},
          notes=["Copper keeps 8 mm from the box opening (do not let PCBWay add copper fill there)",
                 "Fit test: outline, crush-rib window, spacers H1-H3, SHT40, FFC connector J1; microphone MK1 "
                 "and the ADAU7002 U2 (WLCSP 0.4 mm pitch: order this board with PCBWay assembly, option A, either way)"]),
-    dict(name="eu_cap_board", pcb="pcb/sensor/kicad/eu_cap_board.kicad_pcb", fab=None, tables=[("EU", "cap board")],
+    dict(name="eu_sensor_board", pcb="pcb/eu/kicad/eu_sensor_board.kicad_pcb", fab=None, tables=[("EU", "sensor board")],
          finish="ENIG", proto=CN2_PROTO, layers=RIGID, skip={"J2"},
          notes=["Closed snap windows at the corners (routed cut-outs inside the outline): do not omit",
                 "Fit test: outline, snap windows, screws, spacers H5-H7, SHT40, sensor pin pads; microphone MK1 "
                 "and the ADAU7002 U2 (WLCSP 0.4 mm pitch: order this board with PCBWay assembly, option A, either way)"]),
-    dict(name="cover_flex", pcb="pcb/sensor/kicad/cover_flex.kicad_pcb", fab=None,
+    dict(name="cover_flex", pcb="pcb/shared/kicad/cover_flex.kicad_pcb", fab=None,
          tables=[("NA", "cover flex"), ("EU", "cover flex")], finish="ENIG",
          proto=("FIT-TEST PROTOTYPE: pad, contact and regulator positions come from photos and drawings (REF / "
                 "MEASURE) until measured on a remote"),
@@ -77,8 +78,8 @@ BOARDS = [
                 f"One 90 deg bend in the run, inside r {sp.BC_BEND_R} mm, copper outside, installed once: bend zone "
                 "marked on the fab drawing, no stiffener or track turn within it"]),
 ]
-# fitted by hand in both options: the rocker snaps into the printed insert / cap before it is soldered (D-26)
-HAND = {"S1": "rocker: snapped into the printed insert / cap first, then soldered by hand"}
+# fitted by hand in both options: the rocker snaps into the printed barrier before it is soldered (D-26)
+HAND = {"S1": "rocker: snapped into the printed barrier first, then soldered by hand"}
 
 
 def board_info(pcb_path):
@@ -216,9 +217,9 @@ def write_readme(rows, plates):
          "source the parts). You solder the THT parts and the rockers.",
          "- **Option B** (`option_b_self_solder/`): PCBWay makes bare boards; you buy every part and solder "
          "everything.", "",
-         "Do the human reviews in `pcb/fab/README.md` and `pcb/eu/fab/README.md` (fuse rating, isolation, "
+         "Do the human reviews in `pcb/na/fab/README.md` and `pcb/eu/fab/README.md` (fuse rating, isolation, "
          "thermal, approvals) before ordering the mains boards. Nothing here is a compliance claim.", "",
-         "**Prototypes.** The ring board, the EU cap board and the back cover flex are not confirmed yet; their "
+         "**Prototypes.** The sensor board, the EU sensor board and the back cover flex are not confirmed yet; their "
          "files are named `_PROTOTYPE` and are for fit tests only:", ""]
     for r in rows:
         if r["bd"].get("proto"):
@@ -238,7 +239,7 @@ def write_readme(rows, plates):
                  f'{i["w"]:.1f} × {i["h"]:.1f} mm | {cu} / {i["t"]:.2f} mm | {bd["finish"]} | '
                  f'{", ".join(r["refs"]) or "-"} | {hand} |')
     L += ["", "Order settings common to the rigid boards: FR4 TG150 or standard (the two mains boards: high-CTI FR4, "
-          "see their notes), 1 oz copper (see the wiring board's note), green solder mask and white silkscreen both sides, no impedance control, no V-cut. Gerbers are "
+          "see their notes), 1 oz copper (see the mains board's note), green solder mask and white silkscreen both sides, no impedance control, no V-cut. Gerbers are "
           "RS-274X with Excellon drills in mm; Gerbers, drills and centroid share the board's drill / aux origin.", "",
           "Per board (add to the order remarks):", ""]
     for r in rows:
@@ -265,7 +266,7 @@ def write_readme(rows, plates):
           "2. Optional: add a stencil (framework-less, top) for the boards with SMD parts: the paste layers are in "
           "the Gerbers. The microphone (LGA), the SHT40 (DFN), the WA-SMSI posts and spacers and the P70 spring "
           "pins are reflow parts (hot plate or hot air with paste). The ADAU7002 (WLCSP-8, 0.4 mm pitch) is not a "
-          "hand part: order the ring board and the EU cap board with PCBWay assembly (option A) even here.",
+          "hand part: order the sensor board and the EU sensor board with PCBWay assembly (option A) even here.",
           "3. Buy every part: `parts_digikey.csv` / `parts_mouser.csv` (the lines marked NOT AT … go to the other distributor).", "",
           "## Quantities", "",
           f"Part quantities are exactly {plates['NA']} sets per variant, no spares (`pcb/order/README.md`). "

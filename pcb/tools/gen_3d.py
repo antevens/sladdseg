@@ -17,8 +17,8 @@ sys.path.insert(0, str(ROOT / "cad" / "build123d"))
 from params import ADAU, FINGER_FREE, MIC, MIC_PORT_IN              # noqa: E402
 
 VENDOR = ROOT / "scratch" / "3d"
-PROJECTS = {"na": ROOT / "pcb" / "kicad" / "3d", "eu": ROOT / "pcb" / "eu" / "kicad" / "3d",
-            "sensor": ROOT / "pcb" / "sensor" / "kicad" / "3d"}
+PROJECTS = {v: ROOT / "pcb" / v / "kicad" / "3d" for v in ("na", "eu", "shared")}
+LV = ("na", "eu", "shared")                 # the low-voltage library (lv.pretty) is in every project folder
 
 
 def rocker():
@@ -120,11 +120,11 @@ MODELS = {
     # at x -8.2 (lever side), board at y 0, body +y: z -> X (poles' centre), x -> Y (body centre), y -> Z
     "WAGO_2604-3102_1x02_P5.00mm_Vertical": (("eu",), wago2_vertical, "wago/2604-3102.stp",
                                               ((90, 0, 90), (-4.8, 4.75, 0))),
-    "Harwin_P70-2200045": (("eu", "sensor"), p70, None, None),
-    "Harwin_S7081-42R": (("sensor",), s7081, None, None),
-    "Knowles_SPK0641HT4H-1_3x4mm": (("sensor",), spk0641, None, None),
-    "Analog_WLCSP-8_0.76x1.56mm_P0.4mm": (("sensor",), adau7002, None, None),
-    "Sensirion_DFN-4_1.5x1.5mm_P0.8mm_SHT4x_NoCentralPad": (("sensor",), sht4x, None, None),
+    "Harwin_P70-2200045": (LV, p70, None, None),
+    "Harwin_S7081-42R": (LV, s7081, None, None),
+    "Knowles_SPK0641HT4H-1_3x4mm": (LV, spk0641, None, None),
+    "Analog_WLCSP-8_0.76x1.56mm_P0.4mm": (LV, adau7002, None, None),
+    "Sensirion_DFN-4_1.5x1.5mm_P0.8mm_SHT4x_NoCentralPad": (LV, sht4x, None, None),
 }
 
 

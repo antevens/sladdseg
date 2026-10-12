@@ -22,17 +22,17 @@ PRINTER = "Elegoo Centauri Carbon 2 0.4 nozzle"
 BASE_PROCESS = "0.20mm Strength @Elegoo CC2 0.4 nozzle"
 BED = "Textured PEI Plate"                 # CC2 ships with a textured PEI sheet
 
-# Whole insert is barrier, so it gets barrier settings everywhere (no modifiers needed):
+# Whole barrier is barrier, so it gets barrier settings everywhere (no modifiers needed):
 # 6 walls (2.7 mm) makes every 1.6 mm barrier wall solid, 6 top/bottom layers.
 BARRIER = {"wall_loops": "6", "top_shell_layers": "6", "bottom_shell_layers": "6",
            "sparse_infill_density": "40%", "sparse_infill_pattern": "gyroid",
            "enable_support": "0", "brim_type": "outer_only", "brim_width": "5",
            "seam_position": "back", "detect_thin_wall": "1"}
-# Trim prints face-down: 7 bottom layers keep the face skin solid (the radar skin is 0.6 mm, D-51).
+# Face plate prints face-down: 7 bottom layers keep the face skin solid (the radar skin is 0.6 mm, D-51).
 TRIM = {"wall_loops": "4", "top_shell_layers": "4", "bottom_shell_layers": "7",
         "sparse_infill_density": "20%", "sparse_infill_pattern": "gyroid",
         "enable_support": "0", "brim_type": "no_brim", "seam_position": "back"}
-# v0.4 insert (D-68): plug down; supports only under the seal lip and in the riser pocket.
+# v0.4 barrier (D-68): plug down; supports only under the seal lip and in the pin board pocket.
 INSERT = dict(BARRIER, enable_support="1", support_type="normal(auto)", support_on_build_plate_only="1",
               support_threshold_angle="40")
 COUPON = dict(INSERT, brim_type="no_brim")
@@ -49,31 +49,31 @@ TEST = "Elegoo PLA @ECC2"
 
 JOBS = {
     # name: (parts, filament, process overrides)
-    "insert_PC-FR": (["insert"], "Elegoo PC-FR @ECC2", INSERT),
-    "insert_PLA_testfit": (["insert"], TEST, dict(INSERT, brim_type="no_brim")),
-    "trim_PLA": (["trim"], TEST, TRIM),
-    "coupons_PLA": (["coupon_pocket_well", "coupon_msr", "coupon_rocker", "coupon_ribs"], TEST, COUPON),
+    "na_barrier_PC-FR": (["na_barrier"], "Elegoo PC-FR @ECC2", INSERT),
+    "na_barrier_PLA_testfit": (["na_barrier"], TEST, dict(INSERT, brim_type="no_brim")),
+    "na_face_plate_PLA": (["na_face_plate"], TEST, TRIM),
+    "na_coupons_PLA": (["na_coupon_pocket_well", "na_coupon_msr", "na_coupon_rocker", "na_coupon_ribs"], TEST, COUPON),
     "backcover_PETG": (["back_cover"], "Elegoo PETG @ECC2", COVER),   # its clips broke in PLA (D-44)
     "backcover_ABS": (["back_cover"], "Elegoo ABS @ECC2", COVER),     # test while the PETG is on its way; ABS shrinks more
     "plate_jig_PLA": (["plate_jig_saw"], TEST, JIG),
-    "eu_cap_PC-FR": (["cap_eu"], "Elegoo PC-FR @ECC2", BARRIER),
-    "eu_cap_PLA_testfit": (["cap_eu"], TEST, dict(BARRIER, brim_type="no_brim")),
-    "eu_trim_PLA": (["trim_eu"], TEST, TRIM),
-    "eu_carrier_PLA": (["carrier_eu"], TEST, JIG),   # cap board carrier (D-70)
-    "eu_testbox_PLA": (["testbox_eu", "testbox_plate_eu"], TEST, JIG),   # test socket (D-76)
+    "eu_barrier_PC-FR": (["eu_barrier"], "Elegoo PC-FR @ECC2", BARRIER),
+    "eu_barrier_PLA_testfit": (["eu_barrier"], TEST, dict(BARRIER, brim_type="no_brim")),
+    "eu_face_plate_PLA": (["eu_face_plate"], TEST, TRIM),
+    "eu_carrier_PLA": (["eu_carrier"], TEST, JIG),   # sensor board carrier (D-70)
+    "eu_testbox_PLA": (["eu_testbox", "eu_testbox_plate"], TEST, JIG),   # test socket (D-76)
     # plain plates: rocker and battery-free remote only (D-109)
-    "plain_insert_PC-FR": (["insert_plain"], "Elegoo PC-FR @ECC2", INSERT),
-    "plain_insert_PLA_testfit": (["insert_plain"], TEST, dict(INSERT, brim_type="no_brim")),
-    "plain_trim_PLA": (["trim_plain"], TEST, TRIM),
-    "eu_plain_cap_PC-FR": (["cap_plain_eu"], "Elegoo PC-FR @ECC2", BARRIER),
-    "eu_plain_cap_PLA_testfit": (["cap_plain_eu"], TEST, dict(BARRIER, brim_type="no_brim")),
-    "eu_plain_trim_PLA": (["trim_plain_eu"], TEST, TRIM),
-    "eu_plain_carrier_PLA": (["carrier_plain_eu"], TEST, JIG),
+    "na_plain_barrier_PC-FR": (["na_plain_barrier"], "Elegoo PC-FR @ECC2", INSERT),
+    "na_plain_barrier_PLA_testfit": (["na_plain_barrier"], TEST, dict(INSERT, brim_type="no_brim")),
+    "na_plain_face_plate_PLA": (["na_plain_face_plate"], TEST, TRIM),
+    "eu_plain_barrier_PC-FR": (["eu_plain_barrier"], "Elegoo PC-FR @ECC2", BARRIER),
+    "eu_plain_barrier_PLA_testfit": (["eu_plain_barrier"], TEST, dict(BARRIER, brim_type="no_brim")),
+    "eu_plain_face_plate_PLA": (["eu_plain_face_plate"], TEST, TRIM),
+    "eu_plain_carrier_PLA": (["eu_plain_carrier"], TEST, JIG),
     # switch-only plates: rocker switch and terminal blocks; the plain face plate and carrier (D-122)
-    "switch_insert_PC-FR": (["insert_switch"], "Elegoo PC-FR @ECC2", INSERT),
-    "switch_insert_PLA_testfit": (["insert_switch"], TEST, dict(INSERT, brim_type="no_brim")),
-    "eu_switch_cap_PC-FR": (["cap_switch_eu"], "Elegoo PC-FR @ECC2", BARRIER),
-    "eu_switch_cap_PLA_testfit": (["cap_switch_eu"], TEST, dict(BARRIER, brim_type="no_brim")),
+    "na_switch_barrier_PC-FR": (["na_switch_barrier"], "Elegoo PC-FR @ECC2", INSERT),
+    "na_switch_barrier_PLA_testfit": (["na_switch_barrier"], TEST, dict(INSERT, brim_type="no_brim")),
+    "eu_switch_barrier_PC-FR": (["eu_switch_barrier"], "Elegoo PC-FR @ECC2", BARRIER),
+    "eu_switch_barrier_PLA_testfit": (["eu_switch_barrier"], TEST, dict(BARRIER, brim_type="no_brim")),
 }
 
 

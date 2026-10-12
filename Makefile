@@ -10,7 +10,7 @@ ORCA_URL = https://github.com/OrcaSlicer/OrcaSlicer/releases/download/v$(ORCA_VE
 ORCA_APPIMAGE = .tools/OrcaSlicer_$(ORCA_VERSION).AppImage
 SLICER ?= $(abspath $(ORCA_APPIMAGE))
 
-.PHONY: setup system-deps slicer cad check print pcb renders check-renders eu order stock order-push all clean
+.PHONY: setup system-deps slicer cad check print pcb renders check-renders na eu order stock order-push all clean
 system-deps:    ## apt packages: KiCad 9, python venv, headless libs for OrcaSlicer (Ubuntu 24.04, sudo)
 	tools/install-system-deps.sh
 
@@ -25,38 +25,42 @@ $(ORCA_APPIMAGE):
 	echo "$(ORCA_SHA256)  $@.part" | sha256sum -c -
 	chmod +x $@.part && mv $@.part $@
 
-cad:            ## STEP/STL of insert + trim, print-oriented STLs (build/print), assembly, replacement back cover
-	cd $(CAD) && $(PY) export.py && $(PY) assembly.py && $(PY) backcover.py
+cad:            ## STEP/STL of every printed part, print-oriented STLs (build/print), the NA assembly, the back cover
+	cd $(CAD) && $(PY) export.py && $(PY) backcover.py
+	cd $(CAD)/na && $(PY) assembly_na.py
 
-check:          ## geometry, barrier, wiring-board fit and printability checks, render inventory - must pass
+check:          ## shared parts, NA and EU: geometry, barrier, board fit, printability; render inventory - must pass
 	cd $(CAD) && $(PY) checks.py
+	cd $(CAD)/na && $(PY) checks_na.py
+	cd $(CAD)/eu && $(PY) checks_eu.py
 	$(PY) cad/tools/check_renders.py
 
 print: $(if $(filter $(abspath $(ORCA_APPIMAGE)),$(SLICER)),$(ORCA_APPIMAGE))  ## OrcaSlicer projects (print/*.3mf) + G-code (build/print/gcode)
 	SLICER="$(SLICER)" $(PY) print/slice.py
 
-pcb:            ## KiCad: wiring board (pcb/), ring board, riser, cover flex, EU cap board (pcb/sensor/), EU boards (pcb/eu/): ERC + DRC, fab packs
-	pcb/tools/build.sh
-	pcb/sensor/tools/build.sh
+pcb:            ## KiCad, NA (pcb/na/), EU (pcb/eu/) and shared (pcb/shared/) boards: ERC + DRC, fab packs
+	pcb/na/tools/build.sh
 	pcb/eu/tools/build.sh
+	pcb/shared/tools/build.sh
 
-WB_PCB = pcb/kicad/wiring_board.kicad_pcb
-RING_PCB = pcb/sensor/kicad/ring_board.kicad_pcb
+NA_MB = pcb/na/kicad/na_mains_board.kicad_pcb
 EU_MB = pcb/eu/kicad/eu_mains_board.kicad_pcb
-EU_LV = pcb/eu/kicad/eu_5v_board.kicad_pcb
+EU_PB = pcb/eu/kicad/eu_pin_board.kicad_pcb
 RENDER_PCB = kicad-cli pcb render --quality high --width 1600 --height 1200
 
 # Render groups: each stamp depends on the sources its renders are drawn from, so `make renders` redraws
 # exactly the out-of-date groups and `make -q renders` (check-renders) reports any render older than its model.
 STAMP = build/stamps
-CAD_SRC = $(wildcard $(CAD)/*.py) cad/tools/sections.py
-EU_SRC = $(CAD_SRC) $(wildcard $(CAD)/eu/*.py)
+SHARED_SRC = $(wildcard $(CAD)/*.py) cad/tools/sections.py
+NA_SRC = $(SHARED_SRC) $(wildcard $(CAD)/na/*.py)
+EU_SRC = $(SHARED_SRC) $(wildcard $(CAD)/eu/*.py)
 XVFB = $(if $(DISPLAY),,xvfb-run -a)
 BARE = python3 pcb/tools/render_bare.py
-BOARD_RENDERS = $(STAMP)/wiring_board $(STAMP)/ring_board $(STAMP)/riser_board \
-                $(STAMP)/cover_flex $(STAMP)/eu_cap_board \
-                $(STAMP)/eu_mains_board $(STAMP)/eu_5v_board
-RENDER_STAMPS = $(STAMP)/sections $(STAMP)/views $(STAMP)/backcover $(STAMP)/eu $(BOARD_RENDERS)
+NA_BOARDS = na_mains_board na_sensor_board na_pin_board
+EU_BOARDS = eu_mains_board eu_pin_board eu_sensor_board
+SHARED_BOARDS = cover_flex
+BOARD_RENDERS = $(addprefix $(STAMP)/,$(NA_BOARDS) $(EU_BOARDS) $(SHARED_BOARDS))
+RENDER_STAMPS = $(STAMP)/na_sections $(STAMP)/na_views $(STAMP)/eu_views $(STAMP)/shared_views $(BOARD_RENDERS)
 
 renders: $(RENDER_STAMPS)  ## docs/renders/*.png, every group whose sources changed (3D needs xvfb-run headless)
 
@@ -67,43 +71,43 @@ check-renders: ## renders current (none older than its sources), every render us
 $(STAMP):
 	mkdir -p $@
 
-$(STAMP)/sections: $(CAD_SRC) $(WB_PCB) | $(STAMP)
-	cd $(CAD) && $(PY) renders.py
+$(STAMP)/na_sections: $(NA_SRC) $(NA_MB) | $(STAMP)
+	cd $(CAD)/na && $(PY) sections_na.py
 	touch $@
 
-$(STAMP)/views: $(CAD_SRC) $(WB_PCB) | $(STAMP)
-	cd $(CAD) && $(XVFB) $(PY) render3d.py
+$(STAMP)/na_views: $(NA_SRC) $(NA_MB) | $(STAMP)
+	cd $(CAD)/na && $(XVFB) $(PY) render_na.py
 	touch $@
 
-$(STAMP)/backcover: $(EU_SRC) | $(STAMP)
-	cd $(CAD) && $(XVFB) $(PY) render_backcover.py
+$(STAMP)/shared_views: $(NA_SRC) $(EU_SRC) | $(STAMP)
+	cd $(CAD) && $(XVFB) $(PY) render_shared.py
 	touch $@
 
-$(STAMP)/eu: $(EU_SRC) $(EU_MB) $(EU_LV) | $(STAMP)
+$(STAMP)/eu_views: $(EU_SRC) $(EU_MB) $(EU_PB) | $(STAMP)
 	cd $(CAD)/eu && $(XVFB) $(PY) render_eu.py
 	touch $@
 
-$(STAMP)/wiring_board: $(WB_PCB) pcb/tools/render_bare.py | $(STAMP)
-	$(RENDER_PCB) --side top -o docs/renders/wiring_board_front.png $<
-	$(RENDER_PCB) --side bottom -o docs/renders/wiring_board_back.png $<
-	$(RENDER_PCB) --side top --rotate "-40,0,30" -o docs/renders/wiring_board_iso_front.png $<
-	$(RENDER_PCB) --side bottom --rotate "40,0,-30" -o docs/renders/wiring_board_iso_back.png $<
-	$(BARE) $<
+$(STAMP)/na_mains_board: $(NA_MB) pcb/tools/render_bare.py | $(STAMP)
+	$(RENDER_PCB) --side top -o docs/renders/na_mains_board_front.png $<
+	$(RENDER_PCB) --side bottom -o docs/renders/na_mains_board_back.png $<
+	$(RENDER_PCB) --side top --rotate "-40,0,30" -o docs/renders/na_mains_board_iso_front.png $<
+	$(RENDER_PCB) --side bottom --rotate "40,0,-30" -o docs/renders/na_mains_board_iso_back.png $<
+	$(BARE) $< na_mains_board
 	touch $@
 
-$(STAMP)/ring_board: $(RING_PCB) pcb/tools/render_bare.py | $(STAMP)
-	$(RENDER_PCB) --side top -o docs/renders/ring_board_front.png $<
-	$(RENDER_PCB) --side bottom -o docs/renders/ring_board_back.png $<
-	$(BARE) $< ring_board
-	touch $@
-
-$(STAMP)/riser_board $(STAMP)/cover_flex $(STAMP)/eu_cap_board: $(STAMP)/%: pcb/sensor/kicad/%.kicad_pcb pcb/tools/render_bare.py | $(STAMP)
+$(addprefix $(STAMP)/,$(filter-out na_mains_board,$(NA_BOARDS))): $(STAMP)/%: pcb/na/kicad/%.kicad_pcb pcb/tools/render_bare.py | $(STAMP)
 	$(RENDER_PCB) --side top -o docs/renders/$*_front.png $<
 	$(RENDER_PCB) --side bottom -o docs/renders/$*_back.png $<
 	$(BARE) $< $*
 	touch $@
 
-$(STAMP)/eu_mains_board $(STAMP)/eu_5v_board: $(STAMP)/%: pcb/eu/kicad/%.kicad_pcb pcb/tools/render_bare.py | $(STAMP)
+$(addprefix $(STAMP)/,$(EU_BOARDS)): $(STAMP)/%: pcb/eu/kicad/%.kicad_pcb pcb/tools/render_bare.py | $(STAMP)
+	$(RENDER_PCB) --side top -o docs/renders/$*_front.png $<
+	$(RENDER_PCB) --side bottom -o docs/renders/$*_back.png $<
+	$(BARE) $< $*
+	touch $@
+
+$(addprefix $(STAMP)/,$(SHARED_BOARDS)): $(STAMP)/%: pcb/shared/kicad/%.kicad_pcb pcb/tools/render_bare.py | $(STAMP)
 	$(RENDER_PCB) --side top -o docs/renders/$*_front.png $<
 	$(RENDER_PCB) --side bottom -o docs/renders/$*_back.png $<
 	$(BARE) $< $*
@@ -126,9 +130,13 @@ stock:          ## live DigiKey / Mouser stock and lifecycle of every listed par
 order-push:     ## DigiKey myLists link + Mouser cart for PLATES plates (default 1) of VARIANT=na|eu|both, -plain (battery-free) or -switch (switch only) (default na); PRIMARY=digikey|mouser
 	python3 pcb/tools/distributors.py push $(VARIANT) $(PLATES) --primary=$(PRIMARY)
 
-eu:             ## EU variant (D-30, cad/build123d/eu/): STEP/STL to build/eu, checks, its renders (docs/renders/eu_*.png)
-	cd $(CAD)/eu && $(PY) cap_eu.py && $(PY) trim_eu.py && $(PY) checks_eu.py
-	$(MAKE) $(STAMP)/eu
+na:             ## NA variant (cad/build123d/na/): STEP/STL to build/na, checks, its renders (docs/renders/na_*.png)
+	cd $(CAD)/na && $(PY) barrier_na.py && $(PY) face_plate_na.py && $(PY) checks_na.py
+	$(MAKE) $(STAMP)/na_sections $(STAMP)/na_views
+
+eu:             ## EU variant (cad/build123d/eu/): STEP/STL to build/eu, checks, its renders (docs/renders/eu_*.png)
+	cd $(CAD)/eu && $(PY) barrier_eu.py && $(PY) face_plate_eu.py && $(PY) checks_eu.py
+	$(MAKE) $(STAMP)/eu_views
 
 all: pcb cad check print renders check-renders
 

@@ -1,6 +1,6 @@
 """HACKSAW GUIDE for the steel plate supplied with the BILRESA (D-52, D-81): the whole plate lies in a pocket, round end
 on the stop; walls above it with a hacksaw slot across at the cut line; clamp the jig in a vise. The cut at MAGNET[1]
-leaves the piece the insert (NA) or the cap (EU) takes (D-43).
+leaves the piece the barrier (NA) or the barrier (EU) takes (D-43).
 PETG, floor down, no supports.
 Run:  python plate_jig.py  -> ../../build/plate_jig_saw.stl
 """

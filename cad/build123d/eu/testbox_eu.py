@@ -1,7 +1,7 @@
 """EU TEST SOCKET (D-76): a printed stand-in for the DIN 49073 flush box, to try the EU stack's depth before a real wall.
 
 The box: BOX_DIA inside, BOX_HOLE outside, TB_DEPTH inside depth, the four device screw domes (DOMES, DOME_D) with
-pilot holes for the cap's screws, V-grooves inside and outside at the TB_MARKS depths, an inspection window in the
+pilot holes for the barrier's screws, V-grooves inside and outside at the TB_MARKS depths, an inspection window in the
 wall at -45 deg with a labelled fin beside it. The wall plate: TB_PLATE_T thick, larger than the face plate, sits on
 a shoulder on the box so the box's rim is flush with its face; a key at the top sets the orientation.
 Print: box floor down, plate flat, no supports. Any filament.

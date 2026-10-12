@@ -2,8 +2,8 @@
 
 Usage: python3 pcb/tools/order_bom.py [DEVKIT_SETS]   (default 5)
 Writes pcb/order/{unit_na,unit_eu,devkit}_{digikey,mouser}.csv (the devkit: DEVKIT_SETS NA and DEVKIT_SETS EU plates;
-parts a distributor does not carry are listed last in its file, to buy from the other) from the boards' part tables (parts.py, eu_parts.py, sensor_parts.py,
-eu_capboard_parts.py) and the parts not on a board (EXTRA_NA, EXTRA_EU). Lines merge by MPN; the quantity is
+parts a distributor does not carry are listed last in its file, to buy from the other) from the boards' part tables (parts_na.py, parts_eu.py, lv_parts.py,
+lv_parts_na.py, lv_parts_eu.py) and the parts not on a board (EXTRA_NA, EXTRA_EU). Lines merge by MPN; the quantity is
 exactly the per-plate count times the plates (no spares). Parts without an MPN yet are listed on stdout.
 """
 import csv
@@ -70,13 +70,13 @@ SMALL = ("0402", "0603", "1206", "SOT-23", "SOD-523", "DFN", "SPK0641", "WLCSP",
 # NA parts that are not on a board (D-50, D-57): the spacer posts' studs, the board standoffs and the 5 V FFC
 EXTRA_NA = {
     "ST1": dict(mfr="Wurth Elektronik", mpn="971100244", fp="WA-SBRIE", desc="Brass spacer stud M2 male-female, 10 mm, "
-                "4 mm hex: spacer post, wiring board P1 to the riser"),
+                "4 mm hex: spacer post, mains board P1 to the pin board"),
     "ST2": dict(mfr="Wurth Elektronik", mpn="971100244", fp="WA-SBRIE", desc="Brass spacer stud M2 male-female, 10 mm, "
-                "4 mm hex: spacer post, wiring board P2 to the riser"),
+                "4 mm hex: spacer post, mains board P2 to the pin board"),
     **{f"SO{i}": dict(mfr="Keystone", mpn="25503", fp="standoff", desc="Nylon M3 male-female hex standoff, 15 mm, "
-                      "5.0 mm hex: wiring board to the insert (D-57)") for i in range(1, 5)},
+                      "5.0 mm hex: mains board to the barrier (D-57)") for i in range(1, 5)},
     "W1": dict(mfr="GCT", mpn="05-06-A-0152-A-4-06-4-G", fp="FFC", desc="FFC 0.5 mm, 6 contacts, 152 mm, Type 1: "
-               "wiring board J2 to the ring board J1"),
+               "mains board J2 to the sensor board J1"),
 }
 # EU parts that are not on a board (D-94): the lights' protective earth, joined in the box
 EXTRA_EU = {
@@ -84,19 +84,19 @@ EXTRA_EU = {
                 "0.2-4 mm2: PE in from the supply to PE out to the lights, in the box (no PE on the boards)"),
 }
 # bought locally: no MPN in the lists (printed on stdout)
-LOCAL = {"NA": ["M2 x 5 pan head screw ISO 7045, steel: 2 per plate (riser onto the spacer posts)",
+LOCAL = {"NA": ["M2 x 5 pan head screw ISO 7045, steel: 2 per plate (pin board onto the spacer posts)",
                 "heatshrink 6 mm (2:1), 15 mm: 2 per plate (over the spacer posts)",
-                "M3 x 8 slotted pan head screw ISO 1580, nylon: 4 per plate (wiring board onto the standoffs)"],
-         "EU": ["M2 x 6 thread-forming screw for plastics: 4 per plate (cap board into the carrier)"]}
+                "M3 x 8 slotted pan head screw ISO 1580, nylon: 4 per plate (mains board onto the standoffs)"],
+         "EU": ["M2 x 6 thread-forming screw for plastics: 4 per plate (sensor board into the carrier)"]}
 
 
 # battery-free edition (D-109, D-122): the mains board fully populated, the 5 V path to the spring pins, the back cover
-# flex; left off: the ring board / cap board, the FFC, the EU 5 V board's sensor pins P1 / P2
-PLAIN_DROP = {("NA", "ring board"): None, ("EU", "cap board"): None, ("NA", "mechanical"): {"W1"},
-              ("EU", "5 V board"): {"P1", "P2"}}
+# flex; left off: the sensor boards, the FFC, the EU pin board's sensor pins P1 / P2
+PLAIN_DROP = {("NA", "sensor board"): None, ("EU", "sensor board"): None, ("NA", "mechanical"): {"W1"},
+              ("EU", "pin board"): {"P1", "P2"}}
 # switch-only edition (D-122): the rocker switch and the terminal blocks on the mains board, the board's standoffs (NA)
 # and the PE lever connector (EU); nothing else
-SWITCH_KEEP = {("NA", "wiring board"): {"S1", "J1"}, ("NA", "mechanical"): {"SO1", "SO2", "SO3", "SO4"},
+SWITCH_KEEP = {("NA", "mains board"): {"S1", "J1"}, ("NA", "mechanical"): {"SO1", "SO2", "SO3", "SO4"},
                ("EU", "mains board"): {"S1", "J1", "J2"}, ("EU", "mechanical"): {"PE1"}}
 
 
@@ -121,14 +121,14 @@ def tables():
             return __import__(mod)
         finally:
             sys.path.pop(0)
-    na, eu = load("pcb/tools", "parts"), load("pcb/eu/tools", "eu_parts")
-    sen, euc = load("pcb/sensor/tools", "sensor_parts"), load("pcb/sensor/tools", "eu_capboard_parts")
-    return [("NA", "wiring board", na.PARTS), ("NA", "ring board", sen.RING_PARTS),
-            ("NA", "riser", sen.RISER_PARTS), ("NA", "cover flex", sen.COVER_PARTS),
+    na, eu = load("pcb/na/tools", "parts_na"), load("pcb/eu/tools", "parts_eu")
+    na_lv, eu_lv, lv = load("pcb/na/tools", "lv_parts_na"), load("pcb/eu/tools", "lv_parts_eu"), load("pcb/shared/tools", "lv_parts")
+    return [("NA", "mains board", na.PARTS), ("NA", "sensor board", na_lv.SB_PARTS),
+            ("NA", "pin board", na_lv.PB_PARTS), ("NA", "cover flex", lv.COVER_PARTS),
             ("NA", "mechanical", EXTRA_NA),
-            ("EU", "mains board", eu.MAINS_PARTS), ("EU", "5 V board", eu.LV_PARTS),
-            ("EU", "cap board", euc.CAPBOARD_PARTS),
-            ("EU", "cover flex", sen.COVER_PARTS), ("EU", "mechanical", EXTRA_EU)]
+            ("EU", "mains board", eu.MB_PARTS), ("EU", "pin board", eu.PB_PARTS),
+            ("EU", "sensor board", eu_lv.SB_PARTS),
+            ("EU", "cover flex", lv.COVER_PARTS), ("EU", "mechanical", EXTRA_EU)]
 
 
 def short(desc, n=90):

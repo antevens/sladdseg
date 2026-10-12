@@ -1,0 +1,4 @@
+(version 1)
+# EU sensor board (low voltage only): FR4 1.6 mm in the carrier.
+(rule "Board edge clearance"
+    (constraint edge_clearance (min 0.3mm)))
