@@ -34,9 +34,9 @@ def msr_posts():
 def build(plain=False):
     """Face plate; plain: the standard-size plate without the sensor bays (D-109)."""
     pw, ph, py = (PLAIN_PW, PLAIN_PH, 0.0) if plain else (PW, PH, PLATE_Y)
-    shell = Pos(0, py, 0) * slab(rr(pw, ph, PR), 0, PT)
-    shell = chamfer(shell.edges().group_by(Axis.Z)[-1], FACE_CHAMFER)
-    shell -= Pos(0, py, 0) * slab(rr(pw - 2 * SKIN, ph - 2 * SKIN, PR - SKIN), -1, PT - SKIN)
+    outline = Pos(0, py, 0) * slab(rr(pw, ph, PR), 0, PT)
+    outline = chamfer(outline.edges().group_by(Axis.Z)[-1], FACE_CHAMFER)
+    shell = outline - Pos(0, py, 0) * slab(rr(pw - 2 * SKIN, ph - 2 * SKIN, PR - SKIN), -1, PT - SKIN)
     body = shell
     sb = (SHT[0] + 2 * SHT_BAY_CLR, SHT[1] + 2 * SHT_BAY_CLR)
     if not plain:
@@ -45,6 +45,7 @@ def build(plain=False):
         body += frame(MSR_BAY[0], MSR_BAY[1], BAY_WALL, MSR_BAY_R, z0, PT, MSR_Y)
         body += frame(*sb, BAY_WALL, SHT_BAY_R, z0, PT, SHT_AT[1])
         body += mic_tube()
+        body &= outline                                 # the bay frames inside the chamfered edge
 
     # ---------------- cuts ----------------
     # clearance envelope of the insert: island window through the face, flange underneath

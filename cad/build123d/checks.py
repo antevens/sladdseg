@@ -988,6 +988,21 @@ def jig_checks():
                                         f"the floor: the blade cuts right through")
 
 
+def edge_chamfer(tr):
+    """The face plate's front edge chamfer is the same all round: nothing added inside the plate fills it."""
+    from build123d import Box
+    c, top = FACE_CHAMFER, PLATE_Y + PH / 2
+    filled = []
+    for x in (-PW / 2 + 8, 0.0, 15.0, PW / 2 - 8):
+        for y, s in ((top, -1), (PLATE_Y - PH / 2, 1)):
+            probe = Pos(x, y + s * c * 0.25, PT - c * 0.25) * Box(0.1, 0.1, 0.1)   # inside the chamfer's cut corner
+            r = probe & tr
+            if r is not None and r.volume > 1e-6:
+                filled.append((x, round(y, 1)))
+    check(not filled, f"face plate: front edge chamfer {c} mm all round (filled at {filled})" if filled else
+          f"face plate: front edge chamfer {c} mm all round, also over the MSR-2 and SHT40 bays")
+
+
 def plain_checks():
     """Plain plate (D-109): the insert without the 5 V cable bore and the standard-size face plate, on the same wiring
     board, riser and spring pins as the full plate."""
@@ -1032,6 +1047,7 @@ def main():
     ins = insert.build()
     tr = trim.build()
     solids(ins, tr)
+    edge_chamfer(tr)
     board_fit(ins)
     mounting(ins)
     msr2_model()
