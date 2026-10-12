@@ -1,13 +1,38 @@
-# Wiring board (v0.6)
+# Boards (v0.6)
 
-The single wiring board for the v0.6 plate (docs/DESIGN.md D-24, D-25, D-26). One board
-carries the house wiring terminal block, the
-emergency rocker that switches line and neutral, and the PSU that feeds the MSR-2.
+Seven boards, generated from Python into KiCad 9 projects (ERC and DRC at all severities, schematic parity). Spacing
+values are design targets for human review. Nothing here is a compliance claim, and nothing has been checked by a third
+party.
 
-Spacing values below are design targets for human review. Nothing here is a
-compliance claim, and nothing on this board has been checked by a third party.
+| Board | Variant | Editions | Size, material | Carries | Status | Details |
+| --- | --- | --- | --- | --- | --- | --- |
+| Wiring board | NA | all | 47 × 72 mm, FR4 1.6 mm (high-CTI; copper weight open: 1 oz designed, 2 oz option), 2 layers | rocker switch S1, WAGO 2604-1106 (L / N / PE in and out), F1, RV1, Mean Well IRM-03-5, J2 (5 V FFC), spacer posts P1 / P2; switch only: S1 and J1 alone | PCBWay pack in `fab/` | [below](#wiring-board-na) |
+| Ring board | NA | full | 66.3 × 125.9 mm, FR4 1.6 mm, 2 layers | J1 (5 V FFC), J2 (MSR-2's CN2), SHT40, microphone + ADAU7002 | no fab files: CN2 pinout not confirmed | [`sensor/README.md`](sensor/README.md#ring-board-kicadring_board) |
+| Riser board | NA | battery-free, full | 14 × 12 mm, FR4 0.8 mm, 2 layers | two Harwin P70 spring pins onto the back cover, on the wiring board's spacer posts | PCBWay pack in `sensor/fab/riser_board/` | [`sensor/README.md`](sensor/README.md#riser-board-kicadriser_board-fab-pack-in-fabriser_board) |
+| Back cover flex | NA and EU | battery-free, full | 31.2 × 30.1 mm flat, polyimide 0.10 mm, 1 copper layer, FR4 stiffeners | pads for the spring pins, ESD diode, 3.3 V regulator, two spring fingers onto the remote's cell contacts | no fab files: contact positions not measured on a remote | [`sensor/README.md`](sensor/README.md#back-cover-flex) |
+| EU mains board | EU | all | Ø58 mm, FR4 1.6 mm (high-CTI, 2 oz), 2 layers | rocker switch S1, two WAGO 2604-3102, F1, RV1, Zettler ZPI03S0500WC, J3 (5 V header); switch only: S1, J1, J2 alone | PCBWay pack in `eu/fab/` | [`eu/README.md`](eu/README.md#mains-board-kicadeu_mains_board) |
+| EU 5 V board | EU | battery-free, full | 58 × 27.9 mm D-shape, FR4 1.6 mm, 2 layers | socket on the mains board's J3, C1, four Harwin P70 spring pins (cap board, back cover) | PCBWay pack in `eu/fab/` | [`eu/README.md`](eu/README.md#5-v-board-kicadeu_5v_board) |
+| EU cap board | EU | full | 76 × 113.8 mm, FR4 1.6 mm, 2 layers | pads for the 5 V board's spring pins, J2 (MSR-2's CN2), SHT40, microphone + ADAU7002 | no fab files: CN2 pinout not confirmed | [`sensor/README.md`](sensor/README.md#eu-cap-board-kicadeu_cap_board-d-56-d-70) |
 
-## Layout
+Sources: the wiring board from `tools/parts.py`; the ring board, riser, back cover flex and EU cap board from
+`sensor/tools/sensor_parts.py` and `sensor/tools/eu_capboard_parts.py`; the EU mains and 5 V boards from
+`eu/tools/eu_parts.py`. Geometry shared with the CAD comes from `cad/build123d/params.py` and
+`cad/build123d/eu/params_eu.py`. Order lists for all parts: `order/README.md`.
+
+| Wiring board | Ring board | Riser board | Back cover flex |
+| --- | --- | --- | --- |
+| ![Wiring board, front](../docs/renders/wiring_board_front.png) | ![Ring board, front](../docs/renders/ring_board_front.png) | ![Riser, front](../docs/renders/riser_board_front.png) | ![Cover flex, copper side](../docs/renders/cover_flex_front.png) |
+
+| EU mains board | EU 5 V board | EU cap board |
+| --- | --- | --- |
+| ![EU mains board, front](../docs/renders/eu_mains_board_front.png) | ![EU 5 V board, front](../docs/renders/eu_5v_board_front.png) | ![EU cap board, front](../docs/renders/eu_cap_board_front.png) |
+
+## Wiring board (NA)
+
+The NA plate's board (docs/DESIGN.md D-24, D-25, D-26): the house wiring terminal block, the emergency rocker switch
+that breaks line and neutral, and the PSU fed from the switched side.
+
+### Layout
 
 Coordinates are front view in millimetres: X right, Y up toward the rocker, origin at
 the board centre. F faces the plate, B faces the box.
@@ -34,7 +59,7 @@ the board centre. F faces the plate, B faces the box.
   `make check` tests the heads against the board STEP.
   Board-only footprints, not in the BOM or centroid. Mains copper keeps 1.0 mm from holes.
 
-## Parts
+### Parts
 
 | Ref | Part | MPN | Side, position | Source |
 | --- | --- | --- | --- | --- |
@@ -58,7 +83,7 @@ S1 data from the drawing:
 - Marked ratings: ENEC 12(4) A 250 V~; UL/CSA 15 A 125-250 VAC.
 - The drawing is not in the repository.
 
-## Nets
+### Nets
 
 | Net | Class | Connects |
 | --- | --- | --- |
@@ -82,7 +107,7 @@ Load current path:
   through two vias below it; the fused line runs from F1.2 to PS1.1 and straight across to RV1.1.
 - Neutral: J1.3 to S1.2 on F, then S1.2a to J1.2 on B. The B path runs up the right side.
 
-## Rules
+### Rules
 
 The rules are in `kicad/wiring_board.kicad_dru`, written by `tools/gen_project.py`.
 
@@ -105,7 +130,7 @@ between copper on one layer is never shorter than the straight gap, so the 3.0 m
 targets are checked as clearance. KiCad evaluates creepage rules without the
 footprint, so a per-part creepage exception cannot be written.
 
-## Status
+### Status
 
 Done:
 
@@ -140,6 +165,22 @@ Open:
   is used.
 - The 22 uF output capacitor is on the ring board at J1 (D-50).
 - P1 / P2 carry the riser board and its 5 V: the WA-SBRIE studs' 5 mm male thread ends inside the 7 mm spacer, short of the board and the PSU behind it (`make check`).
+
+### Renders
+
+With components, then without (every trace and pour), then the copper layers (back seen from behind).
+
+| Front | Back |
+| --- | --- |
+| ![Wiring board, front](../docs/renders/wiring_board_front.png) | ![Wiring board, back](../docs/renders/wiring_board_back.png) |
+| ![Wiring board, bare front](../docs/renders/wiring_board_bare_front.png) | ![Wiring board, bare back](../docs/renders/wiring_board_bare_back.png) |
+| ![Wiring board, front copper](../docs/renders/wiring_board_copper_front.png) | ![Wiring board, back copper](../docs/renders/wiring_board_copper_back.png) |
+
+| Front, angled | Back, angled |
+| --- | --- |
+| ![Wiring board, front, angled](../docs/renders/wiring_board_iso_front.png) | ![Wiring board, back, angled](../docs/renders/wiring_board_iso_back.png) |
+
+![Wiring board, bare, angled](../docs/renders/wiring_board_bare_iso.png)
 
 ## Silkscreen labels and 3D models (all boards)
 
@@ -178,10 +219,11 @@ Needs KiCad 9 (`kicad-cli` and the `pcbnew` Python module) and the repository's
 `.venv` with build123d.
 
 ```bash
-make pcb        # runs pcb/tools/build.sh
+make pcb        # all boards: pcb/tools/build.sh, pcb/sensor/tools/build.sh, pcb/eu/tools/build.sh
 ```
 
-The script runs these steps:
+Each `build.sh` writes the 3D models, libraries, project and rules, schematics and boards, runs ERC and DRC
+(reports in `build/`) and writes the fab packs that are not blocked. The wiring board's steps:
 
 - `gen_3d.py`: the 3D models in `kicad/3d/` (vendor STEP from `scratch/3d/` when present).
 - `gen_libs.py`: the symbol and footprint libraries.
@@ -193,19 +235,3 @@ The script runs these steps:
   BOM and the centroid; S1 is not fitted).
 
 All part data, nets and geometry live in `tools/parts.py`.
-
-## Renders
-
-With components, then without (every trace and pour), then the copper layers (back seen from behind).
-
-| Front | Back |
-| --- | --- |
-| ![Wiring board, front](../docs/renders/wiring_board_front.png) | ![Wiring board, back](../docs/renders/wiring_board_back.png) |
-| ![Wiring board, bare front](../docs/renders/wiring_board_bare_front.png) | ![Wiring board, bare back](../docs/renders/wiring_board_bare_back.png) |
-| ![Wiring board, front copper](../docs/renders/wiring_board_copper_front.png) | ![Wiring board, back copper](../docs/renders/wiring_board_copper_back.png) |
-
-| Front, angled | Back, angled |
-| --- | --- |
-| ![Wiring board, front, angled](../docs/renders/wiring_board_iso_front.png) | ![Wiring board, back, angled](../docs/renders/wiring_board_iso_back.png) |
-
-![Wiring board, bare, angled](../docs/renders/wiring_board_bare_iso.png)

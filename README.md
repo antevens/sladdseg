@@ -33,7 +33,8 @@ Nothing here is certified or code-compliant; see `docs/SAFETY.md`.
 | `docs/ASSEMBLY.md` | what holds each part, assembly order, detail views |
 | `docs/PRINTING.md` | print jobs, settings, order of work |
 | `docs/MEASUREMENTS.md` | measured values and the ones still estimated |
-| `pcb/README.md`, `pcb/sensor/README.md`, `pcb/eu/README.md` | boards, nets, rules, board renders |
+| `pcb/README.md` | all seven boards: what each carries, editions, status; the wiring board in detail |
+| `pcb/sensor/README.md`, `pcb/eu/README.md` | the other boards in detail: parts, nets, rules, board renders |
 | `pcb/order/README.md` | DigiKey / Mouser order lists and PCBWay packs |
 
 ```bash

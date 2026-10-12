@@ -18,9 +18,6 @@ PRINT_ORIENT = {
     "coupon_msr": lambda p: Rot(180, 0, 0) * p,
     "coupon_rocker": lambda p: p,
     "coupon_ribs": lambda p: p,
-    "coupon_back_gauges": lambda p: p,              # flat (D-87)
-    "coupon_end_gauges": lambda p: p,               # flat (D-101)
-    "coupon_shell_gauges": lambda p: p,             # bottom (the round-over's 45 deg point) down (D-101)
     "back_cover": lambda p: p,                      # back down: as modelled (D-35)
     "cap_eu": lambda p: Rot(180, 0, 0) * p,         # face-down (barrier, D-30)
     "trim_eu": lambda p: Rot(180, 0, 0) * p,        # face-down
@@ -63,9 +60,6 @@ def parts():
             "coupon_msr": coupons.msr(tr),
             "coupon_rocker": coupons.rocker_ladder(),
             "coupon_ribs": coupons.ribs(),
-            "coupon_back_gauges": coupons.back_gauges(),
-            "coupon_end_gauges": coupons.end_gauges(),
-            "coupon_shell_gauges": coupons.shell_gauges(),
             "back_cover": backcover.cover(),
             "cap_eu": cap_eu.build(), "trim_eu": trim_eu.build(),
             "carrier_eu": capboard_eu.carrier(),
