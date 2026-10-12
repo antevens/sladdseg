@@ -74,16 +74,16 @@ Full edition (3):
 
 | Remote in place | Remote out, rocker switch exposed |
 | --- | --- |
-| ![NA full plate](docs/renders/v0.5_front.png) | ![NA full plate, remote out](docs/renders/v0.5_remote_out.png) |
+| ![NA full plate](docs/renders/v0.6_front.png) | ![NA full plate, remote out](docs/renders/v0.6_remote_out.png) |
 
 | Half-section | Back, box side |
 | --- | --- |
-| ![NA half-section](docs/renders/v0.5_section.png) | ![NA back](docs/renders/v0.5_back.png) |
+| ![NA half-section](docs/renders/v0.6_section.png) | ![NA back](docs/renders/v0.6_back.png) |
 
 Full edition (3), exploded: remote, face plate, insert, ring board with the MSR-2, riser with the spring pins on two spacer posts, four
 nylon standoffs, wiring board.
 
-![NA exploded](docs/renders/v0.5_exploded.png)
+![NA exploded](docs/renders/v0.6_exploded.png)
 
 Battery-free edition (2):
 

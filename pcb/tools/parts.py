@@ -8,7 +8,7 @@ import uuid
 NS = uuid.UUID("2b7f0c1e-4c1d-4f55-9b0e-3a8d6c2f1e07")
 LIB = "wiring_board"
 PROJECT = "wiring_board"
-REV = "v0.5"
+REV = "v0.6"
 REV_DATE = "2026-10-12"                     # title blocks and silkscreen
 
 

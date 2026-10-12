@@ -1,6 +1,6 @@
-# Wiring board (v0.5)
+# Wiring board (v0.6)
 
-The single wiring board for the v0.5 plate (docs/DESIGN.md D-24, D-25, D-26). One board
+The single wiring board for the v0.6 plate (docs/DESIGN.md D-24, D-25, D-26). One board
 carries the house wiring terminal block, the
 emergency rocker that switches line and neutral, and the PSU that feeds the MSR-2.
 

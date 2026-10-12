@@ -28,7 +28,7 @@ from params import (FINGER, FINGER_PAD, FLEX_T, MIC, MIC_PORT_IN, MIC_AT, MIC_PA
                     BC_BEND_R, BC_BEND_CLR, BC_SLIT, BC_REG_RECESS, BC_PAD_CU)
 
 LIB = "sensor"
-REV = "v0.5"
+REV = "v0.6"
 REV_DATE = "2026-10-12"                                     # title blocks
 RING, RISER_B, COVER = "ring_board", "riser_board", "cover_flex"
 

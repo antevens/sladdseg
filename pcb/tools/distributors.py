@@ -239,7 +239,7 @@ def stock():
 def push(na, eu, primary, dry, plain=False):
     plates = {"NA": na, "EU": eu}
     lines, _ = ob.collect(plates, ob.plain_keep if plain else None)
-    name = "smart-wallplate v0.5 " + ("plain " if plain else "") + \
+    name = "smart-wallplate v0.6 " + ("plain " if plain else "") + \
         " ".join(f"{k}{n}" for k, n in (("NA", na), ("EU", eu)) if n) + f" {date.today().isoformat()}"
     dk_parts, ms_items = [], []
     for mpn, line in lines.items():

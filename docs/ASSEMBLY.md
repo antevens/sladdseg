@@ -130,17 +130,17 @@ section of every printed part (dashed line: the wall surface).
 
 | Face plate off | 5 V path |
 | --- | --- |
-| ![NA face plate lifted off](renders/v0.5_face_off.png) | ![NA 5 V path](renders/v0.5_power.png) |
+| ![NA face plate lifted off](renders/v0.6_face_off.png) | ![NA 5 V path](renders/v0.6_power.png) |
 
 | Battery-free remote | Spring pins, section |
 | --- | --- |
-| ![NA battery-free remote](renders/v0.5_battery_free.png) | ![NA spring pins](renders/v0.5_pins.png) |
+| ![NA battery-free remote](renders/v0.6_battery_free.png) | ![NA spring pins](renders/v0.6_pins.png) |
 
 | Ring board (red: copper keep-out round the box opening) | Microphone sections |
 | --- | --- |
-| ![NA ring board](renders/v0.5_ring.png) | ![NA microphone sections](renders/v0.5_mic_section.png) |
+| ![NA ring board](renders/v0.6_ring.png) | ![NA microphone sections](renders/v0.6_mic_section.png) |
 
-![NA cross-sections](renders/v0.5_sections.png)
+![NA cross-sections](renders/v0.6_sections.png)
 
 EU plate: the sensors' side (carrier, cap board, MSR-2, microphone, SHT40), the carrier clamp from the wall side and
 its lip in section, the sensor pins onto the cap board's pads, a face plate snap, a section and the box from behind.
