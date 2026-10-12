@@ -329,7 +329,6 @@ BC_TERM_Y = -1                            # REF terminal end (VBAT / GND contact
 BC_VBAT_X = -1                            # REF VBAT contact on the -x cell, GND on the +x cell (FCC photos; check on a unit)
 BC_WALL = 1.6                             # MEASURED cover shell thickness (human, 2026-10-09)
 BC_SIDE_WALL = BC_WALL - 0.1              # side wall: 0.1 more room inside all round for the remote's housing (D-75)
-BC_END_WALL = BC_SIDE_WALL - 0.1          # end walls: 0.1 more room inside at each end (D-103)
 BC_PRY = (6.0, 1.2)                       # MEASURE screwdriver notch in the rim at the bottom end (-y): width, depth
 # snap clips: one at each end (x = 0), free-standing inside the end wall, below the rim; the housing's edge comes
 # down into the cover and the clip's hook catches its wall
@@ -343,10 +342,10 @@ BC_LATCH_RIM_GAP = 1.0                    # MEASURED top clip's top below the ri
 # clip tops above the inside floor: bottom end (-y) MEASURED 4.7 plus 0.2 towards the rim (test print, human
 # 2026-10-10); top end (+y) from BC_LATCH_RIM_GAP
 BC_LATCH_TOPS = (4.7 + 0.2, B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
-# innermost point (hook tip) in from the outside rim: bottom end from its face 2.9 in (MEASURED on a print, human
-# 2026-10-09), top end measured 2.8 on the original; both plus the deeper hooks. Where reach - hook - thickness
-# < BC_WALL the clip's back merges into the end wall.
-BC_LATCH_REACH = (2.9 + BC_LATCH_HOOK[0], 2.8 + 0.2)
+# innermost point (hook tip) in from the outside rim: bottom end 3.25 (human 2026-10-12, D-107; was 4.0), top end
+# 2.7 (the clip 0.3 nearer the end, human 2026-10-12, D-107; was 3.0). Where reach - hook - thickness < BC_WALL the
+# clip's back merges into the end wall.
+BC_LATCH_REACH = (3.25, 2.7)
 # small tabs inside both long side walls, two per side either side of mid-length, into slots in the housing's long
 # sides (human, 2026-10-11, D-90): the slots' inside / outside spacing along y, tab top below the rim, tab height,
 # tab protrusion from the wall

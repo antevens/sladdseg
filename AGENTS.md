@@ -143,6 +143,9 @@ kicad-cli pcb drc --severity-all --schematic-parity --exit-code-violations pcb/k
 - Commit only with the human's explicit approval (see Working rules); then keep
   commits small, one concern each. Update the `docs/DESIGN.md` decision log for
   any design decision.
+- Versions: work happens on `main`. At each version bump, tag the last commit of the
+  old version `vX.Y` and leave a branch `vX.Y` at it (human, 2026-10-12); tags and
+  branches, like commits, only with the human's approval.
 
 ## Working rules
 
@@ -279,7 +282,7 @@ Do not violate these; ask the human if a task seems to require it.
 
 ## Current status (v0.5)
 
-The decision log in `docs/DESIGN.md` (D-50..D-79 for v0.4, D-80..D-106 for v0.5) has the history.
+The decision log in `docs/DESIGN.md` (D-50..D-79 for v0.4, D-80 on for v0.5) has the history.
 
 NA: box insert (PC-FR barrier) and passive face plate; wiring board (rocker, WAGO block, PSU,
 J2) on four nylon standoffs (D-57), ERC/DRC clean, PCBWay pack in `pcb/fab/`; ring board on the
