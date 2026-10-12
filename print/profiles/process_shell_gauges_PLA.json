@@ -1,0 +1,16 @@
+{
+  "type": "process",
+  "name": "smart-wallplate shell_gauges_PLA",
+  "inherits": "0.20mm Strength @Elegoo CC2 0.4 nozzle",
+  "from": "User",
+  "instantiation": "true",
+  "wall_loops": "4",
+  "top_shell_layers": "4",
+  "bottom_shell_layers": "4",
+  "sparse_infill_density": "40%",
+  "sparse_infill_pattern": "gyroid",
+  "enable_support": "0",
+  "brim_type": "outer_only",
+  "seam_position": "back",
+  "brim_width": "4"
+}

@@ -27,8 +27,8 @@ from params import (FINGER, FINGER_PAD, FLEX_T, MIC, MIC_PORT_IN, MIC_AT, MIC_PA
                     BC_BRIDGE_H, BC_LANE_H, BC_END_CORNER, BC_END_XO, BC_PAD_END, BC_PAD_LOW, BC_PAD_STIFF_T, BC_PAD_D, end_top)
 
 LIB = "sensor"
-REV = "v0.4"
-REV_DATE = "2026-10-11"                                     # title blocks
+REV = "v0.5"
+REV_DATE = "2026-10-12"                                     # title blocks
 RING, RISER_B, COVER = "ring_board", "riser_board", "cover_flex"
 
 # ---- CN2 mate (D-82, D-89): Molex 55909-2474 SlimStack plug, 24 contacts, 2 rows, 0.4 mm, mating the MSR-2's CN2

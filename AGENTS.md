@@ -260,10 +260,11 @@ Do not violate these; ask the human if a task seems to require it.
    low-voltage spaces, is not an opening in the barrier; `make check` /
    `make eu` keep it above z 0 and the mains-air check must still pass.
    Anything forming the barrier is printed in a UL94 V-0 filament (see PRINTING).
-3. **PCB isolation (D-24).** Designed for EU/UK (EN/BS EN 62368-1, IEC 60664-1)
+3. **PCB isolation (D-24, D-102).** Designed for EU/UK (EN/BS EN 62368-1, IEC 60664-1)
    and US/CA (UL/CSA 62368-1), 270 V working, overvoltage category III,
-   pollution degree 2, using the stricter table in each case:
-   L–N and L–L(switched) ≥3.5 mm, L or N to PE ≥3.5 mm, mains to the 5 V side
+   pollution degree 2, on high-CTI FR4 (CTI ≥ 600, material group I) for the mains
+   boards, using the stricter table in each case:
+   L–N and L–L(switched) ≥3.0 mm, L or N to PE ≥3.0 mm, mains to the 5 V side
    ≥8.0 mm plus a routed slot under the PSU (reinforced). Clearance and
    creepage both. Exception: between the pins of a certified part rated for
    ≥270 V at OVC III / PD2 (e.g. the WAGO 2604 terminal block, the rocker), the
@@ -276,9 +277,9 @@ Do not violate these; ask the human if a task seems to require it.
 5. Never describe the device as code-compliant, certified, or safe to install.
    Say what was checked. Energising anything mains-side is a human decision.
 
-## Current status (v0.4)
+## Current status (v0.5)
 
-The decision log in `docs/DESIGN.md` (D-50..D-79 for v0.4) has the history.
+The decision log in `docs/DESIGN.md` (D-50..D-79 for v0.4, D-80..D-106 for v0.5) has the history.
 
 NA: box insert (PC-FR barrier) and passive face plate; wiring board (rocker, WAGO block, PSU,
 J2) on four nylon standoffs (D-57), ERC/DRC clean, PCBWay pack in `pcb/fab/`; ring board on the

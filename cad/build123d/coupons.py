@@ -14,8 +14,12 @@
   coupon_end_gauges   five flat '#' frames for the inside of the original back cover in plan view: the bar tips cut to
                       a rounded rectangle (the original's inside) with corner radius END_GAUGE_R (engraved); the one
                       that drops in at the rim touching every tip gives the remote's end shape (D-101).
+  coupon_shell_gauges five liners for the inside of the original back cover: a 1.6 mm band whose outside is the shell's
+                      inside (plan corner radius SHELL_GAUGE_R, the back's round-over, the wall up to the rim), open in
+                      the middle, notched for the end clips, side ribs and side tabs; the one that sits on the floor
+                      with its top flush with the rim all round gives the end shape (D-101).
 """
-from math import cos, pi, sin
+from math import cos, pi, sin, sqrt
 from build123d import Box, Pos, Rectangle, Rot, Polyline, Text, extrude, make_face
 from params import *
 from common import slab, rr
@@ -29,6 +33,9 @@ GAUGE_T = 2.0                                      # gauge thickness
 END_GAUGE_R = (20.9, 18.0, 15.0, 12.0, 9.0)        # end gauges: corner radius of the plan outline (20.9: semicircular ends)
 END_GAUGE_CLR = 0.05                               # each side, under the original cover's inside outline
 END_GAUGE_BARS = ((-13.0, 13.0), (7.5, -20.0), 4.0, 3.0)   # bars: x of the two along y, y of the two along x, widths
+SHELL_GAUGE_R = (15.0, 16.5, 18.0, 19.5, 20.9)     # shell gauges: plan corner radius of the cover's inside (20.9: semicircular)
+SHELL_GAUGE_T = 1.6                                # band thickness
+SHELL_NOTCH = 0.5                                  # each side round the original's clips, ribs and tabs
 GAUGE_GRIP = 8.0                                   # gauge above the cover's rim
 
 
@@ -127,6 +134,59 @@ def end_gauge(r):
     return g
 
 
+def _inside(rc, inset, top):
+    """The original cover's inside (remote plan, floor at z 0) as a rounded rectangle with corner radius rc, inset by
+    `inset` all round: the back's round-over (B_BACK_RUN x B_BACK_RISE) from its 45 deg point up, straight up to `top`.
+    Nothing below the 45 deg point: a 45 deg tangent there would stand proud of the curve."""
+    from build123d import RectangleRounded, Plane, loft
+    w0, h0 = B_W - 2 * BC_WALL - 2 * inset, B_H - 2 * BC_WALL - 2 * inset
+    rr_ = lambda run: RectangleRounded(w0 - 2 * run, h0 - 2 * run, max(0.3, min(rc - inset - run, (w0 - 2 * run) / 2 - 0.01)))
+    n = 8
+    secs = [Plane.XY.offset(B_BACK_RISE * (1 - cos(pi / 2 * i / n))) * rr_(B_BACK_RUN * (1 - sin(pi / 2 * i / n)))
+            for i in range(n // 2, n + 1)]
+    return loft(secs, ruled=False) + slab(rr_(0.0), B_BACK_RISE - 0.01, top)
+
+
+def shell_gauge(rc):
+    """Liner for the original back cover (remote plan, its inside floor at z 0, rim at B_SEAM_Z - BC_WALL): a
+    SHELL_GAUGE_T band whose outside is the cover's inside with plan corner radius rc, from the round-over's 45 deg
+    point (it rests on the curve) to the rim, open in the middle; notched for the end clips (x 0, BC_LATCH_W[1]), the
+    side ribs (y 0, BC_SIDE_TAB, up to BC_SIDE_TAB_RIM_GAP under the rim) and the side tabs (BC_TAB), bridged round
+    the clips at the top; a label flag at the bottom edge of the +x side (on the bed, clear of the floor in use)."""
+    d = B_SEAM_Z - BC_WALL
+    z45 = B_BACK_RISE * (1 - cos(pi / 4))
+    band = _inside(rc, 0.0, d) - (_inside(rc, SHELL_GAUGE_T, d + 1) + Pos(0, 0, z45 - 5) * Box(B_W, B_H, 10))
+    n = SHELL_NOTCH
+    for s in (-1, 1):
+        band -= Pos(0, s * B_H / 2, d / 2) * Box(BC_LATCH_W[1] + 2 * n, 2 * B_BACK_RUN + 6, d + 2)        # end clips
+        z1 = d - BC_SIDE_TAB_RIM_GAP + n                                                              # side ribs
+        band -= Pos(s * B_W / 2, 0, z1 / 2 - 1) * Box(2 * B_BACK_RUN + 6, BC_SIDE_TAB[0] + 2 * n, z1 + 2)
+        gi, go, top, h, prot = BC_TAB                                                                 # side tabs
+        for sy in (-1, 1):
+            band -= Pos(s * B_W / 2, sy * (gi + go) / 4, d - top - h / 2) * Box(2 * B_BACK_RUN + 6, (go - gi) / 2 + 2 * n,
+                                                                               h + 2 * n)
+    h2, cw = (B_H - 2 * BC_WALL) / 2, BC_LATCH_W[1] / 2 + n
+    yi = h2 - (max(BC_LATCH_REACH) - BC_WALL) - n                # inner edge of the clip's notch
+    for s in (-1, 1):                                           # bridge round each clip's inner side, at the top
+        u = Pos(0, s * (yi - 0.6 + (h2 - 0.3 - yi) / 2 + 0.3), d - 0.6) * Box(2 * cw + 3.0, h2 - 0.3 - yi + 1.2, 1.2)
+        u -= Pos(0, s * (yi + (h2 - yi) / 2 + 0.5), d - 0.6) * Box(2 * cw, h2 - yi + 1, 2.0)
+        band += u
+    xi = (B_W - 2 * BC_WALL) / 2 - B_BACK_RUN * (1 - sin(pi / 4)) - SHELL_GAUGE_T   # band's inner bottom edge, +x side
+    flag = Pos(xi - 2.0 + 0.3, 13.0, z45 + 0.5) * Box(4.6, 7.0, 1.0)
+    flag -= Pos(xi - 2.0 + 0.3, 13.0, z45 + 0.85) * Rot(0, 0, 90) * extrude(Text(f"R{rc:g}", 2.8), 0.5)
+    return band + flag
+
+
+def shell_gauges():
+    """The SHELL_GAUGE_R liners in two rows (3 + 2), floor side down."""
+    dx, dy = B_W - 2 * BC_WALL + 5.0, B_H - 2 * BC_WALL + 5.0
+    out = None
+    for i, r in enumerate(SHELL_GAUGE_R):
+        g = Pos((i % 3) * dx, -(i // 3) * dy, 0) * shell_gauge(r)
+        out = g if out is None else out + g
+    return out
+
+
 def end_gauges():
     """The END_GAUGE_R gauges in two rows (3 + 2), flat."""
     dx, dy = B_W - 2 * BC_WALL + 4.0, B_H - 2 * BC_WALL + 4.0
@@ -149,6 +209,6 @@ def back_gauges():
 
 if __name__ == "__main__":
     for name, p in (("pocket_well", pocket_well()), ("msr", msr()), ("rocker", rocker_ladder()), ("ribs", ribs()),
-                    ("back_gauges", back_gauges()), ("end_gauges", end_gauges())):
+                    ("back_gauges", back_gauges()), ("end_gauges", end_gauges()), ("shell_gauges", shell_gauges())):
         bb = p.bounding_box()
         print(f"coupon_{name}: {bb.size.X:.0f} x {bb.size.Y:.0f} x {bb.size.Z:.0f} mm, {p.volume/1000:.1f} cm3, valid={p.is_valid}, solids={len(p.solids())}")

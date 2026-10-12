@@ -1,6 +1,6 @@
-# Wiring board (v0.4)
+# Wiring board (v0.5)
 
-The single wiring board for the v0.4 plate (docs/DESIGN.md D-24, D-25, D-26). One board
+The single wiring board for the v0.5 plate (docs/DESIGN.md D-24, D-25, D-26). One board
 carries the house wiring terminal block, the
 emergency rocker that switches line and neutral, and the PSU that feeds the MSR-2.
 
@@ -22,7 +22,7 @@ the board centre. F faces the plate, B faces the box.
   to both arms). B.Cu is a parallel ring joined to J1.6 by the vias.
 - PE arms from the ring to J1.6 (left, F) and J1.1 (right, F and B): 10.4 mm wide, flush with
   the outer edges of the pin pair's pads (row distance 8.2 plus the 2.2 mm pad),
-  ending square at the pins' centre line so the pads keep the 3.5 mm to the neighbouring
+  ending square at the pins' centre line so the pads keep the 3.0 mm to the neighbouring
   L / N terminals.
 - Pours that compete for copper have fixed priorities (line over neutral), so the fill is
   the same on every rebuild.
@@ -77,18 +77,23 @@ N_SW (5.1, 26.55) (slot centres; 1802.2504 pins at 26.5, RA4 tabs at 26.6). Pins
 
 Load current path:
 
-- Line: J1.5 to S1.1 on F, then S1.1a to J1.4 on B. The B path runs down under J1 and
-  up the left edge.
+- Line: J1.5 to S1.1 on F, then S1.1a to J1.4 on B. The B pour runs from J1.4 up into the band between J1's
+  upper pin row and the rocker's in pins, and in parallel down under J1 and up the left edge. F1 takes L_SW
+  through two vias below it; the fused line runs from F1.2 to PS1.1 and straight across to RV1.1.
 - Neutral: J1.3 to S1.2 on F, then S1.2a to J1.2 on B. The B path runs up the right side.
 
 ## Rules
 
 The rules are in `kicad/wiring_board.kicad_dru`, written by `tools/gen_project.py`.
 
-- L to N: 3.5 mm.
-- L_IN to L_SW and L_F: 3.5 mm.
-- N_IN to N_SW: 3.5 mm.
-- Mains to PE: 3.5 mm.
+- L to N: 3.0 mm.
+- L_IN to L_SW and L_F: 3.0 mm.
+- N_IN to N_SW: 3.0 mm.
+- Any two different mains nets: 3.0 mm (covers switched line to fused line across F1).
+- Mains to PE: 3.0 mm.
+
+(`MAINS_GAP` in `tools/parts.py`: IEC 60664-1 OVC III clearance 3.0 mm; on high-CTI FR4, CTI ≥ 600, the creepage need
+drops to about 1.6 mm, so clearance sets the target. Order the board in high-CTI FR4, D-102.)
 - Mains to SELV: 8.0 mm clearance and creepage, with the routed slot.
 - Mains to the PSU NC pin: 8.0 mm.
 - Mains copper to board edge: 1.0 mm; other copper 0.5 mm.
@@ -96,7 +101,7 @@ The rules are in `kicad/wiring_board.kicad_dru`, written by `tools/gen_project.p
   certified parts.
 
 Creepage is checked only for mains to SELV. On this flat board the surface path
-between copper on one layer is never shorter than the straight gap, so the 3.5 mm
+between copper on one layer is never shorter than the straight gap, so the 3.0 mm
 targets are checked as clearance. KiCad evaluates creepage rules without the
 footprint, so a per-part creepage exception cannot be written.
 
@@ -121,7 +126,7 @@ Open:
   Centre and one end: fits, snapped in that way round. Both ends: the third row lands over J1 (y 12.4).
 - Check the J1 pin rows on a part. They come from WAGO's 3D model (rows y 8.1 and -0.1,
   8.2 apart, D-37).
-- Thermal review of the 15 A paths. The 3.5 mm targets to the neighbouring J1 pads (round,
+- Thermal review of the 15 A paths. The 3.0 mm targets to the neighbouring J1 pads (round,
   2.2 mm, 5 mm pitch) leave 1.6 to 1.8 mm of pour beside each pad (N_SW 1.3 mm, beside
   the PE arm) over the 2 to 3 mm where the pours leave J1. Options are 2 oz copper, or
   different targets between in and switched terminals of one pole.

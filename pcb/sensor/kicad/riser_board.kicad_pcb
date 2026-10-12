@@ -84,7 +84,7 @@
 	(net 2 "GND")
 	(footprint "sensor:Harwin_P70-2200045"
 		(layer "F.Cu")
-		(uuid "0b9c064a-0599-4910-9d83-53681bccd501")
+		(uuid "06b7a834-ea8c-47ec-8a07-3705c9a1fccd")
 		(at 113.2 113.5)
 		(descr "Harwin P70-2200045 SMT spring pin with peg, pad 2.2 mm, hole 1.2 mm, https://content.harwin.com/asset/7e702b12-8f84-42b5-9282-d7e22f3466f3/DRG-02624-Technical-Drawing-Datasheet-P70-220-pdf.pdf")
 		(tags "spring pin pogo")
@@ -92,7 +92,7 @@
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "d5e3896d-7b62-471d-9747-596d4d8e76c6")
+			(uuid "2fae6641-c09f-4042-95e3-27c641bef06b")
 			(effects
 				(font
 					(size 1 1)
@@ -104,7 +104,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "6cc57bd4-fe51-4fdb-83f5-23cedbc12e77")
+			(uuid "64ee1db5-becc-4306-8c50-33f98d866106")
 			(effects
 				(font
 					(size 1 1)
@@ -116,7 +116,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "a12e5c00-00c6-4193-b106-76972818a352")
+			(uuid "7e5c3c61-8e6f-4d9b-90be-9d2ff0977ac6")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -128,7 +128,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "35ac521e-9b42-4536-bc50-8361ac300c45")
+			(uuid "f9e2caea-79b5-405a-8a6b-11b32f2b7fbf")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -149,7 +149,7 @@
 			)
 			(fill no)
 			(layer "F.CrtYd")
-			(uuid "c7f2e10d-5320-455d-aac9-0e16252b737d")
+			(uuid "bf8f1b51-4d8f-48b5-9136-aca95e7cfec4")
 		)
 		(fp_circle
 			(center 0 0)
@@ -160,7 +160,7 @@
 			)
 			(fill no)
 			(layer "F.Fab")
-			(uuid "b20c1caf-2da9-4284-8209-a66de8472691")
+			(uuid "8da85967-ccdf-42b3-8ae5-ed091fd9d70e")
 		)
 		(pad "1" thru_hole circle
 			(at 0 0)
@@ -169,7 +169,7 @@
 			(layers "*.Cu" "*.Mask" "F.Paste")
 			(remove_unused_layers no)
 			(net 2 "GND")
-			(uuid "38181688-a701-4460-916e-28a9591d03aa")
+			(uuid "3e1fbd03-3f15-4798-997e-5e034d200434")
 		)
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/3d/Harwin_P70-2200045.step"
@@ -184,89 +184,9 @@
 			)
 		)
 	)
-	(footprint "sensor:M2_Post_Pad_D3.8mm"
-		(layer "F.Cu")
-		(uuid "39088507-62cf-4fe4-8f90-76decfe4133b")
-		(at 116.65 116.5)
-		(descr "M2 screw onto a spacer post: plated 2.2 mm hole, 3.8 mm pad (pan head 4.0)")
-		(tags "M2 post pad")
-		(property "Reference" "P2"
-			(at 0 0 0)
-			(layer "F.SilkS")
-			(hide yes)
-			(uuid "30037a07-b43f-45c7-9282-a767909ea4e0")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "Value" "GND post"
-			(at 0 0 0)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "0d685822-7856-402b-aa95-d018436f0be2")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 0)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "63f9b0f4-1fbd-4a1e-8f0f-fc2544967097")
-			(effects
-				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 0)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "7eb7fc58-5242-4c65-9735-244cd4d624da")
-			(effects
-				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
-				)
-			)
-		)
-		(path "/f6ec47fd-8e09-5971-8ad7-9bb8a56bee69")
-		(sheetname "Root")
-		(sheetfile "riser_board.kicad_sch")
-		(attr through_hole exclude_from_bom)
-		(fp_circle
-			(center 0 0)
-			(end 2 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.CrtYd")
-			(uuid "c19967ca-9035-46e2-bd98-8804b251f997")
-		)
-		(pad "1" thru_hole circle
-			(at 0 0)
-			(size 3.8 3.8)
-			(drill 2.2)
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(net 2 "GND")
-			(uuid "5082901c-ded2-4e31-9814-62513538ec60")
-		)
-		(embedded_fonts no)
-	)
 	(footprint "sensor:Harwin_P70-2200045"
 		(layer "F.Cu")
-		(uuid "5c688241-0709-4746-8f4c-22aeb82cfb44")
+		(uuid "1e07a96c-d95f-4c97-ae55-cd4595292d52")
 		(at 113.2 108.9)
 		(descr "Harwin P70-2200045 SMT spring pin with peg, pad 2.2 mm, hole 1.2 mm, https://content.harwin.com/asset/7e702b12-8f84-42b5-9282-d7e22f3466f3/DRG-02624-Technical-Drawing-Datasheet-P70-220-pdf.pdf")
 		(tags "spring pin pogo")
@@ -274,7 +194,7 @@
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "fc914353-9633-4011-97bc-d163b4eb55b3")
+			(uuid "bfecef24-4aef-40df-a32b-7b4db9a3a841")
 			(effects
 				(font
 					(size 1 1)
@@ -286,7 +206,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "7bf7400c-d748-47f3-a426-eb1be24f2c6c")
+			(uuid "34f2fcf9-a6e5-4dfc-bf9f-2c3e95b1071f")
 			(effects
 				(font
 					(size 1 1)
@@ -298,7 +218,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "e8a88374-dd19-4930-9567-2e1813cbcb1d")
+			(uuid "4420362a-1200-4514-ba72-0461c4aeb19e")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -310,7 +230,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "9c28b36c-d36f-4b83-9ef4-1b8054508c1f")
+			(uuid "a3c2c2ad-7e1a-40ee-ad2e-73edd9cebe2d")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -331,7 +251,7 @@
 			)
 			(fill no)
 			(layer "F.CrtYd")
-			(uuid "cfa6ef95-19e7-4c4b-adaf-282bc2ac4d63")
+			(uuid "ceda5a72-6234-4c38-9dde-82342bbe0694")
 		)
 		(fp_circle
 			(center 0 0)
@@ -342,7 +262,7 @@
 			)
 			(fill no)
 			(layer "F.Fab")
-			(uuid "4303888a-7141-48c7-b64f-4eef54e971df")
+			(uuid "8f1d87e6-9b8b-4a2b-8bbc-e10512381b00")
 		)
 		(pad "1" thru_hole circle
 			(at 0 0)
@@ -351,7 +271,7 @@
 			(layers "*.Cu" "*.Mask" "F.Paste")
 			(remove_unused_layers no)
 			(net 1 "+5V")
-			(uuid "7afcc0d3-ad5a-4374-9e14-8aa42bb76e8d")
+			(uuid "4780d2bd-3770-4480-83f4-59ba5435764a")
 		)
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/3d/Harwin_P70-2200045.step"
@@ -368,15 +288,15 @@
 	)
 	(footprint "sensor:M2_Post_Pad_D3.8mm"
 		(layer "F.Cu")
-		(uuid "f4f3397a-c6f3-43af-9ff1-09a51629de97")
-		(at 109.85 116.5)
+		(uuid "aafb72ce-15b8-4ea3-b9ac-0fcbb4f6a504")
+		(at 116.65 116.5)
 		(descr "M2 screw onto a spacer post: plated 2.2 mm hole, 3.8 mm pad (pan head 4.0)")
 		(tags "M2 post pad")
-		(property "Reference" "P1"
+		(property "Reference" "P2"
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "7fe1f718-1ea3-441c-a23c-d9e162d2b780")
+			(uuid "8d7ba720-00ab-4586-9223-654a6315ce88")
 			(effects
 				(font
 					(size 1 1)
@@ -384,11 +304,11 @@
 				)
 			)
 		)
-		(property "Value" "+5V post"
+		(property "Value" "GND post"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "c3d32a7c-4462-49a9-b45b-379ae6bc5e23")
+			(uuid "df2486e9-d8d4-430d-a343-ec2c358ab824")
 			(effects
 				(font
 					(size 1 1)
@@ -400,7 +320,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "fbfb46ac-6f91-49ac-acfd-19c88ad264bf")
+			(uuid "e20ec861-0e61-4dcf-9187-8727aae0f452")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -412,7 +332,87 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "4a0c1f79-d721-4c5a-a994-626371d2b960")
+			(uuid "22d31890-d428-4139-af1a-5513a73c1ede")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(path "/f6ec47fd-8e09-5971-8ad7-9bb8a56bee69")
+		(sheetname "Root")
+		(sheetfile "riser_board.kicad_sch")
+		(attr through_hole exclude_from_bom)
+		(fp_circle
+			(center 0 0)
+			(end 2 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.CrtYd")
+			(uuid "31bfbef8-ccce-49ba-8b34-d7c389f819ae")
+		)
+		(pad "1" thru_hole circle
+			(at 0 0)
+			(size 3.8 3.8)
+			(drill 2.2)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net 2 "GND")
+			(uuid "f8abed99-f48f-449e-bf82-751df2ab6a7d")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "sensor:M2_Post_Pad_D3.8mm"
+		(layer "F.Cu")
+		(uuid "b47eab61-f050-4225-92f4-43b373411dd6")
+		(at 109.85 116.5)
+		(descr "M2 screw onto a spacer post: plated 2.2 mm hole, 3.8 mm pad (pan head 4.0)")
+		(tags "M2 post pad")
+		(property "Reference" "P1"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "d4dabc62-b3ea-4688-b3c3-a2059f23cb9a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Value" "+5V post"
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "986747b4-833b-499f-a653-d2273967d7c0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "a94895ea-1697-4324-92eb-6e388b133a81")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "583b3590-a608-4d3d-b9b0-325c776f0ea4")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -433,7 +433,7 @@
 			)
 			(fill no)
 			(layer "F.CrtYd")
-			(uuid "6def8945-5c9d-49ec-9968-ac5d577542a0")
+			(uuid "cb390fb5-41ba-41e4-a24b-536a7f131e54")
 		)
 		(pad "1" thru_hole circle
 			(at 0 0)
@@ -442,7 +442,7 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net 1 "+5V")
-			(uuid "75273554-4fef-48bb-8b60-20dc2825333f")
+			(uuid "815e1eb3-8caf-4e02-a3b2-0722d2b0cf40")
 		)
 		(embedded_fonts no)
 	)
@@ -454,7 +454,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "14eb2062-9550-4ba8-95c3-d60c2ba4686c")
+		(uuid "3b5827f9-da83-4719-a97c-c44c39b0aa1e")
 	)
 	(gr_arc
 		(start 106.25 108.4)
@@ -465,7 +465,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "dd361014-0f2a-4557-87a0-85010d3b1d8c")
+		(uuid "419d900e-ec56-480c-9a1e-28886d48bfdc")
 	)
 	(gr_arc
 		(start 107.25 119.4)
@@ -476,7 +476,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "353bcc76-2ffb-48b3-93b9-74d872cb5262")
+		(uuid "e9ea89a1-3282-4a8f-82f6-15ce29612061")
 	)
 	(gr_line
 		(start 107.25 119.4)
@@ -486,7 +486,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "39656f0a-5cc1-4402-bdab-17d90f470ef4")
+		(uuid "e84ec169-11d0-4609-8cc7-914b338e995a")
 	)
 	(gr_line
 		(start 119.25 107.4)
@@ -496,7 +496,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "b3043bce-8f43-488a-ab5d-055eb78bdc0f")
+		(uuid "5554c98d-c76f-4845-bb44-236e71665b58")
 	)
 	(gr_arc
 		(start 119.25 107.4)
@@ -507,7 +507,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "4723f584-063d-4161-9d5c-6fc7fb458390")
+		(uuid "606c0f46-898e-4229-99d3-72d193243ce2")
 	)
 	(gr_arc
 		(start 120.25 118.4)
@@ -518,7 +518,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "dd474350-cad3-4f10-8156-4891bd3cd59a")
+		(uuid "d9a14206-d7f3-4b52-8fd6-4d1a06b62b35")
 	)
 	(gr_line
 		(start 120.25 118.4)
@@ -528,12 +528,12 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "8f3aa528-8699-41fd-a618-cf45fca1eafb")
+		(uuid "ba1cacf0-e80f-4e33-a2d4-1db1eca4e8e6")
 	)
-	(gr_text "RISER v0.4"
+	(gr_text "RISER v0.5"
 		(at 113.25 111.2 0)
 		(layer "B.SilkS")
-		(uuid "b5e89d7f-5043-424f-bd0b-644aeb5085c0")
+		(uuid "4286eab2-43b7-4e48-acad-e359cc6a7556")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -548,7 +548,7 @@
 		(width 1)
 		(layer "F.Cu")
 		(net 1)
-		(uuid "c3b64f8d-d678-4d28-81bd-069bffc4581f")
+		(uuid "567238cd-a57e-49c5-b7d0-f181b2793fb5")
 	)
 	(segment
 		(start 112.21 108.9)
@@ -556,7 +556,7 @@
 		(width 1)
 		(layer "F.Cu")
 		(net 1)
-		(uuid "cedf8f47-41e9-4ac0-8253-70e36203b8a0")
+		(uuid "fbf26f45-0f27-4055-b361-2872c5f47425")
 	)
 	(arc
 		(start 111.238134 109.693662)
@@ -565,15 +565,7 @@
 		(width 1)
 		(layer "F.Cu")
 		(net 1)
-		(uuid "3627bce0-050b-46ee-9184-2ad0d0d98243")
-	)
-	(segment
-		(start 114.19 113.5)
-		(end 113.2 113.5)
-		(width 1)
-		(layer "F.Cu")
-		(net 2)
-		(uuid "7b848e9f-c800-4ebc-9c69-691da0c4631b")
+		(uuid "ac5ca74d-c572-4299-a0c9-1fd78411c37b")
 	)
 	(segment
 		(start 116.65 116.5)
@@ -581,7 +573,15 @@
 		(width 1)
 		(layer "F.Cu")
 		(net 2)
-		(uuid "b6f06105-34f3-4f6b-88ef-4066cbdbfe98")
+		(uuid "7a37c07b-a134-4bf4-ba4a-0a9dc1e56f03")
+	)
+	(segment
+		(start 114.19 113.5)
+		(end 113.2 113.5)
+		(width 1)
+		(layer "F.Cu")
+		(net 2)
+		(uuid "fe867bc6-643f-4eba-994b-44b5f869b631")
 	)
 	(arc
 		(start 115.390354 114.209734)
@@ -590,7 +590,7 @@
 		(width 1)
 		(layer "F.Cu")
 		(net 2)
-		(uuid "129fd961-a3d2-44e5-b441-50ccd4b8b0c9")
+		(uuid "8d872edb-c7ef-442d-a73e-3e206e3617b1")
 	)
 	(embedded_fonts no)
 )

@@ -655,9 +655,11 @@ def cover_checks():
     ps = bc.cover_parts()
     c = ps["cover"]
     check(c.is_valid and len(c.solids()) == 1, f"cover: one valid solid ({c.volume / 1000:.2f} cm3)")
-    check(BC_SIDE_WALL >= 1.2,
-          f"side wall {BC_SIDE_WALL:.1f} mm (back {BC_WALL}): {B_W - 2 * BC_SIDE_WALL:.1f} x {B_H - 2 * BC_SIDE_WALL:.1f} "
-          f"inside at the rim, 0.1 more all round for the remote's housing (D-75)")
+    end = (c & Pos(0, B_H / 4, B_SEAM_Z - 0.5) * Box(0.1, B_H / 2, 0.2)).bounding_box()   # top end (no pry notch)
+    check(min(BC_SIDE_WALL, BC_END_WALL) >= 1.2 and abs(end.max.Y - B_H / 2) < 0.05
+          and abs(end.min.Y - (B_H / 2 - BC_END_WALL)) < 0.05,
+          f"walls: sides {BC_SIDE_WALL:.2f}, ends {BC_END_WALL:.2f} mm (back {BC_WALL}): {B_W - 2 * BC_SIDE_WALL:.2f} x "
+          f"{2 * end.min.Y:.2f} inside at the rim, end wall {end.max.Y - end.min.Y:.2f} (D-75, D-103)")
     win = PIN_BARREL[0] / 2 + BC_WIN_CLR
     check(win - PIN_BARREL[0] / 2 >= 0.2 and BC_PAD_D / 2 >= win + 0.2,
           f"spring pin windows r {win:.2f} round the {PIN_BARREL[0]} barrel, pads r {BC_PAD_D / 2} over them (D-50)")

@@ -135,7 +135,9 @@ WAGO_ROW = 8.2                            # DATASHEET (WAGO 3D model 2604-3102):
 WAGO_ROW_OFF = 0.65                       # DATASHEET (WAGO 3D model): rows' centre from the body centre, towards the
                                           # entry side (body 3.6 past the first row, 4.9 past the second, lever side)
 S1_WAGO_BODY_GAP = 0.0                    # S1's slot pads (back) may come up to the WAGO bodies, kept off their pins (D-88)
-S1_WAGO_PIN_GAP = 3.5                     # S1's slot pads to any WAGO pad, copper edge to edge (D-24 L-N target)
+MAINS_GAP = 3.0                           # different mains nets: IEC 60664-1 OVC III clearance 3.0 on high-CTI FR4 (creepage
+                                          # ~1.6), hard constraint 3, D-102 (NA: pcb/tools/parts.py)
+S1_WAGO_PIN_GAP = MAINS_GAP               # S1's slot pads to any WAGO pad, copper edge to edge
 MB_WAGO_C = ((16.6, 7.5), (-16.6, 7.5))   # L block (right), N block (left), body centres on the back; poles
                                           # along y, upper pole in, lower pole switched (as the rocker's poles);
                                           # levers towards the board centre

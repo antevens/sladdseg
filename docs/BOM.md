@@ -16,7 +16,7 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | — | Brass spacer stud M2 male-female, 10 mm, 4 mm hex ×2 | Würth WA-SBRIE 971100244 | D-50: screwed into P1 / P2 (5 mm male thread, ends inside the 7 mm spacer); carry the riser and its 5 V. |
 | — | Heatshrink 6 mm 2:1, 15 mm ×2 | any | D-50: over each spacer post. |
 | — | FFC 0.5 mm, 6 contacts, 152 mm, Type 1 | GCT 05-06-A-0152-A-4-06-4-G (or Würth WR-FFC 687606152002; D-98) | D-50, D-74: wiring board J2 → straight bore → ring board J1; 140 mm along the route incl. 46 mm folded flat beside J1, 4 mm into each connector. |
-| PCB | Wiring board 47 × 72 mm, 2-layer 1.6 mm | PCBWay; order pack in `pcb/fab/` | Routed isolation slot in the outline. S1 is soldered by hand last: after it is snapped into the insert and the board is screwed down (slotted holes, D-88). Copper weight: thermal review. |
+| PCB | Wiring board 47 × 72 mm, 2-layer 1.6 mm, high-CTI FR4 (CTI ≥ 600, D-102) | PCBWay; order pack in `pcb/fab/` | Routed isolation slot in the outline. S1 is soldered by hand last: after it is snapped into the insert and the board is screwed down (slotted holes, D-88). Copper weight: thermal review. |
 | — | Apollo MSR-2 mmWave multisensor | apolloautomation.com / The Pi Hut | ESP32-C3, LD2410B, DPS310, LTR-390; optional SCD-40. Used out of case. |
 | PCB | Ring board, 2-layer FR4 1.6 mm, 66.3 × 125.9 mm with a 53.9 × 79.3 mm window | PCBWay; `pcb/sensor/` ring_board (no fab files until CN2 is confirmed) | D-50, D-68: on the insert's collar (crush ribs), under the face plate. Copper 8 mm from the box opening. |
 | H1–H3 (ring) | SMT steel spacer M2, 1.5 mm, tin | Würth WA-SMSI 9774015243R | D-68: the MSR-2's board rests on them under the face plate's posts. |

@@ -24,7 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "cad" / "build123d" / "eu"))
 from params_eu import (WB_R, WB_CUT_Y, PSU, WAGO_EU, WAGO_PITCH, WAGO_ROW, WAGO_ROW_OFF, MB_PSU_C,  # noqa: E402
-                       MB_WAGO_C, MB_SLOT, PSU_ROWS, MB_HDR, MB_BOSS, MB_BOSS_D, MB_BOSS_CLR, SW_Y,
+                       MB_WAGO_C, MB_SLOT, PSU_ROWS, MAINS_GAP, MB_HDR, MB_BOSS, MB_BOSS_D, MB_BOSS_CLR, SW_Y,
                        WB_MOUNT, DOMES, DOME_NOTCH_R, PINS, PIN_PAD_D, PIN_HOLE_D, PIN_FLANGE, BC_FINGERS,
                        SW_PIN_GRID, SW_PAD)
 
@@ -35,8 +35,8 @@ FP_ANT, FP_KICAD = "Ant_Logo_8mm_SilkScreen", "KiCad-Logo2_5mm_SilkScreen"
 URL = "github.com/antevens/smart-wallplate"
 BRAND = {"eu_mains_board": ([(FP_ANT, (0.0, -9.95), "F", 0), (FP_KICAD, (15.0, -10.5), "F", 0)], (-0.4, 23.7, "B")),
          "eu_5v_board": ([(FP_ANT, (-9.9, -6.7), "B", 0), (FP_KICAD, (2.4, -5.7), "B", 0)], (-2.1, -12.6, "B"))}
-REV = "v0.4"
-REV_DATE = "2026-10-11"                    # title blocks
+REV = "v0.5"
+REV_DATE = "2026-10-12"                    # title blocks
 NS = uuid.UUID("8d2f4a8e-0b3c-4e7a-9f1d-6c5b2a1e3d40")
 
 
@@ -130,7 +130,7 @@ def outline(cut_y=None, step=4.0):
 
 # ref: symbol, footprint, value, nets, pos (x, y, rot), side, bom
 MAINS_PARTS = {
-    "S1": dict(sym="SW_DPST_Marquardt", fp=FP_ROCKER, value="1802.2504",
+    "S1": dict(label="E-Switch RA412C1100\nor Marquardt 1802.2504", sym="SW_DPST_Marquardt", fp=FP_ROCKER, value="1802.2504",
                nets={"1": "L_IN", "1a": "L_SW", "2": "N_IN", "2a": "N_SW"}, pos=(0.0, SW_Y, 180), side="F",
                mfr="Marquardt", mpn="1802.2504",
                desc="Rocker switch DPST, ENEC 12(4) A 250 V~, UL/CSA 15 A 125-250 VAC, PCB pins: emergency off "
@@ -170,7 +170,7 @@ MAINS_PARTS.update({f"MH{i + 1}": dict(sym="MountingHole", fp=FP_MH, value="M2",
 LV_PARTS = {
     "J1": dict(sym="Conn_01x02", fp=FP_SOCKET, value="Socket 1x2 2.54", nets={"1": "+5V", "2": "GND"},
                pos=(*MB_HDR, 0), side="B", mfr="Samtec", mpn="SSW-102-01-G-S",
-               label="+5V GND socket", desc="5 V from the mains board's header (5 V island)", ds="https://suddendocs.samtec.com/catalog_english/ssw.pdf"),
+               label="Samtec SSW-102-01-G-S", desc="5 V from the mains board's header (5 V island)", ds="https://suddendocs.samtec.com/catalog_english/ssw.pdf"),
     "C1": dict(label="22uF 16V X5R 1206", sym="C", fp=FP_C1, value="22uF 16V X5R", nets={"1": "+5V", "2": "GND"},
                pos=(16.0, -6.8, 90), side="F", mfr="KEMET", mpn="C1206C226M4PACTU",
                desc="Ceramic 22 uF 16 V X5R 1206, 1.8 mm max", ds="https://yageogroup.com/content/datasheet/asset/file/KEM_C1006_X5R_SMD"),

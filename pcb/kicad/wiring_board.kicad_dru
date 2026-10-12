@@ -15,26 +15,30 @@
     (constraint hole_clearance (min 1.0mm)))
 
 # Creepage: on this flat board the surface path between copper on one layer is never shorter
-# than the straight gap, so the 3.5 mm mains targets below are checked as clearance, which lets
+# than the straight gap, so the mains targets below are checked as clearance, which lets
 # the rated-part exception further down apply per pad (KiCad's creepage check evaluates rule
 # conditions without the footprint, so a per-part creepage exception cannot be written).
 # Creepage is checked where the path runs round the slot and board edge: mains to 5 V side.
 
-(rule "L-N clearance >= 3.5 mm"
+(rule "L-N clearance >= 3.0 mm"
     (condition "A.NetClass == 'Mains_L' && B.NetClass == 'Mains_N'")
-    (constraint clearance (min 3.5mm)))
+    (constraint clearance (min 3.0mm)))
 
-(rule "L in to switched/fused L >= 3.5 mm"
+(rule "L in to switched/fused L >= 3.0 mm"
     (condition "A.NetName == '/L_IN' && (B.NetName == '/L_SW' || B.NetName == '/L_F')")
-    (constraint clearance (min 3.5mm)))
+    (constraint clearance (min 3.0mm)))
 
-(rule "N in to switched N >= 3.5 mm"
+(rule "N in to switched N >= 3.0 mm"
     (condition "A.NetName == '/N_IN' && B.NetName == '/N_SW'")
-    (constraint clearance (min 3.5mm)))
+    (constraint clearance (min 3.0mm)))
 
-(rule "Mains to PE >= 3.5 mm"
+(rule "Different mains nets >= 3.0 mm (switched line / fused line across F1, and any other pair)"
+    (condition "(A.NetClass == 'Mains_L' || A.NetClass == 'Mains_N') && (B.NetClass == 'Mains_L' || B.NetClass == 'Mains_N') && A.NetName != B.NetName")
+    (constraint clearance (min 3.0mm)))
+
+(rule "Mains to PE >= 3.0 mm"
     (condition "(A.NetClass == 'Mains_L' || A.NetClass == 'Mains_N') && B.NetClass == 'PE'")
-    (constraint clearance (min 3.5mm)))
+    (constraint clearance (min 3.0mm)))
 
 (rule "Mains to 5 V side >= 8.0 mm (reinforced, routed slot under the PSU)"
     (condition "(A.NetClass == 'Mains_L' || A.NetClass == 'Mains_N') && B.NetClass == 'SELV'")

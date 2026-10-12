@@ -7,8 +7,8 @@ Writes to docs/renders/ (NAME defaults to the board file's stem):
       Flat plots of each copper layer with the outline (back seen from behind).
 
 Run with the Python that ships pcbnew:
-  python3 pcb/tools/render_bare.py [BOARD.kicad_pcb] [NAME] [--copper-only]
---copper-only skips the 3D renders; boards without copper on B.Cu get no back plot.
+  python3 pcb/tools/render_bare.py [BOARD.kicad_pcb] [NAME]
+Boards without copper on B.Cu get no back plot.
 Needs kicad-cli and pdftoppm (poppler-utils) on PATH.
 """
 import shutil
@@ -20,8 +20,7 @@ from pathlib import Path
 import pcbnew
 
 ROOT = Path(__file__).resolve().parents[2]
-ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
-COPPER_ONLY = "--copper-only" in sys.argv
+ARGS = sys.argv[1:]
 BOARD = Path(ARGS[0]).resolve() if ARGS else ROOT / "pcb" / "kicad" / "wiring_board.kicad_pcb"
 NAME = ARGS[1] if len(ARGS) > 1 else BOARD.stem
 OUT = ROOT / "docs" / "renders"
@@ -68,7 +67,7 @@ def main():
         tmp = Path(d)
         bare = bare_copy(tmp)
         back = has_back_copper(pcbnew.LoadBoard(str(BOARD)))
-        for name, args in ({} if COPPER_ONLY else VIEWS).items():
+        for name, args in VIEWS.items():
             out = OUT / f"{NAME}_bare_{name}.png"
             subprocess.run(RENDER + args + ["-o", str(out), str(bare)], check=True,
                            stdout=subprocess.DEVNULL)

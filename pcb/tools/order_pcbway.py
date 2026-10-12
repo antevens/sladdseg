@@ -39,7 +39,8 @@ BOARDS = [
          finish="HASL lead-free or ENIG",
          notes=["Routed isolation slot in the outline (Edge.Cuts), 5 mm wide from the bottom edge up under PS1: "
                 "do not omit", "Copper weight 1 oz as designed; 2 oz is the option under thermal review "
-                "(pcb/fab/README.md)", "Four 3.2 mm unplated mounting holes"]),
+                "(pcb/fab/README.md)", "Four 3.2 mm unplated mounting holes",
+                "Laminate: high-CTI FR4, CTI >= 600 V (PLC 0, IEC 60664-1 material group I): the mains spacing targets assume it (D-102)"]),
     dict(name="riser_board", pcb="pcb/sensor/kicad/riser_board.kicad_pcb", fab="pcb/sensor/fab/riser_board",
          tables=[("NA", "riser")], finish="ENIG",
          notes=["0.8 mm FR4", "Two plated 2.2 mm holes for the M2 screws (P1, P2) and plated 1.2 mm holes for the "
@@ -47,7 +48,8 @@ BOARDS = [
     dict(name="eu_mains_board", pcb="pcb/eu/kicad/eu_mains_board.kicad_pcb", fab="pcb/eu/fab/eu_mains_board",
          tables=[("EU", "mains board")], finish="HASL lead-free or ENIG",
          notes=["Routed relief slot under the PSU in the outline (Edge.Cuts): do not omit",
-                "Mains board: do the review in pcb/eu/fab/README.md before ordering"]),
+                "Mains board: do the review in pcb/eu/fab/README.md before ordering",
+                "Laminate: high-CTI FR4, CTI >= 600 V (PLC 0, IEC 60664-1 material group I): the mains spacing targets assume it (D-102)"]),
     dict(name="eu_5v_board", pcb="pcb/eu/kicad/eu_5v_board.kicad_pcb", fab="pcb/eu/fab/eu_5v_board",
          tables=[("EU", "5 V board")], finish="ENIG", notes=["Plated 1.2 mm holes for the spring pins' pegs"]),
     dict(name="ring_board", pcb="pcb/sensor/kicad/ring_board.kicad_pcb", fab=None, tables=[("NA", "ring board")],
@@ -224,8 +226,8 @@ def write_readme(rows, plates):
         L.append(f'| {bd["name"]}{flag} | {r["need"]} ({variants}) | {r["qty"]} (assemble {r["need"]}) | '
                  f'{i["w"]:.1f} × {i["h"]:.1f} mm | {cu} / {i["t"]:.2f} mm | {bd["finish"]} | '
                  f'{", ".join(r["refs"]) or "-"} | {hand} |')
-    L += ["", "Order settings common to the rigid boards: FR4 TG150 or standard, 1 oz copper (see the wiring board's "
-          "note), green solder mask and white silkscreen both sides, no impedance control, no V-cut. Gerbers are "
+    L += ["", "Order settings common to the rigid boards: FR4 TG150 or standard (the two mains boards: high-CTI FR4, "
+          "see their notes), 1 oz copper (see the wiring board's note), green solder mask and white silkscreen both sides, no impedance control, no V-cut. Gerbers are "
           "RS-274X with Excellon drills in mm; Gerbers, drills and centroid share the board's drill / aux origin.", "",
           "Per board (add to the order remarks):", ""]
     for r in rows:

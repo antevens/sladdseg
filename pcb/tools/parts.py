@@ -8,8 +8,8 @@ import uuid
 NS = uuid.UUID("2b7f0c1e-4c1d-4f55-9b0e-3a8d6c2f1e07")
 LIB = "wiring_board"
 PROJECT = "wiring_board"
-REV = "v0.4"
-REV_DATE = "2026-10-11"                     # title blocks and silkscreen
+REV = "v0.5"
+REV_DATE = "2026-10-12"                     # title blocks and silkscreen
 
 
 def uid(*names):
@@ -40,7 +40,7 @@ FP_MH = "MountingHole_3.2mm_M3_NPTH"
 PARTS = {
     # turned 90 degrees: poles are columns (line left at X -5.1, neutral right at X 5.1),
     # in-pins on the body's centre line (Y 19.5), switched pins above (Y 26.5), away from J1
-    "S1": dict(sym="SW_DPST_Marquardt", fp=FP_ROCKER, value="1802.2504",
+    "S1": dict(label="E-Switch RA412C1100\nor Marquardt 1802.2504", sym="SW_DPST_Marquardt", fp=FP_ROCKER, value="1802.2504",
                nets={"1": "L_IN", "1a": "L_SW", "2": "N_IN", "2a": "N_SW"},
                pcb=(0.0, 19.5, 0, "F"), mfr="Marquardt", mpn="1802.2504",
                desc="Rocker switch DPST, ENEC 12(4) A 250 V~, UL/CSA 15 A 125-250 VAC, PCB pins, "
@@ -109,6 +109,8 @@ SMSI_BODY_D = 4.35                          # spacer body diameter (Fab outline)
 PS1_PINS = {"1": (-15.24, -12.5), "3": (-10.16, -12.5), "5": (15.24, -12.5),
             "16": (10.16, -30.28), "14": (15.24, -30.28)}
 
+MAINS_GAP = 3.0                             # L-N, in to switched, mains to PE: IEC 60664-1 OVC III clearance 3.0 on
+                                            # high-CTI FR4 (creepage ~1.6), hard constraint 3, D-102 (EU: params_eu)
 NETCLASS = {"Mains_L": ["L_IN", "L_SW", "L_F"], "Mains_N": ["N_IN", "N_SW"], "PE": ["PE"],
             "SELV": ["+5V", "GND"]}
 
@@ -126,14 +128,15 @@ POURS = [
     ("N_IN", "F.Cu", [(2.0, -2.0), (8.5, -2.0), (8.5, 21.5), (2.0, 21.5)]),
     # switched neutral: right of the N_IN pin, over the top to S1.2a (back)
     ("N_SW", "B.Cu", [(8.5, -2.0), (14.0, -2.0), (14.0, 29.0), (1.0, 29.0), (1.0, 24.5), (8.5, 24.5)]),
-    # switched line (back): down from J1.4, under J1, up the left edge to S1.1a; also feeds F1
-    ("L_SW", "B.Cu", [(2.0, 8.0), (2.0, -6.0), (-3.0, -6.0), (-3.0, -30.0), (-19.0, -30.0),
-                      (-19.0, 29.0), (-1.0, 29.0), (-1.0, 8.0)]),
+    # switched line (back): up from J1.4 into the band between J1's upper pin row and the rocker's in pins, left past
+    # J1.5 / S1.1, up the left side to S1.1a; also down from J1.4 under J1 and up the left edge (in parallel), feeding F1
+    ("L_SW", "B.Cu", [(2.0, 15.5), (2.0, -6.0), (-3.0, -6.0), (-3.0, -30.0), (-19.0, -30.0),
+                      (-19.0, 29.0), (-1.0, 29.0), (-1.0, 15.5)]),
 ]
 
 # PE arms: J1.6 / J1.1 (pin pairs at x -9.5 / 15.5) to the PE ring, flush with the outer edges of
 # the pin pair's pads; they end square at the pins' centre line, behind the pads, so the pads
-# still set the 3.5 mm keep-away from the neighbouring L / N terminals.
+# still set the MAINS_GAP keep-away from the neighbouring L / N terminals.
 PE_PIN_X = (-9.5, 15.5)
 PE_ROWS = (-0.1, 8.1)                       # J1's two solder-pin rows (front view y): first row (entry side) above
 WAGO_PAD = (2.2, 2.2)                       # J1 pad size (x, y), round, used by the footprint
@@ -160,19 +163,19 @@ PE_ARMS += [(lay, [(PE_PIN_X[1], _arm_y[0]), (_ring_r, _arm_y[0]), (_ring_r, _ar
 POUR_PRIO = {"L_IN": 3, "N_IN": 2, "L_SW": 3, "N_SW": 2}
 
 # Tracks: net -> [(layer, width, [(x, Y), ...])]
-VIAS = {"L_SW": [(-12.0, -28.4), (-9.0, -28.4)],  # (x, y): 1.0 / 0.5 mm; or (x, y, diameter, drill)
+VIAS = {"L_SW": [(-16.0, -29.0), (-13.0, -29.0)],  # (x, y): 1.0 / 0.5 mm; or (x, y, diameter, drill)
         "+5V": [(10.4, -24.05, 0.6, 0.3), (10.4, -25.55, 0.6, 0.3)]}   # J2.5 / J2.2 to B.Cu
 
 TRACKS = {
-    # fused line: F1.2 (top) -> PS1.1, and F1.2 -> RV1.1 (bottom) round the right of F1
+    # fused line: F1.2 (top) -> PS1.1, and F1.2 -> RV1.1 (bottom) straight across, clear of F1.1 (switched line)
     "L_F": [("F.Cu", 0.8, [(-14.6, -18.75), (-15.6, -17.0), (-15.6, -13.5), (-15.24, -12.5)]),
-            ("F.Cu", 0.8, [(-14.6, -18.75), (-11.2, -19.5), (-11.2, -26.65), (-5.5, -26.65)])],
+            ("F.Cu", 0.8, [(-14.6, -18.75), (-5.5, -26.65)])],
     # switched neutral: RV1.2 (top) -> PS1.3
     "N_SW": [("F.Cu", 0.8, [(-5.5, -17.35), (-5.5, -14.0), (-10.16, -12.5)]),
              # J1.2 -> under J1 -> RV1 track
              ("F.Cu", 0.5, [(10.5, -0.1), (10.5, -5.0), (-5.5, -5.0), (-5.5, -14.0)])],
-    # PSU feed: F1.1 -> vias to the L_SW pour on the back
-    "L_SW": [("F.Cu", 0.8, [(-14.6, -27.25), (-13.0, -28.4), (-9.0, -28.4)])],
+    # PSU feed: F1.1 -> vias below F1 to the L_SW pour on the back (3.0 from the fused line and the PE ring)
+    "L_SW": [("F.Cu", 0.8, [(-14.6, -27.25), (-14.6, -29.0)]), ("F.Cu", 0.8, [(-16.0, -29.0), (-13.0, -29.0)])],
     # PS1.16 -> P1 up the left (F, ends on the pad ring); J2.2 / J2.5 -> vias at their tails -> B.Cu -> PS1.16
     "+5V": [("F.Cu", 0.8, [(10.16, -30.28), (8.5, -28.62), (8.5, -19.5), (9.4, -18.75)]),
             ("F.Cu", 0.3, [(11.1, -24.05), (10.4, -24.05)]), ("F.Cu", 0.3, [(11.1, -25.55), (10.4, -25.55)]),

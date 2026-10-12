@@ -18,6 +18,7 @@ every part is single-material.
 | `print/backcover_ABS.3mf` | the same cover in ABS, to test before the PETG arrives (shrinks more: check the fit first) | ABS | 17 m / 7.5 g |
 | `print/back_gauges_PLA.3mf` | five flat profile gauges for the inside of the remote's original back cover, side to side: the modelled back (round-over 8.1 × 8.0, measured) with its round-over 0.5 mm smaller to 0.5 mm larger in 0.25 mm steps (engraved R7.60 … R8.60), a line at the rim (D-87); deburr the arcs before use | PLA | 18 m / 7.8 g |
 | `print/end_gauges_PLA.3mf` | five flat '#' frames for the inside of the remote's original back cover in plan view, bar tips cut to its inside outline with corner radius 20.9 (semicircular ends) / 18 / 15 / 12 / 9 (engraved) (D-101) | PLA | 18 m / 8.2 g |
+| `print/shell_gauges_PLA.3mf` | five liners for the inside of the remote's original back cover: a 1.6 mm band whose outside is the shell's inside (plan corner radius 15 / 16.5 / 18 / 19.5 / 20.9 engraved, the back's round-over, the wall up to the rim), open in the middle, notched for the end clips, side ribs and side tabs; printed with a brim (D-101) | PLA | 28 m / 10.3 g |
 | `print/plate_jig_PLA.3mf` | steel plate hacksaw guide (D-52, D-81), floor down | PLA | 18 m / 7.8 g |
 | `print/eu_cap_PLA_testfit.3mf` | EU cap (fit check only, **not for mains**), face down | PLA | 28 m / 10.9 g |
 | `print/eu_cap_PC-FR.3mf` | EU cap, **final** (the EU barrier), face down | Elegoo PC-FR (flame retardant; no UL94 class stated, D-18) | 37 m / 9.8 g |
@@ -49,6 +50,9 @@ time/material lands in `build/print/gcode/`.
    `end_gauges_PLA`: drop each '#' frame into the original back cover (engraving up) at the rim; the one
    that sits level with all eight bar tips touching the wall gives the end shape (D-101). Too round: gaps at the
    tips near the ends; too square: it will not go in. Record it in `docs/MEASUREMENTS.md`.
+   `shell_gauges_PLA`: set each liner into the original back cover (label flag down, at the floor); the one that
+   sits on the curved floor without rocking, its top flush with the rim all round, gives the end shape at the
+   rim. Too round: gaps or a low top at the corners; too square: it stands proud at the corners.
 2. Update `params.py` from the measurements, `make cad check print`.
 3. `insert_PLA_testfit` + `trim_PLA` → full dry fit in the box (breaker off, nothing
    connected). Check the corner taper against the box ears.

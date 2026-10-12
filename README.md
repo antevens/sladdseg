@@ -60,7 +60,7 @@ the sensors and the automations could not control them.
 
 ## Renders
 
-### v0.4
+### v0.5
 
 Shaded views of the assembly: face plate (white), box insert (grey), BILRESA remote (model), Marquardt
 1802.2504 rocker (red), wiring board (green, KiCad model), ring board (green) on the insert's collar
@@ -68,27 +68,27 @@ with the MSR-2 (black), the microphone and the SHT40, nylon board standoffs. Reg
 
 | Front | Remote lifted out |
 | --- | --- |
-| ![v0.4 front](docs/renders/v0.4_front.png) | ![v0.4 remote out](docs/renders/v0.4_remote_out.png) |
+| ![v0.5 front](docs/renders/v0.5_front.png) | ![v0.5 remote out](docs/renders/v0.5_remote_out.png) |
 
 | Half-section | Back, mains side |
 | --- | --- |
-| ![v0.4 half-section](docs/renders/v0.4_section.png) | ![v0.4 back](docs/renders/v0.4_back.png) |
+| ![v0.5 half-section](docs/renders/v0.5_section.png) | ![v0.5 back](docs/renders/v0.5_back.png) |
 
 Exploded: remote, face plate, insert, ring board with the MSR-2, riser with the spring pins on the spacer
 posts, the four nylon board standoffs (D-57), wiring board.
 
-![v0.4 exploded assembly](docs/renders/v0.4_exploded.png)
+![v0.5 exploded assembly](docs/renders/v0.5_exploded.png)
 
 Face plate lifted off (see-through): it carries nothing but plastic; the ring board, the MSR-2, the
 microphone and the SHT40 stay on the insert (D-50, D-68).
 
-![v0.4 face plate lifted off](docs/renders/v0.4_face_off.png)
+![v0.5 face plate lifted off](docs/renders/v0.5_face_off.png)
 
 Ring board from the front, red where copper may not go (8 mm along the wall from the box opening): the
 MSR-2 on CN2 and three SMT spacers, J1 for the FFC, the microphone and its ADAU7002 at the top right, the SHT40 at
 the bottom.
 
-![v0.4 ring board](docs/renders/v0.4_ring.png)
+![v0.5 ring board](docs/renders/v0.5_ring.png)
 
 5 V power path (insert cut at the pass-through, seen from the right): a stock 6-way FFC from J2 on the
 wiring board runs between the rocker and the top-right standoff to a straight bore in the insert's top-right corner
@@ -96,20 +96,20 @@ wiring board runs between the rocker and the top-right standoff to a straight bo
 out of the flange onto the ring board to J1; its spare
 length lies folded flat beside J1 (D-68). Both ends latch (Hirose FH12, slide lock).
 
-![v0.4 5 V power path](docs/renders/v0.4_power.png)
+![v0.5 5 V power path](docs/renders/v0.5_power.png)
 
 Battery-free remote: two spring pins on the riser board, which stands on the two spacer posts from the
 wiring board's 5 V area, through the pocket floor onto the pads of the replacement back cover.
 
 | Exploded | Section through the pins |
 | --- | --- |
-| ![v0.4 battery-free](docs/renders/v0.4_battery_free.png) | ![v0.4 spring pins](docs/renders/v0.4_pins.png) |
+| ![v0.5 battery-free](docs/renders/v0.5_battery_free.png) | ![v0.5 spring pins](docs/renders/v0.5_pins.png) |
 
 Microphone (D-29, D-83): the top-port PDM mic on the ring board, the ADAU7002 beside it turning its PDM into I²S for
 the MSR-2; the face plate's sound column stands on a gasket on the board round the mic, hollow over it, its bore over
 the port.
 
-![v0.4 microphone sections](docs/renders/v0.4_mic_section.png)
+![v0.5 microphone sections](docs/renders/v0.5_mic_section.png)
 
 BILRESA model: stadium outline, wheel with its gap ring, three LEDs, side
 parting line, and a back that curves from a flat central pad out to the sides.
@@ -126,12 +126,12 @@ from the datasheets, the board plane and limits from Apollo's case; part positio
 | --- | --- |
 | ![MSR-2 model, front](docs/renders/msr2_front.png) | ![MSR-2 model, back](docs/renders/msr2_back.png) |
 
-Cross-sections of every v0.4 part (legend under the sheet, each panel titled with what it shows). The dashed
+Cross-sections of every v0.5 part (legend under the sheet, each panel titled with what it shows). The dashed
 line is the wall surface.
 
-![v0.4 assembly cross-sections](docs/renders/v0.4_sections.png)
+![v0.5 assembly cross-sections](docs/renders/v0.5_sections.png)
 
-### v0.4 wiring board
+### v0.5 wiring board
 
 KiCad renders of `pcb/`. The front faces the plate (rocker, SMD
 fuse and MOV, 5 V connector J2, the two SMT spacer posts below it); the back faces the box (WAGO block, PSU). The four
@@ -194,15 +194,39 @@ section at the top: the lip under the cap's rebate, outside the seal band.
 | --- | --- |
 | ![EU cap board, front copper](docs/renders/eu_cap_board_copper_front.png) | ![EU cap board, back copper](docs/renders/eu_cap_board_copper_back.png) |
 
+Without components:
+
+| Front | Back |
+| --- | --- |
+| ![EU cap board, bare front](docs/renders/eu_cap_board_bare_front.png) | ![EU cap board, bare back](docs/renders/eu_cap_board_bare_back.png) |
+
+![EU cap board, bare, angled](docs/renders/eu_cap_board_bare_iso.png)
+
 | Mains board, front | Mains board, back |
 | --- | --- |
 | ![EU mains board, front](docs/renders/eu_mains_board_front.png) | ![EU mains board, back](docs/renders/eu_mains_board_back.png) |
 | ![EU mains board, front copper](docs/renders/eu_mains_board_copper_front.png) | ![EU mains board, back copper](docs/renders/eu_mains_board_copper_back.png) |
 
+Without components:
+
+| Front | Back |
+| --- | --- |
+| ![EU mains board, bare front](docs/renders/eu_mains_board_bare_front.png) | ![EU mains board, bare back](docs/renders/eu_mains_board_bare_back.png) |
+
+![EU mains board, bare, angled](docs/renders/eu_mains_board_bare_iso.png)
+
 | 5 V board, front | 5 V board, back |
 | --- | --- |
 | ![EU 5 V board, front](docs/renders/eu_5v_board_front.png) | ![EU 5 V board, back](docs/renders/eu_5v_board_back.png) |
 | ![EU 5 V board, front copper](docs/renders/eu_5v_board_copper_front.png) | ![EU 5 V board, back copper](docs/renders/eu_5v_board_copper_back.png) |
+
+Without components:
+
+| Front | Back |
+| --- | --- |
+| ![EU 5 V board, bare front](docs/renders/eu_5v_board_bare_front.png) | ![EU 5 V board, bare back](docs/renders/eu_5v_board_bare_back.png) |
+
+![EU 5 V board, bare, angled](docs/renders/eu_5v_board_bare_iso.png)
 
 ### Steel plate hacksaw guide (D-52, D-81)
 
@@ -240,6 +264,14 @@ through the VBAT contact: the finger on the end section, its dome on the remote'
 
 ![Back cover flex, copper](docs/renders/cover_flex_copper_front.png)
 
+Without components:
+
+| Front | Back |
+| --- | --- |
+| ![Back cover flex, bare front](docs/renders/cover_flex_bare_front.png) | ![Back cover flex, bare back](docs/renders/cover_flex_bare_back.png) |
+
+![Back cover flex, bare, angled](docs/renders/cover_flex_bare_iso.png)
+
 ### Ring board, riser
 
 KiCad projects in `pcb/sensor/` (D-50). Ring board: the microphone and the ADAU7002 at the top right (D-83), I²S and
@@ -252,8 +284,24 @@ SHT40; GND pours (the left rail carries GND). The CN2 mate and its map are place
 | ![Ring board, front](docs/renders/ring_board_front.png) | ![Ring board, back](docs/renders/ring_board_back.png) |
 | ![Ring board, front copper](docs/renders/ring_board_copper_front.png) | ![Ring board, back copper](docs/renders/ring_board_copper_back.png) |
 
+Without components:
+
+| Front | Back |
+| --- | --- |
+| ![Ring board, bare front](docs/renders/ring_board_bare_front.png) | ![Ring board, bare back](docs/renders/ring_board_bare_back.png) |
+
+![Ring board, bare, angled](docs/renders/ring_board_bare_iso.png)
+
 Riser board (two spring pins, two M2 post pads):
 
 | Riser, front | Riser, back |
 | --- | --- |
 | ![Riser, front copper](docs/renders/riser_board_copper_front.png) | ![Riser, back copper](docs/renders/riser_board_copper_back.png) |
+
+Without components:
+
+| Front | Back |
+| --- | --- |
+| ![Riser, bare front](docs/renders/riser_board_bare_front.png) | ![Riser, bare back](docs/renders/riser_board_bare_back.png) |
+
+![Riser, bare, angled](docs/renders/riser_board_bare_iso.png)

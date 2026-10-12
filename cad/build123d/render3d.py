@@ -1,4 +1,4 @@
-"""Shaded 3D renders for the docs: xvfb-run python render3d.py -> docs/renders/v0.4_*.png"""
+"""Shaded 3D renders for the docs: xvfb-run python render3d.py -> docs/renders/v0.5_*.png"""
 import tempfile
 from pathlib import Path
 import pyvista as pv
@@ -110,39 +110,39 @@ def shot(name, ps, cam, size=(1400, 1100), hide=(), head=0.55, alpha=None):
 def main():
     R.mkdir(parents=True, exist_ok=True)
     ring_keys = ("ring", "spacers", "cn2", "msr", "j1", "sht45", "passives", "mic")
-    shot("v0.4_front", parts(), [(150, -170, 260), (0, 0, 0), (0, 1, 0)], hide=BOARD_KEYS)
-    shot("v0.4_remote_out", parts(lift=45, pins_out=1.5), [(210, -200, 330), (0, 0, 15), (0, 1, 0)], hide=BOARD_KEYS)
-    shot("v0.4_section", parts(cut=True), [(290, 70, 150), (0, 0, -5), (0, 1, 0)])
-    shot("v0.4_back", parts(), [(130, -120, -230), (0, -5, -10), (0, 1, 0)], hide=("trim",), head=1.0,
+    shot("v0.5_front", parts(), [(150, -170, 260), (0, 0, 0), (0, 1, 0)], hide=BOARD_KEYS)
+    shot("v0.5_remote_out", parts(lift=45, pins_out=1.5), [(210, -200, 330), (0, 0, 15), (0, 1, 0)], hide=BOARD_KEYS)
+    shot("v0.5_section", parts(cut=True), [(290, 70, 150), (0, 0, -5), (0, 1, 0)])
+    shot("v0.5_back", parts(), [(130, -120, -230), (0, -5, -10), (0, 1, 0)], hide=("trim",), head=1.0,
          alpha={"insert": 0.45})
     # exploded: remote, face plate, insert with the ring board, wiring board pulled apart along z
     ps, _ = parts()
     off = {"remote": 95, "trim": 55, "insert": 0, "posts": -25, "jumper": 0, "riser": -25, "pins": -25,
            "pin_posts": -25, "sleeves": -25, "screws": -25, **{k: -20 for k in ring_keys}, **{k: -55 for k in BOARD_KEYS}}
     exploded = {k: Pos(0, 0, off[k]) * v for k, v in ps.items() if k in off}
-    shot("v0.4_exploded", exploded, [(330, -260, 120), (0, 0, 15), (0, 1, 0)], size=(1400, 1300), head=0.8)
+    shot("v0.5_exploded", exploded, [(330, -260, 120), (0, 0, 15), (0, 1, 0)], size=(1400, 1300), head=0.8)
     # face plate lifted off: nothing comes with it but the plastic (D-50)
     ps, _ = parts(pins_out=1.5)
     ps.pop("remote")
     sep = {k: (Pos(0, 0, 40) * v if k == "trim" else v) for k, v in ps.items()}
-    shot("v0.4_face_off", sep, [(230, -200, 200), (5, 5, 10), (0, 0, 1)], size=(1400, 1300),
+    shot("v0.5_face_off", sep, [(230, -200, 200), (5, 5, 10), (0, 0, 1)], size=(1400, 1300),
          hide=("posts",) + BOARD_KEYS, head=0.9, alpha={"trim": 0.3})
     # the ring board with its parts, from the front
     ps, _ = parts()
     rb = {k: ps[k] for k in ring_keys}
     rb["keep"] = ring.keepout()
-    shot("v0.4_ring", rb, [(30, -60, 240), (0, 6, 0), (0, 1, 0)], size=(1200, 1600), head=0.9)
+    shot("v0.5_ring", rb, [(30, -60, 240), (0, 6, 0), (0, 1, 0)], size=(1200, 1600), head=0.9)
     # 5 V cable path: insert and face plate cut at the pass-through, seen from the right
     ps, _ = parts()
     keep = Pos(PASS_E[0] - 150, 0, 0) * Box(300, 400, 400)
     ps = {k: (v & keep if k in ("insert", "trim", "ring") else v) for k, v in ps.items()}
-    shot("v0.4_power", ps, [(230, -40, 30), (22, 5, -8), (0, 1, 0)], size=(1400, 1100),
+    shot("v0.5_power", ps, [(230, -40, 30), (22, 5, -8), (0, 1, 0)], size=(1400, 1100),
          hide=("remote", "trim", "posts", "msr"), head=1.0)
     # battery-free remote: back cover (pads) and remote lifted off the pocket, the pins extended
     ps, _ = parts(pins_out=1.5)
     ps.pop("remote")
     bf = battery_free(lift_cover=30, lift_remote=55)
-    shot("v0.4_battery_free", {**ps, **bf}, [(260, -230, 210), (5, 0, 10), (0, 1, 0)], size=(1400, 1300),
+    shot("v0.5_battery_free", {**ps, **bf}, [(260, -230, 210), (5, 0, 10), (0, 1, 0)], size=(1400, 1300),
          hide=("trim", "posts") + BOARD_KEYS, head=0.85, alpha={"insert": 0.6})
     # spring pins: cut through both pins (x), seen from +x: board, posts, riser, pins, floor, cover, remote
     ps, _ = parts()
@@ -153,7 +153,7 @@ def main():
     cutp = {k: (v & keep) for k, v in {**ps, **bf}.items() if k not in BOARD_KEYS}
     cutp = {k: v for k, v in cutp.items() if v is not None and v.volume > 1e-6}
     cutp.update({k: v for k, v in ps.items() if k in BOARD_KEYS})
-    shot("v0.4_pins", cutp, [(x + 120, -5, -5), (x, -5, -8), (0, 0, 1)], size=(1400, 1100),
+    shot("v0.5_pins", cutp, [(x + 120, -5, -5), (x, -5, -8), (0, 0, 1)], size=(1400, 1100),
          hide=("trim", "posts", "wago"), head=1.0, alpha={"front_half": 0.35, "cover": 0.5})
     # hacksaw guide for the steel plate (D-52, D-81), the supplied plate in it, cut line red
     import plate_jig as pj

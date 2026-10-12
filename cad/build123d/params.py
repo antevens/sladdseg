@@ -329,6 +329,7 @@ BC_TERM_Y = -1                            # REF terminal end (VBAT / GND contact
 BC_VBAT_X = -1                            # REF VBAT contact on the -x cell, GND on the +x cell (FCC photos; check on a unit)
 BC_WALL = 1.6                             # MEASURED cover shell thickness (human, 2026-10-09)
 BC_SIDE_WALL = BC_WALL - 0.1              # side wall: 0.1 more room inside all round for the remote's housing (D-75)
+BC_END_WALL = BC_SIDE_WALL - 0.1          # end walls: 0.1 more room inside at each end (D-103)
 BC_PRY = (6.0, 1.2)                       # MEASURE screwdriver notch in the rim at the bottom end (-y): width, depth
 # snap clips: one at each end (x = 0), free-standing inside the end wall, below the rim; the housing's edge comes
 # down into the cover and the clip's hook catches its wall

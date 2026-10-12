@@ -118,13 +118,13 @@ DRU = f"""(version 1)
     (condition "{MAINS} && B.Type == 'Hole'")
     (constraint hole_clearance (min 1.0mm)))
 
-(rule "L-N clearance >= 3.5 mm"
+(rule "L-N clearance >= {ep.MAINS_GAP} mm"
     (condition "A.NetClass == 'Mains_L' && B.NetClass == 'Mains_N'")
-    (constraint clearance (min 3.5mm)))
+    (constraint clearance (min {ep.MAINS_GAP}mm)))
 
-(rule "Different mains nets >= 3.5 mm (line / switched line / fused line, neutral / switched neutral)"
+(rule "Different mains nets >= {ep.MAINS_GAP} mm (line / switched line / fused line, neutral / switched neutral)"
     (condition "{MAINS} && (B.NetClass == 'Mains_L' || B.NetClass == 'Mains_N') && A.NetName != B.NetName")
-    (constraint clearance (min 3.5mm)))
+    (constraint clearance (min {ep.MAINS_GAP}mm)))
 
 (rule "Mains to 5 V side >= 8.0 mm (reinforced)"
     (condition "{MAINS} && B.NetClass == 'SELV'")
@@ -245,8 +245,8 @@ def build_mains():
               (top, top), (2.0, top)]
         down = [(2.0, bot), (top, bot), (top, split_w - 0.5), (step - 0.5, split_w - 0.5), (step - 0.5, split_s - 0.5),
                 (2.0, split_s - 0.5)]
-        for net, pts in ((n_in, up), (n_sw, down)):                # mains: 3.5 to any other net
-            bd.zone(net, layer, [(sx * x, y) for x, y in pts], name=net, clearance=3.5)
+        for net, pts in ((n_in, up), (n_sw, down)):                # mains: MAINS_GAP to any other net
+            bd.zone(net, layer, [(sx * x, y) for x, y in pts], name=net, clearance=ep.MAINS_GAP)
     for i, (x, y) in enumerate(ep.MB_BOSS):                     # mounting holes: mains copper >= 1.0 mm away
         bd.keepout(x, y, 1.1 + 1.0 + 0.2, f"MH{i + 1} keep-out")
     w_l, w_s = ep.TRACK_W["Mains_L"], ep.TRACK_W["SELV"]
@@ -254,7 +254,7 @@ def build_mains():
     f_lf = xy("F1", "2")
     rv_l, rv_n = xy("RV1", "1"), xy("RV1", "2")
     # PSU feed: fused line from F1 to the PSU and the varistor, neutral from the PSU pin to the varistor
-    y_lf = psu_n[1] - (ep.PSU_PAD / 2 + 3.5 + w_l / 2 + 0.1)   # under the AC row: 3.5 from the N pad
+    y_lf = psu_n[1] - (ep.PSU_PAD / 2 + ep.MAINS_GAP + w_l / 2 + 0.1)   # under the AC row: MAINS_GAP from the N pad
     bd.track("L_F", w_l, [f_lf, (psu_l[0], f_lf[1]), psu_l], P.F_Cu)
     bd.track("L_F", w_l, [psu_l, (psu_l[0], y_lf), (rv_l[0] + 1.5, y_lf), rv_l], P.F_Cu)
     bd.track("N_SW", w_l, [psu_n, (psu_n[0], rv_n[1]), rv_n], P.F_Cu)

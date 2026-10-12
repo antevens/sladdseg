@@ -4,7 +4,7 @@ gen_pcb.py re-saves the project file with netclasses set through the pcbnew API.
 """
 import json
 from pathlib import Path
-from parts import PROJECT
+from parts import PROJECT, MAINS_GAP
 
 PRJ = Path(__file__).resolve().parents[1] / "kicad"
 
@@ -34,26 +34,30 @@ DRU = f"""(version 1)
     (constraint hole_clearance (min 1.0mm)))
 
 # Creepage: on this flat board the surface path between copper on one layer is never shorter
-# than the straight gap, so the 3.5 mm mains targets below are checked as clearance, which lets
+# than the straight gap, so the mains targets below are checked as clearance, which lets
 # the rated-part exception further down apply per pad (KiCad's creepage check evaluates rule
 # conditions without the footprint, so a per-part creepage exception cannot be written).
 # Creepage is checked where the path runs round the slot and board edge: mains to 5 V side.
 
-(rule "L-N clearance >= 3.5 mm"
+(rule "L-N clearance >= {MAINS_GAP} mm"
     (condition "A.NetClass == 'Mains_L' && B.NetClass == 'Mains_N'")
-    (constraint clearance (min 3.5mm)))
+    (constraint clearance (min {MAINS_GAP}mm)))
 
-(rule "L in to switched/fused L >= 3.5 mm"
+(rule "L in to switched/fused L >= {MAINS_GAP} mm"
     (condition "A.NetName == '/L_IN' && (B.NetName == '/L_SW' || B.NetName == '/L_F')")
-    (constraint clearance (min 3.5mm)))
+    (constraint clearance (min {MAINS_GAP}mm)))
 
-(rule "N in to switched N >= 3.5 mm"
+(rule "N in to switched N >= {MAINS_GAP} mm"
     (condition "A.NetName == '/N_IN' && B.NetName == '/N_SW'")
-    (constraint clearance (min 3.5mm)))
+    (constraint clearance (min {MAINS_GAP}mm)))
 
-(rule "Mains to PE >= 3.5 mm"
+(rule "Different mains nets >= {MAINS_GAP} mm (switched line / fused line across F1, and any other pair)"
+    (condition "{MAINS} && (B.NetClass == 'Mains_L' || B.NetClass == 'Mains_N') && A.NetName != B.NetName")
+    (constraint clearance (min {MAINS_GAP}mm)))
+
+(rule "Mains to PE >= {MAINS_GAP} mm"
     (condition "{MAINS} && B.NetClass == 'PE'")
-    (constraint clearance (min 3.5mm)))
+    (constraint clearance (min {MAINS_GAP}mm)))
 
 (rule "Mains to 5 V side >= 8.0 mm (reinforced, routed slot under the PSU)"
     (condition "{MAINS} && B.NetClass == 'SELV'")

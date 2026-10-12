@@ -11,7 +11,7 @@ of the lights; the PSU is fed from the switched side, so the rocker also turns t
 
 | Ref | Part | Side | Nets |
 | --- | --- | --- | --- |
-| S1 | Marquardt 1802.2504 rocker, DPST, PCB pins, ENEC 12(4) A 250 V~, UL/CSA 15 A; second source E-Switch RA412C1100 (4.8 mm tabs, ENEC 10(4) A, D-88): plated slots 5.2 × 1.2 on 10.2 × 7.05, their pads up to the WAGO bodies (0.05 mm), ≥ 3.5 mm from the WAGO pins | front (through the cap's panel) | 1 L_IN, 1a L_SW, 2 N_IN, 2a N_SW |
+| S1 | Marquardt 1802.2504 rocker, DPST, PCB pins, ENEC 12(4) A 250 V~, UL/CSA 15 A; second source E-Switch RA412C1100 (4.8 mm tabs, ENEC 10(4) A, D-88): plated slots 5.2 × 1.2 on 10.2 × 7.05, their pads up to the WAGO bodies (0.05 mm), ≥ 3.0 mm from the WAGO pins (D-102) | front (through the cap's panel) | 1 L_IN, 1a L_SW, 2 N_IN, 2a N_SW |
 | J1 | WAGO 2604-3102, push-in, 2-pole, 4 mm², entry 90° to the board, 400 V III/2; turned 180° from J2 | back | L_SW (pole 1), L_IN (pole 2, upper) |
 | J2 | WAGO 2604-3102 (as J1) | back | N_IN (house neutral), N_SW (to the lights) |
 | F1 | Schurter UMT 250, T1A 250 VAC | front | L_SW to L_F |
@@ -51,11 +51,11 @@ Nothing is soldered or wired between the boards or across the cap (DESIGN R9, R1
 
 ## Rules
 
-`kicad/eu_mains_board.kicad_dru`: L–N ≥ 3.5 mm, any two different mains nets ≥ 3.5 mm (line / switched
-line / fused line, neutral / switched neutral), mains to the 5 V side ≥ 8.0 mm (clearance and
-creepage), mains to the PSU's NC pin ≥ 8.0 mm, mains copper ≥ 1.0 mm from the board edge and the
-holes; pins of one rated part keep the part's own spacing. The mains pours carry their own 3.5 mm
-clearance. Design targets for human review, not a compliance claim.
+`kicad/eu_mains_board.kicad_dru`: L–N ≥ 3.0 mm, any two different mains nets ≥ 3.0 mm (line / switched
+line / fused line, neutral / switched neutral; `MAINS_GAP` in `params_eu.py`, on high-CTI FR4, D-102), mains to
+the 5 V side ≥ 8.0 mm (clearance and creepage), mains copper ≥ 1.0 mm from the board edge and the holes; pins of
+one rated part keep the part's own spacing. The mains pours carry their own 3.0 mm clearance. Order the board in
+high-CTI FR4 (CTI ≥ 600). Design targets for human review, not a compliance claim.
 
 The net classes come from the project file; `tools/gen_eu.py` rewrites it after every save
 (pcbnew's SaveBoard resets it). The single EU PSU board before D-36 was checked without them, so

@@ -94,17 +94,17 @@ $(STAMP)/wiring_board: $(WB_PCB) pcb/tools/render_bare.py | $(STAMP)
 $(STAMP)/ring_board: $(RING_PCB) pcb/tools/render_bare.py | $(STAMP)
 	$(RENDER_PCB) --side top -o docs/renders/ring_board_front.png $<
 	$(RENDER_PCB) --side bottom -o docs/renders/ring_board_back.png $<
-	$(BARE) $< ring_board --copper-only
+	$(BARE) $< ring_board
 	touch $@
 
 $(STAMP)/riser_board $(STAMP)/cover_flex $(STAMP)/eu_cap_board: $(STAMP)/%: pcb/sensor/kicad/%.kicad_pcb pcb/tools/render_bare.py | $(STAMP)
-	$(BARE) $< $* --copper-only
+	$(BARE) $< $*
 	touch $@
 
 $(STAMP)/eu_mains_board $(STAMP)/eu_5v_board: $(STAMP)/%: pcb/eu/kicad/%.kicad_pcb pcb/tools/render_bare.py | $(STAMP)
 	$(RENDER_PCB) --side top -o docs/renders/$*_front.png $<
 	$(RENDER_PCB) --side bottom -o docs/renders/$*_back.png $<
-	$(BARE) $< $* --copper-only
+	$(BARE) $< $*
 	touch $@
 
 DEVKIT_SETS ?= 4

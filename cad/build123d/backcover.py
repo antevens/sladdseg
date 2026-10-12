@@ -71,17 +71,18 @@ def strip_boxes(clr=0.0):
             (xr0 - clr, xr1 + clr, min(yc, yb), max(yc, yb)), (xr0 - clr, xs0 + clr, yb - clr, yb + BC_RUN_JOG + clr)]
 
 
-def back_shape(inset=0.0, lift=0.0):
-    """The remote's back (flat pad, quarter-circle round-over, straight sides) inset by `inset` all
-    round and raised by `lift`. Below the curve's 45 deg point the round-over is replaced by its
+def back_shape(inset=0.0, lift=0.0, inset_y=None):
+    """The remote's back (flat pad, quarter-circle round-over, straight sides) inset by `inset` across x and
+    `inset_y` along y (default `inset`) and raised by `lift`. Below the curve's 45 deg point the round-over is replaced by its
     45 deg tangent (a frustum), so the cover prints back down without supports."""
     n = bilresa.N_SECT
+    dy = (inset if inset_y is None else inset_y) - inset   # extra inset along y
     secs = []
     for i in range(n // 2, n + 1):                        # from the 45 deg point up
         t = (pi / 2) * i / n
         run = B_BACK_RUN * (1 - sin(t)) + inset
-        secs.append(Plane.XY.offset(lift + B_BACK_RISE * (1 - cos(t))) * stadium(B_W - 2 * run, B_H - 2 * run))
-    w, h = B_W - 2 * inset, B_H - 2 * inset
+        secs.append(Plane.XY.offset(lift + B_BACK_RISE * (1 - cos(t))) * stadium(B_W - 2 * run, B_H - 2 * run - 2 * dy))
+    w, h = B_W - 2 * inset, B_H - 2 * inset - 2 * dy
     zt = EDGE_C / 2                                       # height of the 45 deg point (n even)
     frustum = chamfer(slab(stadium(w, h), lift, lift + B_SEAM_Z).edges().group_by(Axis.Z)[0], EDGE_C)
     frustum &= Pos(0, 0, lift + zt / 2) * Box(B_W + 2, B_H + 2, zt)
@@ -94,8 +95,9 @@ def outer():
 
 
 def shell():
-    """Cover shell: back_shape hollowed by BC_SIDE_WALL sideways and BC_WALL at the back, open at the seam."""
-    return outer() - back_shape(BC_SIDE_WALL, BC_WALL)
+    """Cover shell: back_shape hollowed by BC_SIDE_WALL across x, BC_END_WALL along y and BC_WALL at the back,
+    open at the seam."""
+    return outer() - back_shape(BC_SIDE_WALL, BC_WALL, BC_END_WALL)
 
 
 def corner_cuts():

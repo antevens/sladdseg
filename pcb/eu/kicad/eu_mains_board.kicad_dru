@@ -14,13 +14,13 @@
     (condition "(A.NetClass == 'Mains_L' || A.NetClass == 'Mains_N') && B.Type == 'Hole'")
     (constraint hole_clearance (min 1.0mm)))
 
-(rule "L-N clearance >= 3.5 mm"
+(rule "L-N clearance >= 3.0 mm"
     (condition "A.NetClass == 'Mains_L' && B.NetClass == 'Mains_N'")
-    (constraint clearance (min 3.5mm)))
+    (constraint clearance (min 3.0mm)))
 
-(rule "Different mains nets >= 3.5 mm (line / switched line / fused line, neutral / switched neutral)"
+(rule "Different mains nets >= 3.0 mm (line / switched line / fused line, neutral / switched neutral)"
     (condition "(A.NetClass == 'Mains_L' || A.NetClass == 'Mains_N') && (B.NetClass == 'Mains_L' || B.NetClass == 'Mains_N') && A.NetName != B.NetName")
-    (constraint clearance (min 3.5mm)))
+    (constraint clearance (min 3.0mm)))
 
 (rule "Mains to 5 V side >= 8.0 mm (reinforced)"
     (condition "(A.NetClass == 'Mains_L' || A.NetClass == 'Mains_N') && B.NetClass == 'SELV'")
