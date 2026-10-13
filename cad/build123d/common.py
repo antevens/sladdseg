@@ -1,6 +1,7 @@
 """Small geometry helpers shared by the printed parts."""
-from build123d import (Matrix, Pos, Rot, RectangleRounded, Sphere, Cylinder, Plane,
-                       extrude, loft, Vector)
+from math import hypot
+from build123d import (Matrix, Pos, Rot, RectangleRounded, Sphere, Cylinder, Plane, Polyline,
+                       extrude, loft, make_face, Vector)
 
 
 def rr(w, h, r):
@@ -18,10 +19,10 @@ def slab(sketch, z0, z1):
     return Pos(0, 0, z0) * extrude(sketch, z1 - z0)
 
 
-def frame(w, h, wall, r, z0, z1, y=0.0):
+def frame(w, h, wall, r, z0, z1, y=0.0, x=0.0):
     outer = rr(w + 2 * wall, h + 2 * wall, r + wall)
     inner = rr(w, h, max(r, 0.3))
-    return Pos(0, y, 0) * (slab(outer, z0, z1) - slab(inner, z0 - 1, z1 + 1))
+    return Pos(x, y, 0) * (slab(outer, z0, z1) - slab(inner, z0 - 1, z1 + 1))
 
 
 def taper(w, h, r, z0, z1, grow):
@@ -29,6 +30,13 @@ def taper(w, h, r, z0, z1, grow):
     a = Plane.XY.offset(z0) * rr(w, h, r)
     b = Plane.XY.offset(z1) * rr(w + 2 * grow, h + 2 * grow, r + grow)
     return loft([a, b])
+
+
+def mouth_chamfer(w, h, z, c):
+    """Cutter for a 45 deg chamfer c round a stadium opening (w, h) whose rim is at height z; it starts 0.01 inside the
+    opening so its edge never lies on the opening's wall."""
+    e = 0.01
+    return taper(w - 2 * e, h - 2 * e, w / 2 - e, z - c - e, z + e, c + 2 * e)
 
 
 def sound_column(port, mic, port_in, board_top, top_z, bore, gasket, boot):
@@ -92,3 +100,29 @@ def pogo(x, y, z_board, tip_z, flange, barrel, plunger_d):
     out += Pos(x, y, z_board + (flange[1] + barrel[1]) / 2) * Cylinder(barrel[0] / 2, barrel[1] - flange[1])
     zb = z_board + barrel[1]
     return out + Pos(x, y, (zb + tip_z) / 2) * Cylinder(plunger_d / 2, tip_z - zb)
+
+
+# ---------------- shapely plans to solids ----------------
+def _ring(coords):
+    """Face from a closed polyline through a shapely ring's points, without repeated or nearly repeated points."""
+    pts = []
+    for p in list(coords)[:-1]:
+        if not pts or hypot(p[0] - pts[-1][0], p[1] - pts[-1][1]) > 1e-3:
+            pts.append(p)
+    if hypot(pts[0][0] - pts[-1][0], pts[0][1] - pts[-1][1]) <= 1e-3:
+        pts.pop()
+    return make_face(Polyline(*pts, close=True))
+
+
+def prism(poly, z0, z1):
+    """Prism of a shapely (multi)polygon from z0 to z1."""
+    out = None
+    for g in getattr(poly.simplify(0.005), "geoms", [poly.simplify(0.005)]):
+        if g.is_empty or g.area < 1e-3:
+            continue
+        f = _ring(g.exterior.coords)
+        for h in g.interiors:
+            f -= _ring(h.coords)
+        s = Pos(0, 0, z0) * extrude(f, z1 - z0)
+        out = s if out is None else out + s
+    return out

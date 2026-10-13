@@ -101,7 +101,7 @@ class Sheet:
             s = copy.deepcopy(self.symlib[name])
             s[1] = f"{self.lib.name}:{name}"
             lib_symbols.append(s)
-        tb = S("title_block", S("title", title), S("date", date), S("rev", rev), S("company", "smart-wallplate"),
+        tb = S("title_block", S("title", title), S("date", date), S("rev", rev), S("company", "sladdseg"),
                *[S("comment", i + 1, c) for i, c in enumerate(comments)])
         sch = S("kicad_sch", S("version", Sym("20250114")), S("generator", "eeschema"),
                 S("generator_version", "9.0"), S("uuid", self.root), S("paper", "A4"), tb, lib_symbols,

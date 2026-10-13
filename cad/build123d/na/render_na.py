@@ -48,8 +48,8 @@ def parts(lift=0.0, cut=False, pins_out=0.0, plain=False, switch=False):
     rp.pop("keep")
     rp["pins"] = Pos(0, 0, pins_out) * rp["pins"]
     if plain or switch:
-        rp = {} if switch else {k: rp[k] for k in ("pin_board", "pins", "pin_posts")}
-    ps = {"face_plate": face_plate_na.build(plain or switch), "barrier": barrier_na.build(plain, switch), "remote": bilresa.build(SEAT_Z, lift),
+        rp = {"blank": sensor_board_na.blank_board()} if switch else {k: rp[k] for k in ("pin_board", "pins", "pin_posts")}
+    ps = {"face_plate": face_plate_na.build(plain or switch), "barrier": barrier_na.build(), "remote": bilresa.build(SEAT_Z, lift),
           "posts": standoff_na.placed(), **rp, **({} if plain or switch else jumper_na.build())}
     ps.update(board_parts())
     if cut:  # keep x <= 0 for a half-section (board parts are clipped as meshes in shot())
@@ -100,11 +100,11 @@ def main():
     rb = {k: ps[k] for k in sb_keys}
     rb["keep"] = sensor_board_na.keepout()
     shot("na_sensors", rb, [(30, -60, 240), (0, 6, 0), (0, 1, 0)], size=(1200, 1600), head=0.9)
-    # 5 V cable path: barrier and face plate cut at the pass-through, seen from the right
+    # 5 V cable path (D-134): barrier and sensor board cut in the cable's plane, seen from the right
     ps, _ = parts()
-    keep = Pos(PASS_E[0] - 150, 0, 0) * Box(300, 400, 400)
+    keep = Pos(FFC_SLOT_X - 150, 0, 0) * Box(300, 400, 400)
     ps = {k: (v & keep if k in ("barrier", "face_plate", "sensor_board") else v) for k, v in ps.items()}
-    shot("na_power", ps, [(230, -40, 30), (22, 5, -8), (0, 1, 0)], size=(1400, 1100),
+    shot("na_power", ps, [(FFC_SLOT_X + 170, -60, -5), (FFC_SLOT_X, -36, -10), (0, 0, 1)], size=(1400, 1100),
          hide=("remote", "face_plate", "posts", "msr"), head=1.0)
     # battery-free remote: back cover (pads) and remote lifted off the pocket, the pins extended
     ps, _ = parts(pins_out=1.5)

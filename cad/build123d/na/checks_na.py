@@ -15,6 +15,7 @@ import face_plate_na
 
 ROOT = kicad_board.ROOT
 MB_PCB = ROOT / "pcb" / "na" / "kicad" / "na_mains_board.kicad_pcb"
+SB_PCB = ROOT / "pcb" / "na" / "kicad" / "na_sensor_board.kicad_pcb"
 
 
 def dims():
@@ -37,7 +38,8 @@ def dims():
     print(f"       second-source rocker (E-Switch RA4, D-88): top {alt:.1f} mm under the remote's back (nominal)")
     pin_y = min(SW_Y, SW_Y + SW_SW_DIR * SW_SLOT_DY) - SW_PAD[1] / 2
     check(pin_y >= MB_Y + WAGO_Y + WAGO6[1] / 2, f"rocker slots (pad edge y {pin_y:.1f}) clear of the terminal block")
-    check(PASS_E[0] * J2_POS[0] > 0, "5 V pass-through is on the same side as the 5 V connector")
+    check(abs(J2_POS[0] - FFC_SLOT_X) < 1e-6 and abs(SB_J1[0] - FFC_SLOT_X) < 1e-6,
+          f"J2, J1 and the 5 V cable's slit on x {FFC_SLOT_X}: the cable in one plane (D-134)")
     stack = SB_T + B2B_STACK + MSR[2] + MSR_SKIN_GAP + RADAR_WALL
     check(abs(PT - stack) < 1e-6, f"plate {PT} mm = sensor board {SB_T} + CN2 stack {B2B_STACK} + MSR-2 {MSR[2]} + gap "
                                   f"{MSR_SKIN_GAP} + radar skin {RADAR_WALL} (D-51, D-66; MSR[2] and B2B_STACK MEASURE)")
@@ -116,10 +118,10 @@ def msr_spacers(ins):
     import msr2
     from build123d import Cylinder
     rp = sensor_board_na.parts()
-    mp = msr2.placed_parts(0, MSR_Y, MSR_BACK_Z)
+    mp = msr2.placed_parts(MSR_X, MSR_Y, MSR_BACK_Z)
     check(abs(MSR_NUT[1] - B2B_STACK) < 1e-6, f"spacers {MSR_NUT[1]} mm = the CN2 stack {B2B_STACK} mm: the MSR-2's "
                                                f"back rests on them with CN2 mated (both to be measured)")
-    check(all(abs(x - px) < 1e-6 and abs(y - MSR_Y - py) < 1e-6 for (x, y), (px, py) in zip(MSR_SPACERS, MSR2_POSTS))
+    check(all(abs(x - MSR_X - px) < 1e-6 and abs(y - MSR_Y - py) < 1e-6 for (x, y), (px, py) in zip(MSR_SPACERS, MSR2_POSTS))
           and len(MSR_SPACERS) == len(MSR2_POSTS), "a spacer under each face plate post")
     r0 = MSR_NUT[0] / 2
     for i, (x, y) in enumerate(MSR_SPACERS):
@@ -288,61 +290,58 @@ def sensor_board_checks(ins, tr):
 
 
 def ffc_checks(ins, tr):
-    """5 V FFC (D-50, D-68, D-74): stock 6-way cable through the pass-through, out of the flange onto the sensor board,
-    its spare folded flat beside J1, clear of everything else."""
+    """5 V FFC (D-50, D-134): stock 6-way cable in one plane from J2 through the slit in the barrier's bottom wall to J1:
+    length, the slit's walls and lip, the cable inside the barrier's outline below the wall plane, clear of the rest."""
     print("5 V FFC")
     import jumper_na, sensor_board_na, bilresa, standoff_na
-    from math import hypot
-    diag = hypot(JUMPER_END[0], JUMPER_END[2])
-    check(diag <= PASS_D - 0.5 and JUMPER_END[0] <= PASS_SLOT[0] - 0.5 and JUMPER_END[2] <= PASS_SLOT[1] - 0.3,
-          f"FFC contact end ({JUMPER_END[0]} x {JUMPER_END[2]}) threads the {PASS_D} mm pass-through and its "
-          f"{PASS_SLOT[0]} x {PASS_SLOT[1]} slot")
-    need = jumper_na.length() + 2 * JUMPER_END[1]
+    from math import atan2, degrees
+    pts, (t1, t2) = ffc_curve()
+    ang = degrees(atan2(t2[1] - t1[1], t1[0] - t2[0]))
+    print(f"       out of J2, a {FFC_BEND[0]} mm bend up, a {abs(t2[1] - t1[1]):.1f} mm high straight run at {ang:.0f} deg, "
+          f"a {FFC_BEND[1]} mm bend over onto the sensor board, into J1")
+    check(abs(ang) < 90.0, "the straight run leans outwards (no reverse bend)")
+    need = jumper_na.length()
     slack = JUMPER_STOCK_L - need
     check(JUMPER_SLACK[0] <= slack <= JUMPER_SLACK[1],
-          f"FFC route {jumper_na.length():.0f} mm + {JUMPER_END[1]} mm into each connector leaves {slack:.1f} mm of the "
-          f"{JUMPER_STOCK_L:.0f} mm stock cable to bow in the free span ({JUMPER_SLACK[0]}..{JUMPER_SLACK[1]}); no loop")
-    fold = jumper_fold()
-    lo_y, hi_y = JUMPER_FOLD_Y - JUMPER_W / 2, JUMPER_FOLD_Y + JUMPER_W / 2
-    check(fold > 2.0 and lo_y >= FLANGE_OUT[1] / 2 + 0.2 - 1e-6 and hi_y <= SB_J1[1] - FH12[1] / 2 - 0.2 + 1e-6,
-          f"spare length folded flat in four {fold:.1f} mm layers on the sensor board (y {lo_y:.2f}..{hi_y:.2f}: beyond "
-          f"the flange, short of J1's body)")
-    xl = SB_J1[0] - fold - JUMPER_W / 2
-    check(xl >= BOSS_R + 1.0, f"fold ends at x {xl:.1f}, clear of the #6 screw boss (r {BOSS_R})")
-    # the straight bore (D-74): walls to the remote pocket and the standoffs' tapped holes, the mouth inside the plug,
-    # the groove where it opens through the corner taper, threading (one bend, into the slot)
-    from build123d import Cylinder
-    m, e, f = pass_points()
-    r = PASS_D / 2
-    bore = barrier_na.bore()
+          f"FFC route {need - 2 * JUMPER_END[1]:.1f} mm + {JUMPER_END[1]} mm into each connector leaves {slack:.1f} mm of "
+          f"the {JUMPER_STOCK_L:.0f} mm stock cable to bow in the free span ({JUMPER_SLACK[0]}..{JUMPER_SLACK[1]})")
+    g = FFC_SLOT[1] / 2
+
+    def y_at(z):
+        for (ya, za), (yb, zb) in zip(pts, pts[1:]):
+            if (za - z) * (zb - z) <= 0 and za != zb:
+                return ya + (z - za) * (yb - ya) / (zb - za)
+        return None
+    # below the wall plane the cable stays inside the plug's outline (the box wall cannot pinch it)
+    out_ = [z / 10 for z in range(int(Z_BOT * 10), 1) if y_at(z / 10) is not None
+            and y_at(z / 10) - JUMPER_T / 2 < -PLUG_TOP]
+    check(not out_, "the cable stays inside the plug's outline below the wall plane"
+                    + (f" (outside at z {out_[0]:.1f})" if out_ else ""))
+    zc = next(z / 100 for z in range(0, 300) if y_at(z / 100) is not None and y_at(z / 100) <= -BOX_H / 2)
+    print(f"       the cable crosses the box wall's line {zc:.2f} mm in front of the wall plane")
+    # the lip between the slit and the outside: FFC_LIP or more from FFC_LIP_Z up to the wall plane
+    thin = []
+    for i in range(int(round(-FFC_LIP_Z / 0.25)) + 1):
+        z = FFC_LIP_Z + 0.25 * i
+        edge = y_at(z) - g
+        probe = Pos(FFC_SLOT_X, edge - 5.0 - 0.01, min(z, -0.05)) * Box(0.05, 10.0, 0.05)
+        r = ins & probe
+        hit = [q for q in (r.solids() if r else []) if q.bounding_box().max.Y > edge - 0.3]   # wider on the bend
+        t = hit[0].bounding_box().size.Y if hit else 0.0
+        thin += [(z, t)] if t < FFC_LIP - 0.05 else []
+    check(not thin, f"lip outside the slit >= {FFC_LIP} mm from z {FFC_LIP_Z} to the wall plane"
+                    + (f" ({thin[0][1]:.2f} at z {thin[0][0]:.2f})" if thin else ""))
+    slit = barrier_na.ffc_slot()
     pocket = slab(stadium(*POCKET_IN), SEAT_Z, PT + 5)
-    d = bore.distance_to(pocket)
-    check(d >= BARRIER_MIN - 1e-6, f"bore {d:.2f} mm from the remote pocket (>= {BARRIER_MIN})")
-    tap = min(bore.distance_to(barrier_na.mount_hole(x, y, t)) for (x, y), t in zip(MOUNT_HOLES, MOUNT_THREAD_L))
-    check(tap >= 1.2, f"bore {tap:.2f} mm from the nearest standoff's tapped hole (>= 1.2)")
-    bosses = barrier_na.mount_bosses()
-    d = bore.distance_to(bosses)
-    check(d >= MOUNT_PASS_GAP - 1e-6 or tap >= 1.2, f"bore clears the standoff bosses' tapped holes ({d:.2f} mm to a boss "
-                                                     f"face, inside the boss: {tap:.2f} mm to the hole)")
-    edge = min(BOX_W / 2 - abs(m[0]), BOX_H / 2 - abs(m[1]))
-    check(edge >= 6.0, f"bore's axis at the underside plane ({m[0]:.1f}, {m[1]:.1f}), {edge:.1f} mm in from the box wall")
-    from math import atan2, degrees
-    run = hypot(e[0] - m[0], e[1] - m[1])
-    ang = degrees(atan2(e[2] - m[2], run))
-    print(f"       bore {hypot(run, e[2] - m[2]):.1f} mm long, {ang:.0f} deg from horizontal; one bend, into the slot")
-    env = barrier_na.outline_solid()
-    below = Pos(0, 0, -50 + Z_BOT + 0.05) * Box(200, 200, 100)
-    groove = (bore - env) - below
-    top = groove.bounding_box().max.Z if groove is not None and groove.volume > 1e-3 else Z_BOT
-    check(top <= -3.0, f"bore closed above z {top:.1f}: the groove below opens through the corner taper, at least 3 mm "
-                       f"under the wall plane")
-    probe = Pos(m[0], m[1], Z_BOT - 0.5) * Cylinder(r - 0.3, 1.0)
-    r_ = probe & ins
-    check(r_ is None or r_.volume < 0.01, "bore's mouth open on the underside")
+    d = slit.distance_to(pocket)
+    check(d >= BARRIER_MIN - 1e-6, f"slit {d:.2f} mm from the remote pocket (>= {BARRIER_MIN})")
+    tap = min(slit.distance_to(barrier_na.mount_hole(x, y, t)) for (x, y), t in zip(MOUNT_HOLES, MOUNT_THREAD_L))
+    check(tap >= 1.2, f"slit {tap:.2f} mm from the nearest standoff's tapped hole (>= 1.2)")
     jmp = jumper_na.build()["jumper"]
     rp = sensor_board_na.parts()
     others = {"barrier": ins, "face plate": tr, "board standoffs": standoff_na.placed(), "remote": bilresa.build(SEAT_Z),
-              "pin_board": rp["pin_board"], "spacer posts": rp["posts"] + rp["sleeves"], "MSR-2": rp["msr"]}
+              "sensor board": rp["sensor_board"], "pin_board": rp["pin_board"],
+              "spacer posts": rp["posts"] + rp["sleeves"], "MSR-2": rp["msr"]}
     for on, o in others.items():
         r = jmp & o
         v = r.volume if r is not None else 0.0
@@ -350,6 +349,10 @@ def ffc_checks(ins, tr):
     slab_ = Pos(0, MB_Y, MB_FRONT_Z - MB[2] / 2) * Box(*MB)
     r = jmp & slab_
     check(r is None or r.volume < 0.01, "FFC clears the mains board's slab")
+    if SB_PCB.exists():
+        k = kicad_board.Board(SB_PCB, (SB_Y[0] + SB_Y[1]) / 2).origin("J1")
+        check(abs(k[0] - SB_J1[0]) < 0.01 and abs(k[1] - SB_J1[1]) < 0.01,
+              f"KiCad sensor board J1 at ({k[0]:.2f}, {k[1]:.2f}) matches params SB_J1")
 
 
 def separation(ins, tr):
@@ -414,20 +417,19 @@ def board_fit(ins):
               f"KiCad board {slab_.size.X:.2f} x {slab_.size.Y:.2f} matches params MB {MB[0]} x {MB[1]}")
 
 
-def barrier(ins, plain=False, switch=False):
-    print("barrier" + (" (switch-only barrier, D-122)" if switch else " (plain barrier, D-109)" if plain else ""))
+def barrier(ins, edition="full"):
+    print("barrier" + ("" if edition == "full" else f" ({edition} edition)"))
     room = slab(rr(PW + 20, PH + 20, 5), 0, PT + 10)
     box = slab(Rectangle(BOX_W, BOX_H), -BOX_D, 0)
-    # plug the openings that are closed by something else when installed: the 5 V pass-through (FFC; the plain barrier
-    # has none), the rocker cutout (the certified rocker body) and the two spring pins' holes in the pocket floor
-    # (the pins, D-50)
+    # plug the openings that are closed by something else when installed: the rocker cutout (the certified rocker
+    # body), the two spring pins' holes in the pocket floor (the pins, D-50; switch only: the blank board's pegs,
+    # D-127) and the 5 V cable's slit (the FFC, D-134)
     rocker = Pos(0, SW_Y, 0) * slab(Rectangle(*SW_CUT), PANEL_BOT_Z - 1, WELL_FLOOR_Z + 1)
     import sensor_board_na
-    air = (room + box) - ins - rocker
-    if not switch:
-        air -= sensor_board_na.pin_holes()                            # pins fill their holes (D-50)
-    if not plain:
-        air -= barrier_na.pass_through()
+    air = (room + box) - ins - rocker - sensor_board_na.pin_holes() - barrier_na.ffc_slot()
+    if edition != "full":
+        print("       NOTE: no FFC in this edition; the 5 V cable's slit stays open (human decision, D-135: 0.5 mm wide, "
+              "its upper end under the flange and the face plate, turning 81 deg into the wall; plugged for this test)")
     parts = air.solids()
     mains = [s for s in parts if s.is_inside(Vector(0, 0, -BOX_D + 1))]
     check(len(mains) == 1, "found the mains air volume")
@@ -435,7 +437,7 @@ def barrier(ins, plain=False, switch=False):
     for name, p in [("room in front of the face", (0, 0, PT + 5)),
                     ("remote pocket", (0, 0, SEAT_Z + 1)),
                     ("face plate hollow (low-voltage)", (28.0, 60.0, 5)),
-                    ("MSR-2 bay", (0, MSR_Y, 5)),
+                    ("MSR-2 bay", (MSR_X, MSR_Y, 5)),
                     ("sensor board space beside the plug", (-30.0, 0.0, SB_T / 2))]:
         check(not m.is_inside(Vector(*p)), f"mains air does not reach the {name}")
     check(m.bounding_box().max.Z <= 0.01, f"mains air stays behind the wall plane (max z {m.bounding_box().max.Z:.2f})")
@@ -457,7 +459,8 @@ def battery_free_checks(ins, tr):
     fw, ft, hd, g = PB_CLIP
     w, hgt, _ = PB
     over = [round(min(abs(hb.bounding_box().max.X - (PB_C[0] - w / 2)), abs(hb.bounding_box().min.X - (PB_C[0] + w / 2)),
-                      abs(hb.bounding_box().min.Y - (PB_C[1] + hgt / 2))), 2) for hb in hooks.solids()]
+                      abs(hb.bounding_box().min.Y - (PB_C[1] + hgt / 2)), abs(hb.bounding_box().max.Y - (PB_C[1] - hgt / 2))), 2)
+            for hb in hooks.solids()]
     zc = max(hb.bounding_box().max.Z for hb in hooks.solids())
     L = (SEAT_Z - POCKET_WALL) - min(hb.bounding_box().min.Z for hb in hooks.solids())
     check(len(hooks.solids()) == len(PB_CLIPS) and all(abs(o - hd) < 0.01 for o in over)
@@ -559,36 +562,70 @@ def edge_chamfer(tr):
           f"face plate: front edge chamfer {c} mm all round, also over the MSR-2 and SHT40 bays")
 
 
+def screw_lobes(tr, ins):
+    """The face plate's lobes round the screws (D-132): the countersink inside the face plate all round, a close seam to
+    the barrier's island, the lobe's edge on the remote pocket's wall."""
+    print("face plate round the screws (D-132)")
+    from build123d import Cylinder
+    from math import radians, tan
+    d = (SCREW_HEAD_D - SCREW_D) / 2 / tan(radians(SCREW_CSK / 2))
+    for s in (-1, 1):
+        y = s * SCREW_PITCH / 2
+        ring = Pos(0, y, PT - d / 2) * (Cylinder(SCREW_HEAD_D / 2 + 1.0, d - 0.2) - Cylinder(SCREW_HEAD_D / 2 + 0.05, d))
+        r = ring & tr
+        check(r is not None and r.volume > 0.99 * ring.volume,
+              f"{'top' if s > 0 else 'bottom'} screw: face plate solid 1.0 mm all round its countersink")
+    import face_plate_na
+    from common import prism
+    lobe = prism(face_plate_na.screw_lobes().buffer(-0.01), DECK_Z + 0.5, PT)       # sides only: it sits on the barrier
+    gap = lobe.distance_to(ins)
+    check(abs(gap - SCREW_LOBE[1]) < 0.02, f"seam between the lobes and the barrier's island {gap:.2f} mm "
+                                           f"(SCREW_LOBE {SCREW_LOBE[1]})")
+    from shapely.geometry import box
+    pw, ph = POCKET_IN
+    pocket = box(-0.001, -ph / 2 + pw / 2, 0.001, ph / 2 - pw / 2).buffer(pw / 2, 256)
+    lobes = face_plate_na.screw_lobes()
+    on = lobes.boundary.intersection(pocket.boundary.buffer(0.02)).length
+    check(on > 2 * 5.0, f"lobes' inner edges on the remote pocket's wall over {on:.1f} mm (the face plate forms its top "
+                        f"there), filleted r {SCREW_LOBE[2]} into the window's edge")
+
+
 def switch_checks():
-    """Switch-only plate (D-122): the barrier without spring-pin holes, pin board pocket or cable bore, the plain face plate;
-    the mains board carries only the rocker switch and the terminal block."""
+    """Switch-only plate (D-122, D-127): the one barrier with the printed blank board in the pin board's pocket, its pegs
+    in the spring pins' holes; the plain face plate; the mains board carries only the rocker switch and the terminal
+    block."""
     print("switch-only plate (rocker switch and terminal block, D-122)")
-    ins, tr = barrier_na.build(switch=True), face_plate_na.build(plain=True)
-    check(ins.is_valid and len(ins.solids()) == 1, "switch-only barrier: one valid solid")
-    r = ins & tr
-    check(r is None or r.volume < 0.01, f"switch-only barrier and plain face plate do not overlap "
-                                        f"({r.volume if r else 0.0:.3f} mm3)")
+    import sensor_board_na
+    ins, tr, bl = barrier_na.build(), face_plate_na.build(plain=True), sensor_board_na.blank_board()
+    check(bl.is_valid and len(bl.solids()) == 1, f"blank board: one valid solid ({bl.volume:.0f} mm3)")
+    r = bl & ins
+    check(r is None or r.volume < 0.001, f"blank board clear of the barrier ({r.volume if r else 0.0:.3f} mm3)")
+    _, hooks = sensor_board_na.pin_board_clips()
+    gap = PB_BOT - hooks.bounding_box().max.Z
+    check(0.0 < gap <= PB_CLIP_PLAY + 1e-6, f"blank board held in the pocket by the pin board's clips (hooks "
+                                              f"{gap:.2f} under its back face, D-91)")
     from build123d import Cylinder
     open_ = []
-    for x, y in BC_FINGERS:                                 # through the pocket floor, under the seat
-        probe = Pos(x, y, SEAT_Z - 0.5) * Cylinder(0.3, 0.4)
-        r = probe & ins
+    for x, y in BC_FINGERS:                                 # in the pocket floor, under the seat
+        probe = Pos(x, y, SEAT_Z - 1.0) * Cylinder(0.5, 0.6)
+        r = probe & bl
         if r is None or r.volume < 0.99 * probe.volume:
             open_.append((x, y))
-    check(not open_, "switch-only barrier: the pocket floor is solid where the spring pins would pass"
+    check(not open_, f"blank board's pegs fill the spring pins' holes up to {BLANK_CLR} under the seat"
                      + (f" (open at {open_})" if open_ else ""))
-    barrier(ins, plain=True, switch=True)
-    from export import PRINT_ORIENT
-    overhangs("switch-only barrier", PRINT_ORIENT["na_switch_barrier"](ins), supported=(0.0,))   # seal lip on the wall
+    r = ins & tr
+    check(r is None or r.volume < 0.01, f"barrier and plain face plate do not overlap ({r.volume if r else 0.0:.3f} mm3)")
+    barrier(ins + bl, "switch-only")
+    overhangs("blank board (pegs up)", bl)
 
 
 def plain_checks():
-    """Plain plate (D-109): the barrier without the 5 V cable bore and the standard-size face plate, on the same wiring
-    board, pin board and spring pins as the full plate."""
+    """Battery-free plate (D-109): the one barrier (D-127) and the standard-size face plate, on the same mains board, pin
+    board and spring pins as the full plate."""
     print("plain plate (rocker and battery-free remote, D-109)")
-    ins, tr = barrier_na.build(plain=True), face_plate_na.build(plain=True)
+    ins, tr = barrier_na.build(), face_plate_na.build(plain=True)
     check(ins.is_valid and len(ins.solids()) == 1 and tr.is_valid and len(tr.solids()) == 1,
-          "plain barrier and plain face plate are one valid solid each")
+          "barrier and plain face plate are one valid solid each")
     bb = tr.bounding_box()
     check(abs(bb.size.X - PLAIN_PW) < 0.01 and abs(bb.size.Y - PLAIN_PH) < 0.01 and abs(bb.center().Y) < 0.01,
           f"plain face plate {bb.size.X:.2f} x {bb.size.Y:.2f} mm, centred on the box (standard single-gang plate)")
@@ -599,24 +636,17 @@ def plain_checks():
           f"plain face plate: {PLAIN_PH / 2 - SCREW_PITCH / 2 - SCREW_HEAD_D / 2:.1f} mm beyond each screw head")
     r = ins & tr
     ov = r.volume if r is not None else 0.0
-    check(ov < 0.01, f"plain barrier and plain face plate do not overlap ({ov:.3f} mm3)")
+    check(ov < 0.01, f"barrier and plain face plate do not overlap ({ov:.3f} mm3)")
     import bilresa
     r = bilresa.build(SEAT_Z) & ins
     ov = r.volume if r is not None else 0.0
-    check(ov < 0.01, f"BILRESA model clears the plain barrier's pocket ({ov:.3f} mm3)")
-    env = barrier_na.pass_through() & barrier_na.outline_solid()       # the pass-through within the barrier's outline
-    sol = barrier_na.pass_through() & ins
-    v_env, v_sol = env.volume, (sol.volume if sol is not None else 0.0)
-    check(abs(v_env - v_sol) < 0.5, f"plain barrier: the 5 V pass-through's space is solid ({v_sol:.1f} of {v_env:.1f} mm3)")
     import sensor_board_na, assembly_na
     rp = sensor_board_na.parts()
     for name, p in {**{k: rp[k] for k in ("pin_board", "pins", "posts")}, "mains board": assembly_na.mains_board()}.items():
         d = tr.distance_to(p)
         check(d >= 0.05, f"plain face plate not touching the {name} (gap {d:.2f} mm)")
-    barrier(ins, plain=True)
+    barrier(ins, "battery-free")
     from export import PRINT_ORIENT
-    overhangs("plain barrier", PRINT_ORIENT["na_plain_barrier"](ins),
-              supported=(0.0, PB_TOP + PB_CLR, PB_TOP + M2_HEAD[1] + PB_CLR))
     overhangs("plain face plate", PRINT_ORIENT["na_plain_face_plate"](tr), limit=3.5)
 
 
@@ -627,13 +657,14 @@ def main():
     tr = face_plate_na.build()
     solids(ins, tr)
     edge_chamfer(tr)
+    screw_lobes(tr, ins)
     board_fit(ins)
     mounting(ins)
     msr_spacers(ins)
     sensor_board_mount(ins)
     sensor_board_checks(ins, tr)
-    base.scd_vent_checks(tr, MSR_Y, MSR_BACK_Z, PT)
-    base.msr_posts(tr, MSR_Y, MSR_BACK_Z, PT)
+    base.scd_vent_checks(tr, MSR_Y, MSR_BACK_Z, PT, MSR_X)
+    base.msr_posts(tr, MSR_Y, MSR_BACK_Z, PT, MSR_X)
     ffc_checks(ins, tr)
     separation(ins, tr)
     barrier(ins)

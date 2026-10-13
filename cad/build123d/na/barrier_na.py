@@ -5,13 +5,11 @@ The sensor board presses onto crush ribs on the collar's outside; in the box a f
 Print: UL94 V-0 filament, as modelled (z up, lowest face Z_BOT = the switch panel's underside and the
 mounting bosses on the bed). The mains board hangs on four nylon standoffs (standoff_na.py) screwed into the bosses'
 tapped M3 holes (D-57).
-Plain barrier (D-109, no sensor board): no 5 V cable channel or bore, so its only openings are the spring-pin holes.
-Run:  python barrier_na.py  -> ../../build/barrier_na.step / .stl, na_plain_barrier.step / .stl
+Run:  python barrier_na.py  -> ../../../build/na/barrier.step / .stl, blank_board.step / .stl
 """
-from math import hypot
 from build123d import Box, Cone, Cylinder, Rectangle, Pos, Rot
 from params_na import *
-from common import rr, stadium, slab, taper, ellipsoid, rod
+from common import rr, stadium, slab, taper, ellipsoid, prism, mouth_chamfer
 
 
 def outline_solid():
@@ -35,11 +33,11 @@ def outline_solid():
     return body
 
 
-def build(plain=False, switch=False):
-    """barrier; plain (battery-free edition): without the 5 V cable's channel and bore (no sensor board, D-109);
-    switch (switch-only edition): also without the spring pins' holes, the pin board pocket and its clips (D-122)."""
+def build():
+    """The barrier, one for every edition (D-127): the remote pocket, the switch well, the 5 V cable's slit (D-134),
+    the spring pins' holes, the pin board's pocket and its clips (in the switch-only edition the printed blank board,
+    sensor_board_na.blank_board(), sits in the pocket and its pegs fill the holes)."""
     import sensor_board_na
-    plain = plain or switch
     body = outline_solid()
     # ---------------- cuts ----------------
     cut = slab(stadium(*POCKET_IN), SEAT_Z, PT + 5)                                       # remote pocket
@@ -50,22 +48,19 @@ def build(plain=False, switch=False):
         cut += Pos(s * SCOOP_X, 0, SCOOP_ZC) * ellipsoid(*SCOOP)
     for s in (-1, 1):                                                                     # #6 screw clearance
         cut += Pos(0, s * SCREW_PITCH / 2, DECK_Z / 2) * Cylinder(SCREW_D / 2, DECK_Z + 2)
-    if not plain:
-        cut += ffc_channel()
-    clip_hooks = None
-    if not switch:
-        cut += sensor_board_na.pin_holes() + sensor_board_na.pin_board_pocket()                                     # battery-free remote (D-50)
-        clip_relief, clip_hooks = sensor_board_na.pin_board_clips()                                      # pin board snap clips (D-91)
-        cut += clip_relief
-    body -= cut
-    if clip_hooks is not None:
-        body += clip_hooks
+    cut += ffc_slot()
+    cut += sensor_board_na.pin_holes() + sensor_board_na.pin_board_pocket()               # battery-free remote (D-50)
+    clip_relief, clip_hooks = sensor_board_na.pin_board_clips()                           # pin board snap clips (D-91)
+    body -= cut + clip_relief
+    body += clip_hooks
     for kx, ky in KEY_POS:                                                                # locating pins
         body += Pos(kx, ky, DECK_Z + KEY_H / 2 - 0.01) * Cylinder(KEY_D / 2, KEY_H + 0.02)
+    import face_plate_na
+    body -= prism(face_plate_na.screw_lobes().buffer(SCREW_LOBE[1], 64), DECK_Z - 0.01, PT + 1)   # the face plate's lobes (D-132)
     body += mount_bosses()                                                                # after the pocket cut
     body -= mount_holes()
-    if not plain:
-        body -= pass_through()                                                            # after the bosses: past MH3's side
+    body -= arrows()
+    body -= mouth_chamfer(*POCKET_IN, PT, POCKET_CHAMFER)                                 # 45 deg round the pocket's mouth
     return body
 
 
@@ -93,21 +88,49 @@ def ribs():
     return out
 
 
-def ffc_channel():
-    """Out of the pass-through's flat slot through the collar and the flange onto the sensor board, towards J1 and the
-    fold: flat floor on the board, 45 deg peaked roof (prints without supports)."""
+def ffc_slot():
+    """The 5 V cable's slit (D-134), the barrier's single cable opening: through the bottom wall along the cable's own
+    line (ffc_curve()), in through the taper below the plug's bottom face, the straight run up through the wall behind a
+    lip, the bend over onto the sensor board guided by the curved slit, out under the flange to J1; FFC_SLOT[1] round
+    the cable. Open along its left side (FFC_SLOT[2]) so the cable, bent to shape, slides in sideways; the lip cut
+    back below FFC_LIP_Z (no knife edge at the mouth)."""
+    from shapely.geometry import LineString, Polygon, box as sbox
     from common import radial_prism
-    _, e, f = pass_points()
-    w = PASS_SLOT[0]
-    z0, z1 = SB_T - 0.01, SB_T + FH12[2] + 0.2
+    w, gap, notch = FFC_SLOT
+    g = gap / 2
+    pts, (t1, _) = ffc_curve()
+    k = next(i for i, p in enumerate(pts) if p[1] >= t1[1] - 1e-6)
+    run = [p for p in pts if p[1] < FFC_BOARD_Z - 1e-6 or p[0] >= FFC_ARC_END_Y - 1e-6]   # J2 to the end of the bend
+
+    def yz(poly, width, xc):                             # section (y, z) polygon, width along x
+        return radial_prism((xc, 0.0), (0.0, 1.0), list(poly.exterior.coords)[:-1], width)
+
+    slot = LineString(run).buffer(g, cap_style=2, join_style=1)
+    out = yz(slot, w, FFC_SLOT_X)
+    side = Polygon(run[k:] + [(-60.0, FFC_BOARD_Z + g), (-60.0, run[k][1])]).union(slot).buffer(0)
+    out += yz(side, notch, FFC_SLOT_X - w / 2 + notch / 2)
+    out += yz(side.intersection(sbox(-60.0, -40.0, 0.0, FFC_LIP_Z)), w, FFC_SLOT_X)
+    z0, z1 = SB_T - 0.01, FFC_BOARD_Z + g + 0.3                # over the board, out under the flange to J1
+    j1 = SB_J1[1] + FH12_ENTRY
     prof = [(-w / 2, z0), (w / 2, z0), (w / 2, z1), (0.0, z1 + w / 2), (-w / 2, z1)]
+    out += radial_prism((FFC_SLOT_X, (FFC_ARC_END_Y + 0.3 + j1) / 2), (1.0, 0.0), prof, FFC_ARC_END_Y + 0.3 - j1)
+    return out
+
+
+def arrows():
+    """Arrows engraved in the plug's bottom face either side of the slit, pointing at it: the cable goes in the slit,
+    not between the box and the barrier (D-134)."""
+    from build123d import Polyline, extrude, make_face
+    L, hw, d, zc = ARROW
     out = None
-    for t in ((SB_J1[0], SB_J1[1]), (SB_J1[0], JUMPER_FOLD_Y)):
-        dx, dy = t[0] - f[0], t[1] - f[1]
-        n = hypot(dx, dy)
-        ux, uy = dx / n, dy / n
-        c = radial_prism(((f[0] + t[0]) / 2, (f[1] + t[1]) / 2), (-uy, ux), prof, n + w)
-        out = c if out is None else out + c
+    for s in (-1, 1):
+        tip = FFC_SLOT_X + s * (FFC_SLOT[0] / 2 + 1.0)
+        tail = tip + s * L
+        pts = [(tail, zc - 0.4), (tip + s * hw, zc - 0.4), (tip + s * hw, zc - hw / 2), (tip, zc),
+               (tip + s * hw, zc + hw / 2), (tip + s * hw, zc + 0.4), (tail, zc + 0.4)]
+        face = make_face(Polyline(*[(px, -PLUG_TOP - 0.01, pz) for px, pz in pts], close=True))
+        a = extrude(face, d + 0.01, dir=(0, 1, 0))
+        out = a if out is None else out + a
     return out
 
 
@@ -149,37 +172,13 @@ def magnet_recess():
     return end + upper
 
 
-def bore():
-    """The pass-through's straight bore (D-74), from below the underside up to the flat slot."""
-    _, e, _ = pass_points()
-    return rod(pass_at(Z_BOT - PASS_BELOW), e, PASS_D)
-
-
-def pass_through():
-    """The single 5 V cable hole (D-74): one straight bore from the barrier's underside in the top-right corner, past the
-    remote pocket, to a flat slot out through the collar; its lower part opens through the corner taper as a groove."""
-    _, e, f = pass_points()
-    leg = bore()
-    from common import radial_prism
-    w, h, _ = PASS_SLOT
-    z0, z1 = PASS_TOP_Z - h / 2, PASS_TOP_Z + h / 2
-    ux, uy = PASS_DIR
-    n = (-uy, ux)                                          # across the slot
-    length = hypot(f[0] - e[0], f[1] - e[1]) + w / 2
-    # cross-section in the plane across the slot: flat floor, 45 deg peaked roof (prints without a bridge)
-    prof = [(-w / 2, z0), (w / 2, z0), (w / 2, z1), (0.0, z1 + w / 2), (-w / 2, z1)]
-    mid = ((e[0] + f[0]) / 2 + ux * w / 4, (e[1] + f[1]) / 2 + uy * w / 4)
-    slot = radial_prism(mid, n, prof, length)
-    return leg + slot
-
-
 if __name__ == "__main__":
     from pathlib import Path
     from build123d import export_step, export_stl
     out = Path(__file__).resolve().parents[3] / "build" / "na"
     out.mkdir(parents=True, exist_ok=True)
-    for name, plain, switch in (("barrier", False, False), ("barrier_plain", True, False), ("barrier_switch", True, True)):
-        p = build(plain, switch)
+    import sensor_board_na
+    for name, p in (("barrier", build()), ("blank_board", sensor_board_na.blank_board())):
         bb = p.bounding_box()
         print(f"{name} bbox x {bb.min.X:.1f}..{bb.max.X:.1f} y {bb.min.Y:.1f}..{bb.max.Y:.1f} z {bb.min.Z:.1f}..{bb.max.Z:.1f}"
               f"  vol {p.volume/1000:.1f} cm3 valid={p.is_valid} solids={len(p.solids())}")

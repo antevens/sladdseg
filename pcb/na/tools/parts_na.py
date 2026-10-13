@@ -68,11 +68,11 @@ PARTS = {
     "P2": dict(label="Wurth WA-SMSI M2 L7", sym="Conn_01x01", fp=FP_POST, value="GND post", nets={"1": "GND"},
                pcb=(16.65, -16.5, 0, "F"), mfr="Wurth Elektronik", mpn="9774070243R",
                desc="SMT steel spacer, internal thread M2, 7 mm, tin: GND to the pin board (D-50, D-59)", ds=SMSI_DS),
-    # turned 90: the FFC leaves to the right, then up past the posts. Pinout mirror-symmetric (GND 1, 3, 4, 6;
+    # cable out downwards (-y), straight to the barrier's bottom slot. Pinout mirror-symmetric (GND 1, 3, 4, 6;
     # +5V 2, 5), so an FFC with contacts on either side, flipped end to end, keeps the polarity
     "J2": dict(label="Hirose FH12-6S", sym="Conn_01x06", fp=FP_J2, value="5V out (FFC to the sensor board)",
                nets={"1": "GND", "2": "+5V", "3": "GND", "4": "GND", "5": "+5V", "6": "GND"},
-               pcb=(13.5, -24.8, 90, "F"), mfr="Hirose", mpn="FH12-6S-0.5SH(55)",
+               pcb=(12.7, -23.3, 0, "F"), mfr="Hirose", mpn="FH12-6S-0.5SH(55)",
                desc="FPC connector 0.5 mm, 6 contacts, slide lock: 5 V to the sensor board FFC (D-50)", ds=FH12_DS),
 }
 
@@ -87,12 +87,12 @@ URL_POS = (0.0, 14.6, "B")
 # (MOUNT_HOLES, checked by `make check`). All unplated, with no copper under the standoffs or the screw heads:
 # a copper keep-out round each hole (MOUNT_KO) on both layers, and the PE ring detours round MH1 and MH3
 # on the inside (PE_DETOURS), so earth continuity never depends on copper they press on, or
-# on vias. Top right is lowered so the barrier boss clears the 5 V pass-through.
+# on vias.
 MOUNT_D = 3.2                               # M3 clearance (ISO 273 fine)
 STANDOFF_HEX_D = 5.0 / 0.866                # Keystone 25503 5.0 mm hex across its corners (front)
 SCREW_HEAD_D = 5.6                          # Keystone 29341 M3 pan head, ISO 1580 maximum (back)
 MOUNT_KO = max(STANDOFF_HEX_D, SCREW_HEAD_D) / 2 + 0.5   # copper keep-out radius round each hole
-MOUNT = {"MH1": (-21.0, 33.5), "MH2": (-21.0, -33.5), "MH3": (21.0, 24.77), "MH4": (21.0, -33.5)}
+MOUNT = {"MH1": (-21.0, 33.5), "MH2": (-21.0, -33.5), "MH3": (21.0, 33.5), "MH4": (21.0, -33.5)}
 
 # WA-SMSI M2 land pattern (DATASHEET 9774070243R, the same as the L6 9774060243R): spigot hole, solder pad, stencil ring
 POST_HOLE = 3.0                             # non-plated through hole for the spigot (Ø2.8, 1.4 long: ends inside the 1.6 board)
@@ -146,7 +146,7 @@ _ring_l, _ring_r = PE_RING_INNER[0][0] - 0.5, PE_RING_INNER[3][0] + 0.5    # 0.5
 # PE runs J1.6 -> left edge -> MH1 -> top -> MH3 -> J1.1, and the ring's lower part stays joined
 # to both arms. gen_pcb_na.py checks that this path holds on F.Cu without vias or hole copper.
 PE_DETOUR_W = 2.0
-PE_DETOURS = {"MH1": (-100.0, 10.0), "MH3": (80.0, 280.0)}
+PE_DETOURS = {"MH1": (-100.0, 10.0), "MH3": (170.0, 280.0)}
 PE_ARMS = [("F.Cu", [(_ring_l, _arm_y[0]), (PE_PIN_X[0], _arm_y[0]), (PE_PIN_X[0], _arm_y[1]), (_ring_l, _arm_y[1])])]
 PE_ARMS += [(lay, [(PE_PIN_X[1], _arm_y[0]), (_ring_r, _arm_y[0]), (_ring_r, _arm_y[1]), (PE_PIN_X[1], _arm_y[1])])
             for lay in ("F.Cu", "B.Cu")]
@@ -157,7 +157,7 @@ POUR_PRIO = {"L_IN": 3, "N_IN": 2, "L_SW": 3, "N_SW": 2}
 
 # Tracks: net -> [(layer, width, [(x, Y), ...])]
 VIAS = {"L_SW": [(-16.0, -29.0), (-13.0, -29.0)],  # (x, y): 1.0 / 0.5 mm; or (x, y, diameter, drill)
-        "+5V": [(10.4, -24.05, 0.6, 0.3), (10.4, -25.55, 0.6, 0.3)]}   # J2.5 / J2.2 to B.Cu
+        "+5V": [(11.95, -20.2, 0.6, 0.3), (13.45, -20.2, 0.6, 0.3)]}   # J2.2 / J2.5 to B.Cu
 
 TRACKS = {
     # fused line: F1.2 (top) -> PS1.1, and F1.2 -> RV1.1 (bottom) straight across, clear of F1.1 (switched line)
@@ -169,14 +169,14 @@ TRACKS = {
              ("F.Cu", 0.5, [(10.5, -0.1), (10.5, -5.0), (-5.5, -5.0), (-5.5, -14.0)])],
     # PSU feed: F1.1 -> vias below F1 to the L_SW pour on the back (3.0 from the fused line and the PE ring)
     "L_SW": [("F.Cu", 0.8, [(-14.6, -27.25), (-14.6, -29.0)]), ("F.Cu", 0.8, [(-16.0, -29.0), (-13.0, -29.0)])],
-    # PS1.16 -> P1 up the left (F, ends on the pad ring); J2.2 / J2.5 -> vias at their tails -> B.Cu -> PS1.16
-    "+5V": [("F.Cu", 0.8, [(10.16, -30.28), (8.5, -28.62), (8.5, -19.5), (9.4, -18.75)]),
-            ("F.Cu", 0.3, [(11.1, -24.05), (10.4, -24.05)]), ("F.Cu", 0.3, [(11.1, -25.55), (10.4, -25.55)]),
-            ("B.Cu", 0.4, [(10.4, -24.05), (10.4, -29.3), (10.16, -30.28)])],
-    # PS1.14 -> P2 up the right (F); J2.1 / 3 / 4 / 6 -> a bar left of the +5V vias -> the 5 V side pour
+    # PS1.16 -> P1 up the left (F, ends on the pad ring); J2.2 / J2.5 -> vias above their tails -> B.Cu -> PS1.16
+    "+5V": [("F.Cu", 0.8, [(10.16, -30.28), (7.8, -27.92), (7.8, -19.6), (9.4, -18.75)]),
+            ("F.Cu", 0.3, [(11.95, -20.9), (11.95, -20.2)]), ("F.Cu", 0.3, [(13.45, -20.9), (13.45, -20.2)]),
+            ("B.Cu", 0.4, [(13.45, -20.2), (11.95, -20.2), (10.6, -21.55), (10.6, -29.3), (10.16, -30.28)])],
+    # PS1.14 -> P2 up the right (F); J2.1 / 3 / 4 / 6 -> a bar above the +5V vias -> the 5 V side pour
     "GND": [("F.Cu", 0.8, [(15.24, -30.28), (17.0, -30.28), (18.6, -28.68), (18.6, -20.0), (17.45, -18.65)]),
-            ("F.Cu", 0.3, [(11.1, -23.55), (10.6, -23.05), (9.7, -23.05)]),
-            ("F.Cu", 0.3, [(11.1, -26.05), (10.6, -26.55), (9.7, -26.55)]),
-            ("F.Cu", 0.3, [(11.1, -24.55), (10.6, -24.8), (9.7, -24.8)]), ("F.Cu", 0.3, [(11.1, -25.05), (10.6, -24.8)]),
-            ("F.Cu", 0.3, [(9.7, -26.55), (9.7, -23.05)])],
+            ("F.Cu", 0.3, [(11.45, -20.9), (10.95, -20.4), (10.95, -19.5)]),
+            ("F.Cu", 0.3, [(13.95, -20.9), (14.45, -20.4), (14.45, -19.5)]),
+            ("F.Cu", 0.3, [(12.45, -20.9), (12.7, -20.4), (12.7, -19.5)]), ("F.Cu", 0.3, [(12.95, -20.9), (12.7, -20.4)]),
+            ("F.Cu", 0.3, [(14.45, -19.5), (10.95, -19.5)])],
 }

@@ -92,7 +92,7 @@ CARRIER_RIM = 1.6                         # carrier's rim round the sensor board
 SB_RIM_CLR = 0.2                          # sensor board to the rim
 SB_POCKET_CLR = 0.3                       # sensor board / carrier cut-out round the face plate's pocket walls
 SB_PAD_D = 2.4                            # gold pad under each sensor pin (plunger 0.9)
-SB_SCREWS = ((-32.0, 48.0), (32.0, 36.0), (-32.0, -36.0), (32.0, -36.0))   # M2 x 6 thread-forming screws through the
+SB_SCREWS = ((-32.0, 36.0), (32.0, 36.0), (-32.0, -36.0), (32.0, -36.0))   # M2 x 6 thread-forming screws through the
                                           # sensor board into the carrier
 SB_SCREW_D, SB_TAP_D = 2.0, 1.6           # M2 clearance hole in the board; tap-drill hole in the carrier
 CARRIER_CAP_CLR = 0.2                     # carrier's bore round the barrier disc
@@ -110,8 +110,18 @@ MIC_HOLE = (1.6, 0.6, 3.0)             # sound hole (D-52): diameter, skin web l
 # ---- pin board (D-shaped, just under the barrier, below the switch cup) ----
 PB_T = 1.6
 PB_CUT_CLR = 1.0                          # board's straight edge below the switch cup
-PB_MOUNT = ((-12.0, -22.0), (16.8, -20.6))  # board holes (M2, from pcb/eu), screwed to bosses under the barrier
+PB_MOUNT = ((-12.0, -22.0), (16.8, -20.6), (-16.0, -3.2), (22.4, -11.0))  # board holes (M2, from pcb/eu), screwed to
+                                          # bosses under the barrier; the last two on the ridge (D-129)
 PB_MOUNT_D, PB_BOSS_D = 2.2, 5.0          # board hole; barrier boss (tap-drilled for an M2 thread-forming screw)
+PB_RIDGE = (0.3, 0.4)                     # ridge under the barrier that the pin board's front rests on (D-128, D-129): in from
+                                          # the board's edges, clearance round the parts on its front
+PB_RIDGE_PATH = ((22.8, -10.4), (25.6, -11.6))   # where the ridge leaves the straight edge to pass inside the sensor pins
+                                          # (the bend, then back to the round edge below them)
+BLANK_LEDGE = (1.6, 0.2)                  # printed blank board (switch only, D-127, D-131): its ridge's width, gap left under
+                                          # the barrier
+BLANK_GAP = 0.2                           # blank board's ridge to the barrier's ridge, bosses and cups beside it (D-131)
+RIDGE_ROUND = 0.5                         # both ridges rounded in plan by this, inside and outside corners (D-131)
+RIDGE_MIN_AREA = 8.0                      # blank board's ridge: pieces smaller than this (mm2, a 5 mm stub) left out
 FRONT_PARTS = {"C1": (3.2, 1.6, 1.8)}      # 1206 capacitor on the pin board's front
 
 # ---- mains board (round, at the rocker's PCB seat) ----
@@ -199,9 +209,9 @@ PL_Y = (SHT_Y - SHT[1] / 2 - SHT_BAY_CLR - BAY_WALL - SKIN - BAY_EDGE,
         MSR_Y + MSR[1] / 2 + CLR + BAY_WALL + SKIN + BAY_EDGE)
 PH = PL_Y[1] - PL_Y[0]
 PC = (0.0, (PL_Y[0] + PL_Y[1]) / 2)                        # plate centre relative to the box centre
-# plain plate (rocker and battery-free remote only, no sensor board or sensors; D-109): 80 x 80, centred on the box; the
-# carrier keeps its lip under the barrier and its corners with the snap windows, nothing beside the barrier
-PLAIN_PW = PLAIN_PH = 80.0
+# plain plate (rocker and battery-free remote only, no sensor board or sensors; D-109): square, centred on the box, as wide
+# as the full plate, so the carrier stays whole, CARRIER_SIDE outside its bore, on all four sides (D-146)
+PLAIN_PW = PLAIN_PH = PW
 PLAIN_PC = (0.0, 0.0)
 
 
@@ -211,11 +221,12 @@ def plate(plain=False):
 
 # sensors, derived
 MSR_BACK_Z = SB_TOP + B2B_STACK                            # MSR-2's back on CN2 and the spacers on the sensor board
-MSR_CN2_X = MSR_BOARD[0] / 2 - MSR_CN2_IN
-MSR_SPACERS = [(x, MSR_Y + y) for x, y in MSR2_POSTS]      # sensor board's SMT spacers under the MSR-2, below its posts
+MSR_X = -LUX_POS[0]                       # MSR-2 centre (room x): the grille over its light sensor on the plate's centre line
+MSR_CN2_X = MSR_X + MSR_BOARD[0] / 2 - MSR_CN2_IN
+MSR_SPACERS = [(MSR_X + x, MSR_Y + y) for x, y in MSR2_POSTS]      # sensor board's SMT spacers under the MSR-2, below its posts
 SKIN_Z = PT - SKIN
 MSR_FRAME = (MSR[0] + 2 * CLR, MSR[1] + 2 * CLR, BAY_WALL)      # face plate's MSR-2 bay frame: inside w, h, wall
-MIC_AT = (MSR_FRAME[0] / 2 + MSR_FRAME[2] + 0.3 + MIC_SPAN[0], MSR_Y + MIC_ROW_DY)   # mic port; its parts and lanes
+MIC_AT = (MSR_X + MSR_FRAME[0] / 2 + MSR_FRAME[2] + 0.3 + MIC_SPAN[0], MSR_Y + MIC_ROW_DY)   # mic port; its parts and lanes
                                           # between it and the bay frame (D-83)
 SB_INSET = SB_EDGE + CARRIER_RIM + SB_RIM_CLR              # sensor board edge in from the face plate's outer walls' inside
 SNAPS = [(a, SNAP_KEY_W if a == SNAP_ANGLES[0] else SNAP[0]) for a in SNAP_ANGLES]   # angle, width
@@ -227,5 +238,5 @@ LIP_R = REBATE_R + LIP_CLR                                  # lip's inner edge
 TEETH = [(a, w + 2 * SNAP_CLR + 2 * LIP_TOOTH) for a, w in SNAPS]   # barrier's teeth at the snap angles: angle, width
 SB_TOP_Y = PL_Y[1] - SKIN - SB_INSET                       # sensor board's top edge
 # the MSR-2's back switches stand deeper than CN2's stack: notches in the sensor board's top edge (as the NA sensor board)
-MSR_SW_CUTS = [(x - MSR2_SW[0] / 2 - MSR2_SW_CLR, x + MSR2_SW[0] / 2 + MSR2_SW_CLR,
+MSR_SW_CUTS = [(MSR_X + x - MSR2_SW[0] / 2 - MSR2_SW_CLR, MSR_X + x + MSR2_SW[0] / 2 + MSR2_SW_CLR,
                MSR_Y + MSR_BOARD[1] / 2 - MSR2_SW[1] - MSR2_SW_CLR) for x in MSR2_SW_X]   # x0, x1, y0

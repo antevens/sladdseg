@@ -63,6 +63,19 @@ def pin_board():
     return disc
 
 
+def blank_board():
+    """Printed blank board for the switch-only edition (D-127, D-131), printed with the barrier in V-0: the pin board's
+    outline, on its bosses and screws, resting on the barrier's ridge; a peg up each of the barrier's four pin holes to
+    just under its face (BLANK_CLR round it) and its own ridge beside the barrier's (ridges_eu.blank_ridge()) up to
+    BLANK_LEDGE[1] under the barrier: it stiffens the board and, with the barrier's ridge, closes the box."""
+    import ridges_eu
+    out = pin_board()
+    for x, y in tuple(PINS) + tuple(BC_FINGERS):
+        z1 = CAP_T - BLANK_CLR
+        out += Pos(x, y, (PB_FRONT + z1) / 2) * Cylinder(PIN_CAP_HOLE_D / 2 - BLANK_CLR, z1 - PB_FRONT)
+    return out + ridges_eu.solid(ridges_eu.blank_ridge(), PB_FRONT - 0.01, -BLANK_LEDGE[1])
+
+
 def mains_board():
     """Mains board: the box circle less clearance, notched round the domes, the relief slot under the
     PSU, holes for the long bosses."""

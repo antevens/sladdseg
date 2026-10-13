@@ -54,27 +54,25 @@ WAGO6 = (32.4, 16.1, 20.7)                # DATASHEET WAGO 2604-1106 (3D model):
 WAGO_X, WAGO_Y = 3.0, 5.05                # terminal block centre at the board (front-view x, y; from pcb/)
 WAGO_ENTRY = (0, 1)                       # direction the wire entries face (front-view x, y): away from the PSU
 WAGO_PSU_GAP = 1.0                        # minimum gap from the block's closed back to the PSU body
-J2_POS = (13.5, -24.8)                    # SMD 5 V connector on F (front-view x, y; from pcb/), below the posts, FFC to +x
+J2_POS = (12.7, -23.3)                    # SMD 5 V connector on F (front-view x, y; from pcb/), below the posts, FFC down (-y)
 WIRE_SPACE_MIN = 10.0                     # free depth wanted behind the terminal block
 
 # ---- board mounting: nylon standoffs (D-57) ----
 # Four Keystone 25503 nylon M3 male-female hex standoffs (15 mm): the stud screws into a tapped blind hole in a boss
-# on the barrier's underside, a nylon M3 x 8 pan head screw through each board hole into the standoff. At the top
-# right the pocket corner leaves room for a 5.5 mm hole only: that standoff's stud is cut to 5 mm before fitting.
-MOUNT_HOLES = ((-21.0, 33.5), (-21.0, -33.5), (21.0, 24.77), (21.0, -33.5))  # board holes (front-view x, y; from pcb/)
+# on the barrier's underside, a nylon M3 x 8 pan head screw through each board hole into the standoff.
+MOUNT_HOLES = ((-21.0, 33.5), (-21.0, -33.5), (21.0, 33.5), (21.0, -33.5))  # board holes (front-view x, y; from pcb/)
 MOUNT_HOLE_D = 3.2                        # board hole, M3 clearance (ISO 273 fine)
 MOUNT_BOSS_D = 7.0                        # boss on the barrier, from the standoff's face up into the barrier
-# boss tops: 1 mm into the corner taper; top right rises into the pocket corner under the remote's back round-over
-MOUNT_BOSS_TOP = (-1.6, -1.6, -2.0, -1.6)
+# boss tops: 1 mm into the corner taper
+MOUNT_BOSS_TOP = (-1.6, -1.6, -1.6, -1.6)
 STANDOFF = (5.0, 8.0, 8.0)                # DATASHEET Keystone 25503 (catalog M65 p.76): hex across flats, male
                                           # thread length, internal thread depth; nylon 6/6 UL94 V-2
 STANDOFF_L = 15.0                         # DATASHEET Keystone 25503 body length
-MOUNT_STUD = (8.0, 8.0, 5.0, 8.0)         # stud length per hole (MOUNT_HOLES order): as supplied, top right cut to 5
+MOUNT_STUD = (8.0, 8.0, 8.0, 8.0)         # stud length per hole (MOUNT_HOLES order): as supplied
 STANDOFF_SCREW = (8.0, 5.6, 1.8)          # nylon M3 x 8 slotted pan head: length; head diameter and height ISO 1580 max
 MOUNT_THREAD_D, MOUNT_TAP_D = 3.0, 2.5    # M3 x 0.5: stud, tap-drill hole (ISO 2306)
 MOUNT_THREAD_L = tuple(s + 0.5 for s in MOUNT_STUD)   # tapped depth per hole: the stud plus 0.5 (45 deg cone end)
 MOUNT_THREAD_MIN = 1.5 * 3.0              # stud engagement in the printed thread, >= 1.5 x M3
-MOUNT_PASS_GAP = 1.0                      # boss to the 5 V pass-through channel
 
 # ---- barrier (box side, V-0) ----
 PLUG_CLR = 0.75                           # barrier body to box wall, each side
@@ -86,39 +84,35 @@ ISLAND_R = 6.0
 BOSS_R = 4.0                              # screw boss on the barrier
 KEY_D, KEY_H, KEY_CLR = 3.0, 1.0, 0.15    # locating pins barrier -> face plate (asymmetric = keyed)
 KEY_POS = ((25.0, 30.0), (-25.0, -22.0))
+SCREW_LOBE = (7.0, 0.15, 1.5)             # face plate round each screw, reaching in to the remote pocket (D-132): radius
+                                          # round the screw, seam to the barrier's island, fillet where it meets the window
 SCOOP = (6.0, 16.0, 9.0)                  # finger scoop ellipsoid radii (x, y, z)
 SCOOP_ZC = PT + 2.5                       # scoop centre height
-PASS_D = 4.5                              # 5 V FFC pass-through (barrier opening, with the two pin holes): takes
-                                          # the FFC's stiffened contact end when it is threaded through
-PASS_E = (20.9, 32.9)                     # straight bore's top (D-74): it meets the flat slot here, at PASS_TOP_Z
-PASS_RUN = 3.0                            # bore's run in plan from the underside plane (Z_BOT) to PASS_E, along PASS_DIR:
-                                          # the most that keeps BARRIER_MIN to the remote pocket
-PASS_BELOW = 4.0                          # bore modelled this far below the underside plane (cuts clean through)
-PASS_DIR = (0.7071, 0.7071)               # bore and slot direction in plan: out through the flange's top-right corner
 
 # ---- edge vents ----
 VENT_Z_OVER, VENT_H = 3.0, 5.0             # NA edge vents: centre above the sensor board's parts, height
 
-# ---- 5 V cable: mains board J2 -> pass-through -> sensor board J1 (D-50) ----
-# A stock FFC (6 contacts, 0.5 mm pitch) latched in Hirose FH12-6S-0.5SH slide-lock connectors at both ends: J2 on the
-# mains board, J1 on the sensor board. It is pushed through the pass-through (a straight bore in the barrier, D-74) from
-# the box side; no loop in the box: J2 is plugged from the side with the board on its standoffs. The stock cable's
-# spare length lies flat on the sensor board, folded in four layers beside J1 (face side).
+# ---- 5 V cable: mains board J2 -> slit in the barrier's bottom wall -> sensor board J1 (D-50, D-134) ----
+# A stock FFC (6 contacts, 0.5 mm pitch, contacts on the same side at both ends) latched in Hirose FH12-6S-0.5SH
+# slide-lock connectors: J2 on the mains board, cable out downwards; J1 at the bottom of the sensor board, cable in from
+# above; both on x FFC_SLOT_X. The cable stays in that plane (ffc_curve()): a bend up out of J2, one straight run through
+# a slit in the barrier's bottom wall, a bend over onto the sensor board, guided by the slit.
 FH12 = (6.1, 5.6, 2.0)                    # REF FH12-6S body (x, y, height): KiCad footprint / Hirose FH12 series
+FH12_ENTRY = 4.9                          # FH12 footprint origin to the body's cable face (KiCad footprint, F.Fab)
 JUMPER_W = 3.5                            # FFC width (6 contacts at 0.5)
-JUMPER_END = (3.5, 4.0, 0.3)              # FFC contact end: width, stiffened length, thickness (FH12 FPC spec)
+JUMPER_END = (3.5, 4.0, 0.3)              # FFC contact end: width, length in the connector, thickness (FH12 FPC spec)
 JUMPER_T = 0.12                           # FFC thickness
-JUMPER_STOCK_L = 152.0                    # DATASHEET GCT 05-06-A-0152-A-4-06-4-G (or Wurth 687606152002): length
+JUMPER_STOCK_L = 50.0                     # DATASHEET GCT 05-06-A-0050-A-4-06-4-G (or Wurth 687606050002): length
 JUMPER_SLACK = (2.0, 10.0)                # spare length the route may leave (it bows in the free span): min, max
-JUMPER_SPARE = 4.0                        # spare length the fold is sized to leave
-JUMPER_FOLD_Y = 43.4                      # fold's centre line (room y): on the sensor board between the flange and J1
-JUMPER_LAYER = 0.15                       # fold's layer pitch (FFC 0.12)
-JUMPER_SIDE_X, JUMPER_TURN_Y = 21.3, -11.0  # FFC from J2 out to the right, up past the spacer posts
-JUMPER_WAYPOINT = (15.5, 24.8, -14.0)     # then between the rocker and the top-right standoff to the mouth (D-74)
-PASS_TOP_Z = 2.3                          # the pass-through's 45 deg leg ends here (centre), a flat slot goes on out
-PASS_SLOT = (4.5, 1.0, 3.5)               # flat slot out of the 45 deg leg, then a channel out to the board: width, height,
-                                          # length along PASS_DIR
-SB_J1 = (27.0, 48.2)                    # FH12 on the sensor board (room x, y), cable in from -y
+FFC_SLOT_X = 12.7                         # J2, J1 and the slit on this x: between PS1's +5V and GND pins
+FFC_SLOT = (4.4, 0.5, 1.1)                # slit: width, gap round the cable (both sides), side notch the cable goes in by
+FFC_EXIT = 1.0                            # straight out of J2 before the first bend
+FFC_BEND = (3.0, 4.0)                     # bend radii: up out of J2, over onto the sensor board
+FFC_LIP = 0.8                             # least lip outside the slit (cut back below FFC_LIP_Z, no knife edge)
+FFC_LIP_Z = -8.1                          # the lip's lower end
+ARROW = (4.5, 2.2, 0.35, -1.5)            # engraved arrows either side of the slit on the plug's bottom face: length,
+                                          # head width, depth, centre z
+SB_J1 = (FFC_SLOT_X, -50.0)             # FH12 on the sensor board (room x, y), cable in from +y
 
 # ---- microphone position ----
 MIC_SKIN_HOLE_D = 1.6                     # sound hole through the face skin (1.0 closed up on the print, D-61)
@@ -132,13 +126,13 @@ SB_WIN_CLR = 0.3                        # board's window round the seal band
 SB_LAND = 1.5                           # flat land at the flange taper's foot over the board's inner edge (D-68)
 SB_RIB = (1.0, 0.15)                    # crush ribs on the collar's outside: width, interference into the board's
                                           # window edge (press fit for handling, D-68; COUPON coupon_ribs)
-SB_RIBS = (("x", 22.0), ("y", 14.0))    # ribs on each straight side: along x at y +-22, along y at x +-14
+SB_RIBS = (("x", 22.0), ("y", 18.0))    # ribs on each straight side: along x at y +-22, along y at x +-18
 SB_R = 3.4                              # outer corner radius
 SB_KEEP = 8.0                           # copper path from the box opening's edge, along the wall (front layer: plus
                                           # the board's edge, SB_T); mains to 5 V target as on the mains board (D-24)
 SHT_AT = (0.0, -51.3)                     # SHT40 on the sensor board (room x, y), in the face plate's vented bay
 # small parts on the sensor board: centre (room x, y), body w, h, max height
-SB_SMALL = {"C1": ((21.0, 50.6), (1.6, 3.2, 1.8)),     # 22 uF 16 V 1206 at J1 (KEMET C1206C226M4PACTU, 1.8 max: DigiKey, D-95)
+SB_SMALL = {"C1": ((20.0, -54.2), (3.2, 1.6, 1.8)),     # 22 uF 16 V 1206 at J1 (KEMET C1206C226M4PACTU, 1.8 max: DigiKey, D-95)
               "C2": ((2.6, -51.3), (0.5, 1.0, 0.55)),    # SHT40 100 nF 0402 (0.5 +-0.05)
               **{k: ((MIC_AT[0] + dx, MIC_AT[1] + dy), s) for k, ((dx, dy), s) in MIC_PARTS.items()}}
 
@@ -153,8 +147,9 @@ PB_CLR = 0.3                           # pin board to its pocket under the floor
 # snap clips in the pin board pocket (D-91): fingers hang from the pocket floor down past the pin board's edges, a hook under its
 # back face holds it against the pins' push. Clip centres on the pin board's edges: (edge, position along it from the pin board
 # centre). With the two posts the top clip makes a three-point hold in line with the pins; the right one sits between the
-# pins. None on the left edge: the steel piece's recess above it leaves no floor for a relief slot.
-PB_CLIPS = (("top", 0.0), ("right", 2.2))
+# pins; the bottom one, between the posts, holds the printed blank board (switch only, no posts) with the other two
+# (human 2026-10-12, D-127). None on the left edge: the steel piece's recess above it leaves no floor for a relief slot.
+PB_CLIPS = (("top", 0.0), ("right", 2.2), ("bottom", 0.0))
 PB_CLIP = (3.0, 0.8, 0.4, 0.3)         # finger width, thickness, hook depth under the board, relief round the finger
 PB_CLIP_PLAY = 0.1                     # hook's catch face below the pin board's back face
 POSTS = ((9.85, -16.5), (16.65, -16.5))   # spacer posts on the mains board's 5 V area (+5V, GND), level, the pins either side (D-60)
@@ -197,11 +192,12 @@ TAPER_D = round(hypot(_cx, _cy - (POCKET_OUT[1] / 2 - _r)) - _r + 0.6, 1)
 # MSR-2 bay sits just above the top screw (boss + countersink), SHT40 bay as before
 MSR_Y = SCREW_PITCH / 2 + max(BOSS_R + SPLIT_CLR, SCREW_HEAD_D / 2 + 1.0) + MSR[1] / 2 + CLR
 MSR_BACK_Z = SB_T + B2B_STACK         # MSR-2 board back (CN2 side): on CN2 on the sensor board, MSR_SKIN_GAP under the skin
-MSR_CN2_X = MSR_BOARD[0] / 2 - MSR_CN2_IN
+MSR_X = -LUX_POS[0]                       # MSR-2 centre (room x): the grille over its light sensor on the plate's centre line
+MSR_CN2_X = MSR_X + MSR_BOARD[0] / 2 - MSR_CN2_IN
 # the MSR-2's back switches stand deeper than the CN2 stack: notches in the sensor board's top edge
-MSR_SW_CUTS = [(x - MSR2_SW[0] / 2 - MSR2_SW_CLR, x + MSR2_SW[0] / 2 + MSR2_SW_CLR,
+MSR_SW_CUTS = [(MSR_X + x - MSR2_SW[0] / 2 - MSR2_SW_CLR, MSR_X + x + MSR2_SW[0] / 2 + MSR2_SW_CLR,
                 MSR_Y + MSR_BOARD[1] / 2 - MSR2_SW[1] - MSR2_SW_CLR) for x in MSR2_SW_X]   # x0, x1, y0 (room)
-MSR_SPACERS = [(x, MSR_Y + y) for x, y in MSR2_POSTS]   # sensor board's SMT spacers under the MSR-2, below its posts (room)
+MSR_SPACERS = [(MSR_X + x, MSR_Y + y) for x, y in MSR2_POSTS]   # sensor board's SMT spacers under the MSR-2, below its posts (room)
 SKIN_Z = PT - SKIN                        # underside of the face plate's face skin
 # sensor board
 _sb_in = SKIN + SPLIT_CLR + SB_SIDE_CLR                            # face plate's outer edge to the board's edge
@@ -218,54 +214,51 @@ PIN_WORK = PIN_TIP_Z - PB_TOP          # pins' design working height on the pads
 
 
 
-def pass_points():
-    """Pass-through axis (D-74): the straight bore's point in the underside plane (Z_BOT), its top where it meets the
-    flat slot, the slot's end (room x, y, z)."""
-    ux, uy = PASS_DIR
-    e = (*PASS_E, PASS_TOP_Z)
-    m = (e[0] - PASS_RUN * ux, e[1] - PASS_RUN * uy, Z_BOT)
-    f = (e[0] + PASS_SLOT[2] * ux, e[1] + PASS_SLOT[2] * uy, PASS_TOP_Z)
-    return m, e, f
+FFC_BOARD_Z = SB_T + 0.1                  # 5 V cable's centre over the sensor board
+FFC_ARC_END_Y = -(SB_INNER[1] / 2) + 0.15  # the second bend ends just inside the sensor board's window edge
+PLUG_TOP = PLUG[1] / 2
 
 
-def pass_at(z):
-    """Point on the bore's axis at height z."""
-    m, e, _ = pass_points()
-    t = (z - m[2]) / (e[2] - m[2])
-    return tuple(m[i] + t * (e[i] - m[i]) for i in range(3))
+def ffc_curve(n=24):
+    """FFC centre line in the plane x = FFC_SLOT_X as (y, z): straight out of J2 (-y), a bend up (FFC_BEND[0]), one
+    straight run at its own angle through the barrier's bottom wall, a bend over onto the sensor board (FFC_BEND[1]),
+    straight to 1 mm inside J1. Also returns the straight run's ends."""
+    from math import atan2, cos, sin, radians, pi
+    r1, r2 = FFC_BEND
+    e = (MB_Y + J2_POS[1] - FH12_ENTRY, MB_FRONT_Z + 1.0)
+    e1 = (e[0] - FFC_EXIT, e[1])
+    c1 = (e1[0], e1[1] + r1)                             # turned clockwise (y right, z up)
+    c2 = (FFC_ARC_END_Y, FFC_BOARD_Z - r2)               # turned anticlockwise
+
+    def ends(a):
+        hy, hz = -cos(a), sin(a)                         # heading of the straight run
+        t1 = (c1[0] - r1 * hz, c1[1] + r1 * hy)
+        t2 = (c2[0] + r2 * hz, c2[1] - r2 * hy)
+        return t1, t2, (t2[0] - t1[0]) * hz - (t2[1] - t1[1]) * hy
+
+    lo, hi = radians(5), radians(89.9)
+    for _ in range(80):                                  # the run tangent to both bends
+        mid = (lo + hi) / 2
+        lo, hi = (mid, hi) if ends(lo)[2] * ends(mid)[2] > 0 else (lo, mid)
+    t1, t2, _ = ends(lo)
+    a1 = atan2(t1[1] - c1[1], t1[0] - c1[0])
+    a2 = atan2(t2[1] - c2[1], t2[0] - c2[0])
+    a1 = a1 - 2 * pi if a1 > -pi / 2 else a1             # clockwise from the bottom (-90 deg) down to a1
+    arc1 = [(c1[0] + r1 * cos(-pi / 2 + (a1 + pi / 2) * i / n), c1[1] + r1 * sin(-pi / 2 + (a1 + pi / 2) * i / n))
+            for i in range(n + 1)]
+    arc2 = [(c2[0] + r2 * cos(a2 + (pi / 2 - a2) * i / n), c2[1] + r2 * sin(a2 + (pi / 2 - a2) * i / n))
+            for i in range(n + 1)]
+    pts = [e] + arc1 + arc2 + [(SB_J1[1] + FH12_ENTRY - 1.0, FFC_BOARD_Z)]
+    return pts, (t1, t2)
 
 
-def jumper_path():
-    """5 V FFC centre line (room x, y, z): J2 -> out to the right, up past the spacer posts -> between the rocker and the
-    top-right standoff to the mouth -> the straight bore -> the flat slot -> out of the flange onto the sensor board ->
-    the fold -> J1 (D-74)."""
-    return _jumper_pts(jumper_fold())
-
-
-def _jumper_pts(fold):
-    """The route with a fold of length `fold` (four flat layers along -x from J1's x, on the sensor board)."""
-    _, e, f = pass_points()
-    jy = MB_Y + J2_POS[1]
-    ent = (J2_POS[0] + FH12[1] / 2 + 0.3, jy, MB_FRONT_Z + FH12[2] / 2)          # J2 turned: cable out to +x
-    lo = MB_FRONT_Z + FH12[2] + 1.5
-    j1 = (SB_J1[0], SB_J1[1] - FH12[1] / 2 - 0.3, SB_T + 0.6)
-    xr, xl, yb = SB_J1[0], SB_J1[0] - fold, JUMPER_FOLD_Y
-    zs = [SB_T + 0.1 + i * JUMPER_LAYER for i in range(4)]
-    layers = [(xr, yb, zs[0]), (xl, yb, zs[0]), (xl, yb, zs[1]), (xr, yb, zs[1]),
-              (xr, yb, zs[2]), (xl, yb, zs[2]), (xl, yb, zs[3]), (xr, yb, zs[3])]
-    return [ent, (JUMPER_SIDE_X, jy, lo), (JUMPER_SIDE_X, JUMPER_TURN_Y, lo), JUMPER_WAYPOINT, pass_at(Z_BOT - 1.0),
-            e, f] + layers + [j1]
-
-
-def _length(pts):
-    return sum(hypot(*(b[i] - a[i] for i in range(3))) for a, b in zip(pts, pts[1:]))
-
-
-def jumper_fold():
-    """Fold length that leaves JUMPER_SPARE of the stock cable (4 mm of each end in its connector)."""
-    target = JUMPER_STOCK_L - 2 * JUMPER_END[1] - JUMPER_SPARE
-    return (target - _length(_jumper_pts(0.0))) / 4
+def slot_path():
+    """FFC centre line (room x, y, z): ffc_curve() in the plane x = FFC_SLOT_X."""
+    return [(FFC_SLOT_X, y, z) for y, z in ffc_curve()[0]]
 
 
 def jumper_length():
-    return _length(jumper_path())
+    """FFC length the route needs: J2's cable face to J1's, plus JUMPER_END[1] into each connector."""
+    from math import dist
+    pts = ffc_curve()[0]
+    return sum(dist(a, b) for a, b in zip(pts, pts[1:])) - 1.0 + 2 * JUMPER_END[1]

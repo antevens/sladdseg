@@ -1,14 +1,14 @@
 """EU TRIM PLATE (D-30, D-56): a passive cover: face, remote pocket walls (standing on the barrier), finger scoops both sides (D-73),
 MSR-2 bay (radar skin, vents over the CO2 sensor, posts onto the MSR-2's board) above, SHT40 bay below, the microphone's sound hole and column. No electronics and no contacts:
 the sensors sit on the sensor board (sensor_board_eu.py). Four snap fingers at the corners catch grooves in the carrier's
-windows (D-70, D-77). Plain plate (D-109): 80 x 80, centred on the box, pocket walls, scoops and snap fingers only.
+windows (D-70, D-77). Plain plate (D-109, D-146): square, as wide as the full plate, centred on the box, pocket walls, scoops and snap fingers only.
 Low-voltage side only; any filament (PETG/ASA). Print face-down, no supports.
 Run:  python face_plate_eu.py  -> ../../../build/eu/face_plate_na.step / .stl
 """
 from math import sqrt
 from build123d import Axis, Box, Cylinder, Ellipse, Plane, Pos, chamfer, loft
 from params_eu import *
-from common import rr, stadium, slab, frame, sound_column
+from common import rr, stadium, slab, frame, sound_column, mouth_chamfer
 import msr2
 
 
@@ -76,7 +76,7 @@ def mic_tube():
 
 
 def build(plain=False):
-    """Face plate; plain: the 80 x 80 plate without the sensor bays (D-109)."""
+    """Face plate; plain: the square plate without the sensor bays (D-109, D-146)."""
     pw, ph, c = plate(plain)
     pc = Pos(c[0], c[1], 0)
     shell = pc * slab(rr(pw, ph, PR), 0, PT)
@@ -88,26 +88,28 @@ def build(plain=False):
         body += scoop_block(sx, plain)
     if plain:
         body -= slab(stadium(*POCKET_IN), CAP_T, PT + 1)                           # remote pocket
+        body -= mouth_chamfer(*POCKET_IN, PT, POCKET_CHAMFER)                     # 45 deg round its mouth (D-139)
         for sx in (-1, 1):
             body -= scoop(sx)
         return body + snaps()
     z0 = SB_TOP + SPLIT_CLR                                                          # bay frames down to the sensor board
-    body += Pos(0, MSR_Y, 0) * frame(MSR_FRAME[0], MSR_FRAME[1], MSR_FRAME[2], MSR_BAY_R, z0, PT)
+    body += Pos(MSR_X, MSR_Y, 0) * frame(MSR_FRAME[0], MSR_FRAME[1], MSR_FRAME[2], MSR_BAY_R, z0, PT)
     sb = (SHT[0] + 2 * SHT_BAY_CLR, SHT[1] + 2 * SHT_BAY_CLR)
     body += Pos(0, SHT_Y, 0) * frame(*sb, BAY_WALL, SHT_BAY_R, z0, PT)
     body += mic_tube()
     # ---------------- cuts ----------------
     body -= slab(stadium(*POCKET_IN), CAP_T, PT + 1)                               # remote pocket
+    body -= mouth_chamfer(*POCKET_IN, PT, POCKET_CHAMFER)                         # 45 deg round its mouth (D-139)
     for sx in (-1, 1):                                                               # finger scoops
         body -= scoop(sx)
     body += snaps()
-    body -= Pos(0, MSR_Y, 0) * slab(rr(MSR_FRAME[0], MSR_FRAME[1], MSR_BAY_R), -0.01, PT - RADAR_WALL)
-    body += msr2.posts(0, MSR_Y, MSR_BACK_Z, PT - RADAR_WALL)        # in the hollowed bay: clamp the MSR-2's board (D-67)
-    body -= msr2.scd_vents(0, MSR_Y, PT, RADAR_WALL)      # grille: CO2 sensor and light sensor (D-65, D-69)
+    body -= Pos(MSR_X, MSR_Y, 0) * slab(rr(MSR_FRAME[0], MSR_FRAME[1], MSR_BAY_R), -0.01, PT - RADAR_WALL)
+    body += msr2.posts(MSR_X, MSR_Y, MSR_BACK_Z, PT - RADAR_WALL)        # in the hollowed bay: clamp the MSR-2's board (D-67)
+    body -= msr2.scd_vents(MSR_X, MSR_Y, PT, RADAR_WALL)      # grille: CO2 sensor and light sensor (D-65, D-69)
     zt, zb, h = VENT_Z
     n, pitch, dx, w, d = MSR_VENTS
     for i in range(n):                                                               # MSR-2 vents, top edge
-        body -= Pos((i - (n - 1) / 2) * pitch + dx, PL_Y[1] - SKIN + d / 2 - 1, zt) * Box(w, d, h)
+        body -= Pos(MSR_X + (i - (n - 1) / 2) * pitch + dx, PL_Y[1] - SKIN + d / 2 - 1, zt) * Box(w, d, h)
     body -= Pos(0, SHT_Y, 0) * slab(rr(*sb, SHT_BAY_R), -0.01, PT - SKIN)
     # microphone sound hole over the column
     hd, web, rd = MIC_HOLE                               # sound hole through a thin web, recess from the face (D-52)

@@ -181,11 +181,10 @@ PB_PARTS = {
     "P4": dict(label="Harwin P70-2200045 GND", sym="Conn_01x01", fp=FP_PIN, value="P70-2200045 GND", nets={"1": "GND"},
                pos=(*BC_FINGERS[1], 0), side="F", mfr="Harwin", mpn="P70-2200045",
                desc="Spring pin with peg, 2 A: GND onto the back cover's pad through the barrier", ds=PIN_DS),
-    "MH1": dict(sym="MountingHole", fp=FP_MH, value="M2", nets={}, pos=(*PB_MOUNT[0], 0), side="F",
-                mfr="-", mpn="-", desc="M2 to the barrier boss", ds="", in_bom=False),
-    "MH2": dict(sym="MountingHole", fp=FP_MH, value="M2", nets={}, pos=(*PB_MOUNT[1], 0), side="F",
-                mfr="-", mpn="-", desc="M2 to the barrier boss", ds="", in_bom=False),
 }
+PB_PARTS.update({f"MH{i + 1}": dict(sym="MountingHole", fp=FP_MH, value="M2", nets={}, pos=(*xy, 0), side="F", mfr="-",
+                                    mpn="-", desc="M2 to the barrier boss", ds="", in_bom=False)
+                 for i, xy in enumerate(PB_MOUNT)})        # the last two on the barrier's ridge (D-129)
 PB_BOSS_HOLES = [(xy, MB_BOSS_D / 2 + MB_BOSS_CLR) for xy in MB_BOSS if xy[1] < PB_CUT_Y]   # long bosses passing
 
 NETCLASS = {"Mains_L": ("L_IN", "L_SW", "L_F"), "Mains_N": ("N_IN", "N_SW"), "SELV": ("+5V", "GND")}

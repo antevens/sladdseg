@@ -294,11 +294,11 @@ def build_pin_board(header):
     p1, p2 = xy("P2"), xy("P1")                         # +5V pin (P2), GND pin (P1)
     b5, bg = xy("P3"), xy("P4")                         # battery-free pins: +5V (P3), GND (P4)
     bd.track("+5V", w, [s5, (s5[0], b5[1]), b5, (b5[0], c_p[1]), c_p], P.F_Cu)
-    xg = bg[0] - 3.2
-    bd.track("GND", w, [bg, (xg, bg[1]), (xg, sg[1]), sg], P.F_Cu)
+    bd.track("GND", w, [bg, (bg[0], sg[1]), sg], P.F_Cu)                          # down from the GND pin, in under the socket
     bd.track("+5V", w, [c_p, (c_p[0] + 1.0, p1[1]), p1], P.F_Cu)
     bd.track("GND", w, [c_g, (p2[0] - 1.5, p2[1]), p2], P.F_Cu)
-    bd.track("GND", w, [sg, (sg[0] + 3.0, sg[1]), (sg[0] + 3.0, p2[1] + 2.0), (p2[0] - 2.0, p2[1] + 2.0), p2], P.B_Cu)
+    xb = bg[0] + 2.5                                         # back: right of the battery-free pins, up to the sensor GND pin
+    bd.track("GND", w, [sg, (xb, sg[1]), (xb, p2[1] + 2.0), (p2[0] - 2.0, p2[1] + 2.0), p2], P.B_Cu)
     bd.text(f"EU PIN {ep.REV}", -12.0, -17.0, P.F_SilkS, 0.9)
     bd.branding(*ep.BRAND["eu_pin_board"], ep.URL)
     bd.save()

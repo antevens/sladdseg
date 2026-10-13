@@ -5,7 +5,7 @@ import pyvista as pv
 from build123d import export_stl
 
 R = Path(__file__).resolve().parents[2] / "docs" / "renders"
-COL = {"face_plate": "#f2f1ee", "barrier": "#8d949b", "remote": "#fbfaf6", "rocker": "#b23a32",
+COL = {"blank": "#8d949b", "face_plate": "#f2f1ee", "barrier": "#8d949b", "remote": "#fbfaf6", "rocker": "#b23a32",
        "board": "#1f6b3a", "posts": "#d9822b", "flex": "#c98a1c", "tongue": "#c98a1c", "plug": "#222222", "sht45": "#5b2a86",
        "fingers": "#e3c565", "target": "#2f7a46", "jumper": "#d99a2b", "irm": "#2b2b2b", "wago": "#c9ccd1", "small": "#c8a03a",
        "msr": "#3a3a3a", "mic": "#2c5d8f", "floor": "#7d8a96", "floor_flex": "#d99a2b", "floor_pads": "#e3c565",

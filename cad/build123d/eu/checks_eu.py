@@ -201,7 +201,7 @@ def sensors(cap, tr):
     d = cp["spacers"].distance_to(cp["msr"]) + cp["spacers"].distance_to(cp["sensor_board"])
     check(d < 0.01, "spacers between the sensor board and the MSR-2's board")
     import msr2
-    mb = msr2.placed_parts(0, MSR_Y, MSR_BACK_Z)["board"]
+    mb = msr2.placed_parts(MSR_X, MSR_Y, MSR_BACK_Z)["board"]
     for i, (x, y) in enumerate(MSR_SPACERS):
         disc = Pos(x, y, MSR_BACK_Z + 0.05) * Cylinder(MSR_NUT[0] / 2 - 0.05, 0.1)
         r = disc & mb
@@ -432,15 +432,18 @@ def test_socket(cap):
     base.overhangs("test socket plate", pl)
 
 
-def barrier(cap, plain=False, switch=False):
-    print("barrier" + (" (switch-only barrier, D-122)" if switch else " (plain barrier, D-109)" if plain else ""))
+def barrier(cap, edition="full"):
+    print("barrier" + ("" if edition == "full" else f" ({edition} edition)"))
     room = Pos(PC[0], PC[1], 0) * slab(rr(PW + 20, PH + 20, 5), 0, PT + 10)
     box = Pos(0, 0, -BOX_D / 2) * Cylinder(BOX_R, BOX_D)
     for x, y in DOMES:
         box -= Pos(x, y, -BOX_D / 2) * Cylinder(DOME_D / 2, BOX_D + 0.01)
     plugs = Pos(0, SW_Y, 0) * slab(Rectangle(*SW_CUT), PANEL_BOT_Z - 0.2, PANEL_TOP_Z + 0.2)
-    if not switch:
-        plugs += barrier_eu.pin_holes(plain)
+    plugs += barrier_eu.pin_holes()                         # the pins' barrels (switch only: the blank board's pegs, D-127)
+    if edition == "battery-free":
+        print("       NOTE: no sensor pins P1 / P2 in this edition; their two holes stay open (human decision, D-128: over "
+              "the pin board's corner, outside the ridge, under the face plate), plugged for this test. Mains air still reaches "
+              "them round the pin board's round edge and through its holes")
     air = (room + box) - cap - plugs
     mains = [s for s in air.solids() if s.is_inside(Vector(0, 0, -BOX_D + 1))]
     check(len(mains) == 1, "found the mains air volume")
@@ -449,7 +452,7 @@ def barrier(cap, plain=False, switch=False):
                     ("remote pocket", (0, -10, SEAT_Z + 1)),
                     ("switch cup", (0, SW_Y, PANEL_TOP_Z + 1)),
                     ("face plate hollow (low-voltage)", (-(CAP_R + 0.2), MSR_Y - 15, 5)),
-                    ("MSR-2 bay", (0, MSR_Y, 5))]:
+                    ("MSR-2 bay", (MSR_X, MSR_Y, 5))]:
         check(not m.is_inside(Vector(*p)), f"mains air does not reach the {name}")
     check(m.bounding_box().max.Z <= 1e-3, f"mains air stays behind the wall plane (max z {m.bounding_box().max.Z:.2f})")
 
@@ -480,20 +483,59 @@ def board_checks():
               f"(closest {pin[1]}, >= {S1_WAGO_PIN_GAP})")
 
 
+def ridge_checks():
+    """The ridge under the barrier that the pin board's front rests on, tying its bosses together (D-128, D-129)."""
+    print("ridge under the pin board (D-129)")
+    rg, pb, b = barrier_eu.ridge(), boards_eu.pin_board(), boards_eu.parts()
+    rb = rg.bounding_box()
+    check(rg.is_valid and len(rg.solids()) == 1 and abs(rb.min.Z - PB_FRONT) < 1e-3 and rb.max.Z >= -1e-3,
+          f"ridge one piece, from the barrier's underside down onto the board's front (z {PB_FRONT:.2f}), "
+          f"{BARRIER_MIN} wide, {rg.volume:.0f} mm3")
+    r = rg & pb
+    check(r is None or r.volume < 1e-3, "ridge stands on the board's front face, not into it")
+    bosses = None
+    for x, y in PB_MOUNT:
+        c = Pos(x, y, PB_FRONT / 2) * Cylinder(PB_BOSS_D / 2 + 0.01, -PB_FRONT + 1)
+        bosses = c if bosses is None else bosses + c
+    out = rg - bosses - barrier_eu.extrude_up(pb)
+    check(out is None or out.volume < 1e-3, f"ridge inside the board's outline ({PB_RIDGE[0]} in from its edges; the "
+                                            f"bosses it joins may stand over the edge)")
+    far = [round(rg.distance_to(Pos(x, y, PB_FRONT / 2) * Cylinder(PB_BOSS_D / 2, -PB_FRONT)), 2) for x, y in PB_MOUNT]
+    check(max(far) < 1e-3, f"ridge joins all {len(PB_MOUNT)} of the board's bosses ({far})")
+    for k in ("pins", "bf_pins", "front", "socket", "header", "mains_board", "mains_front", "wago", "psu"):
+        d = rg.distance_to(b[k])
+        check(d >= PB_RIDGE[1] - 0.01 or k in ("socket", "header", "mains_board", "mains_front", "wago", "psu") and d > 0.0,
+              f"ridge clear of the {k} ({d:.2f} mm)")
+    import ridges_eu
+    br, kr = ridges_eu.barrier_ridge(), ridges_eu.blank_ridge()
+    gap = br.distance(kr)
+    pieces = len(getattr(kr, "geoms", [kr]))
+    check(abs(gap - BLANK_GAP) < 0.01, f"blank board's ridge beside the barrier's, {gap:.2f} mm from it, in {pieces} pieces "
+                                       f"({kr.area:.0f} mm2; broken by the steel piece's cup, the long boss and the bosses)")
+    for name, g in (("barrier's", br), ("blank board's", kr)):
+        rough = g.symmetric_difference(g.buffer(RIDGE_ROUND - 0.05).buffer(-(RIDGE_ROUND - 0.05))).area + \
+            g.symmetric_difference(g.buffer(-(RIDGE_ROUND - 0.05)).buffer(RIDGE_ROUND - 0.05)).area
+        check(rough < 0.05 * g.length, f"{name} ridge rounded in plan: no corner sharper than r {RIDGE_ROUND - 0.05:.2f} "
+                                       f"({rough:.3f} mm2 off)")
+    d = rg.distance_to(boards_eu.blank_board() - pb)
+    check(d >= 0.1, f"barrier's ridge clear of the blank board's pegs and ridge ({d:.2f} mm)")
+
+
 def plain_checks():
-    """Plain plate (D-109): the barrier with the battery-free pins' holes only, the carrier without the sensor board, the
-    80 x 80 face plate; the mains board and the pin board as the full plate, without the sensor pins P1 / P2."""
+    """Battery-free plate (D-109): the one barrier (D-127), the carrier without the sensor board, the square face plate (D-146);
+    the mains board and the pin board as the full plate, without the sensor pins P1 / P2."""
     print("plain plate (rocker and battery-free remote, D-109)")
     from math import cos, radians, sin
     import face_plate_eu
-    cap, tr, car = barrier_eu.build(plain=True), face_plate_eu.build(plain=True), sensor_board_eu.carrier(plain=True)
+    cap, tr, car = barrier_eu.build(), face_plate_eu.build(plain=True), sensor_board_eu.carrier(plain=True)
     for name, q in (("barrier", cap), ("face plate", tr), ("carrier", car)):
         check(q.is_valid and len(q.solids()) == 1, f"plain {name}: one valid solid ({q.volume / 1000:.1f} cm3)")
     bb = tr.bounding_box()
     check(abs(bb.size.X - PLAIN_PW) < 0.01 and abs(bb.size.Y - PLAIN_PH) < 0.01 and abs(bb.center().X) < 0.01
           and abs(bb.center().Y) < 0.01, f"plain face plate {bb.size.X:.1f} x {bb.size.Y:.1f} mm, centred on the box")
-    room = PLAIN_PW / 2 - SKIN - (CAP_R + CARRIER_CAP_CLR)
-    check(room >= 0.0, f"barrier disc and carrier bore inside the plain plate's walls ({room:.2f} mm to spare at the sides)")
+    room = min(PLAIN_PW, PLAIN_PH) / 2 - SKIN - SB_EDGE - (CAP_R + CARRIER_CAP_CLR)
+    check(room >= CARRIER_SIDE - 1e-6, f"plain carrier {room:.2f} mm outside its bore on all four sides, full height "
+                                       f"(>= {CARRIER_SIDE}, D-146)")
     parts = boards_eu.parts()
     rem = boards_eu.remote()
     pairs = [("barrier", cap, "face plate", tr), ("carrier", car, "face plate", tr), ("carrier", car, "barrier", cap),
@@ -528,29 +570,41 @@ def plain_checks():
     probe = Pos(0, 0, (LIP_T + SB_TOP + 1) / 2) * Cylinder(CAP_R, SB_TOP + 1 - LIP_T)
     r = car & probe
     check(r is None or r.volume < 0.001, "plain carrier clear of the barrier disc above the lip: the barrier goes in from the front")
-    barrier(cap, plain=True)
-    base.overhangs("plain barrier", Rot(180, 0, 0) * cap, bridges=((-MAGNET_Z[0], MAG_BRIDGE),))
+    barrier(cap, "battery-free")
     base.overhangs("plain face plate", Rot(180, 0, 0) * tr, limit=3.5)
     base.overhangs("plain carrier (bottom down)", car)
 
 
 def switch_checks():
-    """Switch-only plate (D-122): the barrier without pin holes or pin board bosses; the mains board carries only the rocker
-    switch and the terminal blocks; the plain carrier and face plate."""
+    """Switch-only plate (D-122, D-127): the one barrier with the printed blank board in the pin board's place, its pegs in
+    the four pin holes, its ledge closing the box under the barrier; the mains board carries only the rocker switch and
+    the terminal blocks; the plain carrier and face plate."""
     print("switch-only plate (rocker switch and terminal blocks, D-122)")
     import face_plate_eu
-    cap, tr, car = barrier_eu.build(switch=True), face_plate_eu.build(plain=True), sensor_board_eu.carrier(plain=True)
-    check(cap.is_valid and len(cap.solids()) == 1, f"switch-only barrier: one valid solid ({cap.volume / 1000:.1f} cm3)")
+    cap, tr, car = barrier_eu.build(), face_plate_eu.build(plain=True), sensor_board_eu.carrier(plain=True)
+    bl = boards_eu.blank_board()
+    check(bl.is_valid and len(bl.solids()) == 1, f"blank board: one valid solid ({bl.volume:.0f} mm3)")
     parts = boards_eu.parts()
     for an, a in (("face plate", tr), ("carrier", car), ("remote", boards_eu.remote()), ("mains board", parts["mains_board"]),
-                  ("terminal blocks", parts["wago"])):
+                  ("terminal blocks", parts["wago"]), ("blank board", bl)):
         r = a & cap
         check(r is None or r.volume < 0.05, f"switch-only: {an} clears the barrier ({r.volume if r else 0.0:.3f} mm3)")
-    sol = barrier_eu.pin_holes(True) & cap
-    check(sol is not None and sol.volume > 0.99 * (barrier_eu.pin_holes(True) & Pos(0, 0, CAP_T / 2) * Cylinder(CAP_R, CAP_T)).volume,
-          "switch-only barrier: solid where the battery-free pins pass")
-    barrier(cap, plain=True, switch=True)
-    base.overhangs("switch-only barrier", Rot(180, 0, 0) * cap, bridges=((-MAGNET_Z[0], MAG_BRIDGE),))
+    for an, a in (("mains board", parts["mains_board"]), ("terminal blocks", parts["wago"]), ("rocker", parts["switch"])):
+        r = a & bl
+        check(r is None or r.volume < 0.05, f"switch-only: blank board clears the {an} ({r.volume if r else 0.0:.3f} mm3)")
+    open_ = []
+    for x, y in tuple(PINS) + tuple(BC_FINGERS):            # in the barrier's floor
+        probe = Pos(x, y, CAP_T / 2) * Cylinder(0.5, CAP_T - 2 * BLANK_CLR - 0.1)
+        r = probe & bl
+        if r is None or r.volume < 0.99 * probe.volume:
+            open_.append((x, y))
+    check(not open_, f"blank board's pegs fill the four pin holes up to {BLANK_CLR} under the barrier's face"
+                     + (f" (open at {open_})" if open_ else ""))
+    d = (bl - boards_eu.pin_board()).distance_to(cap)      # the plate itself sits on the bosses, as the pin board does
+    check(d >= BLANK_CLR - 0.01, f"blank board's pegs and ridge {d:.2f} mm clear of the barrier at the closest (pegs "
+                                 f"{BLANK_CLR} round, ridge {BLANK_LEDGE[1]} under it)")
+    barrier(cap + bl, "switch-only")
+    base.overhangs("blank board (pegs and ledge up)", bl)
 
 
 def main():
@@ -561,8 +615,8 @@ def main():
     sensors(cap, tr)
     bf_checks(cap, tr)
     separation(tr)
-    base.scd_vent_checks(tr, MSR_Y, MSR_BACK_Z, PT)
-    base.msr_posts(tr, MSR_Y, MSR_BACK_Z, PT)
+    base.scd_vent_checks(tr, MSR_Y, MSR_BACK_Z, PT, MSR_X)
+    base.msr_posts(tr, MSR_Y, MSR_BACK_Z, PT, MSR_X)
     snaps(cap, tr)
     finger_scoops(tr)
     carrier_clamp(cap)
@@ -573,6 +627,7 @@ def main():
     base.overhangs("face plate", Rot(180, 0, 0) * tr, limit=3.5)
     cp = sensor_board_eu.parts()
     base.overhangs("sensor board carrier (bottom down)", cp["carrier"])
+    ridge_checks()
     plain_checks()
     switch_checks()
     print("FAILED: " + "; ".join(base.FAILS) if base.FAILS else "all checks passed")

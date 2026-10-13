@@ -2,8 +2,8 @@
 # System packages for the whole toolchain on Ubuntu 24.04 (the dev container base).
 #   python3-venv            CAD venv (make setup)
 #   kicad 9 (PPA)           PCB generation, ERC/DRC, fab outputs (make pcb)
-#   xvfb, webkit2gtk, GL    run the OrcaSlicer AppImage headless (make print)
-# OrcaSlicer itself is downloaded and checksum-verified by `make slicer`.
+#   xvfb, webkit2gtk, GL    run the ElegooSlicer AppImage headless (make print)
+# ElegooSlicer itself is downloaded and checksum-verified by `make slicer`.
 set -euo pipefail
 SUDO=$([ "$(id -u)" = 0 ] && echo "" || echo sudo)
 $SUDO apt-get update -qq

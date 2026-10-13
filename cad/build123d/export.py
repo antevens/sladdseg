@@ -11,8 +11,7 @@ OUT = Path(__file__).resolve().parents[2] / "build"
 PRINT_ORIENT = {
     "na_barrier": lambda p: p,                          # floor-down: as modelled; supports under the seal lip and the pin board pocket (D-68)
     "na_face_plate": lambda p: Rot(180, 0, 0) * p,           # face-down
-    "na_plain_barrier": lambda p: p,                    # as the barrier (D-109)
-    "na_switch_barrier": lambda p: p,                   # as the barrier (D-122)
+    "na_blank_board": lambda p: p,                  # pegs up (D-127)
     "na_plain_face_plate": lambda p: Rot(180, 0, 0) * p,     # face-down (D-109)
     "na_coupon_pocket_well": lambda p: p,
     "na_coupon_msr": lambda p: Rot(180, 0, 0) * p,
@@ -22,8 +21,7 @@ PRINT_ORIENT = {
     "eu_barrier": lambda p: Rot(180, 0, 0) * p,         # face-down (barrier, D-30)
     "eu_face_plate": lambda p: Rot(180, 0, 0) * p,        # face-down
     "eu_carrier": lambda p: p,                      # bottom down: the rim up, the lip under the barrier on the bed (D-71)
-    "eu_plain_barrier": lambda p: Rot(180, 0, 0) * p,   # as the barrier (D-109)
-    "eu_switch_barrier": lambda p: Rot(180, 0, 0) * p,  # as the barrier (D-122)
+    "eu_blank_board": lambda p: p,                  # pegs and ledge up (D-127)
     "eu_plain_face_plate": lambda p: Rot(180, 0, 0) * p,  # face-down (D-109)
     "eu_plain_carrier": lambda p: p,                # as the carrier (D-109)
     "eu_testbox": lambda p: p,                      # floor down, open side up (D-76)
@@ -50,12 +48,11 @@ def mesh_of(part, tol=0.02):
 def parts():
     import sys
     sys.path[1:1] = [str(Path(__file__).resolve().parent / v) for v in ("na", "eu")]
-    import barrier_na, face_plate_na, coupons_na, backcover, plate_jig
-    import barrier_eu, face_plate_eu, sensor_board_eu, testbox_eu
+    import barrier_na, face_plate_na, sensor_board_na, coupons_na, backcover, plate_jig
+    import barrier_eu, face_plate_eu, sensor_board_eu, boards_eu, testbox_eu
     ins, tr = barrier_na.build(), face_plate_na.build()
     return {"na_barrier": ins, "na_face_plate": tr,
-            "na_plain_barrier": barrier_na.build(plain=True), "na_plain_face_plate": face_plate_na.build(plain=True),
-            "na_switch_barrier": barrier_na.build(switch=True),
+            "na_blank_board": sensor_board_na.blank_board(), "na_plain_face_plate": face_plate_na.build(plain=True),
             "na_coupon_pocket_well": coupons_na.pocket_well(ins),
             "na_coupon_msr": coupons_na.msr(tr),
             "na_coupon_rocker": coupons_na.rocker_ladder(),
@@ -63,8 +60,7 @@ def parts():
             "back_cover": backcover.cover(),
             "eu_barrier": barrier_eu.build(), "eu_face_plate": face_plate_eu.build(),
             "eu_carrier": sensor_board_eu.carrier(),
-            "eu_plain_barrier": barrier_eu.build(plain=True), "eu_plain_face_plate": face_plate_eu.build(plain=True),
-            "eu_switch_barrier": barrier_eu.build(switch=True),
+            "eu_blank_board": boards_eu.blank_board(), "eu_plain_face_plate": face_plate_eu.build(plain=True),
             "eu_plain_carrier": sensor_board_eu.carrier(plain=True),
             "eu_testbox": testbox_eu.box(), "eu_testbox_plate": testbox_eu.plate(),
             "plate_jig_saw": plate_jig.saw_guide()}
@@ -74,7 +70,7 @@ def main():
     pdir = OUT / "print"
     pdir.mkdir(parents=True, exist_ok=True)
     for name, p in parts().items():
-        if name in ("na_barrier", "na_face_plate", "na_plain_barrier", "na_plain_face_plate", "na_switch_barrier"):  # model frame, for the assembly/renders
+        if name in ("na_barrier", "na_face_plate", "na_plain_face_plate"):  # model frame, for the assembly/renders
             export_step(p, str(OUT / f"{name}.step"))
             export_stl(p, str(OUT / f"{name}.stl"), tolerance=0.02, angular_tolerance=0.1)
         q = on_bed(PRINT_ORIENT[name](p))

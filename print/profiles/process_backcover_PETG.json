@@ -1,6 +1,6 @@
 {
   "type": "process",
-  "name": "smart-wallplate backcover_PETG",
+  "name": "sladdseg backcover_PETG",
   "inherits": "0.20mm Strength @Elegoo CC2 0.4 nozzle",
   "from": "User",
   "instantiation": "true",

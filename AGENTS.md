@@ -73,7 +73,7 @@ pcb/                 all boards (README: overview)
   tools/             helpers every generator uses (kigen, fplib, common_parts, gen_3d), render_bare, order tools
   order/             DigiKey / Mouser order lists for test plates (`make order`, tools/order_bom.py; stock and
                      upload: tools/distributors.py)
-print/               OrcaSlicer projects (*.3mf) for the CC2, slice.py, profiles/
+print/               ElegooSlicer projects (*.3mf) for the CC2, slice.py, profiles/
 reference/v0.1-openscad/  FROZEN first pass (OpenSCAD). Do not edit.
 build/               generated outputs (git-ignored): build/na/, build/eu/, build/print/
 scratch/             git-ignored: 3d/ vendor STEP models (read by pcb/tools/gen_3d.py),
@@ -83,12 +83,12 @@ scratch/             git-ignored: 3d/ vendor STEP models (read by pcb/tools/gen_
 ## Commands
 
 ```bash
-make system-deps # apt: KiCad 9, venv, headless OrcaSlicer libs (Ubuntu 24.04)
-make setup       # venv + requirements + pinned OrcaSlicer in .tools/ (once)
+make system-deps # apt: KiCad 9, venv, headless slicer libs (Ubuntu 24.04)
+make setup       # venv + requirements + pinned ElegooSlicer in .tools/ (once)
 make pcb         # every board, NA, EU and shared: ERC + DRC, fab packs
 make cad         # STEP/STL into build/, print STLs into build/print/
 make check       # shared parts, NA and EU: geometry, barrier, board fit, printability, render inventory - must pass
-make print       # OrcaSlicer projects + G-code (SLICER=... overrides the pin)
+make print       # ElegooSlicer projects + G-code (SLICER=... overrides the pin)
 make renders     # docs/renders/*.png: every group whose sources changed (NA, EU, shared parts, boards)
 make check-renders  # no render older than its sources, every render used by a doc - must pass
 make na          # NA variant: CAD to build/na, NA checks, NA renders
@@ -250,11 +250,14 @@ Do not violate these; ask the human if a task seems to require it.
    board, neutral on the other, PE copper along both sides.
 2. **Barrier continuity (D-80).** NA: the barrier's pocket shell + switch
    well + collar separate the mains volume (box) from the low-voltage volume
-   (plate hollow, remote pocket). No openings may be added except the single 5 V
-   FFC bore (D-74) and the two spring-pin holes in the pocket floor, each filled
-   by its pin's barrel (D-50, human decision 2026-10-10). EU: the barrier is the whole
-   barrier; its only openings are the four spring-pin holes, each filled by its
-   pin's barrel (D-54, D-59), and the two device-screw holes, each filled by its
+   (plate hollow, remote pocket). No openings may be added except the 5 V FFC's
+   slit in the bottom wall (D-134) and the two spring-pin holes in the pocket floor, each filled
+   by its pin's barrel (D-50, human decision 2026-10-10; switch only: by the printed blank board's pegs, D-127; in
+   battery-free and switch only the slit stays open, no FFC: human decision 2026-10-12, D-135). EU: the
+   cap over the box is the whole barrier; its only openings are the four spring-pin holes, each filled by its
+   pin's barrel (D-54, D-59; switch only: by the blank board's pegs, D-127; in battery-free the two sensor pins' holes stay open over the pin board's corner,
+   under the face plate: human decision 2026-10-12, D-128), and the two device-screw
+   holes, each filled by its
    screw. On both, the rocker's panel cutout is closed by the rocker body.
    A slot through a barrier part entirely above the wall plane, between two
    low-voltage spaces, is not an opening in the barrier; `make check` /
@@ -285,7 +288,8 @@ The decision log in `docs/DESIGN.md` (D-50..D-79 for v0.4, D-80..D-119 for v0.5,
 NA: barrier (the insert, PC-FR) and passive face plate; mains board (rocker, WAGO block, PSU,
 J2) on four nylon standoffs (D-57), ERC/DRC clean, PCBWay pack in `pcb/na/fab/na_mains_board/`; sensor board on the
 barrier's collar (crush ribs, D-68) with the MSR-2 on CN2, the SHT40 and the microphone + ADAU7002 (D-83); 5 V over
-a stock FFC through one straight bore (D-74); battery-free remote on two Harwin P70 spring pins
+a 50 mm stock FFC from J2 to J1 at the sensor board's bottom, in one plane through a slit in the barrier's bottom wall
+(D-134); battery-free remote on two Harwin P70 spring pins
 from a pin board on two spacer posts (D-59, D-60, D-79).
 
 EU: barrier (the cap, PC-FR), mains board and pin board (PCBWay packs in `pcb/eu/fab/`); sensor board on a
@@ -295,12 +299,14 @@ snapped into the carrier (D-77); steel piece in the barrier's pocket floor (D-72
 
 Both variants: replacement back cover with regulator, pads and spring fingers (D-35, D-41, D-79); KiCad for
 the sensor boards and the cover flex (ERC/DRC clean; fab packs for the pin boards and the mains boards); the
-microphone on both sensor boards, no carrier (D-83); OrcaSlicer projects for every printed part (`print/`); what holds each
+microphone on both sensor boards, no carrier (D-83); ElegooSlicer projects for every printed part (`print/`); what holds each
 part in `docs/ASSEMBLY.md`.
 
-Editions (D-109, D-122): full (above), battery-free (rocker and battery-free remote) and switch only, NA and EU: plain barriers, plain
-face plates (NA 69.85 × 114.3 mm, EU 80 × 80 mm), EU plain carrier; same boards less the sensor parts; checks, print
-jobs and order lists for both.
+Editions (D-109, D-122): full (above), battery-free (rocker and battery-free remote) and switch only, NA and EU. One
+barrier per variant for every edition (D-127); in switch only a printed blank board stands in for the pin board, its
+pegs in the pin holes. Plain face plates (NA 69.85 × 114.3 mm, EU 84.6 × 84.6 mm, D-146), EU plain carrier; same boards less the
+sensor parts; checks, print jobs and order lists for both. In NA battery-free and switch only the cable slit
+stays open (D-135). EU battery-free leaves the sensor pins' two holes open (D-128).
 
 Not done: caliper readings for the `MEASURE` and `ESTIMATE` values (several measured
 by the human 2026-10-09, see `docs/MEASUREMENTS.md`), test prints (under way),
@@ -330,7 +336,7 @@ the cover flex's fab files (`COVER_CONFIRMED`), PC-FR datasheet (`V0_RATED_T`), 
    jumbo-plate option; the EU stack in a real 47 mm box (the printed test socket, D-76,
    has markers at 40, 43, 60 and 63 mm). If the face plates are ever injection moulded: a front edge rounded
    into the window / remote cutout (human, 2026-10-12; FDM face-down cannot print a round tangent to the bed).
-8. Plain plates (D-109, modelled): test prints of the plain barrier / face plate (NA) and the plain barrier, carrier and
+8. Plain plates (D-109, modelled): test prints of the plain face plate (NA) and the plain carrier and
    face plate (EU); the NA plate's 1.11 mm side wall beside the barrier's flange on the print.
 
 ## Open questions for the human

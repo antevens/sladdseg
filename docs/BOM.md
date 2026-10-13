@@ -15,7 +15,7 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | P1, P2 | SMT steel spacer M2, 7 mm, tin | Würth WA-SMSI 9774070243R | D-50: spacer posts on the 5 V area (+5V, GND), reflowed on a Ø5.3 pad over a Ø3.0 unplated hole. |
 | — | Brass spacer stud M2 male-female, 10 mm, 4 mm hex ×2 | Würth WA-SBRIE 971100244 | D-50: screwed into P1 / P2 (5 mm male thread, ends inside the 7 mm spacer); carry the pin board and its 5 V. |
 | — | Heatshrink 6 mm 2:1, 15 mm ×2 | any | D-50: over each spacer post. |
-| — | FFC 0.5 mm, 6 contacts, 152 mm, Type 1 | GCT 05-06-A-0152-A-4-06-4-G (or Würth WR-FFC 687606152002; D-98) | D-50, D-74: mains board J2 → straight bore → sensor board J1; 140 mm along the route incl. 46 mm folded flat beside J1, 4 mm into each connector. |
+| — | FFC 0.5 mm, 6 contacts, 50 mm, Type 1 (contacts on the same side at both ends) | GCT 05-06-A-0050-A-4-06-4-G (or Würth WR-FFC 687606050002; D-98, D-134) | D-50, D-134: mains board J2 → slit in the barrier's bottom wall → sensor board J1, in one plane; 37.1 mm along the route, 4 mm into each connector, 4.9 mm to bow in the free span. |
 | PCB | Mains board 47 × 72 mm, 2-layer 1.6 mm, high-CTI FR4 (CTI ≥ 600, D-102) | PCBWay; order pack in `pcb/na/fab/na_mains_board/` | Routed isolation slot in the outline. S1 is soldered by hand last: after it is snapped into the barrier and the board is screwed down (slotted holes, D-88). Copper weight: thermal review. |
 | — | Apollo MSR-2 mmWave multisensor | apolloautomation.com / The Pi Hut | ESP32-C3, LD2410B, DPS310, LTR-390; optional SCD-40. Used out of case. |
 | PCB | Sensor board, 2-layer FR4 1.6 mm, 66.3 × 125.9 mm with a 53.9 × 79.3 mm window | PCBWay; `pcb/shared/` na_sensor_board (no fab files until CN2 is confirmed) | D-50, D-68: on the barrier's collar (crush ribs), under the face plate. Copper 8 mm from the box opening. |
@@ -43,7 +43,7 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 | PCB | EU sensor board, 2-layer FR4 1.6 mm, round the remote pocket | PCBWay; `pcb/shared/` eu_sensor_board (no fab files until CN2 is confirmed) | D-56, D-70: pin pads underneath, CN2 mate (MSR-2 straight on it), three 1.5 mm SMT spacers H5–H7 (Würth 9774015243R), SHT40, the microphone and the ADAU7002 (D-83). |
 | — | EU sensor board carrier | printed, `print/eu_carrier_PLA.3mf` | D-56: the carrier under the sensor board, its lip pinned to the wall by the barrier's edge, the barrier's teeth stop it turning (D-71). |
 | — | M2 × 6 thread-forming screws ×4 (EU) | any | D-70: sensor board into the carrier. |
-| — | Board standoffs ×4: nylon M3 male-female hex, 15 mm, 5.0 mm hex | **Keystone 25503** | D-57: stud into the barrier's tapped boss, the top-right one's stud cut to 5 mm. Nylon 6/6 UL94 V-2 (catalog M65 p.76). |
+| — | Board standoffs ×4: nylon M3 male-female hex, 15 mm, 5.0 mm hex | **Keystone 25503** | D-57: stud into the barrier's tapped boss, as supplied (D-134). Nylon 6/6 UL94 V-2 (catalog M65 p.76). |
 | — | Board screws ×4: nylon M3 × 8 slotted pan head (ISO 1580) | any | D-57: through the board's Ø3.2 holes into the standoffs (6.4 mm engaged). |
 | — | M3 × 0.5 tap | any | Tap the barrier's four boss holes (2.5 mm tap-drill size as printed; 8.5 mm deep, top right 5.5). |
 | — | #6-32 × 1" oval-head screws | — | ×2, to box ears. |
@@ -56,10 +56,11 @@ Prices/stock as seen Oct 2026; re-check. Bold = safety-critical, don't substitut
 
 The rocker switch and the terminal blocks on the mains board, nothing else: the remote on its own cells and back cover.
 
-- NA: mains board with S1 (rocker switch) and J1 (WAGO 2604-1106) only, its four standoffs; printed: `na_switch_barrier`
-  (no spring-pin holes, pin board pocket or cable bore) and `plain_trim`.
+- NA: mains board with S1 (rocker switch) and J1 (WAGO 2604-1106) only, its four standoffs; printed: `na_barrier` with the
+  blank board in the pin board's pocket, its pegs in the pin holes (D-127), and `na_plain_face_plate`.
 - EU: mains board with S1 and J1 / J2 (WAGO 2604-3102) only, no pin board; the PE lever connector; printed:
-  `eu_switch_cap` (no pin holes, no pin board bosses), `eu_plain_carrier`, `eu_plain_trim`.
+  `eu_barrier` with the blank board on the pin board's bosses, its pegs in the four pin holes and its ledge under the
+  barrier (D-127), `eu_plain_carrier`, `eu_plain_face_plate`.
 
 Order: `make order-push VARIANT=na-switch` or `eu-switch` (3 DigiKey lines for one plate).
 

@@ -49,7 +49,7 @@ DIGIKEY = {
     "ZPI03S0500WC": "3388-ZPI03S0500WC-ND",    # DigiKey API 2026-10-11 (tube, 142; D-100)
     "ADAU7002ACBZ-R7": "505-ADAU7002ACBZ-R7CT-ND",   # cut tape (DigiKey cart, API 2026-10-11)
     "GRM3195C1H104JA05D": "490-GRM3195C1H104JA05DCT-ND",   # DigiKey API 2026-10-11 (D-98)
-    "05-06-A-0152-A-4-06-4-G": "2073-05-06-A-0152-A-4-06-4-G-ND",   # DigiKey API 2026-10-11 (D-98)
+    "05-06-A-0050-A-4-06-4-G": "2073-05-06-A-0050-A-4-06-4-G-ND",   # DigiKey API 2026-10-12 (D-134)
 }
 # Mouser's own numbers where its BOM import does not match the MPN (search results 2026-10-09); None: not
 # carried by Mouser (import reported no match), listed last in the Mouser file to buy from DigiKey
@@ -75,7 +75,7 @@ EXTRA_NA = {
                 "4 mm hex: spacer post, mains board P2 to the pin board"),
     **{f"SO{i}": dict(mfr="Keystone", mpn="25503", fp="standoff", desc="Nylon M3 male-female hex standoff, 15 mm, "
                       "5.0 mm hex: mains board to the barrier (D-57)") for i in range(1, 5)},
-    "W1": dict(mfr="GCT", mpn="05-06-A-0152-A-4-06-4-G", fp="FFC", desc="FFC 0.5 mm, 6 contacts, 152 mm, Type 1: "
+    "W1": dict(mfr="GCT", mpn="05-06-A-0050-A-4-06-4-G", fp="FFC", desc="FFC 0.5 mm, 6 contacts, 50 mm, Type 1: "
                "mains board J2 to the sensor board J1"),
 }
 # EU parts that are not on a board (D-94): the lights' protective earth, joined in the box
@@ -87,7 +87,8 @@ EXTRA_EU = {
 LOCAL = {"NA": ["M2 x 5 pan head screw ISO 7045, steel: 2 per plate (pin board onto the spacer posts)",
                 "heatshrink 6 mm (2:1), 15 mm: 2 per plate (over the spacer posts)",
                 "M3 x 8 slotted pan head screw ISO 1580, nylon: 4 per plate (mains board onto the standoffs)"],
-         "EU": ["M2 x 6 thread-forming screw for plastics: 4 per plate (sensor board into the carrier)"]}
+         "EU": ["M2 x 6 thread-forming screw for plastics: 4 per plate (sensor board into the carrier)",
+                "M2 x 5 thread-forming screw for plastics: 4 per plate (pin board or blank board onto the barrier's bosses, D-129)"]}
 
 
 # battery-free edition (D-109, D-122): the mains board fully populated, the 5 V path to the spring pins, the back cover

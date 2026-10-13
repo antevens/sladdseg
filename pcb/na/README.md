@@ -35,7 +35,7 @@ the board centre. F faces the plate, B faces the box.
   the same on every rebuild.
 - 5 V area: bottom right (X 7 to 19.5, Y -33.5 to -13), GND pour on F.
 - Mounting holes for the barrier's nylon standoffs (D-57), 3.2 mm, all unplated: MH1 (-21, 33.5),
-  MH2 (-21, -33.5), MH3 (21, 24.77), MH4 (21, -33.5). A rule area keeps all copper 3.39 mm
+  MH2 (-21, -33.5), MH3 (21, 33.5), MH4 (21, -33.5). A rule area keeps all copper 3.39 mm
   from each hole on both layers (the standoff's hex and the screw head bear on bare laminate). At MH2 / MH4
   the screw heads reach into PS1's courtyard margin, 1.35 mm clear of its body: a DRC rule allows it and
   `make check` tests the heads against the board STEP.
@@ -51,7 +51,7 @@ the board centre. F faces the plate, B faces the box.
 | F1 | Schurter UMT 250 SMD fuse, T1A 250 VAC | 3403.0166.11 | F, (-14.6, -23) | <https://us.schurter.com/bundles/snceschurter/epim/_ProdPool_/newDS/en/typ_UMT_250.pdf> |
 | RV1 | TDK SMD varistor 275 VAC | B72660M0271K093 (CU4032K275G2) | F, (-5.5, -22) | <https://www.farnell.com/datasheets/2921094.pdf> |
 | P1, P2 | Würth WA-SMSI SMT spacer M2, 7 mm (spacer posts for the pin board, D-50, D-59, D-60) | 9774070243R | F, (9.85, -16.5), (16.65, -16.5) | <https://www.we-online.com/catalog/datasheet/9774070243R.pdf> |
-| J2 | Hirose FH12 FPC connector, 6 contacts, 0.5 mm, slide lock, 5 V out to the sensor board's FFC | FH12-6S-0.5SH(55) | F, (13.5, -24.8), turned 90: FFC out to the right | <https://www.hirose.com/product/en/products/FH12/FH12-6S-0.5SH(55)/> |
+| J2 | Hirose FH12 FPC connector, 6 contacts, 0.5 mm, slide lock, 5 V out to the sensor board's FFC | FH12-6S-0.5SH(55) | F, (12.7, -23.3), 0°: FFC out downwards to the barrier's slit (D-134) | <https://www.hirose.com/product/en/products/FH12/FH12-6S-0.5SH(55)/> |
 
 S1 data from the drawing:
 
@@ -173,7 +173,9 @@ front (F faces the barrier):
 
 - J1: Hirose FH12-6S for the 5 V FFC from the mains board's J2; GND 1, 3, 4, 6, +5V 2, 5 (the
   same mirror-symmetric pinout as J2, so the FFC's type and orientation cannot swap the polarity).
-  C1 22 µF at J1.
+  At the bottom, (12.7, -50.0), 180°: cable in from above, over the mains board's J2 (D-134). C1 22 µF beside it.
+  +5V to CN2: on the back along the bottom band, on the front up the left edge (0.35 mm, outside the keep-out) beside
+  a 0.3 mm GND track, on the back across the top band.
 - J2: Molex 55909-2474 (24 contacts, 0.4 mm) mating the MSR-2's rear connector CN2 (D-82); land pattern from Molex
   SD-55909-003 rev J (D-89); contact map and pin 1 placeholders, below.
 - U1: SHT40 with C2 (100 nF) under the face plate's vents at the bottom.
@@ -208,12 +210,12 @@ back cover's pad positions. 1 mm tracks.
 
 ## 5 V FFC
 
-Stock: GCT 05-06-A-0152-A-4-06-4-G or Würth WR-FFC 687606152002 (0.5 mm, 6 contacts, 152 mm, Type 1; D-98). Mains board J2 → the straight bore in the
-barrier's top-right corner (D-74) → out of the flange onto the sensor board → sensor board J1, both latched (FH12 slide
-lock); the spare length lies folded flat in four layers (12 mm) at y 43.4, between the flange and J1 (D-68). Assembly:
-with the mains board on its standoffs, push the end up the bore from the barrier's underside round its one bend into
-the slot and latch it into J2 from the side; press the sensor board onto the collar's crush ribs (no screws, D-68), pull
-the cable taut from the face side, fold the spare, latch J1.
+Stock: GCT 05-06-A-0050-A-4-06-4-G or Würth WR-FFC 687606050002 (0.5 mm, 6 contacts, 50 mm, Type 1; D-134). Mains board J2
+(cable out downwards) → the slit in the barrier's bottom wall → sensor board J1 (at its bottom, cable in from above), both
+latched (FH12 slide lock), all in the plane x 12.7: a 3 mm bend up out of J2, one straight run through the slit, a 4 mm
+bend over onto the sensor board. Assembly: latch J2 before fitting the mains board; press the sensor board onto the
+collar's crush ribs (no screws, D-68); bend the cable to shape, slide it sideways into the slit through its notch,
+latch J1.
 
 ## Regenerate
 

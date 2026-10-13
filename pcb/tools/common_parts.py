@@ -6,7 +6,7 @@ FP_MOV = "Varistor_TDK_CU4032"
 FP_FUSE = "Fuse_Schurter_UMT250"
 FP_ANT, FP_KICAD = "Ant_Logo_8mm_SilkScreen", "KiCad-Logo2_5mm_SilkScreen"
 ANT_LOGO_H = 8.0                            # height the ant logo is scaled to (pcb/art/Ant_Logo_SilkScreen.kicad_mod)
-URL = "github.com/antevens/smart-wallplate"
+URL = "github.com/antevens/sladdseg"
 
 ROCKER_DS = "Marquardt drawing 1802.2504 rev g, 2003-09-16 (K-drawing 18022504.03)"
 UMT_DS = "https://us.schurter.com/bundles/snceschurter/epim/_ProdPool_/newDS/en/typ_UMT_250.pdf"

@@ -19,7 +19,7 @@ def main():
     import barrier_na, face_plate_na, sensor_board_na, jumper_na, standoff_na
     import backcover as bc
     from build123d import Pos
-    from params_na import SW_Y, PASS_E, MSR_Y, SHT_AT, SB_T, MB_FRONT_Z, MB, BC_FINGERS, SEAT_Z
+    from params_na import SW_Y, FFC_SLOT_X, MSR_Y, SHT_AT, SB_T, MB_FRONT_Z, MB, BC_FINGERS, SEAT_Z
     rp = sensor_board_na.parts()
     cov = bc.cover_parts()
     seated = lambda part: Pos(0, 0, SEAT_Z) * part
@@ -45,7 +45,7 @@ def main():
             f"y={MSR_Y}@-38,38,-6,18#MSR-2 on CN2 on the sensor board, 0.6 mm radar skin",
             f"y={SW_Y}#rocker well, mains board, WAGO block",
             f"y={y5}@-8,32,-30,16#+5V spring pin from the pin board through the pocket floor",
-            f"y={PASS_E[1]}#5 V FFC through the pass-through",
+            f"x={FFC_SLOT_X}@-58,-16,-28,12#5 V FFC: J2, the slit in the barrier's bottom wall, J1 (D-134)",
             f"y={SHT_AT[1]}@-38,38,-6,18#SHT40 on the sensor board under its vents",
             f"z={SB_T / 2}#sensor board on the barrier's collar, crush ribs at its window",
             f"z={MB_FRONT_Z - MB[2] / 2}#mains board: posts, spacer posts, J2"]

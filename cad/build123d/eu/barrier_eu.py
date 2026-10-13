@@ -10,7 +10,7 @@ sits in a recess in the pocket floor, a cup under it keeps the barrier's floor (
 Print: UL94 V-0 filament, top face down (export flips it), no supports.
 Run:  python barrier_eu.py  -> ../../../build/eu/barrier.step / .stl
 """
-from build123d import Box, Cone, Cylinder, Pos, Rectangle, Rot
+from build123d import Axis, Box, Cone, Cylinder, Pos, Rectangle, Rot
 from params_eu import *
 from common import rr, slab
 
@@ -85,39 +85,56 @@ def cup():
     return outer
 
 
+def ridge():
+    """Ridge under the barrier that the pin board's front rests on (D-129, D-131, D-133): ridges_eu.barrier_ridge(), a loop
+    round the board's whole edge, from the barrier's underside down to the board's front, its boss bores kept."""
+    import ridges_eu
+    out = ridges_eu.solid(ridges_eu.barrier_ridge(), PB_FRONT, 0.01)
+    for x, y in PB_MOUNT:
+        out -= Pos(x, y, PB_FRONT + 2.5 - 0.01) * Cylinder(PB_MOUNT_D * 0.75 / 2, 5.0)
+    return out
+
+
+def extrude_up(board):
+    """The board's outline as a prism from its front face up to above the barrier's underside."""
+    from build123d import extrude
+    face = board.faces().sort_by(Axis.Z)[-1]
+    return extrude(face, amount=-PB_FRONT + 1)
+
+
 def cup_cut():
     inner = Pos(0, SW_Y, 0) * slab(rr(*CUP_IN, 0.5), PANEL_TOP_Z, CAP_T + 1)
     cutout = Pos(0, SW_Y, 0) * slab(Rectangle(*SW_CUT), PANEL_BOT_Z - 1, PANEL_TOP_Z + 0.1)
     return inner + cutout
 
 
-def pin_holes(plain=False):
+def pin_holes():
     """The barrier's pin openings: one round each sensor pin to the sensor board's pads (R9) and each battery-free pin to the
-    back cover's pads (D-54), filled by the pins' barrels; the other opening is the rocker's cutout. Plain (D-109):
-    the battery-free pins only."""
+    back cover's pads (D-54), filled by the pins' barrels (switch-only edition: by the blank board's pegs, D-127); the
+    other opening is the rocker's cutout."""
     out = None
-    for x, y in (() if plain else PINS) + tuple(BC_FINGERS):
+    for x, y in tuple(PINS) + tuple(BC_FINGERS):
         h = Pos(x, y, CAP_T / 2) * Cylinder(PIN_CAP_HOLE_D / 2, CAP_T + 2)
         out = h if out is None else out + h
     return out
 
 
-def build(plain=False, switch=False):
-    """Barrier; plain (battery-free edition): without the sensor pins' holes (no sensor board, D-109); switch (switch-only
-    edition): no pin holes and no pin board bosses (D-122)."""
+def build():
+    """The barrier, one for every edition (D-127): the disc, the switch cup, the steel piece's cup, the pin board's and
+    the mains board's bosses, the ridge along the pin board's straight edge (D-128), the four pin holes (in the switch-only edition the printed blank board,
+    boards_eu.blank_board(), takes the pin board's place and its pegs fill them)."""
     body = Pos(0, 0, CAP_T / 2) * Cylinder(CAP_R, CAP_T)
     body += cup()
     body += magnet_cup()
-    if not switch:
-        body += board_bosses()
+    body += board_bosses()
+    body += ridge()
     body += mains_bosses()
     body -= cup_cut()
     body -= magnet_recess()
     for x, y in SCREWS:
         body -= screw_hole(x, y)
     body -= rebate()
-    if not switch:
-        body -= pin_holes(plain)
+    body -= pin_holes()
     return body
 
 

@@ -93,7 +93,7 @@ schematic parity; reports in `build/`) and writes `fab/cover_flex/` once its pos
 - CN2 mate (Molex 55909-2474, D-82, D-89): contact map and pin 1 (from the GPIO add-on's plug or Apollo). Then set
   `CN2_CONFIRMED`, regenerate, check the fan-out. The pads' mask webs are 0.18 mm (PCBWay: 0.19 green): one opening
   per row.
-- The FFC passes through the mains volume in the pass-through (SAFETY item 4).
+- The FFC passes through the mains volume to the barrier's slit (SAFETY item 4).
 - MK1 and U2 pin 1 against parts (footprints from the datasheets' top views).
 - Microphone firmware test on an MSR-2 (sample rate, I²S slot, load).
 

@@ -38,27 +38,27 @@ def msr2_model():
     check(abs(bb.max.Z - MSR[2]) < 1e-6, f"envelope height MSR[2] {MSR[2]:.2f} = the model's front")
 
 
-def scd_vent_checks(tr, msr_y, back_z, pt):
+def scd_vent_checks(tr, msr_y, back_z, pt, msr_x=0.0):
     """Grille through the radar skin (D-65, D-69): open, the middle slot centred on the light sensor, the rest over
     the SCD4x, off the radar; no separate light-sensor hole."""
     print("grille: CO2 sensor and light sensor (D-65, D-69)")
     from build123d import Box
     import msr2
     w, n, pitch, inset = MSR2_SCD_VENT
-    lx, ly = LUX_POS[0], msr_y + LUX_POS[1]
+    lx, ly = msr_x + LUX_POS[0], msr_y + LUX_POS[1]
     check(w >= MIN_PRINT_HOLE, f"slot width {w} >= {MIN_PRINT_HOLE} (prints open)")
     for i in range(n):
         x = lx + (i - (n - 1) / 2) * pitch
         probe = Pos(x, ly, pt - RADAR_WALL / 2) * Box(w - 0.2, 0.4, RADAR_WALL + 0.2)
         r = probe & tr
         check(r is None or r.volume < 1e-4, f"slot {i + 1} at x {x:.1f} open through the {RADAR_WALL} mm skin")
-    v = msr2.scd_vents(0, msr_y, pt, RADAR_WALL)
+    v = msr2.scd_vents(msr_x, msr_y, pt, RADAR_WALL)
     mid = [s_ for s_ in v.solids() if abs(s_.center().X - lx) < 1e-3]
     c = mid[0].center() if mid else None
     check(n % 2 == 1 and c is not None and abs(c.Y - ly) < 1e-3, f"middle slot centred on the light sensor at "
-                                                                  f"({lx}, {ly - msr_y:.1f}) from the MSR-2's centre")
+                                                                  f"({lx - msr_x}, {ly - msr_y:.1f}) from the MSR-2's centre")
     sx, sy = msr2.scd_centre()
-    scd = Pos(sx, msr_y + sy, pt) * Box(MSR2_SCD[0], MSR2_SCD[1], 10)
+    scd = Pos(msr_x + sx, msr_y + sy, pt) * Box(MSR2_SCD[0], MSR2_SCD[1], 10)
     over = v & scd
     a = (over.volume if over else 0.0) / (RADAR_WALL + 1)
     check(a >= 15.0, f"{a:.1f} mm2 of the grille's {v.volume / (RADAR_WALL + 1):.1f} mm2 over the SCD4x (>= 15)")
@@ -70,26 +70,26 @@ def scd_vent_checks(tr, msr_y, back_z, pt):
     check(gap >= -1e-6, f"SCD4x top {gap:.2f} mm under the skin (no interference)")
 
 
-def msr_posts(tr, msr_y, back_z, pt):
+def msr_posts(tr, msr_y, back_z, pt, msr_x=0.0):
     """Face plate posts (D-66, D-67): each lands on the MSR-2's board inside its outline, clear of its parts; the skin
     stands clear of the MSR-2's front, so the clamp goes through the board, not the CO2 add-on or the radar's pins."""
     print("MSR-2 clamp: face plate posts (D-66, D-67)")
     from build123d import Cylinder
     import msr2
-    mp = msr2.placed_parts(0, msr_y, back_z)
+    mp = msr2.placed_parts(msr_x, msr_y, back_z)
     front = back_z + MSR_BOARD_T
-    posts = msr2.posts(0, msr_y, back_z, pt - RADAR_WALL)
+    posts = msr2.posts(msr_x, msr_y, back_z, pt - RADAR_WALL)
     r = posts & tr
     check(r is not None and abs(r.volume - posts.volume) < 0.01, "posts are part of the face plate")
     for i, (x, y) in enumerate(MSR2_POSTS):
         r = MSR2_POST_D / 2
         inside = abs(x) + r <= MSR_BOARD[0] / 2 and abs(y) + r <= MSR_BOARD[1] / 2
         check(inside, f"post {i + 1} at ({x}, {y}) on the board's outline")
-        foot = Pos(x, msr_y + y, front - 0.05) * Cylinder(r - 0.05, 0.1)
+        foot = Pos(msr_x + x, msr_y + y, front - 0.05) * Cylinder(r - 0.05, 0.1)
         on = foot & mp["board"]
         a = on.volume / 0.05 if on is not None else 0.0
         check(a >= 0.9 * 3.14159 * (r - 0.05) ** 2, f"post {i + 1} foot on solid board ({a:.2f} mm2; notch and holes clear)")
-        grown = Pos(x, msr_y + y, (front + pt) / 2 + 0.01) * Cylinder(r + MSR2_POST_CLR, pt - front)
+        grown = Pos(msr_x + x, msr_y + y, (front + pt) / 2 + 0.01) * Cylinder(r + MSR2_POST_CLR, pt - front)
         hit = [k for k, v in mp.items() if k != "board" and (grown & v) is not None and (grown & v).volume > 1e-5]
         check(not hit, f"post {i + 1} {MSR2_POST_CLR} mm clear of the MSR-2's parts" + (f" (hits {hit})" if hit else ""))
     bb = posts.bounding_box()
@@ -293,7 +293,8 @@ def cover_checks():
     seat = (rb.size.X - 2 * BC_STEEL_RIDGE[0], rb.size.Y - 2 * BC_STEEL_RIDGE[0])
     check(abs(seat[0] - BC_STEEL[0] - 2 * BC_STEEL_CLR) < 0.01 and abs(seat[1] - BC_STEEL[1] - 2 * BC_STEEL_CLR) < 0.01,
           f"ridge round the plate: seat {seat[0]:.1f} x {seat[1]:.1f} mm ({BC_STEEL_CLR} clearance), "
-          f"{BC_STEEL_RIDGE[1]} high, open {BC_STEEL_RIDGE_GAP} mm each side of the clips")
+          f"{BC_STEEL_RIDGE[1]} high, " + (f"into the clips' sides by {-BC_STEEL_RIDGE_GAP} mm" if BC_STEEL_RIDGE_GAP < 0
+                                           else f"open {BC_STEEL_RIDGE_GAP} mm each side of the clips"))
     r = bc.steel_ridge() & ps["steel"]
     check(r is None or r.volume < 0.001, "ridge clears the plate")
     r = ps["pad_stiffener"] & c
@@ -305,6 +306,10 @@ def cover_checks():
                                           f"the regulator, none where the jog leaves the GND pad's inner edge)")
     check(lip - clr >= 0.25 and BC_FLEX_SNAP_GAP <= 0.2, f"snap lips {lip - clr:.2f} mm over the stiffener's edges, "
                                                          f"{BC_FLEX_SNAP_GAP} mm above it")
+    sb = snaps.bounding_box()
+    c0, c1 = BC_CELL_X - AAA_D / 2, BC_CELL_X + AAA_D / 2
+    check(c0 <= sb.min.X and sb.max.X <= c1, f"snap hooks x {sb.min.X:.2f}..{sb.max.X:.2f} within the cell's room "
+                                             f"{c0:.2f}..{c1:.2f}, clear of the housing's side (D-136)")
     for k in ("flex", "pad_stiffener", "pin_pads", "regulator", "steel"):
         r = snaps & ps[k]
         check(r is None or r.volume < 0.001, f"snap hooks clear the {k}")
@@ -384,10 +389,10 @@ def cover_checks():
     check(r is None or r.volume < 0.001, "steel plate clips clear the plate")
     over = BC_STEEL_CLIP[2] - BC_STEEL_CLIP_CLR            # hook reach minus the gap to the plate's end
     cw, ct, ch = BC_STEEL_CLIP
-    arm = BC_STEEL_FLOOR + BC_STEEL[2] + 0.1 + ch / 2 - BC_STEEL_CLIP_ROOT
-    strain = 1.5 * ct * over / arm ** 2                    # cantilever outer-fibre strain as the plate passes the hook
-    check(strain <= 0.05, f"plate clips {cw} wide, {ct} thick, {arm:.1f} mm free from their relief: strain "
-                          f"{strain * 100:.1f} % snapping in (<= 5 %: strength before flex, D-111)")
+    check(ct >= BC_WALL - 1e-6, f"plate clips {cw} wide, {ct} thick (>= the {BC_WALL} wall), solid in the shell, no relief: "
+                                f"the shell flexes to let the plate in (D-140)")
+    joined = bc.steel_ridge() & clips
+    check(joined is not None and joined.volume > 0.01, "ridge round the plate runs into the clips' sides")
     check(over >= 0.3, f"steel plate clips hook {over:.2f} mm over the plate's ends")
     ear = bc.latches().bounding_box()
     reach = sorted(round(B_H / 2 - abs(e.bounding_box().min.Y if e.bounding_box().center().Y > 0
@@ -397,20 +402,23 @@ def cover_checks():
     tip_z = (BC_WALL + BC_LATCH_CATCH_Z, B_SEAM_Z - BC_LATCH_RIM_GAP - 2 * BC_LATCH_HOOK[1])   # catch / tip face's foot
     proud = [BC_LATCH_REACH[i] - shell_in_base(z) for i, z in enumerate(tip_z)]
     eased = [BC_LATCH_REACH[i] - shell_in(z) for i, z in enumerate(tip_z)]
-    check(abs(proud[0] - proud[1]) < 0.01, f"clip tips placed {proud[0]:.2f} (bottom, at its catch) and {proud[1]:.2f} mm "
-                                           f"(top) clear of the inner surface before the ease (D-118); with it "
-                                           f"{eased[0]:.2f} and {eased[1]:.2f} (tips kept, D-126)")
+    placed = BC_LATCH_REACH[0] - shell_in_base(BC_WALL + BC_LATCH_TIP_Z)
+    check(abs(placed - proud[1]) < 0.01, f"clip tips placed {placed:.2f} (bottom, at {BC_LATCH_TIP_Z}) and {proud[1]:.2f} mm "
+                                         f"(top) clear of the inner surface before the ease (D-118); the bottom catch now "
+                                         f"at {BC_LATCH_CATCH_Z}, its tip kept (D-130): {proud[0]:.2f} / {eased[0]:.2f} mm "
+                                         f"clear before / with the ease, the top {eased[1]:.2f} with it")
     for i, f in enumerate(BC_LATCH_CATCH):                 # flat underside: room under it, proud of the shell
         if f is None:
             continue
-        zc = BC_WALL + BC_LATCH_TOPS[i] - BC_LATCH_HOOK[i] - f
+        zc = BC_WALL + BC_LATCH_CATCH_Z if i == 0 else BC_WALL + BC_LATCH_TOPS[i] - BC_LATCH_HOOK[i] - f
         tip = B_H / 2 - BC_LATCH_REACH[i]
         ledge = BC_LATCH_REACH[i] - (B_W / 2 - bc.inner_x(zc))   # tip beyond the shell's inside face at zc (same round-over)
         under = 0.1 * tan(radians(BC_LATCH_RAMP)) if i == 0 else 0.0     # the ramp's drop 0.1 behind the tip
         probe = Pos(0, -(tip + 0.1), zc - under - 0.15) * Box(0.6, 0.15, 0.2)
         r = probe & ps["cover"]
         check(ledge >= BC_LATCH_LEDGE_MIN and (r is None or r.volume < 1e-6),
-              f"{'bottom' if i == 0 else 'top'} clip: catch {zc - BC_WALL:.2f} above the inside floor, a {BC_LATCH_RAMP:.0f} deg ramp under the hook, "
+              f"{'bottom' if i == 0 else 'top'} clip: catch {zc - BC_WALL:.2f} above the inside floor, a {BC_LATCH_RAMP:.0f} deg ramp under the hook"
+              + (f", a {BC_LATCH_LEAD:.0f} deg lead-in on top" if i == 0 else "") + ", "
               f"{ledge:.2f} mm proud of the shell's inner surface (>= {BC_LATCH_LEDGE_MIN}), clear under the tip")
     widths = [round(e.bounding_box().size.X, 2) for e in sorted(bc.latches().solids(), key=lambda e: e.bounding_box().center().Y)]
     check(all(abs(w - BC_LATCH_W[i]) < 0.01 for i, w in enumerate(widths)), f"snap clips {widths} mm wide (bottom, top)")

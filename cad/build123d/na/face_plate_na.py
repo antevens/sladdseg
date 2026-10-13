@@ -12,7 +12,7 @@ Run:  python face_plate_na.py  -> ../../build/face_plate_na.step / .stl, na_plai
 from math import radians, tan
 from build123d import Box, Cylinder, Cone, Pos, Axis, chamfer
 from params_na import *
-from common import rr, slab, frame, sound_column
+from common import rr, slab, frame, sound_column, prism, mouth_chamfer
 import msr2
 
 
@@ -28,7 +28,31 @@ def mic_tube():
 def msr_posts():
     """Posts from the radar skin onto the MSR-2's board (D-66): they press it onto the sensor board's spacers (D-68); the skin stands
     MSR_SKIN_GAP clear of its front."""
-    return msr2.posts(0, MSR_Y, MSR_BACK_Z, PT - RADAR_WALL)
+    return msr2.posts(MSR_X, MSR_Y, MSR_BACK_Z, PT - RADAR_WALL)
+
+
+def window_plan():
+    """The face plate's window round the barrier's island in plan."""
+    from shapely.geometry import box
+    w, h, r = ISLAND[0] + 2 * SPLIT_CLR, ISLAND[1] + 2 * SPLIT_CLR, ISLAND_R + SPLIT_CLR
+    return box(-w / 2 + r, -h / 2 + r, w / 2 - r, h / 2 - r).buffer(r, 64)
+
+
+def screw_lobes():
+    """The face plate's lobes round the two screws in plan (D-132): from the island window's edge in to the remote
+    pocket's end arc (the face plate forms the pocket wall's top there), SCREW_LOBE[0] round each screw, filleted
+    SCREW_LOBE[2] where they meet the window's edge."""
+    from shapely.geometry import Point, box
+    from shapely.ops import unary_union
+    window = window_plan()
+    pw, ph = POCKET_IN
+    pocket = box(-0.001, -ph / 2 + pw / 2, 0.001, ph / 2 - pw / 2).buffer(pw / 2, 256)
+    lobes = unary_union([Point(0, s * SCREW_PITCH / 2).buffer(SCREW_LOBE[0], 128) for s in (-1, 1)])
+    plate = box(-60, -90, 60, 90).difference(window).union(lobes.intersection(window).difference(pocket))
+    k = SCREW_LOBE[2]
+    plate = plate.buffer(k, 64).buffer(-k, 64)                  # fillet where the lobes meet the window's edge
+    lobes = plate.intersection(window).difference(pocket)
+    return lobes.buffer(-0.3, 32).buffer(0.3, 32)               # round the lobes' tips at the pocket
 
 
 def build(plain=False):
@@ -42,7 +66,7 @@ def build(plain=False):
     if not plain:
         # MSR-2 and SHT40 bay frames, down to just over the sensor board's parts
         z0 = FRAME_Z0                                   # over the sensor board's parts (D-68)
-        body += frame(MSR_BAY[0], MSR_BAY[1], BAY_WALL, MSR_BAY_R, z0, PT, MSR_Y)
+        body += frame(MSR_BAY[0], MSR_BAY[1], BAY_WALL, MSR_BAY_R, z0, PT, MSR_Y, MSR_X)
         body += frame(*sb, BAY_WALL, SHT_BAY_R, z0, PT, SHT_AT[1])
         body += mic_tube()
         body &= outline                                 # the bay frames inside the chamfered edge
@@ -50,9 +74,13 @@ def build(plain=False):
     # ---------------- cuts ----------------
     # clearance envelope of the barrier: island window through the face, flange underneath
     body -= slab(rr(ISLAND[0] + 2 * SPLIT_CLR, ISLAND[1] + 2 * SPLIT_CLR, ISLAND_R + SPLIT_CLR), DECK_Z - 1, PT + 1)
+    lobes = screw_lobes()
+    lobes = lobes.union(lobes.buffer(0.1).difference(window_plan()))   # into the face plate round the window: one piece
+    body += prism(lobes, DECK_Z, PT) & outline                     # the lobes round the screws, in the window (D-132)
+    body -= mouth_chamfer(*POCKET_IN, PT, POCKET_CHAMFER)          # the pocket's 45 deg mouth where the lobes form it
     fl = slab(rr(FLANGE_OUT[0] + 2 * SPLIT_CLR, FLANGE_OUT[1] + 2 * SPLIT_CLR, ISLAND_R + FLANGE + SPLIT_CLR), -1, DECK_Z)
     for s in (-1, 1):
-        fl += Pos(0, s * SCREW_PITCH / 2, DECK_Z / 2) * Cylinder(BOSS_R + SPLIT_CLR, DECK_Z + 2)
+        fl += Pos(0, s * SCREW_PITCH / 2, (DECK_Z - 1) / 2) * Cylinder(BOSS_R + SPLIT_CLR, DECK_Z + 1)   # up to the skin
     body -= fl
     for kx, ky in KEY_POS:  # sockets for the barrier's locating pins
         body -= Pos(kx, ky, DECK_Z + (KEY_H + 0.2) / 2 - 0.01) * Cylinder(KEY_D / 2 + KEY_CLR, KEY_H + 0.2)
@@ -63,13 +91,13 @@ def build(plain=False):
         body -= Pos(0, y, PT - d / 2 + 0.005) * Cone(SCREW_D / 2, SCREW_HEAD_D / 2 + 0.01, d + 0.01)
     if plain:
         return body
-    body -= Pos(0, MSR_Y, 0) * slab(rr(*MSR_BAY, 1), -0.01, PT - RADAR_WALL)
+    body -= Pos(MSR_X, MSR_Y, 0) * slab(rr(*MSR_BAY, 1), -0.01, PT - RADAR_WALL)
     body += msr_posts()                                 # in the hollowed bay (D-66)
-    body -= msr2.scd_vents(0, MSR_Y, PT, RADAR_WALL)      # grille: CO2 sensor and light sensor (D-65, D-69)
+    body -= msr2.scd_vents(MSR_X, MSR_Y, PT, RADAR_WALL)      # grille: CO2 sensor and light sensor (D-65, D-69)
     zv = SB_PARTS_TOP + VENT_Z_OVER                   # vents through the edges, above the sensor board's parts
     n, pitch, dx, w, d = MSR_VENTS
     for i in range(n):  # MSR vents, top edge
-        body -= Pos((i - (n - 1) / 2) * pitch + dx, PLATE_Y + PH / 2 - SKIN + d / 2 - 1, zv) * Box(w, d, VENT_H)
+        body -= Pos(MSR_X + (i - (n - 1) / 2) * pitch + dx, PLATE_Y + PH / 2 - SKIN + d / 2 - 1, zv) * Box(w, d, VENT_H)
     body -= Pos(0, SHT_AT[1], 0) * slab(rr(*sb, SHT_BAY_R), -0.01, PT - SKIN)
     body -= Pos(*MIC_AT, PT - SKIN / 2) * Cylinder(MIC_SKIN_HOLE_D / 2, SKIN + 1)   # microphone sound hole (D-29)
     n, pitch, w, lf, de = SHT_VENTS

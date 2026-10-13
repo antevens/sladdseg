@@ -19,7 +19,7 @@ import lv_parts as lv                                     # noqa: E402
 
 SB_BOARD = "eu_sensor_board"
 # silkscreen logos and the project URL: footprint, (x, y), side, rotation; URL (x, y, side)
-BRAND = {SB_BOARD: ([(lv.FP_ANT, (-32.4, 58.9), "F", 0), (lv.FP_KICAD, (25.9, -44.6), "F", 0)], (8.1, -38.3, "F"))}
+BRAND = {SB_BOARD: ([(lv.FP_ANT, (-31.0, -43.5), "F", 0), (lv.FP_KICAD, (25.9, -44.6), "F", 0)], (8.1, -38.3, "F"))}
 CN2_CONFIRMED = lv.CN2_CONFIRMED
 FP_HOLE = "MountingHole_2.2mm_M2"
 FP_PAD = "Contact_Pad_D2.4mm"

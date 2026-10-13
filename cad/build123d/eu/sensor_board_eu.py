@@ -71,15 +71,15 @@ def board():
 def carrier(plain=False):
     """Fills from the wall up to the sensor board round the barrier disc (a bore, so the barrier goes in from the front), a lip at
     the wall under the barrier's edge with gaps for the barrier's teeth (D-71), a rim round the board up to its top (D-70).
-    Plain (D-109): the 80 x 80 plate's outline up to the sensor board's level, no rim, pin or screw holes.
+    Plain (D-109): the square plate's outline up to the sensor board's level and the same rim (D-150), no pin or screw
+    holes.
     Prints bottom down, no supports."""
     import barrier_eu
     o, pocket = outline(plain=plain)
     r0 = CAP_R + CARRIER_CAP_CLR
     c = slab(o, 0, SB_PAD_Z) - slab(pocket, LIP_T, SB_PAD_Z + 1)
-    if not plain:
-        ob, _ = outline(SB_INSET - SB_RIM_CLR)
-        c += slab(o, SB_PAD_Z, SB_TOP) - slab(ob, SB_PAD_Z - 1, SB_TOP + 1)      # rim
+    ob, _ = outline(SB_INSET - SB_RIM_CLR, plain=plain)
+    c += slab(o, SB_PAD_Z, SB_TOP) - slab(ob, SB_PAD_Z - 1, SB_TOP + 1)          # rim (plain: the same, for stiffness, D-150)
     c -= Pos(0, 0, (LIP_T + SB_TOP + 1) / 2) * Cylinder(r0, SB_TOP + 1 - LIP_T)    # bore round the barrier disc
     c -= Pos(0, 0, LIP_T / 2) * Cylinder(LIP_R, LIP_T + 2)                         # lip's inner edge
     c -= barrier_eu.teeth(LIP_R - 1, r0 + 0.01, -1, LIP_T + 0.01, LIP_CLR)             # gaps in the lip for the barrier's teeth
@@ -117,7 +117,7 @@ def spacers():
 
 def msr():
     """The MSR-2 with the CO2 add-on (cad/build123d/msr2.py) on CN2 and the spacers."""
-    return msr2.placed(0, MSR_Y, MSR_BACK_Z)
+    return msr2.placed(MSR_X, MSR_Y, MSR_BACK_Z)
 
 
 def mic():

@@ -1,6 +1,6 @@
 {
   "type": "process",
-  "name": "smart-wallplate eu_testbox_PLA",
+  "name": "sladdseg eu_testbox_PLA",
   "inherits": "0.20mm Strength @Elegoo CC2 0.4 nozzle",
   "from": "User",
   "instantiation": "true",

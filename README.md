@@ -7,8 +7,8 @@ editions:
 
 | Edition | Contents | North American single-gang / Decora (NA): 2 × 3 in box | European round flush box, DIN 49073 (EU): Ø60 / 68 mm |
 | --- | --- | --- | --- |
-| **1. Switch only** | rocker switch and terminal blocks on the mains board, nothing else; the remote on its own cells and back cover | standard-size face plate 69.85 × 114.3 mm | face plate 80 × 80 mm |
-| **2. Battery-free** | the mains board fully populated (rocker switch, terminal blocks, 5 V power supply); the parts that bring 5 V to the spring pins; the replacement back cover with its flex, so the remote stays in place without cells | standard-size face plate 69.85 × 114.3 mm | face plate 80 × 80 mm |
+| **1. Switch only** | rocker switch and terminal blocks on the mains board, nothing else; the remote on its own cells and back cover | standard-size face plate 69.85 × 114.3 mm | face plate 84.6 × 84.6 mm |
+| **2. Battery-free** | the mains board fully populated (rocker switch, terminal blocks, 5 V power supply); the parts that bring 5 V to the spring pins; the replacement back cover with its flex, so the remote stays in place without cells | standard-size face plate 69.85 × 114.3 mm | face plate 84.6 × 84.6 mm |
 | **3. Full** | as 2, plus Apollo MSR-2 (mmWave presence, optional CO2), SHT40 temperature and humidity, push-to-talk microphone | face plate 72.2 × 131.75 mm | face plate 84.6 × 122.4 mm |
 
 - **Remote:** stands 2.6 mm proud of the face. In editions 2 and 3 a printed replacement back cover runs it from the
@@ -39,12 +39,12 @@ Nothing here is certified or code-compliant; see `docs/SAFETY.md`.
 
 ```bash
 make system-deps     # once, Ubuntu 24.04 (KiCad 9, headless slicer libs)
-make setup           # once (venv + pinned OrcaSlicer)
+make setup           # once (venv + pinned ElegooSlicer)
 make pcb             # boards: ERC / DRC, STEP, fab packs
 make cad check       # CAD to build/, all checks (shared parts, NA, EU)
 make na              # NA variant: CAD, checks, renders
 make eu              # EU variant: CAD, checks, renders
-make print           # OrcaSlicer projects in print/
+make print           # ElegooSlicer projects in print/
 make renders         # docs/renders/*.png
 make order           # DigiKey / Mouser lists, PCBWay packs
 ```
@@ -158,9 +158,9 @@ Parts and PCBs per plate, USD.
 
 | Package | 1 plate | 5 plates | 100 plates | 1,000 plates | 10,000 plates |
 | --- | --- | --- | --- | --- | --- |
-| NA full | 111.65 | 60.03 | 37.74 | 34.31 | 32.59 |
-| NA full + MSR-2 | 149.64 | 98.02 | 75.73 | 72.30 | 70.58 |
-| NA full + MSR-2 with CO2 | 169.64 | 118.02 | 95.73 | 92.30 | 90.58 |
+| NA full | 110.90 | 59.68 | 37.61 | 34.19 | 32.48 |
+| NA full + MSR-2 | 148.89 | 97.67 | 75.60 | 72.18 | 70.47 |
+| NA full + MSR-2 with CO2 | 168.89 | 117.67 | 95.60 | 92.18 | 90.47 |
 | NA switch only | 20.68 | 15.96 | 10.00 | 9.06 | 8.60 |
 | NA battery-free | 68.71 | 38.63 | 24.87 | 22.61 | 21.47 |
 | EU full | 102.61 | 48.95 | 31.13 | 28.37 | 26.99 |
@@ -173,11 +173,11 @@ Sources and assumptions:
 
 - **Parts at 1, 5 and 100 (sourced):** DigiKey US list prices for the order lists' parts (`pcb/order/`), cheapest
   packaging and price break for the total need, read 2026-10-12. Per plate:
-  - 1 plate: NA full 51.72, NA battery-free 33.71, NA switch only 15.68; EU full 42.17, EU battery-free 25.83,
+  - 1 plate: NA full 50.97, NA battery-free 33.71, NA switch only 15.68; EU full 42.17, EU battery-free 25.83,
     EU switch only 10.59.
-  - 5 plates: NA full 48.04, NA battery-free 31.63, NA switch only 14.96; EU full 36.86, EU battery-free 22.26,
+  - 5 plates: NA full 47.70, NA battery-free 31.63, NA switch only 14.96; EU full 36.86, EU battery-free 22.26,
     EU switch only 8.18.
-  - 100 plates: NA full 34.33, NA battery-free 22.64, NA switch only 9.36; EU full 27.60, EU battery-free 16.92,
+  - 100 plates: NA full 34.20, NA battery-free 22.64, NA switch only 9.36; EU full 27.60, EU battery-free 16.92,
     EU switch only 6.00.
 - **Parts at 1,000 and 10,000 (assumption):** 10 % and 15 % below the 100-plate price. DigiKey shows no prices
   above about 100 without a quote.
@@ -210,19 +210,19 @@ Known gaps:
 - **Cheaper terminal blocks:** Same Sky TBL-0021-500-06GR (NA) and TBL-0020-500-02GR (EU), push-in without a lever,
   fit the WAGO 2604 footprint and cost about 5–6 (NA) and 3 (EU) less per plate at 100. Not in the design.
 
-### Printed parts (own printer, 2026-10-12)
+### Printed parts (own printer, 2026-10-13)
 
-The barrier part (NA barrier, EU barrier) is printed in Elegoo PC-FR; the face plate, the EU carrier and the back cover
-in Elegoo PETG. Grams and times come from the OrcaSlicer projects (`make print`). USD per plate.
+The barrier (one per variant, printed with the blank board for switch only, D-127) is printed in Elegoo PC-FR; the face plate, the EU carrier and the back cover
+in Elegoo PETG. Grams and times come from the slicer projects (`make print`). USD per plate.
 
 | Package | Printed parts | Filament | Print time | Filament cost | Electricity | Printer wear | **Total** |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| NA full | barrier 51.9 g PC-FR; face plate 23.2 g, back cover 8.3 g PETG | 83.4 g | 3.3 h | 1.54 | 0.08 | 0.29 | **1.91** |
-| NA switch only | barrier 51.3 g PC-FR; face plate 16.0 g PETG | 67.2 g | 2.6 h | 1.36 | 0.06 | 0.23 | **1.65** |
-| NA battery-free | barrier 51.7 g PC-FR; face plate 16.0 g, back cover 8.3 g PETG | 76.0 g | 3.0 h | 1.46 | 0.07 | 0.27 | **1.80** |
-| EU full | barrier 9.8 g PC-FR; face plate 42.9 g, carrier 18.1 g, back cover 8.3 g PETG | 79.1 g | 2.7 h | 0.99 | 0.06 | 0.24 | **1.29** |
-| EU switch only | barrier 9.7 g PC-FR; face plate 27.2 g, carrier 4.6 g PETG | 41.5 g | 1.5 h | 0.57 | 0.03 | 0.13 | **0.73** |
-| EU battery-free | barrier 9.8 g PC-FR; face plate 27.2 g, carrier 4.6 g, back cover 8.3 g PETG | 49.9 g | 1.9 h | 0.67 | 0.04 | 0.16 | **0.87** |
+| NA full | barrier and blank board 52.5 g PC-FR; face plate 23.8 g, back cover 8.1 g PETG | 84.4 g | 3.5 h | 1.56 | 0.08 | 0.31 | **1.94** |
+| NA switch only | barrier and blank board 52.5 g PC-FR; face plate 16.7 g PETG | 69.2 g | 2.8 h | 1.39 | 0.06 | 0.25 | **1.70** |
+| NA battery-free | barrier and blank board 52.5 g PC-FR; face plate 16.7 g, back cover 8.1 g PETG | 77.3 g | 3.2 h | 1.48 | 0.07 | 0.28 | **1.84** |
+| EU full | barrier and blank board 13.3 g PC-FR; face plate 43.3 g, carrier 18.5 g, back cover 8.1 g PETG | 83.3 g | 3.0 h | 1.08 | 0.07 | 0.27 | **1.41** |
+| EU switch only | barrier and blank board 13.3 g PC-FR; face plate 30.2 g, carrier 8.6 g PETG | 52.1 g | 1.9 h | 0.73 | 0.04 | 0.17 | **0.94** |
+| EU battery-free | barrier and blank board 13.3 g PC-FR; face plate 30.2 g, carrier 8.6 g, back cover 8.1 g PETG | 60.2 g | 2.3 h | 0.82 | 0.05 | 0.20 | **1.08** |
 
 Sources and assumptions:
 

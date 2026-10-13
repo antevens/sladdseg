@@ -379,6 +379,13 @@ text(REV_DATE, 12.5, 27.5, "B.SilkS", 0.8, 0.12)
 text(URL, URL_POS[0], URL_POS[1], f"{URL_POS[2]}.SilkS", 0.8, 0.12)
 # front face
 text("+5V  GND", 12.7, -32.7, "F.SilkS", 0.8, 0.12)
+# which way round, and where the 5 V cable goes (D-134)
+text("\u2191 UP", -15.5, -31.0, "F.SilkS", 0.8, 0.12)
+text("THIS SIDE", -6.5, -30.0, "F.SilkS", 0.8, 0.12)
+text("TO THE ROOM", -6.5, -31.4, "F.SilkS", 0.8, 0.12)
+text("\u2191 UP   THIS SIDE INTO THE BOX", -5.0, 33.3, "B.SilkS", 0.8, 0.12)
+for lay in ("F.SilkS", "B.SilkS"):
+    text("FFC \u2193 TO THE SLOT", 12.7, -34.5, lay, 0.8, 0.12)
 
 # part labels: reference + maker / model on each part's side (pcb/tools/kigen.py)
 import kigen

@@ -62,12 +62,12 @@ def cn2():
 def msr():
     """The MSR-2 with the CO2 add-on (msr2.py) on CN2."""
     import msr2
-    return msr2.placed(0, MSR_Y, MSR_BACK_Z)
+    return msr2.placed(MSR_X, MSR_Y, MSR_BACK_Z)
 
 
 def j1():
-    """FH12-6S for the 5 V FFC, cable in from -y."""
-    return Pos(*SB_J1, SB_T + FH12[2] / 2) * Box(*FH12)
+    """FH12-6S for the 5 V FFC, cable in from +y (its cable face FH12_ENTRY above the footprint origin)."""
+    return Pos(SB_J1[0], SB_J1[1] + FH12_ENTRY - FH12[1] / 2, SB_T + FH12[2] / 2) * Box(*FH12)
 
 
 def sht45():
@@ -102,6 +102,20 @@ def pin_board():
         sleeves = sl if sleeves is None else sleeves + sl
         screws = sc if screws is None else screws + sc
     return brd, pins, posts, sleeves, screws
+
+
+def blank_board():
+    """Printed blank board for the switch-only edition (D-127), printed with the barrier in V-0: the pin board's outline
+    and thickness, held up in its pocket by the same clips, with a peg up each spring pin hole to just under the seat
+    (BLANK_CLR round it), a collar where the pins' flanges sit."""
+    w, h, t = PB
+    out = Pos(*PB_C, PB_TOP - t / 2) * Box(w, h, t)
+    zf = PB_TOP + PIN_FLANGE[1] + PIN_RADIAL - BLANK_CLR                      # collar top, under the flange's hole top
+    for x, y in BC_FINGERS:
+        out += Pos(x, y, (PB_TOP + zf) / 2) * Cylinder(PIN_FLANGE[0] / 2 + PIN_RADIAL - BLANK_CLR, zf - PB_TOP + 0.01)
+        z1 = SEAT_Z - BLANK_CLR
+        out += Pos(x, y, (PB_TOP + z1) / 2) * Cylinder(PIN_BARREL[0] / 2 + PIN_RADIAL - BLANK_CLR, z1 - PB_TOP)
+    return out
 
 
 def pin_holes():
@@ -139,8 +153,9 @@ def _pin_board_clip_frames():
     cx, cy = PB_C
     out = []
     for edge, s in PB_CLIPS:
-        if edge == "top":
-            out.append(((cx + s, cy + h / 2), (0, 1), (1, 0)))
+        if edge in ("top", "bottom"):
+            sy = 1 if edge == "top" else -1
+            out.append(((cx + s, cy + sy * h / 2), (0, sy), (1, 0)))
         else:
             sx = -1 if edge == "left" else 1
             out.append(((cx + sx * w / 2, cy + s), (sx, 0), (0, 1)))

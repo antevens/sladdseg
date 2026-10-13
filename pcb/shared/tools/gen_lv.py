@@ -430,7 +430,7 @@ def build_eu_sensor_board():
     via("GND", g30)
     for v in (vs, (-20.0, -46.0), (20.0, -40.0), (-20.0, 52.0), (20.0, 60.0), (-28.0, 40.0)):
         bd.via("GND", *v)
-    bd.text(f"EU SENSOR BOARD {lv.REV} (D-70)", -20.0, -46.0, P.F_SilkS, 1.0)
+    bd.text(f"EU SENSOR BOARD {lv.REV} (D-70)", -10.0, -46.0, P.F_SilkS, 1.0)
     if not eu.CN2_CONFIRMED:
         bd.text("J2 PIN MAP AND PIN 1 ARE PLACEHOLDERS - DO NOT FABRICATE", 0.0, 30.0, P.Cmts_User, 1.0)
     bd.branding(*eu.BRAND[eu.SB_BOARD], lv.URL)
@@ -561,7 +561,9 @@ def place_na_sensor_board():
 def build_na_sensor_board():
     """Sensor board: CN2 fan-out on the front, I2S lanes up and right to the microphone's parts (route_mic), +3V3 from
     CN2 to their bus; SDA, SCL, +3V3 on the back across the top band to the right rail, down the rail on the front round
-    the box's corner keep-out and along the bottom band to the SHT40; +5V from J1 on the back to CN2; GND pours."""
+    the box's corner keep-out and along the bottom band to the SHT40; +5V from J1 (bottom, D-134) along the bottom
+    band on the back, up the left edge on the front beside a GND track, across the top band on the back to CN2; GND
+    pours."""
     bd = place_na_sensor_board()
     F, B = P.F_Cu, P.B_Cu
     rule_area(bd, na.KEEP_FRONT, F, "front copper keep-out: box opening + 6.4 mm")
@@ -574,30 +576,39 @@ def build_na_sensor_board():
     # I2S: up from the upper row (leftmost highest), right to the mic's parts
     for net, (xe, ye) in ent.items():
         bd.track(net, 0.12, [(pin[net][0], top), (pin[net][0], ye), (xe, ye)])
-    # +5V: CN2 up-left to a via; J1's +5V pins to vias; C1 to a via; joined on the back
+    # +5V: J1 (bottom, under the cable from J2) and C1 to vias, left on the back, up the left edge on the front (outside
+    # the keep-out, beside a GND track), across the top band on the back to CN2's via
     p5 = pin["+5V"]
     v5 = (p5[0] - 0.5, 61.4)
     bd.track("+5V", 0.2, [(p5[0], top), (p5[0], 60.6), v5])
     j1 = {n: bd.pad_xy("J1", n) for n in na.FH12_NETS}
-    vj = [(j1["2"][0], 51.3), (j1["5"][0], 51.3)]
+    yv = j1["2"][1] - 1.25
+    vj = [(j1["2"][0], yv), (j1["5"][0], yv)]
     for n, v in zip(("2", "5"), vj):
-        bd.track("+5V", 0.3, [(j1[n][0], j1[n][1] + 0.6), v])
+        bd.track("+5V", 0.3, [(j1[n][0], j1[n][1] - 0.6), v])
     c1 = bd.pad_xy("C1", "1")
-    vc = (c1[0], c1[1] + 1.25)
+    vc = (c1[0], c1[1] + 1.3)
     bd.track("+5V", 0.4, [c1, vc])
-    for v in vj + [vc, v5]:
+    xe, xg = -na.SB_HALF_W + 1.1, -na.SB_HALF_W + 0.55            # left edge lanes (front): +5V inside, GND outside
+    yl1 = 47.5                                                     # +5V's upper end, above the keep-out
+    vl0, vl1 = (xe + 2.5, yv), (xe + 1.6, yl1)
+    for v in vj + [vc, v5, vl0, vl1]:
         bd.via("+5V", *v)
-    bd.track("+5V", 0.4, [vj[1], vj[0], (vj[0][0], 58.5), (v5[0], 58.5), v5], B)
-    bd.track("+5V", 0.4, [vc, (vc[0], 58.5)], B)
-    # J1 GND: 1 / 6 out and up, 3 / 4 up between the +5V vias, a bar above them
-    yb = 52.0
-    for n, dx in (("1", -0.4), ("6", 0.4)):
-        bd.track("GND", 0.25, [(j1[n][0], j1[n][1] + 0.6), (j1[n][0] + dx, 51.3), (j1[n][0] + dx, yb)])
+    bd.track("+5V", 0.4, [vc, (vc[0], yv), vj[0], vj[1], vl0], B)
+    bd.track("+5V", 0.35, [vl0, (xe, yv + 2.5), (xe, yl1 - 1.6), vl1])
+    bd.track("+5V", 0.4, [vl1, (vl1[0], 57.0), (v5[0], 57.0), v5], B)
+    # GND beside it, past both of its turns into the bottom and top bands' pours
+    bd.track("GND", 0.3, [(xg + 2.1, yv - 1.0), (xg, yv + 1.1), (xg, yl1 - 0.5), (xg + 2.1, yl1 + 1.6)])
+    # J1 GND: 1 / 6 out and down, 3 / 4 down between the +5V vias, a bar below them
+    yb = j1["2"][1] - 1.95
+    for n, dx in (("1", 0.4), ("6", -0.4)):
+        bd.track("GND", 0.25, [(j1[n][0], j1[n][1] - 0.6), (j1[n][0] + dx, yv), (j1[n][0] + dx, yb)])
     xm = (j1["3"][0] + j1["4"][0]) / 2
     for n in ("3", "4"):
-        bd.track("GND", 0.25, [(j1[n][0], j1[n][1] + 0.6), (xm, 51.2)])
-    bd.track("GND", 0.25, [(xm, 51.2), (xm, yb)])
-    bd.track("GND", 0.3, [(j1["1"][0] - 0.4, yb), (j1["6"][0] + 0.4, yb)])
+        bd.track("GND", 0.25, [(j1[n][0], j1[n][1] - 0.6), (xm, yv + 0.1)])
+    bd.track("GND", 0.25, [(xm, yv + 0.1), (xm, yb)])
+    bd.track("GND", 0.3, [(j1["1"][0] + 0.4, yb), (j1["6"][0] - 0.4, yb)])
+    bd.track("GND", 0.3, [(j1["1"][0] + 0.4, yb), bd.pad_xy("C1", "2")])
     # CN2 GND contacts: vias to both pours
     gnd_odd, gnd_even = (min((n for n, net in lv.CN2_MAP.items() if net == "GND" and int(n) % 2 == r), key=int)
                          for r in (1, 0))
@@ -653,9 +664,14 @@ def build_na_sensor_board():
     bd.track("GND", 0.2, [u1["4"], c2g])
     vs = (c2g[0], c2g[1] + 1.1)                              # the SHT40's GND patch to the back pour
     bd.track("GND", 0.25, [c2g, vs])
-    for v in (vs, (-20.0, -50.0), (20.0, -50.0), (-20.0, 52.0), (-8.0, 68.5), (8.0, 68.5)):   # stitching, beside the switch notches
+    (l0, _, ly), (_, r1, _) = na.MSR_SW_CUTS                  # the MSR-2's switch notches, left and right
+    for v in (vs, (-20.0, -50.0), (20.0, -50.0), (-20.0, 52.0), (l0 - 1.7, ly + 2.5), (r1 + 1.7, ly + 2.5)):   # stitching, beside the notches
         bd.via("GND", *v)
-    bd.text(f"NA SENSOR BOARD {lv.REV} (D-50)", 0.0, -53.6, P.F_SilkS, 1.0)
+    bd.text(f"NA SENSOR BOARD {lv.REV} (D-50)", -8.0, -53.6, P.F_SilkS, 1.0)
+    bd.text("\u2191 UP   THIS SIDE TO THE ROOM", -12.0, -50.0, P.F_SilkS, 0.8)
+    bd.text("THIS SIDE TO THE WALL   \u2191 UP", -8.0, -51.6, P.B_SilkS, 0.8)
+    for lay in (P.F_SilkS, P.B_SilkS):
+        bd.text("\u2191 FFC FROM THE SLOT", 12.7, -43.4, lay, 0.8)
     if not lv.CN2_CONFIRMED:
         bd.text("J2 PIN MAP AND PIN 1 ARE PLACEHOLDERS - DO NOT FABRICATE", 0.0, 66.5, P.Cmts_User, 1.0)
     bd.branding(*na.BRAND[na.SB_BOARD], lv.URL)

@@ -1,6 +1,6 @@
 {
   "type": "process",
-  "name": "smart-wallplate na_barrier_PLA_testfit",
+  "name": "sladdseg na_barrier_PLA_testfit",
   "inherits": "0.20mm Strength @Elegoo CC2 0.4 nozzle",
   "from": "User",
   "instantiation": "true",

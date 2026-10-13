@@ -22,7 +22,7 @@ from params_na import (BOX_W, BOX_H, SB_T, SB_KEEP, SB_HALF_W, SB_Y, SB_R, SB_IN
 
 SB_BOARD, PB_BOARD = "na_sensor_board", "na_pin_board"
 # silkscreen logos and the project URL (the pin board has no room): footprint, (x, y), side, rotation; URL (x, y, side)
-BRAND = {SB_BOARD: ([(FP_ANT, (-27.6, 58.0), "F", 0), (FP_KICAD, (22.2, -44.0), "F", 0)], (-15.1, -47.7, "F"))}
+BRAND = {SB_BOARD: ([(FP_ANT, (-28.0, -48.5), "F", 0), (FP_KICAD, (26.4, -49.6), "F", 0)], (-13.0, -47.7, "F"))}
 
 
 # ============================== sensor board ==============================
@@ -64,10 +64,10 @@ def _small(ref):
 
 SB_PARTS = {
     "J1": dict(label="Hirose FH12-6S", sym="Conn_01x06", fp=FP_FH12, value="5V in (FFC)", nets=FH12_NETS,
-               pos=(*SB_J1, 0), mfr="Hirose", mpn="FH12-6S-0.5SH(55)",
+               pos=(*SB_J1, 180), mfr="Hirose", mpn="FH12-6S-0.5SH(55)",
                desc="FPC connector 0.5 mm, 6 contacts, slide lock: 5 V from the mains board's J2 (D-50)", ds=FH12_DS),
     "C1": dict(label="22uF 16V X5R 1206", sym="C", fp=FP_C1206, value="22uF 16V X5R", nets={"1": "+5V", "2": "GND"},
-               pos=(*SB_SMALL["C1"][0], 270), mfr="KEMET", mpn="C1206C226M4PACTU",
+               pos=(*SB_SMALL["C1"][0], 180), mfr="KEMET", mpn="C1206C226M4PACTU",
                desc="Ceramic 22 uF 16 V X5R 1206 at J1, 1.8 mm max", ds="https://yageogroup.com/content/datasheet/asset/file/KEM_C1006_X5R_SMD"),
     "J2": dict(sym="Conn_02x12_Odd_Even", fp=FP_B2B, value="55909-2474", label="Molex 55909-2474",
                nets=dict(CN2_MAP), pos=(MSR_CN2_X, MSR_Y, 0), mfr="Molex", mpn="55909-2474",

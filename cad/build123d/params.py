@@ -16,12 +16,13 @@ Tags:
   DATASHEET value that must come from a cited datasheet (see docs/BOM.md).
   derived   computed below - do not edit, change the inputs instead.
 """
-from math import atan, cos, log, pi, sin, sqrt
+from math import atan, cos, log, pi, radians, sin, sqrt, tan
 
 # ---- face plates (both variants) ----
 PR = 6.0                                  # face plate corner radius
 SKIN = 2.0                                # face/side wall of the hollow face plate
 FACE_CHAMFER = 1.2
+POCKET_CHAMFER = FACE_CHAMFER              # 45 deg round the remote pocket's mouth in the face (D-139)
 SPLIT_CLR = 0.25                          # face plate to barrier clearance
 BARRIER_MIN = 1.6                         # thinnest barrier wall allowed
 V0_RATED_T = 1.5                          # MEASURE placeholder: UL94 V-0 thickness of the chosen filament (TDS to cite)
@@ -52,12 +53,13 @@ POCKET_WALL = 1.6                         # pocket shell = mains barrier
 # The supplied magnet (ESTIMATE ~47.4 x 17.5, full round ends R8.75) is cut once across by the user: the piece
 # keeps one round end (down, in the recess's round end) and has a straight cut edge up.
 MAGNET_FULL = (17.5, 47.4)                # ESTIMATE supplied steel plate (adhesive) before the cut (w, length; label drawing)
-MAGNET = (17.5, 18.5, 2.0)                # cut steel piece (w, length from the round end to the cut, t ESTIMATE incl. tape)
+MAGNET = (17.5, 18.5, 1.0)                # cut steel piece (w, length from the round end to the cut, t: MEASURED steel 0.5 +
+                                          # tape 0.5, human 2026-10-13, D-148)
 # cutting jigs for the supplied steel plate (D-52): the whole plate in a pocket, round end on the stop, cut at MAGNET[1]
 JIG_CLR, JIG_WALL, JIG_FLOOR = 0.15, 3.0, 2.0   # pocket clearance round the plate, side wall, floor
 JIG_SAW = (1.2, 0.6, 8.0)                 # hacksaw guide: slot width, slot depth below the plate, wall height above it
 JIG_NOTCH_R = 4.0                         # finger notches in the side walls to lift the plate out
-MAGNET_SETBACK = 0.5                      # magnet face below the seat
+MAGNET_SETBACK = 0.2                      # magnet face below the seat (recess 1.3 shallower, human 2026-10-13, D-148)
 MAGNET_CLR = 0.3                          # recess clearance around the magnet
 MAGNET_END_R = MAGNET[0] / 2              # ESTIMATE the magnet's round end (full round, label drawing R8.76)
 
@@ -178,6 +180,8 @@ PIN_PLUNGER_D = 0.90                      # DATASHEET plunger
 PIN_PEG = (1.00, 2.10)                    # DATASHEET peg diameter, length below the board
 PIN_PAD_D, PIN_HOLE_D = 2.20, 1.20        # DATASHEET recommended solder pad, plated through hole for the peg
 PIN_RADIAL = 0.2                          # floor holes round barrel and plunger
+BLANK_CLR = 0.1                           # printed blank board (switch-only edition): its pegs' clearance in the pin
+                                          # holes, all round and under the seat (D-127)
 
 # ---- replacement back cover (D-35): the BILRESA E2490 without cells, powered from the plate ----
 # Remote coordinates: origin = remote centre, x / y as the front view, z = 0 the back's outer face.
@@ -194,7 +198,11 @@ BC_SIDE_WALL = BC_WALL - 0.1 - 0.2        # side wall: 0.1 more room inside all 
                                           # 0.2 more for the round-over's middle (D-123)
 BC_IN_RUN = B_BACK_RUN + 0.2              # inside round-over across: as much wider as the wall moved out, so it leaves
                                           # the flat back where it did; about 0.1 more room at its middle (D-123)
-BC_PRY = (6.0, 1.2)                       # MEASURE screwdriver notch in the rim at the bottom end (-y): width, depth
+BC_PRY = (6.0, 1.5)                       # screwdriver notch in the rim at the bottom end (-y): width, depth (1.2 + 0.3,
+                                          # human 2026-10-12, D-143)
+BC_LIP_RELIEF = (0.64, -25.0, 30.0)       # rim lowered at the bottom end, under the remote's lower button lip: depth up to
+                                          # y -25, a straight taper from there to nothing at y +30 (human 2026-10-12/13,
+                                          # D-137, D-142, D-145, D-147; printed in fine layers, print/slice.py COVER_FINE)
 # snap clips: one at each end (x = 0), free-standing inside the end wall, below the rim; the housing's edge comes
 # down into the cover and the clip's hook catches its wall
 BC_LATCH_W = (4.0 - 2 * 0.15, 3.1)        # clip width (bottom, top): bottom fills the housing's 4.0 slot less 0.15 each side
@@ -211,8 +219,10 @@ BC_LATCH_RIM_GAP = 1.0                    # MEASURED top clip's top below the ri
 # shell's round-over (D-113)
 BC_LATCH_CATCH = (0.3, None)
 BC_LATCH_RAMP = 30.0                      # bottom clip: ramp under the hook, deg below horizontal (human 2026-10-12, D-126)
-BC_LATCH_CATCH_Z = 3.32                   # bottom clip's catch (tip face's lower end) above the inside floor (human
-                                          # 2026-10-12: 0.1 nearer the rim than D-118's 3.22, D-126)
+BC_LATCH_LEAD = 45.0                      # bottom clip: lead-in on top, from the column's outer face down to the hook's tip,
+                                          # deg above horizontal (human 2026-10-12, D-141); top clip: the hook's drop h
+BC_LATCH_CATCH_Z = 3.62                   # bottom clip's catch (tip face's lower end) above the inside floor (human
+                                          # 2026-10-12: 0.1 nearer the rim than D-118's 3.22, D-126; 0.3 more, D-130)
 # inside eased out through the band where the housing rubbed (prints 2026-10-12, D-126): up to BC_EASE[0] (horizontal)
 # at BC_EASE[1] above the back face, tapering to nothing at the floor and at the straight wall
 BC_EASE = (0.42, 4.0)
@@ -257,9 +267,12 @@ def shell_in(z):
 # reach - hook - thickness < BC_WALL the clip's back merges into the end wall.
 _top_tip_z = B_SEAM_Z - BC_LATCH_RIM_GAP - 2 * BC_LATCH_HOOK[1]
 BC_LATCH_PROUD = 2.7 - shell_in_base(_top_tip_z)
-BC_LATCH_REACH = (shell_in_base(BC_WALL + BC_LATCH_CATCH_Z) + BC_LATCH_PROUD, 2.7)
+BC_LATCH_TIP_Z = 3.32                     # bottom clip: catch height its tip was placed at (D-126); the catch moved up
+                                          # since, the tip stays (human 2026-10-12, D-130)
+BC_LATCH_REACH = (shell_in_base(BC_WALL + BC_LATCH_TIP_Z) + BC_LATCH_PROUD, 2.7)
 # clip tops above the inside floor: bottom from its catch, hook and tip face; top end from BC_LATCH_RIM_GAP
-BC_LATCH_TOPS = (BC_LATCH_CATCH_Z + BC_LATCH_HOOK[0] + BC_LATCH_CATCH[0], B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
+BC_LATCH_TOPS = (BC_LATCH_CATCH_Z + BC_LATCH_CATCH[0] + (BC_LATCH_HOOK[0] + BC_LATCH_T) * tan(radians(BC_LATCH_LEAD)),
+                 B_SEAM_Z - BC_WALL - BC_LATCH_RIM_GAP)
 BC_LATCH_LEDGE_MIN = 0.4                  # flat underside proud of the shell's inner surface, at least
 # small tabs inside both long side walls, two per side either side of mid-length, into slots in the housing's long
 # sides (human, 2026-10-11, D-90): the slots' inside / outside spacing along y, tab top below the rim, tab height,
@@ -280,7 +293,7 @@ BC_STEEL_FLOOR = 0.8                      # plate, its ridge and clips 0.8 deepe
 BC_STEEL_CLR = 0.05                       # plate to the ridge (0.15 rattled on the first print, human 2026-10-09)
 BC_STEEL_CLIP_CLR = 0.15                  # plate's ends to the clips' tabs (fit confirmed on the first print)
 BC_STEEL_RIDGE = (0.8, 1.2)               # ESTIMATE ridge round the plate (photos): thickness, height above the floor
-BC_STEEL_RIDGE_GAP = 0.4                  # ridge to each side of a clip (the clip flexes free)
+BC_STEEL_RIDGE_GAP = -0.1                 # ridge to each side of a clip: negative, it runs into the clip's sides (D-140)
 BC_REG_FLOOR = 0.4                        # cover wall left under the regulator recess
 # cover flex retention (D-45): FR4 stiffener on the pad / regulator section, pressed down past snap hooks on both long
 # edges (beside each finger and the regulator); the end section drops into a slot (a lip in front of each contact
@@ -298,21 +311,21 @@ BC_FLEX_SNAP_RELIEF = 0.3                 # relief round each post (sides and be
 BC_END_LIP = (1.2, 1.0, 0.1)              # lip in front of each block's foot: thickness, height above the ledge, gap
 BC_END_SLOT = (0.8, 0.1, 0.5, 0.8, 0.1)   # slot along each block's outer face, the end section slides down it: side wall,
                                           # wall to the section's edge, lip reach over the edge, lip thickness, lip to copper
-BC_STEEL_CLIP = (6.0, 0.8, 0.45)          # clips at both ends of the plate's pocket: width, tab thickness, hook over the
-                                          # plate's edge; tab 0.8 (was 0.48, D-99): they snapped off, flex was no issue
-                                          # (human 2026-10-12, D-111); 2.8 x the bending strength, about 4.8 % strain
-BC_STEEL_CLIP_ROOT = 0.4                  # tab root: shell left under the relief round each tab (the tab flexes)
-BC_STEEL_CLIP_RELIEF = 0.3                # relief round each tab (sides, behind, and towards the plate)
+BC_STEEL_CLIP = (10.0, 1.6, 0.45)         # clips at both ends of the plate's pocket: width, tab thickness, hook over the
+                                          # plate's edge; solid in the shell, no relief: the shell flexes to let the plate
+                                          # in (they snapped at 0.48, D-99, and were still weak at 0.8 x 6 and 10, D-111,
+                                          # D-138; human 2026-10-12, D-140)
+BC_STEEL_CLIP_TIP = 0.2                   # hook's vertical tip face under its 45 deg lead-in (D-140)
 BC_STEEL_Y = -5.5                         # steel plate centre in the cover (the EU magnet sits under it, clear of the switch cup)
 BC_FLEX_Z = 2.0                           # flex underside above the back face (the regulator hangs in a recess under it)
-BC_FINGERS = ((13.2, -8.9), (13.2, -13.5))    # +5V, GND pads on the cover flex (x, y), the pad section above the GND
+BC_FINGERS = ((11.7, -8.9), (11.7, -13.5))    # +5V, GND pads on the cover flex (x, y), the pad section above the GND
                                           # contact post (D-79): the spring pins come up
                                           # through windows in the back onto them, either side of the posts' line (D-53)
 BC_DOME_DY = 0.0                          # DATASHEET contact dome 3.15 +-0.25 from the bend end of the 6.25 body (~centred)
 BC_WIN_CLR = 0.3                          # window round the spring pin's barrel (it enters the window)
 BC_PAD_D = 2.6                            # gold pad under each spring pin (cover flex): the coverlay opening; the copper
 BC_PAD_CU = 3.0                           # under it is BC_PAD_CU, its edge held by the coverlay (flex pad anchoring, D-116)
-BC_STRIP = (10.7, 16.5)                   # pad and regulator sections across x: +3V3 lane left of the pads, GND right
+BC_STRIP = (9.2, 15.0)                    # pad and regulator sections across x: +3V3 lane left of the pads, GND right
 BC_RUN = (7.2, 9.8)                       # flex run across x to the terminal end: past the GND contact post's inner face,
                                           # clear of the steel plate's ridge (D-79)
 BC_RUN_JOG = 2.0                          # jog from the pad section's inner edge across to the run, at its bottom
@@ -320,12 +333,12 @@ BC_JOG = 8.0                              # y length of the regulator section, a
                                           # for the 0603 capacitors and the ESD diode, D-116)
 BC_PAD_LOW = 0.6                          # flex below the lower pad (the pad section ends just above the terminal bend)
 # 3.3 V regulator on the cover flex (D-41), copper down in a recess in the cover: TI TLV75533PDBVR + 1 uF in / out
-BC_REG = {"U1": (13.6, -1.95), "C3": (14.8, -5.7), "C4": (13.2, 0.55), "D1": (14.8, -4.4)}   # part centres
+BC_REG = {"U1": (12.1, -1.95), "C3": (13.3, -5.7), "C4": (11.7, 0.55), "D1": (13.3, -4.4)}   # part centres
                                           # (remote x, y); D1 the ESD diode on +5V beside C3 (D-116)
 BC_REG_BODY = (3.0, 3.0, 1.45)            # DATASHEET TLV755P DBV (SOT-23-5): body + leads <= 3.0 x 3.0, 1.45 max high
 BC_CAP0603 = (1.6, 0.8, 0.9)              # DATASHEET 0603 capacitor (Samsung CL10A105KO8NNNC): 1.6 x 0.8, 0.9 max high (D-116)
 BC_TVS = (1.0, 0.6, 0.43)                 # DATASHEET onsemi ESD9B5.0ST5G SOD-923: 1.0 x 0.6 body, 0.43 max high (D-116)
-BC_REG_RECESS = (11.4, 16.4, -6.5, 1.1)  # recess under the regulator section (x0, x1, y0, y1), down to BC_REG_FLOOR
+BC_REG_RECESS = (9.9, 14.9, -6.5, 1.1)  # recess under the regulator section (x0, x1, y0, y1), down to BC_REG_FLOOR
 BC_END_T = 0.4                            # FR4 stiffener behind the flex's end section
 BC_END_H = 8.8                            # flex end section height above the flex plane: the contact pads plus 0.5
 BC_END_R = AAA_D / 2 - 0.25               # above the rim, blocks and end section stay inside this circle round each cell

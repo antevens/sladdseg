@@ -15,13 +15,13 @@ tape. Nothing here is a compliance statement; mains work is a human decision (SA
 | --- | --- | --- |
 | Barrier | the two #6-32 box screws through its flange | |
 | Face plate | clamped by the same screws; two pins key it | passive: no electronics, no contacts (D-50) |
-| Mains board | four nylon M3 standoffs (Keystone 25503) screwed into the barrier's tapped bosses, a nylon M3 × 8 screw through each corner hole (D-57) | cut the top-right standoff's stud to 5 mm first |
+| Mains board | four nylon M3 standoffs (Keystone 25503) screwed into the barrier's tapped bosses, a nylon M3 × 8 screw through each corner hole (D-57) | studs as supplied (D-134) |
 | Rocker, WAGO, PSU, F1, RV1, J2, spacer posts P1 / P2 | soldered; the rocker also snaps into the barrier's panel | rocker soldered last, with the board screwed down (see the note at the top) |
 | Spacer studs (WA-SBRIE) | screwed into P1 / P2; heatshrink over each post | D-50 |
-| Pin board | two M2 × 5 screws into the studs; in its pocket under the pocket floor, two snap clips in the pocket (top edge, right edge) hold its back face against the pins' push | D-50, D-91 |
+| Pin board | two M2 × 5 screws into the studs; in its pocket under the pocket floor, three snap clips in the pocket (top, right and bottom edges) hold its back face against the pins' push (the bottom one also holds the blank board in switch only, D-128) | D-50, D-91 |
 | Spring pins | soldered on the pin board; their barrels stand in the floor holes | D-50 |
 | FFC, mains board end | FH12 slide latch on J2 | |
-| FFC, run | from J2 between the rocker and the top-right standoff to the straight bore's mouth on the barrier's underside, through the bore and the slot; out of the flange onto the sensor board; the spare folded flat in four layers beside J1, between the flange and J1 | D-50, D-74 |
+| FFC, run | in the plane x 12.7: down out of J2, one bend up, straight through the slit in the barrier's bottom wall (behind its lip), the slit's curved top bending it over onto the sensor board; no fold, no twist | D-134 |
 | FFC, sensor board end | FH12 slide latch on the sensor board's J1 | |
 | Sensor board | pressed onto eight crush ribs on the collar's outside (0.15 mm into its window edge) for handling; in the box the flange's 1.8 mm land clamps its inner edge against the wall, the face plate's posts and frames the rest | D-50, D-68 |
 | MSR-2 | CN2 on the sensor board and three 1.5 mm SMT spacers under its board; three posts on the face plate press its board onto the spacers (the skin stands 0.3 mm clear of the CO2 add-on and the radar) | D-50, D-66, D-68 |
@@ -38,16 +38,16 @@ tape. Nothing here is a compliance statement; mains work is a human decision (SA
    onto CN2.
 3. Barrier: snap the rocker into its panel from the front. Do not solder it yet.
 4. Pin board: screw it onto the studs (M2 × 5); check that each pin moves freely.
-5. Fit the mains board on its standoffs (the pins enter the floor holes from behind; the rocker's pins or tabs
-   enter the board's slots; the pin board snaps past the two clips in its pocket) and tighten all four screws. To take
-   the board off again, press the two clip hooks outwards with a pick while pulling it back.
+5. Latch the FFC into J2 (contacts towards the board; J2's cable side faces down), then fit the mains board on its
+   standoffs (the pins enter the floor holes from behind; the rocker's pins or tabs enter the board's slots; the pin
+   board snaps past the two clips in its pocket; the cable hangs down past the board's bottom edge) and tighten all
+   four screws. To take the board off again, press the two clip hooks outwards with a pick while pulling it back.
 6. **Now solder the rocker** from the board's back, with the board screwed down and the rocker seated in the panel.
-   Then push the FFC's end into the straight bore from the underside (lay it in the groove in the corner taper, push
-   it up round the one bend into the slot); it comes out under the flange; latch it into J2 from the side
-   (J2 faces the board's right edge).
 7. Sensor board: slide it over the plug from behind (the window passes the mains board) and press it onto the collar's
-   ribs until it sits under the flange's land. From the face side pull the cable up until it lies taut along its
-   route, fold the spare in four flat layers left of J1 and latch it into J1.
+   ribs until it sits under the flange's land. Then bend the cable roughly to its shape (up from J2, over at the top),
+   slide it sideways into the slit in the barrier's bottom wall from the left through the notch, its end out under
+   the flange over the sensor board, and latch it into J1 from the front. Follow the engraved arrows: the cable is in
+   the slit, not between the barrier and the box.
 8. In the box: wire the WAGO block, screw the barrier to the ears, put the face plate on.
 
 ## EU plate
@@ -56,7 +56,8 @@ tape. Nothing here is a compliance statement; mains work is a human decision (SA
 | --- | --- | --- |
 | Barrier | two screws into the box's top and bottom domes | |
 | Face plate | four snap fingers at the corners drop into closed, keyed windows in the sensor board and the carrier (the wide one top right) and catch the grooves in the carrier's windows | D-70, D-77 |
-| Mains board, pin board | M2 screws on the barrier's long bosses | |
+| Mains board | M2 screws on the barrier's long bosses | |
+| Pin board | four M2 × 5 thread-forming screws into the barrier's bosses; its front rests on the ridge that runs along its straight edge, inside the sensor pins and round its edge between the bosses (switch only: the printed blank board, the same way; its own ridge stands beside the barrier's, D-131) | D-129, D-131 |
 | Rocker, WAGO blocks, PSU, header, socket, spring pins | soldered; the rocker also snaps into the cup | rocker soldered last, with the mains board screwed onto the barrier's bosses (see the note at the top) |
 | Cut steel piece | adhesive, in the recess in the barrier's pocket floor (round end down), 0.5 mm below the seat | D-72 |
 | Carrier | on the wall before the barrier; its lip under the barrier's edge, pinned to the wall by the barrier's two screws; the barrier's four teeth in gaps in the lip stop it turning (keyed, one way only) | D-56, D-71 |
@@ -82,10 +83,10 @@ tape. Nothing here is a compliance statement; mains work is a human decision (SA
 
 As the full plates, without the sensors' parts:
 
-- NA: no sensor board and no FFC; the plain barrier has no cable bore. The plain face plate (69.85 × 114.3 mm) is clamped
+- NA: no sensor board and no FFC; the same barrier as the full plate (D-127; its cable slit stays open, D-135). The plain face plate (69.85 × 114.3 mm) is clamped
   by the same two screws and keyed by the same two pins. The pin board, its spacer posts and the spring pins as the full plate.
-- EU: no sensor board and no sensor pins (P1 / P2 left off the pin board); the plain barrier has only the battery-free pins'
-  holes. The plain carrier's lip goes under the barrier's edge as before; the plain face plate (80 × 80 mm) snaps into the
+- EU: no sensor board and no sensor pins (P1 / P2 left off the pin board); the same barrier as the full plate (D-127; the
+  sensor pins' two holes unfilled: open). The plain carrier's lip goes under the barrier's edge as before; the plain face plate (84.6 × 84.6 mm, D-146) snaps into the
   carrier's four corner windows.
 
 ## Replacement back cover
@@ -125,7 +126,7 @@ along each contact block (D-55), the run lies in the notch along the GND contact
 ## Detail views
 
 NA plate: the face plate lifted off (it carries no electronics), the 5 V path (FFC from the mains board through the
-barrier's bore to the sensor board), the spring pins of the battery-free remote, the microphone's sound column, and a
+slit in the barrier's bottom wall to the sensor board), the spring pins of the battery-free remote, the microphone's sound column, and a
 section of every printed part (dashed line: the wall surface).
 
 | Face plate off | 5 V path |

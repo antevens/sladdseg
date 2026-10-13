@@ -7,7 +7,7 @@ import face_plate_eu
 import boards_eu
 import sensor_board_eu
 
-render.COL.update({"switch": "#b23a32", "magnet": "#4a4a4a", "box": "#d9822b", "pins": "#e3c565",
+render.COL.update({"blank": "#8d949b", "switch": "#b23a32", "magnet": "#4a4a4a", "box": "#d9822b", "pins": "#e3c565",
                "pads": "#e3c565", "bf_pins": "#c9a227", "wago": "#9aa0a6", "psu": "#2b2b2b",
                "front": "#c8a03a", "mains_board": "#2f7a46", "mains_front": "#c8a03a", "header": "#2b2b2b",
                "socket": "#2b2b2b", "carrier": "#c9a86a", "sensor_board": "#2f7a46", "sb_pads": "#e3c565",
@@ -27,9 +27,10 @@ def parts(lift=0.0, plain=False, switch=False):
     if plain or switch:
         keep = ("wago", "magnet", "mains_board") if switch else ("board", "psu", "wago", "magnet", "front", "mains_board",
                                                                  "mains_front", "header", "socket", "bf_pins")
-        return {"face_plate": face_plate_eu.build(True), "barrier": barrier_eu.build(True, switch), "carrier": sensor_board_eu.carrier(True),
+        blank = {"blank": boards_eu.blank_board()} if switch else {}
+        return {"face_plate": face_plate_eu.build(True), "barrier": barrier_eu.build(), "carrier": sensor_board_eu.carrier(True),
                 "remote": boards_eu.remote(lift), "switch": boards_eu.switch_model(),
-                **{k: b[k] for k in keep}, "box": box_shell()}
+                **{k: b[k] for k in keep}, **blank, "box": box_shell()}
     return {"face_plate": face_plate_eu.build(), "barrier": barrier_eu.build(), "remote": boards_eu.remote(lift),
             "switch": boards_eu.switch_model(), "board": b["board"], "psu": b["psu"], "wago": b["wago"], "magnet": b["magnet"], "front": b["front"],
             "mains_board": b["mains_board"], "mains_front": b["mains_front"], "header": b["header"], "socket": b["socket"],
