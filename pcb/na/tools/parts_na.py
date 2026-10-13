@@ -14,8 +14,8 @@ from common_parts import (FP_ROCKER, FP_MOV, FP_FUSE, FP_ANT, FP_KICAD, ANT_LOGO
 NS = uuid.UUID("2b7f0c1e-4c1d-4f55-9b0e-3a8d6c2f1e07")
 LIB = "na_mains_board"
 PROJECT = "na_mains_board"
-REV = "v0.6"
-REV_DATE = "2026-10-12"                     # title blocks and silkscreen
+REV = "v0.7"
+REV_DATE = "2026-10-13"                     # title blocks and silkscreen
 
 
 def uid(*names):

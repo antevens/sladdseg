@@ -1,4 +1,4 @@
-# Shared board (v0.6)
+# Shared board (v0.7)
 
 The replacement back cover's flex (D-35, D-50), the same board in both variants, and the generator for every
 low-voltage board: `tools/gen_lv.py na|eu|shared` writes the NA sensor and pin boards into `../na/kicad/`, the EU

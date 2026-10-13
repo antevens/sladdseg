@@ -51,7 +51,7 @@ def main():
             f"z={MB_FRONT_Z - MB[2] / 2}#mains board: posts, spacer posts, J2"]
     tool = [sys.executable, str(ROOT / "cad" / "tools" / "sections.py")]
     subprocess.run(tool + [str(R / "na_sections.png")] + args +
-                   ["--title", "v0.6 sections (dashed red = wall surface, z 0)", "--dpi", "90"] +
+                   ["--title", "v0.7 sections (dashed red = wall surface, z 0)", "--dpi", "90"] +
                    [a for c in cuts for a in ("--cut", c)], check=True)
     print("wrote", R / "na_sections.png")
     # microphone (D-29, D-83): mic and ADAU7002 on the sensor board, the sound column over them to the hole, zoomed

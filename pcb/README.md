@@ -1,4 +1,4 @@
-# Boards (v0.6)
+# Boards (v0.7)
 
 Seven boards, generated from Python into KiCad 9 projects (ERC and DRC at all severities, schematic parity), in one
 folder per variant and one for the board both variants share. Spacing values are design targets for human review.

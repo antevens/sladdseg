@@ -281,9 +281,9 @@ Do not violate these; ask the human if a task seems to require it.
 5. Never describe the device as code-compliant, certified, or safe to install.
    Say what was checked. Energising anything mains-side is a human decision.
 
-## Current status (v0.6)
+## Current status (v0.7)
 
-The decision log in `docs/DESIGN.md` (D-50..D-79 for v0.4, D-80..D-119 for v0.5, D-120 on for v0.6) has the history.
+The decision log in `docs/DESIGN.md` (D-50..D-79 for v0.4, D-80..D-119 for v0.5, D-120..D-150 for v0.6, D-151 on for v0.7) has the history.
 
 NA: barrier (the insert, PC-FR) and passive face plate; mains board (rocker, WAGO block, PSU,
 J2) on four nylon standoffs (D-57), ERC/DRC clean, PCBWay pack in `pcb/na/fab/na_mains_board/`; sensor board on the

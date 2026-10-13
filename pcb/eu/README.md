@@ -1,4 +1,4 @@
-# EU boards (v0.6)
+# EU boards (v0.7)
 
 The European plate's boards (round flush box, DIN 49073, Ø60 inside): the mains board and the pin board, both
 hanging from bosses under the barrier, from `tools/gen_eu.py` with their parts in `tools/parts_eu.py` (D-30, D-36); the

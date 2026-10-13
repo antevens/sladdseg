@@ -35,8 +35,8 @@ MB, PB = "eu_mains_board", "eu_pin_board"
 # silkscreen logos and the project URL: footprint, (x, y), side, rotation; URL (x, y, side)
 BRAND = {"eu_mains_board": ([(FP_ANT, (0.0, -9.95), "B", 0), (FP_KICAD, (15.0, -10.5), "F", 0)], (-0.4, 23.7, "B")),
          "eu_pin_board": ([(FP_ANT, (-9.9, -6.7), "F", 0), (FP_KICAD, (2.4, -5.7), "B", 0)], (-2.1, -12.6, "B"))}
-REV = "v0.6"
-REV_DATE = "2026-10-12"                    # title blocks
+REV = "v0.7"
+REV_DATE = "2026-10-13"                    # title blocks
 NS = uuid.UUID("8d2f4a8e-0b3c-4e7a-9f1d-6c5b2a1e3d40")
 
 

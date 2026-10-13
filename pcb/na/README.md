@@ -1,4 +1,4 @@
-# NA boards (v0.6)
+# NA boards (v0.7)
 
 The North American plate's boards (single-gang box, Decora): the mains board, the sensor board and the pin board. The
 mains board comes from `tools/` (`parts_na.py`, docs/DESIGN.md D-24, D-25, D-26); the sensor board and the pin board
