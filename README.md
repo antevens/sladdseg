@@ -12,23 +12,10 @@ temperature, humidity and push-to-talk voice at the switch location, powered fro
 Two variants, equal in every respect: **NA** for a 2 × 3 in single-gang box, **EU** for a Ø60 / 68 mm round flush
 box. Printed parts and small PCBs, all generated from this repository.
 
-**Status: v0.7, design and test-print stage.** The PCBs have not been ordered and no plate has been energised.
+**Status: v0.7, design stage.** The PCBs have not been ordered and no plate has been energised.
 Nothing here is certified or code-compliant. Read [`docs/SAFETY.md`](docs/SAFETY.md) before building anything.
 
-## Why a custom plate
-
-A wall switch in series with a smart bulb cuts its power, so the bulb drops off the network and out of every
-automation. What is on the market was looked at first ([`docs/DESIGN.md`](docs/DESIGN.md), D-1 to D-6):
-
-- Inovelli's Blue mmWave dimmer (Zigbee, smart-bulb mode) comes closest. It has no humidity sensor and no mount for
-  the remote.
-- Stand-alone presence sensors (Aqara FP300, Everything Presence Lite) are too big for a switch location and have no
-  climate sensing. IKEA's own sensor is PIR.
-- A Shelly relay behind a conventional switch adds a second controller to bulbs that already have one.
-- Designing mains switching electronics, or putting Li-ion cells in the box, was ruled out: approved-equipment rules,
-  heat, fire risk.
-
-The design that follows from that:
+## Design
 
 - The remote is the control. The BILRESA sits recessed in the plate, 2.6 mm proud, held by its magnet on a piece of
   the steel plate IKEA supplies with it.
@@ -59,9 +46,9 @@ From the room inwards:
 | --- | --- | --- |
 | Face plate | PETG print, passive | nothing: no electronics, no contacts, so it lifts off and goes back on blind. EU: snaps into a printed carrier that holds the sensor board |
 | Sensor board (full) | FR4, under the face plate, outside the box | the MSR-2 (ESP32-C3, LD2410B mmWave, optional CO₂) on its rear connector behind a thin radar skin; an SHT40 in a vented bay; a PDM microphone with its PDM-to-I²S converter. ESPHome over Wi-Fi; 5 V from the mains board |
-| Barrier | Elegoo PC-FR print; designed for a UL94 V-0 filament, PLA and PETG for test fits only | the remote's pocket with the steel piece, the rocker's panel, and the wall between the mains volume and the low-voltage side |
+| Barrier | PC-FR print, designed for a UL94 V-0 filament | the remote's pocket with the steel piece, the rocker's panel, and the wall between the mains volume and the low-voltage side |
 | Pin board (editions 2, 3) | FR4, in the box under the pocket floor | two spring pins onto the back cover's pads |
-| Mains board | FR4, in the box; a high-CTI version and a bus-bar version on standard FR4 | the rocker, WAGO 2604 blocks for line, neutral and earth in and out, the 5 V supply on the switched side. Line copper on one side, neutral on the other, every mains path sized for 15 A |
+| Mains board | FR4, in the box | the rocker, WAGO 2604 blocks for line, neutral and earth in and out, the 5 V supply on the switched side. The load runs in 0.5 mm copper bars on the front between the blocks and the rocker; every mains path sized for 15 A |
 
 No soldering at assembly: 5 V between boards over spring contacts, with one latched flat cable in the NA plate;
 house wiring in the WAGO blocks.
@@ -161,8 +148,8 @@ holds no energy.
 
 ## Building from source
 
-CAD in Python (build123d); boards in Python to KiCad 9 projects (ERC and DRC clean, schematic parity); ElegooSlicer
-projects for an Elegoo Centauri Carbon 2; PCBWay packs; order lists with live DigiKey and Mouser stock. `make check`
+CAD in Python (build123d); boards in Python to KiCad 9 projects (ERC and DRC clean, schematic parity); slicer
+projects; PCBWay packs; order lists with live DigiKey and Mouser stock. `make check`
 includes a test that no air path leads from the mains volume through the printed barrier to the room.
 
 ```bash
@@ -192,12 +179,11 @@ make order           # DigiKey / Mouser lists, PCBWay packs
 
 ## Status
 
-- **Ready to order:** the NA and EU mains boards, their bus-bar versions and both pin boards have PCBWay packs, after
+- **Ready to order:** the NA and EU mains boards and both pin boards have PCBWay packs, after
   the human review in [`pcb/na/fab/README.md`](pcb/na/fab/README.md) and [`pcb/eu/fab/README.md`](pcb/eu/fab/README.md).
-- **Prototype only:** the NA and EU sensor boards (CN2's position on the MSR-2 is a photo estimate) and the back cover
+- **Not ready to order:** the NA and EU sensor boards (CN2's position on the MSR-2 is a photo estimate) and the back cover
   flex (contact positions not yet measured on a remote).
-- **To measure:** the `MEASURE` and `ESTIMATE` values in [`docs/MEASUREMENTS.md`](docs/MEASUREMENTS.md), from test
-  prints and a real box. Test prints are under way.
+- **To measure:** the `MEASURE` and `ESTIMATE` values in [`docs/MEASUREMENTS.md`](docs/MEASUREMENTS.md).
 - **Not started:** the ESPHome configuration for the MSR-2 with the SHT40 and the microphone.
 
 ## Open items
@@ -243,7 +229,7 @@ Sources and assumptions:
 - **PCBs at 1 and 5 (sourced):** PCBWay's 5-piece minimum order, 2026-10-12; one plate pays for the whole order.
   - Mains board, pin board, EU mains board, EU pin board: 5.00 each order.
   - Sensor board 24.93, EU sensor board 25.44.
-  - Cover flex: about 25 (prototype price, given by the human).
+  - Cover flex: about 25 (estimate).
   - Per plate: 1 plate NA full 59.93, NA battery-free 35.00, EU full 60.44, EU battery-free 35.00, switch only
     5.00 (the mains board alone); 5 plates one fifth of that.
 - **PCBs at 100 (sourced):** PCBWay quotes for 100 pieces, 2026-10-12.
@@ -259,7 +245,7 @@ Sources and assumptions:
 Known gaps:
 
 - **Quote specs differ from the design:**
-  - The mains boards were quoted in standard FR4 with 1 oz copper; the design calls for high-CTI FR4 and 2 oz.
+  - The mains boards were quoted with 1 oz copper; the NA board is 2 oz. The copper bars are not quoted.
   - The pin board was quoted at 1.6 mm, not 0.8.
 - **Not included:**
   - PCB assembly (the sensor board, the EU sensor board and the cover flex need it);
