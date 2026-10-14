@@ -1,53 +1,49 @@
 # Sladdseg
 
-**The wall switch for a house where every bulb is already smart.**
-
-Smart bulbs and wall switches do not get along. Flip the switch and the bulb goes dark, drops off the network and out
-of reach of every automation, so the switch ends up taped in the on position. Sladdseg replaces that switch with a
-plate that keeps the bulbs powered and puts an IKEA BILRESA scroll-wheel remote where the switch used to be. The remote
-lifts out for use from the sofa. Behind it, a real rocker switch still cuts the circuit for the day the controller is
-down or an electrician needs it dead. The full edition adds mmWave presence, temperature, humidity and push-to-talk
-voice at every switch location, powered from the wall box, with no batteries to change.
+Sladdseg is a wall plate that replaces a light switch on a circuit where every bulb is a smart bulb (here IKEA
+Matter-over-Thread). The bulbs stay powered. An IKEA BILRESA scroll-wheel remote sits recessed in the plate and lifts
+out; behind it a rocker switch cuts line and neutral to the circuit. The full edition adds mmWave presence,
+temperature, humidity and push-to-talk voice at the switch location, powered from the box.
 
 | North American single-gang (Decora) | European round flush box (DIN 49073) |
 | --- | --- |
 | ![NA full plate](docs/renders/na_front.png) | ![EU full plate](docs/renders/eu_front.png) |
 
-Two variants, equal in every respect: **NA** for a 2 × 3 in single-gang box and **EU** for a Ø60 / 68 mm round flush
-box. Both are printed parts and small PCBs: a hobby FDM printer, a PCB fab, and the parametric CAD and generated KiCad
-boards in this repository.
+Two variants, equal in every respect: **NA** for a 2 × 3 in single-gang box, **EU** for a Ø60 / 68 mm round flush
+box. Printed parts and small PCBs, all generated from this repository.
 
-**Status: v0.7, design and test-print stage.** The PCBs have not been ordered yet and no plate has been energised.
-Nothing here is certified or code-compliant. It is an open design for people who can read a schematic, print a part
-and work with an electrician and an inspector. Read [`docs/SAFETY.md`](docs/SAFETY.md) before building anything.
+**Status: v0.7, design and test-print stage.** The PCBs have not been ordered and no plate has been energised.
+Nothing here is certified or code-compliant. Read [`docs/SAFETY.md`](docs/SAFETY.md) before building anything.
 
-## Why Sladdseg
+## Why a custom plate
 
-- **The bulbs stay powered.** No relay, no dimmer and no firmware on the mains side. A smart relay adds nothing when
-  every bulb is smart, so there is none.
-- **The remote you already own, in the wall.** The BILRESA sits recessed in the plate, 2.6 mm proud of the face,
-  held by its own magnet on a piece of the steel plate IKEA ships with it. Lift it out and it is a handheld remote
-  again.
-- **A real switch when you need one.** Under the remote, a hidden DPST rocker breaks line and neutral to the lighting
-  load. Off and on again, with the bulbs' power-on state set to "On", gives you light when Home Assistant is down.
-  Off also de-powers the plate's own electronics.
-- **Sensors where the switch was.** The full edition carries an Apollo MSR-2 (ESP32-C3, LD2410B mmWave presence,
-  optional CO₂) behind a thin radar skin, an SHT40 temperature and humidity sensor in a vented bay, and a MEMS
-  microphone for push-to-talk voice to Home Assistant's Assist pipeline. All of it runs ESPHome over Wi-Fi.
-- **No batteries, no soldering at assembly.** The battery-free and full editions run the remote from the plate's 5 V
-  through spring pins and a printed replacement back cover. The face plate is passive, with no electronics and no
-  contacts, so it lifts off and goes back on blind. Between boards the 5 V runs over spring contacts, with one latched
-  flat cable in the NA plate. House wiring lands in WAGO push-in blocks.
-- **Certified parts do the dangerous jobs.** The rocker (Marquardt 1802.2504 or E-Switch RA412C1100), the 5 V supply
-  (Mean Well IRM-03-5 for NA, Zettler ZPI03S0500WC for EU) and the terminal blocks (WAGO 2604) are bought in with
-  their marks. The boards they sit on are designed to IEC 62368-1 spacing targets, for human review.
-- **Everything is generated.** CAD in Python (build123d), boards in Python to KiCad 9 (ERC and DRC clean, schematic
-  parity), slicer projects, order lists with live DigiKey and Mouser stock, and a check suite that includes a test
-  that no air path leads from the mains volume through the printed barrier to the room.
+A wall switch in series with a smart bulb cuts its power, so the bulb drops off the network and out of every
+automation. What is on the market was looked at first ([`docs/DESIGN.md`](docs/DESIGN.md), D-1 to D-6):
+
+- Inovelli's Blue mmWave dimmer (Zigbee, smart-bulb mode) comes closest. It has no humidity sensor and no mount for
+  the remote.
+- Stand-alone presence sensors (Aqara FP300, Everything Presence Lite) are too big for a switch location and have no
+  climate sensing. IKEA's own sensor is PIR.
+- A Shelly relay behind a conventional switch adds a second controller to bulbs that already have one.
+- Designing mains switching electronics, or putting Li-ion cells in the box, was ruled out: approved-equipment rules,
+  heat, fire risk.
+
+The design that follows from that:
+
+- The remote is the control. The BILRESA sits recessed in the plate, 2.6 mm proud, held by its magnet on a piece of
+  the steel plate IKEA supplies with it.
+- The rocker is the fallback. A hidden DPST rocker breaks line and neutral to the lighting load. Off and on, with the
+  bulbs' power-on state set to "On", gives light when Home Assistant is down. Off also de-powers the plate's
+  electronics.
+- Nothing on the mains side is designed here. The rocker (Marquardt 1802.2504 or E-Switch RA412C1100), the 5 V
+  supply (Mean Well IRM-03-5 for NA, Zettler ZPI03S0500WC for EU) and the terminal blocks (WAGO 2604) are bought in
+  with their marks. The board they sit on is designed to IEC 62368-1 spacing targets, for human review.
+- Cost, parts and PCBs per plate in USD: a full NA plate about 111 at one and 38 at a hundred, plus the MSR-2 at
+  38 to 58 retail; a switch-only plate 21 at one and 10 at a hundred. EU runs a little lower. Details under Cost.
 
 ## Three editions
 
-| Edition | What you get | NA face plate | EU face plate |
+| Edition | Contents | NA face plate | EU face plate |
 | --- | --- | --- | --- |
 | **1. Switch only** | the rocker switch and terminal blocks on the mains board, nothing else; the remote on its own cells and back cover | standard Decora size, 69.85 × 114.3 mm | 84.6 × 84.6 mm |
 | **2. Battery-free** | as 1, plus the 5 V power supply, the spring pins and the replacement back cover: the remote stays in the plate without cells | standard Decora size, 69.85 × 114.3 mm | 84.6 × 84.6 mm |
@@ -59,24 +55,18 @@ Every edition of a variant uses the same printed barrier and the same mains boar
 
 From the room inwards:
 
-- **Remote:** an IKEA BILRESA scroll-wheel remote, kept intact. In editions 2 and 3 its back cover is replaced by a
-  printed one with a small flex: two pads take 5 V from the plate's spring pins and a 3.3 V regulator feeds the
-  remote's cell contacts through spring fingers.
-- **Face plate:** passive, printed in PETG. The EU plate snaps into a printed carrier that holds the sensor board.
-- **Sensor board (full edition):** under the face plate, outside the box. Carries the MSR-2 on its rear connector, the
-  SHT40 and the microphone with its PDM-to-I²S converter. 5 V from the mains board.
-- **Barrier:** the printed wall between the mains volume and the low-voltage side. It holds the remote's pocket, the
-  steel piece the remote's magnet grabs and the rocker's panel. Designed for a UL94 V-0 filament and printed in
-  Elegoo PC-FR; PLA and PETG prints are for test fits only.
-- **Pin board (editions 2 and 3):** two spring pins through the pocket floor onto the back cover's pads.
-- **Mains board:** in the box. The rocker, WAGO 2604 push-in blocks for line, neutral and earth in and out, and the
-  5 V supply fed from the switched side, so the rocker's off position also de-powers everything on the plate. Line
-  copper on one side of the board, neutral on the other, every mains path sized for 15 A. A bus-bar version with
-  laser-cut copper bars on standard FR4 exists for both variants.
+| Part | Material, place | Carries |
+| --- | --- | --- |
+| Face plate | PETG print, passive | nothing: no electronics, no contacts, so it lifts off and goes back on blind. EU: snaps into a printed carrier that holds the sensor board |
+| Sensor board (full) | FR4, under the face plate, outside the box | the MSR-2 (ESP32-C3, LD2410B mmWave, optional CO₂) on its rear connector behind a thin radar skin; an SHT40 in a vented bay; a PDM microphone with its PDM-to-I²S converter. ESPHome over Wi-Fi; 5 V from the mains board |
+| Barrier | Elegoo PC-FR print; designed for a UL94 V-0 filament, PLA and PETG for test fits only | the remote's pocket with the steel piece, the rocker's panel, and the wall between the mains volume and the low-voltage side |
+| Pin board (editions 2, 3) | FR4, in the box under the pocket floor | two spring pins onto the back cover's pads |
+| Mains board | FR4, in the box; a high-CTI version and a bus-bar version on standard FR4 | the rocker, WAGO 2604 blocks for line, neutral and earth in and out, the 5 V supply on the switched side. Line copper on one side, neutral on the other, every mains path sized for 15 A |
 
-All printed parts are sliced for an Elegoo Centauri Carbon 2, and the boards are packed for PCBWay.
+No soldering at assembly: 5 V between boards over spring contacts, with one latched flat cable in the NA plate;
+house wiring in the WAGO blocks.
 
-## Using it
+## Operation
 
 Day to day the lights are controlled wirelessly: the remote, Home Assistant, the IKEA app or a voice assistant. The
 rocker switch is for two cases:
@@ -95,11 +85,11 @@ rocker switch is for two cases:
 > Confirm which supply wire is line with a tester before connecting.
 
 The microphone (full edition) streams to Home Assistant's Assist pipeline only when listening is started from Home
-Assistant, for example by an automation on a remote button. There is no wake word and no speaker.
+Assistant. There is no wake word and no speaker.
 
 ## North American single-gang / Decora
 
-Full edition: lift the remote and the rocker switch is there.
+Full edition:
 
 | Remote in place | Remote out, rocker switch exposed |
 | --- | --- |
@@ -128,9 +118,8 @@ Battery-free edition:
 
 ## European round flush box (DIN 49073)
 
-The barrier closes the box and carries the remote; the mains board sits at the rocker switch's seat under it, the pin
-board just under the barrier, the sensor board in a printed carrier on the wall, and the face plate snaps into the
-carrier.
+The barrier closes the box and carries the remote; under it the mains board at the rocker's seat and the pin board;
+on the wall the sensor board in a printed carrier, and the face plate snapped into the carrier.
 
 Full edition:
 
@@ -161,21 +150,20 @@ Battery-free edition:
 
 ## Battery-free back cover
 
-For fixed installs: the printed cover replaces the remote's own back cover and runs it from the plate with no cells.
-The remote works only while it sits in the plate; lifted out, it is off. Two gold pads behind windows in the cover's
-back take 5 V from the plate's spring pins, and a 3.3 V regulator on the cover's flex feeds two spring fingers on the
-remote's battery contacts. It is not a charging circuit and holds no energy. A version with a battery and a charger
-would be a welcome contribution.
+For fixed installs: the printed cover replaces the remote's own and runs it from the plate with no cells; lifted
+out, the remote is off. Two pads behind windows in the cover's back take 5 V from the spring pins, and a 3.3 V
+regulator on the cover's flex feeds two spring fingers on the remote's battery contacts. Not a charging circuit; it
+holds no energy.
 
 | Cover with its flex | Exploded in the EU plate |
 | --- | --- |
 | ![Back cover, inside](docs/renders/bc_inside.png) | ![Back cover, exploded](docs/renders/bc_exploded.png) |
 
-## Build it
+## Building from source
 
-Everything is generated from source: the CAD is Python (build123d), the boards are Python that writes KiCad 9
-projects, the print jobs are ElegooSlicer projects, and the order lists come from the part files. Ubuntu 24.04,
-KiCad 9 and Python 3 are the toolchain.
+CAD in Python (build123d); boards in Python to KiCad 9 projects (ERC and DRC clean, schematic parity); ElegooSlicer
+projects for an Elegoo Centauri Carbon 2; PCBWay packs; order lists with live DigiKey and Mouser stock. `make check`
+includes a test that no air path leads from the mains volume through the printed barrier to the room.
 
 ```bash
 make system-deps     # once, Ubuntu 24.04 (KiCad 9, headless slicer libs)
@@ -212,16 +200,16 @@ make order           # DigiKey / Mouser lists, PCBWay packs
   prints and a real box. Test prints are under way.
 - **Not started:** the ESPHome configuration for the MSR-2 with the SHT40 and the microphone.
 
-## Contributing
+## Open items
 
-Pull requests and issues are welcome. Things on the list that someone else could pick up:
+Suitable for a contribution:
 
-- a back cover with a battery and a charger, so the remote keeps working out of the plate;
+- a back cover with a battery and a charger;
 - a UK variant (86 mm plate, shallow back box);
 - a version for the BILRESA dual-button remote (IKEA E2489);
 - a jumbo-plate option.
 
-Read [`AGENTS.md`](AGENTS.md) first: it has the conventions, the hard constraints and the checks that must stay green.
+[`AGENTS.md`](AGENTS.md) has the conventions, the hard constraints and the checks that must stay green.
 
 ## Cost (2026-10-12)
 
