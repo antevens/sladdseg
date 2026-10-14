@@ -9,32 +9,28 @@ temperature, humidity and push-to-talk voice at the switch location, powered fro
 | --- | --- |
 | ![NA full plate](docs/renders/na_front.png) | ![EU full plate](docs/renders/eu_front.png) |
 
-Two variants, equal in every respect: **NA** for a 2 × 3 in single-gang box, **EU** for a Ø60 / 68 mm round flush
-box. Printed parts and small PCBs, all generated from this repository.
-
-**Status: v0.7, design stage.** The PCBs have not been ordered and no plate has been energised.
-Nothing here is certified or code-compliant. Read [`docs/SAFETY.md`](docs/SAFETY.md) before building anything.
+Two variants: **NA** for a 2 × 3 in single-gang box, **EU** for a Ø60 / 68 mm round flush box. Printed parts and
+small PCBs, all generated from this repository.
 
 ## Design
 
-- The remote is the control. The BILRESA sits recessed in the plate, 2.6 mm proud, held by its magnet on a piece of
-  the steel plate IKEA supplies with it.
-- The rocker is the fallback. A hidden DPST rocker breaks line and neutral to the lighting load. Off and on, with the
-  bulbs' power-on state set to "On", gives light when Home Assistant is down. Off also de-powers the plate's
-  electronics.
-- Nothing on the mains side is designed here. The rocker (Marquardt 1802.2504 or E-Switch RA412C1100), the 5 V
-  supply (Mean Well IRM-03-5 for NA, Zettler ZPI03S0500WC for EU) and the terminal blocks (WAGO 2604) are bought in
-  with their marks. The board they sit on is designed to IEC 62368-1 spacing targets, for human review.
-- Cost, parts and PCBs per plate in USD: a full NA plate about 111 at one and 38 at a hundred, plus the MSR-2 at
-  38 to 58 retail; a switch-only plate 21 at one and 10 at a hundred. EU runs a little lower. Details under Cost.
+- The remote is the control. The BILRESA sits in the plate, held by a magnet.
+- The rocker is the fallback. Hidden behind the remote, it breaks line and neutral to the load and the plate's
+  electronics; off and on brings the lights up without Home Assistant.
+- Mains side: a certified rocker (Marquardt 1802.2504 or E-Switch RA412C1100), a certified 5 V supply and push-in
+  terminal blocks, on a board designed to IEC 62368-1 spacing.
 
-## Three editions
+## Editions
 
-| Edition | Contents | NA face plate | EU face plate |
+| | Switch | Batt Free | Full |
 | --- | --- | --- | --- |
-| **1. Switch only** | the rocker switch and terminal blocks on the mains board, nothing else; the remote on its own cells and back cover | standard Decora size, 69.85 × 114.3 mm | 84.6 × 84.6 mm |
-| **2. Battery-free** | as 1, plus the 5 V power supply, the spring pins and the replacement back cover: the remote stays in the plate without cells | standard Decora size, 69.85 × 114.3 mm | 84.6 × 84.6 mm |
-| **3. Full** | as 2, plus the sensor board: Apollo MSR-2 (mmWave presence, optional CO₂), SHT40 temperature and humidity, push-to-talk microphone | 72.2 × 131.75 mm | 84.6 × 122.4 mm |
+| Rocker switch and terminal blocks on the mains board | yes | yes | yes |
+| Remote | on its own cells | powered from the plate, no cells | powered from the plate, no cells |
+| 5 V power supply on the mains board | no | yes | yes |
+| Spring pins, pin board and replacement back cover | no | yes | yes |
+| Sensor board: MSR-2 mmWave presence (optional CO₂), SHT40 temperature and humidity, push-to-talk microphone | no | no | yes |
+| NA face plate | 69.85 × 114.3 mm (standard Decora) | 69.85 × 114.3 mm (standard Decora) | 72.2 × 131.75 mm |
+| EU face plate | 84.6 × 84.6 mm | 84.6 × 84.6 mm | 84.6 × 122.4 mm |
 
 Every edition of a variant uses the same printed barrier and the same mains board design, populated to suit.
 
@@ -45,13 +41,10 @@ From the room inwards:
 | Part | Material, place | Carries |
 | --- | --- | --- |
 | Face plate | PETG print, passive | nothing: no electronics, no contacts, so it lifts off and goes back on blind. EU: snaps into a printed carrier that holds the sensor board |
-| Sensor board (full) | FR4, under the face plate, outside the box | the MSR-2 (ESP32-C3, LD2410B mmWave, optional CO₂) on its rear connector behind a thin radar skin; an SHT40 in a vented bay; a PDM microphone with its PDM-to-I²S converter. ESPHome over Wi-Fi; 5 V from the mains board |
+| Sensor board | FR4, under the face plate, outside the box | the MSR-2 (ESP32-C3, LD2410B mmWave, optional CO₂) on its rear connector behind a thin radar skin; an SHT40 in a vented bay; a PDM microphone with its PDM-to-I²S converter. ESPHome over Wi-Fi; 5 V from the mains board |
 | Barrier | PC-FR print, designed for a UL94 V-0 filament | the remote's pocket with the steel piece, the rocker's panel, and the wall between the mains volume and the low-voltage side |
-| Pin board (editions 2, 3) | FR4, in the box under the pocket floor | two spring pins onto the back cover's pads |
+| Pin board (Batt Free, Full) | FR4, in the box under the pocket floor | two spring pins onto the back cover's pads |
 | Mains board | FR4, in the box | the rocker, WAGO 2604 blocks for line, neutral and earth in and out, the 5 V supply on the switched side. The load runs in 0.5 mm copper bars on the front between the blocks and the rocker; every mains path sized for 15 A |
-
-No soldering at assembly: 5 V between boards over spring contacts, with one latched flat cable in the NA plate;
-house wiring in the WAGO blocks.
 
 ## Operation
 
@@ -91,13 +84,13 @@ two spacer posts, four nylon standoffs, mains board.
 
 ![NA exploded](docs/renders/na_exploded.png)
 
-Switch-only edition:
+Switch edition:
 
 | Remote in place | Remote out, rocker switch exposed |
 | --- | --- |
 | ![NA switch-only plate](docs/renders/na_switch_front.png) | ![NA switch-only plate, remote out](docs/renders/na_switch_remote_out.png) |
 
-Battery-free edition:
+Batt Free edition:
 
 | Remote in place | Remote out, rocker switch exposed |
 | --- | --- |
@@ -123,13 +116,13 @@ it and the barrier.
 
 ![EU exploded](docs/renders/eu_exploded.png)
 
-Switch-only edition:
+Switch edition:
 
 | Remote in place | Remote out, rocker switch exposed |
 | --- | --- |
 | ![EU switch-only plate](docs/renders/eu_switch_front.png) | ![EU switch-only plate, remote out](docs/renders/eu_switch_remote_out.png) |
 
-Battery-free edition:
+Batt Free edition:
 
 | Remote in place | Remote out, rocker switch exposed |
 | --- | --- |
