@@ -22,29 +22,25 @@ small PCBs, all generated from this repository.
 
 ## Editions
 
-| | Switch | Batt Free | Full |
-| --- | --- | --- | --- |
-| Rocker switch and terminal blocks on the mains board | yes | yes | yes |
-| Remote | on its own cells | powered from the plate, no cells | powered from the plate, no cells |
-| 5 V power supply on the mains board | no | yes | yes |
-| Spring pins, pin board and replacement back cover | no | yes | yes |
-| Sensor board: MSR-2 mmWave presence (optional CO₂), SHT40 temperature and humidity, push-to-talk microphone | no | no | yes |
-| NA face plate | 69.85 × 114.3 mm (standard Decora) | 69.85 × 114.3 mm (standard Decora) | 72.2 × 131.75 mm |
-| EU face plate | 84.6 × 84.6 mm | 84.6 × 84.6 mm | 84.6 × 122.4 mm |
+| Edition | Remote | Mains board | Sensors | Face plate, NA | Face plate, EU |
+| --- | --- | --- | --- | --- | --- |
+| Switch | On its own cells | Rocker, terminal blocks | None | 69.85 × 114.3 mm (Decora) | 84.6 × 84.6 mm |
+| Batt Free | Powered from the plate through spring pins, no cells | Rocker, terminal blocks, 5 V supply | None | 69.85 × 114.3 mm (Decora) | 84.6 × 84.6 mm |
+| Full | Powered from the plate through spring pins, no cells | Rocker, terminal blocks, 5 V supply | Presence (mmWave, optional CO₂), temperature and humidity, push-to-talk microphone | 72.2 × 131.75 mm | 84.6 × 122.4 mm |
 
-Every edition of a variant uses the same printed barrier and the same mains board design, populated to suit.
+The barrier and the mains board are the same in every edition.
 
-## What is in the plate
+## What is on the plate
 
 From the room inwards:
 
 | Part | Material, place | Carries |
 | --- | --- | --- |
-| Face plate | PETG print, passive | nothing: no electronics, no contacts, so it lifts off and goes back on blind. EU: snaps into a printed carrier that holds the sensor board |
-| Sensor board | FR4, under the face plate, outside the box | the MSR-2 (ESP32-C3, LD2410B mmWave, optional CO₂) on its rear connector behind a thin radar skin; an SHT40 in a vented bay; a PDM microphone with its PDM-to-I²S converter. ESPHome over Wi-Fi; 5 V from the mains board |
-| Barrier | PC-FR print, designed for a UL94 V-0 filament | the remote's pocket with the steel piece, the rocker's panel, and the wall between the mains volume and the low-voltage side |
-| Pin board (Batt Free, Full) | FR4, in the box under the pocket floor | two spring pins onto the back cover's pads |
-| Mains board | FR4, in the box | the rocker, WAGO 2604 blocks for line, neutral and earth in and out, the 5 V supply on the switched side. The load runs in 0.5 mm copper bars on the front between the blocks and the rocker; every mains path sized for 15 A |
+| Face plate | PETG print, passive | Nothing: no electronics, no contacts, so it lifts off and goes back on blind. EU: snaps into a printed carrier that holds the sensor board |
+| Sensor board | FR4, under the face plate, outside the box | The MSR-2 (ESP32-C3, LD2410B mmWave, optional CO₂) on its rear connector behind a thin radar skin; an SHT40 in a vented bay; a PDM microphone with its PDM-to-I²S converter. ESPHome over Wi-Fi; 5 V from the mains board |
+| Barrier | PC-FR print, designed for a UL94 V-0 filament | The remote's pocket with the steel piece, the rocker's panel, and the wall between the mains volume and the low-voltage side |
+| Pin board (Batt Free, Full) | FR4, in the box under the pocket floor | Two spring pins onto the back cover's pads |
+| Mains board | FR4, in the box | The rocker, WAGO 2604 blocks for line, neutral and earth in and out, the 5 V supply on the switched side. The load runs in 0.5 mm copper bars on the front between the blocks and the rocker; every mains path sized for 15 A |
 
 ## Operation
 
@@ -159,15 +155,15 @@ make order           # DigiKey / Mouser lists, PCBWay packs
 
 | Document | Contents |
 | --- | --- |
-| [`AGENTS.md`](AGENTS.md) | project overview, rules, status, backlog |
-| [`docs/SAFETY.md`](docs/SAFETY.md) | safety notes and limits |
-| [`docs/DESIGN.md`](docs/DESIGN.md) | requirements and decision log |
-| [`docs/BOM.md`](docs/BOM.md) | parts per plate |
-| [`docs/ASSEMBLY.md`](docs/ASSEMBLY.md) | what holds each part, assembly order, detail views |
-| [`docs/PRINTING.md`](docs/PRINTING.md) | print jobs, settings, order of work |
-| [`docs/MEASUREMENTS.md`](docs/MEASUREMENTS.md) | measured values and the ones still estimated |
-| [`pcb/README.md`](pcb/README.md) | all nine boards: what each carries, editions, status |
-| [`pcb/na/README.md`](pcb/na/README.md), [`pcb/eu/README.md`](pcb/eu/README.md), [`pcb/shared/README.md`](pcb/shared/README.md) | each variant's boards and the shared cover flex in detail: parts, nets, rules, board renders |
+| [`AGENTS.md`](AGENTS.md) | Project overview, rules, status, backlog |
+| [`docs/SAFETY.md`](docs/SAFETY.md) | Safety notes and limits |
+| [`docs/DESIGN.md`](docs/DESIGN.md) | Requirements and decision log |
+| [`docs/BOM.md`](docs/BOM.md) | Parts per plate |
+| [`docs/ASSEMBLY.md`](docs/ASSEMBLY.md) | What holds each part, assembly order, detail views |
+| [`docs/PRINTING.md`](docs/PRINTING.md) | Print jobs, settings, order of work |
+| [`docs/MEASUREMENTS.md`](docs/MEASUREMENTS.md) | Measured values and the ones still estimated |
+| [`pcb/README.md`](pcb/README.md) | All seven boards: what each carries, editions, status |
+| [`pcb/na/README.md`](pcb/na/README.md), [`pcb/eu/README.md`](pcb/eu/README.md), [`pcb/shared/README.md`](pcb/shared/README.md) | Each variant's boards and the shared cover flex in detail: parts, nets, rules, board renders |
 | [`pcb/order/README.md`](pcb/order/README.md) | DigiKey / Mouser order lists and PCBWay packs |
 
 ## Status
@@ -256,12 +252,12 @@ face plate, the EU carrier and the back cover in Elegoo PETG. Grams and times co
 
 | Package | Printed parts | Filament | Print time | Filament cost | Electricity | Printer wear | **Total** |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| NA full | barrier and blank board 52.5 g PC-FR; face plate 23.8 g, back cover 8.1 g PETG | 84.4 g | 3.5 h | 1.56 | 0.08 | 0.31 | **1.94** |
-| NA switch only | barrier and blank board 52.5 g PC-FR; face plate 16.7 g PETG | 69.2 g | 2.8 h | 1.39 | 0.06 | 0.25 | **1.70** |
-| NA battery-free | barrier and blank board 52.5 g PC-FR; face plate 16.7 g, back cover 8.1 g PETG | 77.3 g | 3.2 h | 1.48 | 0.07 | 0.28 | **1.84** |
-| EU full | barrier and blank board 13.3 g PC-FR; face plate 43.3 g, carrier 18.5 g, back cover 8.1 g PETG | 83.3 g | 3.0 h | 1.08 | 0.07 | 0.27 | **1.41** |
-| EU switch only | barrier and blank board 13.3 g PC-FR; face plate 30.2 g, carrier 8.6 g PETG | 52.1 g | 1.9 h | 0.73 | 0.04 | 0.17 | **0.94** |
-| EU battery-free | barrier and blank board 13.3 g PC-FR; face plate 30.2 g, carrier 8.6 g, back cover 8.1 g PETG | 60.2 g | 2.3 h | 0.82 | 0.05 | 0.20 | **1.08** |
+| NA full | Barrier and blank board 52.5 g PC-FR; face plate 23.8 g, back cover 8.1 g PETG | 84.4 g | 3.5 h | 1.56 | 0.08 | 0.31 | **1.94** |
+| NA switch only | Barrier and blank board 52.5 g PC-FR; face plate 16.7 g PETG | 69.2 g | 2.8 h | 1.39 | 0.06 | 0.25 | **1.70** |
+| NA battery-free | Barrier and blank board 52.5 g PC-FR; face plate 16.7 g, back cover 8.1 g PETG | 77.3 g | 3.2 h | 1.48 | 0.07 | 0.28 | **1.84** |
+| EU full | Barrier and blank board 13.3 g PC-FR; face plate 43.3 g, carrier 18.5 g, back cover 8.1 g PETG | 83.3 g | 3.0 h | 1.08 | 0.07 | 0.27 | **1.41** |
+| EU switch only | Barrier and blank board 13.3 g PC-FR; face plate 30.2 g, carrier 8.6 g PETG | 52.1 g | 1.9 h | 0.73 | 0.04 | 0.17 | **0.94** |
+| EU battery-free | Barrier and blank board 13.3 g PC-FR; face plate 30.2 g, carrier 8.6 g, back cover 8.1 g PETG | 60.2 g | 2.3 h | 0.82 | 0.05 | 0.20 | **1.08** |
 
 Sources and assumptions:
 

@@ -7,18 +7,22 @@ depth is still to be tried in a real box (D-36).
 | File (in each board's folder) | Use |
 | --- | --- |
 | `<board>_v0.7_gerbers.zip` | Upload as the PCB file: RS-274X Gerbers, Excellon drills in mm (PTH and NPTH separate), drill maps |
-| `<board>_v0.7_bom.csv` | Assembly BOM with MPNs (the mains board's S1 has quantity 0: do not fit) |
+| `<board>_v0.7_bom.csv` | Assembly BOM with MPNs (the mains board's S1 and BAR1–BAR4 have quantity 0: do not fit) |
+| `eu_mains_board_busbar_v0.7_bars.dxf` | The mains board's four bars for PCBWay's CNC / laser cutting: mm, one closed outline per bar with its pin holes |
 | `<board>_v0.7_centroid.csv` | Centroid, both sides, origin = board centre (S1 and the mounting holes left out) |
 | `<board>_v0.7_assembly_front.pdf`, `_assembly_back.pdf` | Assembly drawings (back mirrored) |
 | `<board>_v0.7_schematic.pdf` | Schematic |
 | `erc.rpt`, `drc.rpt` | ERC and DRC reports of this build (all severities, schematic parity on) |
 | `gerbers/` | The unzipped Gerber and drill files |
 
-## Mains board (`eu_mains_board/`)
+## Mains board (`eu_mains_board_busbar/`)
 
-- Round, 57.9 mm across, notched for the box's four screw domes; 2 layers, FR-4, 1.6 mm.
-- Copper weight: 2 oz recommended for the load paths (L / N pours carry the lights' current);
-  confirm in the thermal review.
+- Round, 57.9 mm across, notched for the box's four screw domes; 2 layers, standard FR-4, 1.6 mm, **1 oz** (no PE on
+  the board, D-94), **HASL lead-free**; the bars' lands have no solder mask.
+- The load runs in four straight laser-cut copper bars on the front, along each WAGO pole's pin row to the rocker
+  (D-153). Bars (PCBWay CNC / laser cutting): `eu_mains_board_busbar_v0.7_bars.dxf`, mm, copper C110 **0.5 mm**, tin
+  plated, four pieces (BAR1–BAR4 in the BOM, not fitted). Soldered on the front before the board goes onto the
+  barrier's bosses; S1 from the back after.
 - **The outline has a routed relief slot under the PSU.** It is part of Edge.Cuts, not a drill: add
   "routed isolation slot in outline, do not omit" to the order remarks.
 - Three Ø2.2 holes for the barrier's long bosses (M2), no copper within 1.0 mm.
@@ -37,10 +41,15 @@ depth is still to be tried in a real box (D-36).
 
 ## Review checklist (before ordering)
 
-- [ ] Isolation targets on the mains board (L–N and L–L(switched) ≥ 3.0 mm on high-CTI FR4, mains to the 5 V
-      island ≥ 8.0 mm plus the slot, D-102) reviewed against IEC 60664-1 / 62368-1 and the switch standard
-      (IEC 60669-1); the laminate ordered with CTI ≥ 600.
-- [ ] Thermal review of the load paths; choose the copper weight.
+- [ ] Isolation targets on the mains board (any two mains nets ≥ 3.2 mm on standard FR4, IEC 60664-1 creepage at
+      the 320 V row, PD2; mains to the 5 V island ≥ 8.0 mm plus the slot, D-153) reviewed against IEC 60664-1 /
+      62368-1 and the switch standard (IEC 60669-1); L and N bars both on the front (hard constraint 1).
+- [ ] Thermal review of the bars (0.5 mm copper) and the 1 oz feeds to F1, RV1 and the PSU (under 1 A).
+- [ ] The rocker's pin stems over the bars: on a sample, whether the 1802.2504's stems reach the board at the pads
+      (our model of its drawing says they do); the bars lift it by 0.5 mm plus solder (D-153).
+- [ ] The room between the board's front and the barrier for the bars (not in the CAD yet).
+- [ ] WAGO 2604 pin size against the bars' 1.3 mm holes (MEASURE on a part).
+- [ ] Optional conformal coating after assembly (D-152, docs/ASSEMBLY.md): used or not, the coating chosen; not counted towards the spacing.
 - [ ] PS1 Zettler ZPI03S0500WC (D-100): its insulation class (reinforced?) and overvoltage category are not in the
       datasheet (I/P-O/P 3600 VAC, UL/EN 62368-1): confirm with Zettler or its UL / CB file before mains use.
 - [ ] F1 T1A (Zettler's application circuit shows 0.5 A / 250 V) against the branch circuit's prospective fault current

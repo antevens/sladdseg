@@ -14,21 +14,21 @@ Nothing here is a compliance claim, and nothing has been checked by a third part
 
 | Board | Editions | Size, material | Carries | Status |
 | --- | --- | --- | --- | --- |
-| NA mains board | all | 47 × 72 mm, FR4 1.6 mm (high-CTI; copper weight open: 1 oz designed, 2 oz option), 2 layers | rocker switch S1, WAGO 2604-1106 (L / N / PE in and out), F1, RV1, Mean Well IRM-03-5, J2 (5 V FFC), spacer posts P1 / P2; switch only: S1 and J1 alone | PCBWay pack in `na/fab/na_mains_board/` |
-| NA sensor board | full | 66.3 × 125.9 mm, FR4 1.6 mm, 2 layers | J1 (5 V FFC), J2 (MSR-2's CN2), SHT40, microphone + ADAU7002 | no fab files: CN2 pinout not confirmed |
+| NA mains board (bus bars, D-153) | all | 47 × 72 mm, standard FR4 1.6 mm, 2 oz, HASL, 2 layers | rocker switch S1, WAGO 2604-1106 (L / N / PE in and out), F1, RV1, Mean Well IRM-03-5, J2 (5 V FFC), spacer posts P1 / P2; four 0.5 mm copper bars on the front (J1 – S1), PE ring both sides, closed slot under PS1; switch only: S1 and J1 alone | PCBWay pack and bar DXF in `na/fab/na_mains_board_busbar/` |
+| NA sensor board | full | 66.3 × 125.9 mm, FR4 1.6 mm, 2 layers | J1 (5 V FFC), J2 (MSR-2's CN2), SHT40, microphone + ADAU7002 | fit-test prototype: CN2's position on the MSR-2 estimated |
 | NA pin board | battery-free, full | 14 × 12 mm, FR4 0.8 mm, 2 layers | two Harwin P70 spring pins onto the back cover, on the mains board's spacer posts | PCBWay pack in `na/fab/na_pin_board/` |
-| EU mains board | all | Ø58 mm, FR4 1.6 mm (high-CTI, 2 oz), 2 layers | rocker switch S1, two WAGO 2604-3102, F1, RV1, Zettler ZPI03S0500WC, J3 (5 V header); switch only: S1, J1, J2 alone | PCBWay pack in `eu/fab/eu_mains_board/` |
+| EU mains board (bus bars, D-153) | all | Ø58 mm, standard FR4 1.6 mm, 1 oz, HASL, 2 layers | rocker switch S1, two WAGO 2604-3102, F1, RV1, Zettler ZPI03S0500WC, J3 (5 V header); four straight 0.5 mm copper bars on the front (J1 / J2 – S1); switch only: S1, J1, J2 alone | PCBWay pack and bar DXF in `eu/fab/eu_mains_board_busbar/` |
 | EU pin board | battery-free, full | 58 × 27.9 mm D-shape, FR4 1.6 mm, 2 layers | socket on the mains board's J3, C1, four Harwin P70 spring pins (sensor board, back cover) | PCBWay pack in `eu/fab/eu_pin_board/` |
-| EU sensor board | full | 76 × 113.8 mm, FR4 1.6 mm, 2 layers | pads for the pin board's spring pins, J2 (MSR-2's CN2), SHT40, microphone + ADAU7002 | no fab files: CN2 pinout not confirmed |
+| EU sensor board | full | 76 × 113.8 mm, FR4 1.6 mm, 2 layers | pads for the pin board's spring pins, J2 (MSR-2's CN2), SHT40, microphone + ADAU7002 | fit-test prototype: CN2's position on the MSR-2 estimated |
 | Back cover flex | battery-free, full (both variants) | 31.2 × 30.1 mm flat, polyimide 0.10 mm, 1 copper layer, FR4 stiffeners | pads for the spring pins, ESD diode, 3.3 V regulator, two spring fingers onto the remote's cell contacts | no fab files: contact positions not measured on a remote |
 
 | NA mains board | NA sensor board | NA pin board |
 | --- | --- | --- |
-| ![NA mains board, front](../docs/renders/na_mains_board_front.png) | ![NA sensor board, front](../docs/renders/na_sensor_board_front.png) | ![NA pin board, front](../docs/renders/na_pin_board_front.png) |
+| ![NA mains board, front](../docs/renders/na_mains_board_busbar_front.png) | ![NA sensor board, front](../docs/renders/na_sensor_board_front.png) | ![NA pin board, front](../docs/renders/na_pin_board_front.png) |
 
 | EU mains board | EU pin board | EU sensor board |
 | --- | --- | --- |
-| ![EU mains board, front](../docs/renders/eu_mains_board_front.png) | ![EU pin board, front](../docs/renders/eu_pin_board_front.png) | ![EU sensor board, front](../docs/renders/eu_sensor_board_front.png) |
+| ![EU mains board, front](../docs/renders/eu_mains_board_busbar_front.png) | ![EU pin board, front](../docs/renders/eu_pin_board_front.png) | ![EU sensor board, front](../docs/renders/eu_sensor_board_front.png) |
 
 | Back cover flex |
 | --- |

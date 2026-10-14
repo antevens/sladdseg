@@ -8,14 +8,16 @@ variants, is in `../shared/README.md`.
 
 Spacing values are design targets for human review. Nothing here is a compliance claim.
 
-## Mains board (`kicad/eu_mains_board.*`, fab pack in `fab/eu_mains_board/`)
+## Mains board (`kicad/eu_mains_board_busbar.*`, fab pack in `fab/eu_mains_board_busbar/`)
 
 Round, at the rocker's PCB seat (16.2 mm below its panel face). The rocker breaks line and neutral
-of the lights; the PSU is fed from the switched side, so the rocker also turns the sensor off.
+of the lights; the PSU is fed from the switched side, so the rocker also turns the sensor off. The lights' current
+runs in four copper bars on the front (D-153); the earlier board with the load in pours on high-CTI FR4 is dropped
+(D-155).
 
 | Ref | Part | Side | Nets |
 | --- | --- | --- | --- |
-| S1 | Marquardt 1802.2504 rocker, DPST, PCB pins, ENEC 12(4) A 250 V~, UL/CSA 15 A; second source E-Switch RA412C1100 (4.8 mm tabs, ENEC 10(4) A, D-88): plated slots 5.2 × 1.2 on 10.2 × 7.05, their pads up to the WAGO bodies (0.05 mm), ≥ 3.0 mm from the WAGO pins (D-102) | front (through the barrier's panel) | 1 L_IN, 1a L_SW, 2 N_IN, 2a N_SW |
+| S1 | Marquardt 1802.2504 rocker, DPST, PCB pins, ENEC 12(4) A 250 V~, UL/CSA 15 A; second source E-Switch RA412C1100 (4.8 mm tabs, ENEC 10(4) A, D-88): plated slots 5.2 × 1.2 on 10.2 × 7.05, their pads up to the WAGO bodies (0.05 mm), 3.85 mm from the WAGO pins (D-153) | front (through the barrier's panel) | 1 L_IN, 1a L_SW, 2 N_IN, 2a N_SW |
 | J1 | WAGO 2604-3102, push-in, 2-pole, 4 mm², entry 90° to the board, 400 V III/2; turned 180° from J2 | back | L_SW (pole 1), L_IN (pole 2, upper) |
 | J2 | WAGO 2604-3102 (as J1) | back | N_IN (house neutral), N_SW (to the lights) |
 | F1 | Schurter UMT 250, T1A 250 VAC | front | L_SW to L_F |
@@ -24,12 +26,14 @@ of the lights; the PSU is fed from the switched side, so the rocker also turns t
 | J3 | Samtec TSM-102-02-L-SV, SMT pin header 1x2, 2.54 mm, 8.13 mm post (no pin tails under the PSU) | front, 5 V island | +5V, GND |
 | MH1-MH3 | M2 holes on the barrier's long bosses | - | - |
 
-- The lights' current runs in copper pours: L_IN and L_SW on F.Cu (right), N_IN and N_SW on B.Cu
-  (left), in above switched, as the rocker's poles; the split between them steps from the rocker's
-  poles down to the WAGO block's. WAGO pin rows and body from WAGO's 3D model (8.2 mm apart, levers
-  towards the board centre, where the blocks' pins stay 1.0 mm clear of the rocker body on the
-  front); blocks at x ±16.6, y 7.5. The PSU feed (L_F, N_SW to F1 / RV1 / PS1) is
-  1.0 mm track. Order with 2 oz copper for the load paths (sizing: human review).
+- The lights' current runs in four straight 0.5 mm copper bars soldered on the front, one along each WAGO pole's pin
+  row to the rocker (`BB_BARS`: in bars above their row, switched below it, round ends past the outer pin, clear of
+  the 6 mm barrier bosses); no load pours. Built by `gen_eu.py busbar`; `tools/bars_eu.py` (CAD Python) draws the
+  bars round the pads (`build/eu_mains_board_pads.json`), checks them and writes `kicad/eu_mains_board_busbar_bars.json`
+  (their lands: copper with no solder mask) and the DXF for the laser cutter. WAGO pin rows and body from WAGO's 3D
+  model (8.2 mm apart, levers towards the board centre, where the blocks' pins stay 1.0 mm clear of the rocker body
+  on the front); blocks at x ±16.6, y 7.5. Short links from the bars to F1 and to the RV1 / PSU feed (1.0 mm track).
+  Standard FR4, 1 oz (no PE on the board), HASL lead-free.
 - A routed relief slot under the PSU, between its input and output rows, cuts off the 5 V island
   (PSU outputs, J3). Mains copper keeps ≥ 8 mm (clearance and creepage) from it.
 - Keep-out areas round the mounting holes: mains copper ≥ 1.0 mm from them.
@@ -57,22 +61,23 @@ Nothing is soldered or wired between the boards or across the barrier (DESIGN R9
 
 FR4 1.6 mm, two layers, round the remote pocket in the barrier's printed carrier (its rim round the board). TP1 / TP2:
 Ø2.4 gold pads on the underside under the pin board's sensor spring pins (GND, +5V). As on the sensor board: J2 mates
-the MSR-2's CN2 (Molex land pattern, placeholder contact map) and H5–H7 (Würth WA-SMSI 9774015243R, 1.5 mm) carry its board under the face plate's
+the MSR-2's CN2 (Hirose DF40C-24DP-0.4V(51), Apollo's contact map, D-154) and H5–H7 (Würth WA-SMSI 9774015243R, 1.5 mm) carry its board under the face plate's
 posts; MK1 and U2 with C3, C4 and R1 as on the sensor board (`route_mic`, D-83), the mic at x 32.0 so its parts and
-lanes sit between it and the MSR-2's bay frame. I²S from CN2's upper row up, right, down and into U2, +3V3 from the
-lower row down and right to the parts' bus; SDA, SCL and +3V3 on the back
+lanes sit between it and the MSR-2's bay frame. I²S from CN2's signal row (the lower one) down, right, down and into U2,
++3V3 down to a via and on the back to the parts' +3V3; SDA and SCL out past the header's ends to vias; SDA, SCL and
++3V3 (from the parts' +3V3) on the back
 down the outer left edge (outside the snap windows and the screws) to U1 (SHT40) and C2 at the bottom; +5V from the
-pin pad on the back up the outer right edge to CN2; GND pours on both layers; 0.45 / 0.2 mm vias round CN2. Windows at
+pin pad on the back up the outer right edge and across to a via above CN2's +5V contact; GND pours on both layers; 0.45 / 0.2 mm vias round CN2. Windows at
 the four corners pass the face plate's snap fingers; notches in the top edge clear the MSR-2's back switches. H1–H4:
-holes for the M2 screws into the carrier. No fab files until CN2 is confirmed.
+holes for the M2 screws into the carrier. Fit-test prototype: CN2's position on the MSR-2 is a photo estimate.
 
 ## Rules
 
-`kicad/eu_mains_board.kicad_dru`: L–N ≥ 3.0 mm, any two different mains nets ≥ 3.0 mm (line / switched
-line / fused line, neutral / switched neutral; `MAINS_GAP` in `params_eu.py`, on high-CTI FR4, D-102), mains to
-the 5 V side ≥ 8.0 mm (clearance and creepage), mains copper ≥ 1.0 mm from the board edge and the holes; pins of
-one rated part keep the part's own spacing. The mains pours carry their own 3.0 mm clearance. Order the board in
-high-CTI FR4 (CTI ≥ 600). Design targets for human review, not a compliance claim.
+`kicad/eu_mains_board_busbar.kicad_dru`: L–N ≥ 3.2 mm, any two different mains nets ≥ 3.2 mm (line / switched
+line / fused line, neutral / switched neutral; `BB_GAP`: IEC 60664-1 creepage at the 320 V row, pollution degree 2,
+material group III, standard FR4, D-153), mains to the 5 V side ≥ 8.0 mm (clearance and creepage), mains copper
+≥ 1.0 mm from the board edge and the holes; pins of one rated part keep the part's own spacing. Design targets for
+human review, not a compliance claim.
 
 The net classes come from the project file; `tools/gen_eu.py` rewrites it after every save
 (pcbnew's SaveBoard resets it). The single EU PSU board before D-36 was checked without them, so
@@ -87,7 +92,7 @@ make pcb        # every board; or pcb/eu/tools/build.sh for the EU boards alone
 `tools/build.sh` writes the 3D models, the mains board and the pin board (`gen_eu.py`) and the sensor board
 (`../shared/tools/gen_lv.py eu`), runs ERC and DRC on all three, and writes the PCBWay packs for the mains board and
 the pin board in `fab/` (`fab/README.md`: order settings and the review checklist). Order only after the review and a
-dry fit of the stack in a real box. The sensor board's fab files wait for the CN2 contact map.
+dry fit of the stack in a real box. The sensor board's PCBWay files are a fit-test prototype (D-154).
 
 ## Renders
 
@@ -95,11 +100,17 @@ Each board with components, without them, and its copper layers (back seen from 
 
 | Mains board, front | Mains board, back |
 | --- | --- |
-| ![EU mains board, front](../../docs/renders/eu_mains_board_front.png) | ![EU mains board, back](../../docs/renders/eu_mains_board_back.png) |
-| ![EU mains board, bare front](../../docs/renders/eu_mains_board_bare_front.png) | ![EU mains board, bare back](../../docs/renders/eu_mains_board_bare_back.png) |
-| ![EU mains board, front copper](../../docs/renders/eu_mains_board_copper_front.png) | ![EU mains board, back copper](../../docs/renders/eu_mains_board_copper_back.png) |
+| ![EU mains board, front](../../docs/renders/eu_mains_board_busbar_front.png) | ![EU mains board, back](../../docs/renders/eu_mains_board_busbar_back.png) |
+| ![EU mains board, bare front](../../docs/renders/eu_mains_board_busbar_bare_front.png) | ![EU mains board, bare back](../../docs/renders/eu_mains_board_busbar_bare_back.png) |
+| ![EU mains board, front copper](../../docs/renders/eu_mains_board_busbar_copper_front.png) | ![EU mains board, back copper](../../docs/renders/eu_mains_board_busbar_copper_back.png) |
 
-![EU mains board, bare, angled](../../docs/renders/eu_mains_board_bare_iso.png)
+![EU mains board, bare, angled](../../docs/renders/eu_mains_board_busbar_bare_iso.png)
+
+Dropped board (D-155), its files still in the tree until backlog item 4 removes them: `kicad/eu_mains_board.*`,
+`fab/eu_mains_board/`, `build/eu_mains_board.step` and the renders `docs/renders/eu_mains_board_front.png`,
+`docs/renders/eu_mains_board_back.png`, `docs/renders/eu_mains_board_bare_front.png`,
+`docs/renders/eu_mains_board_bare_back.png`, `docs/renders/eu_mains_board_copper_front.png`,
+`docs/renders/eu_mains_board_copper_back.png`, `docs/renders/eu_mains_board_bare_iso.png`.
 
 | pin board, front | pin board, back |
 | --- | --- |

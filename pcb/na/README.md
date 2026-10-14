@@ -9,30 +9,36 @@ variants, is in `../shared/README.md`.
 Spacing values are design targets for human review. Nothing here is a compliance claim, and nothing on these boards
 has been checked by a third party.
 
-## Mains board (`kicad/na_mains_board.*`, fab pack in `fab/na_mains_board/`)
+## Mains board (`kicad/na_mains_board_busbar.*`, fab pack in `fab/na_mains_board_busbar/`)
 
-The NA plate's board (docs/DESIGN.md D-24, D-25, D-26): the house wiring terminal block, the emergency rocker switch
-that breaks line and neutral, and the PSU fed from the switched side.
+The NA plate's board (docs/DESIGN.md D-24, D-25, D-26, D-153): the house wiring terminal block, the emergency rocker
+switch that breaks line and neutral, and the PSU fed from the switched side. The load runs in four laser-cut copper
+bars soldered on the front between J1 and S1, so the board copper does not set the current (D-153; the earlier board
+with the load in pours on high-CTI FR4 is dropped, D-155). Built by `gen_pcb_na.py busbar` (with
+`gen_project_na.py busbar` and `gen_schematic_na.py busbar`); `tools/bars_na.py` (CAD Python) draws the bars round the
+pads (`build/na_mains_board_pads.json`), checks their clearances and writes `kicad/na_mains_board_busbar_bars.json`
+(their lands: copper with no solder mask) and the DXF for the laser cutter.
 
 ### Layout
 
 Coordinates are front view in millimetres: X right, Y up toward the rocker, origin at
 the board centre. F faces the plate, B faces the box.
 
-- Board: 47 x 72 x 1.6 mm, corner radius 1.5 mm.
-- Routed slot: 5 mm wide at X 3.0, from the bottom edge up to Y -10.9, under PS1.
-- PE ring on both layers round the AC part, with stitching vias about every 4 mm. Earth
-  continuity does not depend on vias or on copper the posts press on: on F.Cu alone, J1.6 ->
-  left edge -> round MH1 -> top -> round MH3 -> J1.1 is one piece of copper, and `gen_pcb_na.py`
-  fails the build if it is not (checked with the vias left out). The ring detours round MH1
-  and MH3 on the inside; MH2 interrupts the ring's bottom-left corner (the lower part stays joined
-  to both arms). B.Cu is a parallel ring joined to J1.6 by the vias.
-- PE arms from the ring to J1.6 (left, F) and J1.1 (right, F and B): 10.4 mm wide, flush with
-  the outer edges of the pin pair's pads (row distance 8.2 plus the 2.2 mm pad),
-  ending square at the pins' centre line so the pads keep the 3.0 mm to the neighbouring
-  L / N terminals.
-- Pours that compete for copper have fixed priorities (line over neutral), so the fill is
-  the same on every rebuild.
+- Board: 47 x 72 x 1.6 mm, corner radius 1.5 mm, standard FR4, 2 oz, HASL lead-free.
+- Routed slot under PS1: closed, 2 mm wide, both ends round, stopping 5.5 mm above the bottom edge so the PE ring
+  closes under it. Every mains copper stays 8 mm from the 5 V side by straight line, so the slot only adds.
+- Bars (0.5 mm copper, tin plated), on the front, only between J1 and S1: L_IN / N_IN straight up from their pole
+  (1.4 mm between the poles), then straight sides out to the rocker pad's lower corners; N_SW from J1.2 up the right
+  of the rocker onto S1.2a; L_SW from J1.4 down, round J1.5 and J1.6 at 3.2 mm, up the left and over the top onto
+  S1.1a. Each bar covers its rocker pad and its terminal pole's pads with a hole per pin. Narrowest bar 1.4 mm:
+  0.70 mm², about 21 A at 10 °C rise (IPC-2221). Their lands are board copper of the same outline with no solder
+  mask; vias inside a land are left open.
+- Thin feeds in board copper (under 1 A, `BB_TRACKS`): J1.2 → B → via → RV1.2 → PS1.3; a via in the L_SW land → B →
+  via → F1.1.
+- PE ring: a 7 mm band round the front edge and all free copper on the back, arms to J1.1 / J1.6, 22 stitching vias
+  (1.3 / 0.8 mm, 5 mm grid); continuous on B.Cu alone (the L_SW bar runs between J1.6 and the left edge on the
+  front). Narrowest PE: front 2.87 mm, back 4.60 mm over the top, 2.08 mm under the slot: at 2 oz about 27 A at
+  10 °C rise and about 1.5 kA for one cycle before it melts.
 - 5 V area: bottom right (X 7 to 19.5, Y -33.5 to -13), GND pour on F.
 - Mounting holes for the barrier's nylon standoffs (D-57), 3.2 mm, all unplated: MH1 (-21, 33.5),
   MH2 (-21, -33.5), MH3 (21, 33.5), MH4 (21, -33.5). A rule area keeps all copper 3.39 mm
@@ -82,25 +88,22 @@ S1 pin positions (front view): L_IN (-5.1, 19.5), L_SW (-5.1, 26.55), N_IN (5.1,
 N_SW (5.1, 26.55) (slot centres; 1802.2504 pins at 26.5, RA4 tabs at 26.6). Pins 1 / 2 lie on the body's centre line, 1a / 2a 7 mm off it (drawing
 1802.2504 rev g), so the body is centred on the in pins.
 
-Load current path:
-
-- Line: J1.5 to S1.1 on F, then S1.1a to J1.4 on B. The B pour runs from J1.4 up into the band between J1's
-  upper pin row and the rocker's in pins, and in parallel down under J1 and up the left edge. F1 takes L_SW
-  through two vias below it; the fused line runs from F1.2 to PS1.1 and straight across to RV1.1.
-- Neutral: J1.3 to S1.2 on F, then S1.2a to J1.2 on B. The B path runs up the right side.
+Load current path: in the bars on the front, J1.5 → S1.1 (L_IN), S1.1a → J1.4 (L_SW), J1.3 → S1.2 (N_IN), S1.2a →
+J1.2 (N_SW). F1 hangs off the L_SW land and the PSU's neutral off J1.2 in board copper; the fused line runs from F1.2
+to PS1.1 and across to RV1.1.
 
 ### Rules
 
-The rules are in `kicad/na_mains_board.kicad_dru`, written by `tools/gen_project_na.py`.
+The rules are in `kicad/na_mains_board_busbar.kicad_dru`, written by `tools/gen_project_na.py busbar`.
 
-- L to N: 3.0 mm.
-- L_IN to L_SW and L_F: 3.0 mm.
-- N_IN to N_SW: 3.0 mm.
-- Any two different mains nets: 3.0 mm (covers switched line to fused line across F1).
-- Mains to PE: 3.0 mm.
+- L to N: 3.2 mm.
+- L_IN to L_SW and L_F: 3.2 mm.
+- N_IN to N_SW: 3.2 mm.
+- Any two different mains nets: 3.2 mm (covers switched line to fused line across F1).
+- Mains to PE: 3.2 mm.
 
-(`MAINS_GAP` in `tools/parts.py`: IEC 60664-1 OVC III clearance 3.0 mm; on high-CTI FR4, CTI ≥ 600, the creepage need
-drops to about 1.6 mm, so clearance sets the target. Order the board in high-CTI FR4, D-102.)
+(`BB_GAP`: IEC 60664-1 creepage at the 320 V row, pollution degree 2, material group III (standard FR4), 3.2 mm,
+above the OVC III clearance of 3.0 mm; D-153. Between the pins of the WAGO block its own pitch applies.)
 - Mains to SELV: 8.0 mm clearance and creepage, with the routed slot.
 - Mains to the PSU NC pin: 8.0 mm.
 - Mains copper to board edge: 1.0 mm; other copper 0.5 mm.
@@ -108,7 +111,7 @@ drops to about 1.6 mm, so clearance sets the target. Order the board in high-CTI
   certified parts.
 
 Creepage is checked only for mains to SELV. On this flat board the surface path
-between copper on one layer is never shorter than the straight gap, so the 3.0 mm
+between copper on one layer is never shorter than the straight gap, so the 3.2 mm
 targets are checked as clearance. KiCad evaluates creepage rules without the
 footprint, so a per-part creepage exception cannot be written.
 
@@ -122,8 +125,8 @@ Done:
 - All nets routed.
 - ERC: 0 errors, 0 warnings.
 - DRC (`--severity-all --schematic-parity`): 0 violations, 0 unconnected, 0 parity issues.
-- STEP model in `build/na_mains_board.step`; PCBWay order pack in `fab/`; renders in
-  `docs/renders/na_mains_board_*.png` (`make renders`).
+- STEP model in `build/na_mains_board_busbar.step`; PCBWay order pack with the bars' DXF in
+  `fab/na_mains_board_busbar/`; renders in `docs/renders/na_mains_board_busbar_*.png` (`make renders`).
 
 Open:
 
@@ -133,10 +136,12 @@ Open:
   Centre and one end: fits, snapped in that way round. Both ends: the third row lands over J1 (y 12.4).
 - Check the J1 pin rows on a part. They come from WAGO's 3D model (rows y 8.1 and -0.1,
   8.2 apart, D-37).
-- Thermal review of the 15 A paths. The 3.0 mm targets to the neighbouring J1 pads (round,
-  2.2 mm, 5 mm pitch) leave 1.6 to 1.8 mm of pour beside each pad (N_SW 1.3 mm, beside
-  the PE arm) over the 2 to 3 mm where the pours leave J1. Options are 2 oz copper, or
-  different targets between in and switched terminals of one pole.
+- Thermal review of the bars (narrowest 1.4 mm, 0.70 mm²) and of the PE ring at 2 oz for the branch circuit's
+  fault current (D-153).
+- The rocker's pin stems over the bars: on a sample, whether the 1802.2504's stems reach the board at the pads (our
+  model of its drawing says they do); the bars lift it by 0.5 mm plus solder (D-153).
+- The room between the board's front and the barrier for the bars: the bars are not in the CAD yet (D-153).
+- WAGO 2604 pin size against the bars' 1.3 mm holes (MEASURE on a part).
 - S1's body sits on the front over J1's first pin row: pad edge 1.0 mm from the body
   outline (`PAD_BODY_GAP`, checked by `make check` for every through-hole pad against the
   bodies on the other side). J1's levers overhang the S1 pins 13.9 mm or more above the
@@ -154,15 +159,18 @@ With components, then without (every trace and pour), then the copper layers (ba
 
 | Front | Back |
 | --- | --- |
-| ![Mains board, front](../../docs/renders/na_mains_board_front.png) | ![Mains board, back](../../docs/renders/na_mains_board_back.png) |
-| ![Mains board, bare front](../../docs/renders/na_mains_board_bare_front.png) | ![Mains board, bare back](../../docs/renders/na_mains_board_bare_back.png) |
-| ![Mains board, front copper](../../docs/renders/na_mains_board_copper_front.png) | ![Mains board, back copper](../../docs/renders/na_mains_board_copper_back.png) |
+| ![Mains board, front](../../docs/renders/na_mains_board_busbar_front.png) | ![Mains board, back](../../docs/renders/na_mains_board_busbar_back.png) |
+| ![Mains board, bare front](../../docs/renders/na_mains_board_busbar_bare_front.png) | ![Mains board, bare back](../../docs/renders/na_mains_board_busbar_bare_back.png) |
+| ![Mains board, front copper](../../docs/renders/na_mains_board_busbar_copper_front.png) | ![Mains board, back copper](../../docs/renders/na_mains_board_busbar_copper_back.png) |
 
-| Front, angled | Back, angled |
-| --- | --- |
-| ![Mains board, front, angled](../../docs/renders/na_mains_board_iso_front.png) | ![Mains board, back, angled](../../docs/renders/na_mains_board_iso_back.png) |
+![Mains board, bare, angled](../../docs/renders/na_mains_board_busbar_bare_iso.png)
 
-![Mains board, bare, angled](../../docs/renders/na_mains_board_bare_iso.png)
+Dropped board (D-155), its files still in the tree until backlog item 4 removes them: `kicad/na_mains_board.*`,
+`fab/na_mains_board/`, `build/na_mains_board.step` and the renders `docs/renders/na_mains_board_front.png`,
+`docs/renders/na_mains_board_back.png`, `docs/renders/na_mains_board_bare_front.png`,
+`docs/renders/na_mains_board_bare_back.png`, `docs/renders/na_mains_board_copper_front.png`,
+`docs/renders/na_mains_board_copper_back.png`, `docs/renders/na_mains_board_iso_front.png`,
+`docs/renders/na_mains_board_iso_back.png`, `docs/renders/na_mains_board_bare_iso.png`.
 
 ## Sensor board (`kicad/na_sensor_board.*`)
 
@@ -176,13 +184,14 @@ front (F faces the barrier):
   At the bottom, (12.7, -50.0), 180°: cable in from above, over the mains board's J2 (D-134). C1 22 µF beside it.
   +5V to CN2: on the back along the bottom band, on the front up the left edge (0.35 mm, outside the keep-out) beside
   a 0.3 mm GND track, on the back across the top band.
-- J2: Molex 55909-2474 (24 contacts, 0.4 mm) mating the MSR-2's rear connector CN2 (D-82); land pattern from Molex
-  SD-55909-003 rev J (D-89); contact map and pin 1 placeholders, below.
+- J2: Hirose DF40C-24DP-0.4V(51) (24 contacts, 0.4 mm) mating the MSR-2's rear connector CN2, a DF40C-24DS-0.4V(51)
+  (D-154); land pattern from Hirose's DF40 catalog; contact map from Apollo's schematic; pin 1 at the left end of the
+  lower row (from Apollo's boards).
 - U1: SHT40 with C2 (100 nF) under the face plate's vents at the bottom.
 - MK1: Knowles SPK0641HT4H-1 (top-port PDM microphone, SELECT low) at the top right, port end up under the face
   plate's sound column; U2: Analog Devices ADAU7002 (PDM to I²S, CONFIG high = I²S, WLCSP-8 0.4 mm) to its left with
   C4 (100 nF), R1 (100 kΩ I²S SD pull-down: SDATA is tristated between words) and C3 (the mic's 100 nF, C0G 1206, D-85) outside the
-  column's gasket (D-83). The I²S lanes run from CN2's upper row into U2 (SD straight in on the left, WS and SCK
+  column's gasket (D-83). The I²S lanes run from CN2's signal row into U2 (SD straight in on the left, WS and SCK
   under it and up its right); PDM_CLK goes to the mic on the front, PDM_DAT on the back; a +3V3 bus under the parts
   feeds the mic and C3. The mic's GND ring pads that the signal escapes enclose (5, 6) have their own vias.
 - H1–H3: Würth WA-SMSI M2 L1.5 SMT spacers (9774015243R, Ø5.3 pad on a Ø3.0 unplated hole, GND)
@@ -192,13 +201,15 @@ Copper keeps 8 mm along the wall from the box opening (rule areas: front 6.4 mm 
 edge adds 1.6; back 8.0). So the back layer only has the bands above and below the box; the right
 side carries three front lanes (SCL, SDA, +3V3; 0.15 mm, 0.33 mm pitch) round the box's corner to the
 SHT40, the left side a GND pour that joins the top and bottom pours. SDA, SCL and +3V3 cross the top
-band on the back, under J1, to three vias above the rail; the I²S lanes and +5V stay on the front. Vias 0.45 / 0.2 mm
-round CN2 and U2.
+band on the back, under J1, to three vias above the rail; the I²S lanes stay on the front. At CN2 (D-154) every used
+contact but +5V is on the lower row: the I²S lanes go down, right and up round the header's right end, SCL and SDA
+down and out past the header's ends to vias, +3V3 down to a via and on the back to the mic's parts, +5V up from the
+upper row to a via; GND 1 / 2 / 4 and 23 / 24 to two vias between the rows. Vias 0.45 / 0.2 mm round CN2 and U2.
 
-**Not ready to fabricate.** J2's contact map and pin 1 are placeholders: CN2's part is assumed (D-82: Molex
-55909-2474 on the MSR-2's 51338-2474, 1.5 mm mated); the land pattern is Molex's (SD-55909-003 rev J sheet 2:
-pads 0.22 × 0.9 at 0.4, rows 1.73 apart, four 0.5 × 0.85 fitting nail pads, D-89), but the drawing numbers no pins. `CN2_MAP` only keeps the
-fan-out from crossing. `tools/build.sh` writes no sensor board fab files while `CN2_CONFIRMED` is false.
+**Fit-test prototype.** CN2's part, contact map and pin 1 are Apollo's (D-154: Hirose DF40C-24DS-0.4V(51) on the
+MSR-2, DF40C-24DP-0.4V(51) here, 1.5 mm mated; land pattern from Hirose's DF40 catalog p. 7: pads 0.23 × 0.66 at 0.4,
+rows 3.37 outside / 2.05 inside, four 0.35 × 0.66 corner bracket pads; pin 1 from the add-on's mark and the MSR-2's
+traces), but CN2's position on the MSR-2 (`MSR_CN2_IN`) is a photo estimate.
 
 ## Pin board (`kicad/na_pin_board.*`, fab pack in `fab/na_pin_board/`)
 
@@ -224,11 +235,13 @@ make pcb        # every board; or pcb/na/tools/build.sh for the NA boards alone
 ```
 
 `tools/build.sh` writes the 3D models (`../tools/gen_3d.py`), then the mains board: `gen_libs_na.py` (libraries),
-`gen_project_na.py` (project seed and DRC rules), `gen_schematic_na.py`, `gen_pcb_na.py` (board and zone fill); then
-the sensor board and the pin board (`../shared/tools/gen_lv.py na`). It runs ERC and DRC on all three (reports in
-`build/`), exports the mains board's STEP to `build/na_mains_board.step` and writes the PCBWay packs:
-`fab/na_mains_board/` (`gen_fab_na.py` writes the BOM and the centroid; S1 is not fitted) and `fab/na_pin_board/`. The
-sensor board's fab files wait for the CN2 contact map.
+`gen_project_na.py` (project seed and DRC rules), `gen_schematic_na.py`, `gen_pcb_na.py` (board and zone fill), in
+`busbar` mode, and `bars_na.py` (the bars); then the sensor board and the pin board (`../shared/tools/gen_lv.py na`).
+It runs ERC and DRC on all three (reports in `build/`), exports the mains board's STEP to
+`build/na_mains_board_busbar.step` and writes the PCBWay packs: `fab/na_mains_board_busbar/` (`gen_fab_na.py` writes
+the BOM and the centroid, `bars_na.py` the bars' DXF; S1 and the bars are not fitted) and `fab/na_pin_board/`. The
+sensor board's PCBWay files are a fit-test prototype (D-154). The dropped board's mode of the same generators still
+runs (backlog item 4).
 
 ## Renders
 

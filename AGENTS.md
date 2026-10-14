@@ -66,11 +66,12 @@ cad/build123d/       ACTIVE parametric CAD (Python, build123d); the parts both v
                      board envelopes), testbox_eu (printed test socket, D-76), checks_eu, render_eu (`make eu`)
 cad/tools/           sections.py (section renders for review), check_renders.py (render inventory)
 pcb/                 all boards (README: overview)
-  na/                NA mains board, sensor board, pin board: kicad/, tools/ (edit parts_na.py, lv_parts_na.py),
-                     fab/ (PCBWay packs, review checklist)
-  eu/                EU mains board, pin board, sensor board: kicad/, tools/ (edit parts_eu.py, lv_parts_eu.py), fab/
+  na/                NA mains board (bus bars, D-153), sensor board, pin board: kicad/, tools/ (edit parts_na.py,
+                     lv_parts_na.py; bars_na.py the bus bars), fab/ (PCBWay packs, review checklist)
+  eu/                EU mains board (bus bars, D-153), pin board, sensor board: kicad/, tools/ (edit parts_eu.py,
+                     lv_parts_eu.py; bars_eu.py the bus bars), fab/
   shared/            back cover flex (kicad/, tools/lv_parts.py) and the low-voltage board generator (tools/gen_lv.py)
-  tools/             helpers every generator uses (kigen, fplib, common_parts, gen_3d), render_bare, order tools
+  tools/             helpers every generator uses (kigen, fplib, common_parts, gen_3d, busbars), render_bare, order tools
   order/             DigiKey / Mouser order lists for test plates (`make order`, tools/order_bom.py; stock and
                      upload: tools/distributors.py)
 print/               ElegooSlicer projects (*.3mf) for the CC2, slice.py, profiles/
@@ -213,6 +214,7 @@ General rules for any agent working in this repo.
 - Use proper Markdown syntax for links, images, and other elements.
 - Ensure that code blocks are properly formatted with triple backticks and the
   correct language specified (**ALWAYS**).
+- In tables, the text in every cell starts with a capital letter.
 
 ### Dockerfiles
 
@@ -246,8 +248,10 @@ Do not violate these; ask the human if a task seems to require it.
    listed push-in terminals: L in → certified rocker → switched L out, N in → N
    out, PE in → PE out. Only the rocker switches the load. Every mains path,
    PE included, is sized for 15 A continuous (IPC-2221, ≤10 °C rise) and for
-   fault current until the branch breaker trips. Line copper on one side of the
-   board, neutral on the other, PE copper along both sides.
+   fault current until the branch breaker trips. The load runs in laser-cut copper bars on the front between
+   the terminal blocks and the rocker (D-153, human decision 2026-10-13; line and neutral bars both on the front,
+   the only side both reach); NA PE as a ring on both sides. The boards with the load in board copper on high-CTI
+   FR4 are dropped (D-155, human decision 2026-10-14).
 2. **Barrier continuity (D-80).** NA: the barrier's pocket shell + switch
    well + collar separate the mains volume (box) from the low-voltage volume
    (plate hollow, remote pocket). No openings may be added except the 5 V FFC's
@@ -263,12 +267,11 @@ Do not violate these; ask the human if a task seems to require it.
    low-voltage spaces, is not an opening in the barrier; `make check` /
    `make eu` keep it above z 0 and the mains-air check must still pass.
    Anything forming the barrier is printed in a UL94 V-0 filament (see PRINTING).
-3. **PCB isolation (D-24, D-102).** Designed for EU/UK (EN/BS EN 62368-1, IEC 60664-1)
+3. **PCB isolation (D-24, D-102, D-153, D-155).** Designed for EU/UK (EN/BS EN 62368-1, IEC 60664-1)
    and US/CA (UL/CSA 62368-1), 270 V working, overvoltage category III,
-   pollution degree 2, on high-CTI FR4 (CTI ≥ 600, material group I) for the mains
-   boards, using the stricter table in each case:
-   L–N and L–L(switched) ≥3.0 mm, L or N to PE ≥3.0 mm, mains to the 5 V side
-   ≥8.0 mm plus a routed slot under the PSU (reinforced). Clearance and
+   pollution degree 2, on standard FR4 (material group III), using the stricter table in each case:
+   L–N and L–L(switched) ≥3.2 mm, L or N to PE ≥3.2 mm (IEC 60664-1 creepage at the 320 V row, PD2), mains to the
+   5 V side ≥8.0 mm plus a routed slot under the PSU (reinforced). Clearance and
    creepage both. Exception: between the pins of a certified part rated for
    ≥270 V at OVC III / PD2 (e.g. the WAGO 2604 terminal block, the rocker), the
    part's own pin spacing applies, using the maker's recommended footprint.
@@ -286,7 +289,7 @@ Do not violate these; ask the human if a task seems to require it.
 The decision log in `docs/DESIGN.md` (D-50..D-79 for v0.4, D-80..D-119 for v0.5, D-120..D-150 for v0.6, D-151 on for v0.7) has the history.
 
 NA: barrier (the insert, PC-FR) and passive face plate; mains board (rocker, WAGO block, PSU,
-J2) on four nylon standoffs (D-57), ERC/DRC clean, PCBWay pack in `pcb/na/fab/na_mains_board/`; sensor board on the
+J2) on four nylon standoffs (D-57), ERC/DRC clean, PCBWay pack in `pcb/na/fab/na_mains_board_busbar/`; sensor board on the
 barrier's collar (crush ribs, D-68) with the MSR-2 on CN2, the SHT40 and the microphone + ADAU7002 (D-83); 5 V over
 a 50 mm stock FFC from J2 to J1 at the sensor board's bottom, in one plane through a slit in the barrier's bottom wall
 (D-134); battery-free remote on two Harwin P70 spring pins
@@ -296,6 +299,13 @@ EU: barrier (the cap, PC-FR), mains board and pin board (PCBWay packs in `pcb/eu
 printed carrier pinned to the wall by the barrier (D-70, D-71), the MSR-2 straight on it; face plate
 snapped into the carrier (D-77); steel piece in the barrier's pocket floor (D-72); printed test socket
 (D-76).
+
+Both mains boards carry the load in bus bars (D-153; the high-CTI boards dropped, D-155): standard FR4, 3.2 mm mains
+spacing, 0.5 mm copper bars on the front between the terminal blocks and the rocker (DXF in the PCBWay pack), NA PE as a
+ring; ERC/DRC clean. The bars are not in the CAD yet (rocker seat over the bars, room to the barrier). The dropped
+boards' files (the generators' non-busbar mode, `na_mains_board` / `eu_mains_board` KiCad projects, fab packs and
+renders) are still in the tree, the Makefile and the CAD checks still read `na_mains_board.kicad_pcb` for the board
+positions, and the bus-bar files keep their `_busbar` names: backlog item 4.
 
 Both variants: replacement back cover with regulator, pads and spring fingers (D-35, D-41, D-79); KiCad for
 the sensor boards and the cover flex (ERC/DRC clean; fab packs for the pin boards and the mains boards); the
@@ -311,7 +321,7 @@ stays open (D-135). EU battery-free leaves the sensor pins' two holes open (D-12
 Not done: caliper readings for the `MEASURE` and `ESTIMATE` values (several measured
 by the human 2026-10-09, see `docs/MEASUREMENTS.md`), test prints (under way),
 human review of the PCB checklists (`pcb/na/fab/README.md`, `pcb/eu/fab/README.md`),
-the MSR-2's CN2 contact map and pin 1 (part assumed: Molex 55909-2474 on a 51338-2474, D-82; land pattern from Molex's drawing, D-89; blocks both sensor boards' fab files),
+CN2's position on the MSR-2 (Hirose DF40C-24DS-0.4V(51), mate DF40C-24DP-0.4V(51), contact map and pin 1 from Apollo, D-154; the sensor boards are fit-test prototypes),
 the cover flex's fab files (`COVER_CONFIRMED`), PC-FR datasheet (`V0_RATED_T`), ESPHome configuration.
 
 ## Backlog (in order)
@@ -320,23 +330,28 @@ the cover flex's fab files (`COVER_CONFIRMED`), PC-FR datasheet (`V0_RATED_T`), 
    (coupons first: the rocker ladder gives `SW_PANEL_T`, the crush-rib coupon `SB_RIB`; then the
    PLA barrier and face plate, the back cover on a remote, the EU barrier, carrier and face plate in the test socket),
    update params, `make cad check print`. Replace `ESTIMATE` values as readings come in.
-2. **CN2 (D-50, D-51, D-82, D-89)**: part assumed (Molex 55909-2474 plug, 51338-2474 on the MSR-2); land pattern
-   from Molex's drawing (D-89); the contact map and pin 1 (from a GPIO add-on or Apollo); until then the
-   sensor board and the EU sensor board have no fab files. Microphone (D-83): pin 1 of the mic and the
-   ADAU7002 against parts, firmware test on an MSR-2 (16 kHz, I²S slot, C3 load).
+2. **CN2 (D-50, D-51, D-154)**: Hirose DF40C-24DS-0.4V(51) on the MSR-2, DF40C-24DP-0.4V(51) on the sensor boards,
+   contact map and pin 1 from Apollo's schematic and boards; on an MSR-2: CN2's position (`MSR_CN2_IN`), pin 1 with
+   a meter, the MSR-2's 5 V current (one 0.3 A contact). Microphone (D-83): pin 1 of the mic and the ADAU7002 against parts, firmware test on an MSR-2 (16 kHz,
+   I²S slot, C3 load).
 3. **Human review** of the PCB (`pcb/na/fab/README.md` checklist: F1 rating,
    isolation, thermal, approvals) before ordering from PCBWay.
-4. Dry-fit prints (PLA barrier + face plate) in a real box; check the corner taper vs
+4. **Remove the dropped high-CTI boards' files (D-155)**: the generators' non-busbar mode, the `na_mains_board` /
+   `eu_mains_board` KiCad projects, fab packs, STEP and renders; rename the bus-bar boards, their fab packs and
+   renders to the plain names; point the Makefile (`NA_MB`, `EU_MB`, the board lists), `build.sh`, the CAD checks
+   (`MB_PCB` in `checks_na.py`), the bar scripts (they read the pads JSON) and the docs at them; `make pcb cad check
+   renders check-renders` green.
+5. Dry-fit prints (PLA barrier + face plate) in a real box; check the corner taper vs
    box ears and the wire room behind the board. Then the PC-FR barrier.
-5. Rocker feel: confirm the panel thickness and that the latches hold.
-6. ESPHome YAML for MSR-2 + SHT40 + microphone (starting point in
-   `pcb/shared/README.md`), once the CN2 contact map is known.
-7. Later: UK (86 mm, shallow back box) variant; versions for the BILRESA
+6. Rocker feel: confirm the panel thickness and that the latches hold.
+7. ESPHome YAML for MSR-2 + SHT40 + microphone (starting point in
+   `pcb/shared/README.md`); I²S SD = IO4, WS = IO6, SCK = IO7, I²C SDA = IO1, SCL = IO0 (D-154).
+8. Later: UK (86 mm, shallow back box) variant; versions for the BILRESA
    dual-button remote (E2489, outline and cells recorded from IKEA's drawing);
    jumbo-plate option; the EU stack in a real 47 mm box (the printed test socket, D-76,
    has markers at 40, 43, 60 and 63 mm). If the face plates are ever injection moulded: a front edge rounded
    into the window / remote cutout (human, 2026-10-12; FDM face-down cannot print a round tangent to the bed).
-8. Plain plates (D-109, modelled): test prints of the plain face plate (NA) and the plain carrier and
+9. Plain plates (D-109, modelled): test prints of the plain face plate (NA) and the plain carrier and
    face plate (EU); the NA plate's 1.11 mm side wall beside the barrier's flange on the print.
 
 ## Open questions for the human
@@ -345,7 +360,7 @@ the cover flex's fab files (`COVER_CONFIRMED`), PC-FR datasheet (`V0_RATED_T`), 
   per room.
 - Neutral present in each switch box? (required for the PSU)
 - MSR-2: the CO₂ version is modelled (D-64) on the assumption that it is the one used;
-  bare-board dimensions; confirm the MSR-2's CN2 is a Molex 51338-2474 (D-82).
+  bare-board dimensions; CN2's position on the MSR-2 (D-154).
 - Inspector's view on a concealed emergency switch (BC homeowner permit).
 - F1 fuse rating (T1A chosen, Mean Well gives none) and PCB isolation review.
 - Elegoo PC-FR datasheet: V-0 test thickness.

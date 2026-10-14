@@ -17,6 +17,7 @@ tape. Nothing here is a compliance statement; mains work is a human decision (SA
 | Face plate | clamped by the same screws; two pins key it | passive: no electronics, no contacts (D-50) |
 | Mains board | four nylon M3 standoffs (Keystone 25503) screwed into the barrier's tapped bosses, a nylon M3 × 8 screw through each corner hole (D-57) | studs as supplied (D-134) |
 | Rocker, WAGO, PSU, F1, RV1, J2, spacer posts P1 / P2 | soldered; the rocker also snaps into the barrier's panel | rocker soldered last, with the board screwed down (see the note at the top) |
+| Bus bars BAR1–4 | soldered on the board's front over the WAGO pin tails, before the board is fitted | D-153 |
 | Spacer studs (WA-SBRIE) | screwed into P1 / P2; heatshrink over each post | D-50 |
 | Pin board | two M2 × 5 screws into the studs; in its pocket under the pocket floor, three snap clips in the pocket (top, right and bottom edges) hold its back face against the pins' push (the bottom one also holds the blank board in switch only, D-128) | D-50, D-91 |
 | Spring pins | soldered on the pin board; their barrels stand in the floor holes | D-50 |
@@ -33,16 +34,23 @@ tape. Nothing here is a compliance statement; mains work is a human decision (SA
 
 0. Cut the supplied steel plate: lay it whole in the hacksaw guide, round end on the stop, clamp the guide in a vise
    and saw down the slot. Deburr the cut edge.
-1. Mains board: solder P1 / P2 with the SMD parts (reflow); screw the WA-SBRIE studs in; heatshrink.
+1. Mains board: solder P1 / P2 with the SMD parts (reflow). Bars (D-153), S1 not fitted: lay each bar on its land on
+   the front (bare copper, HASL) over its WAGO pin tails; solder it on a hot plate or with a large iron, filling the
+   pin holes; clean the flux off. Screw the WA-SBRIE studs in; heatshrink.
+   Optional (D-152): brush conformal coating over the front's mains copper and joints, the bars' edges included; keep
+   it off the rocker's slots, J2 and the spacer posts' threads; let it cure.
 2. Sensor board: solder the hand parts (PCBWay fits the SMD parts); stick the mic gasket round the mic; plug the MSR-2
    onto CN2.
 3. Barrier: snap the rocker into its panel from the front. Do not solder it yet.
 4. Pin board: screw it onto the studs (M2 × 5); check that each pin moves freely.
 5. Latch the FFC into J2 (contacts towards the board; J2's cable side faces down), then fit the mains board on its
-   standoffs (the pins enter the floor holes from behind; the rocker's pins or tabs enter the board's slots; the pin
+   standoffs (the pins enter the floor holes from behind; the rocker's pins or tabs pass the bars' slots into the board's; the pin
    board snaps past the two clips in its pocket; the cable hangs down past the board's bottom edge) and tighten all
    four screws. To take the board off again, press the two clip hooks outwards with a pick while pulling it back.
-6. **Now solder the rocker** from the board's back, with the board screwed down and the rocker seated in the panel.
+6. **Now solder the rocker** from the board's back, with the board screwed down and the rocker seated in the panel;
+   its solder fills the plated slots up to the bars. Optional (D-152): clean the flux off and brush conformal coating over the back's mains copper and joints, the
+   rocker's included, round the WAGO block's and the PSU's pins; keep it out of the WAGO block's openings and
+   levers; let it cure.
 7. Sensor board: slide it over the plug from behind (the window passes the mains board) and press it onto the collar's
    ribs until it sits under the flange's land. Then bend the cable roughly to its shape (up from J2, over at the top),
    slide it sideways into the slit in the barrier's bottom wall from the left through the notch, its end out under
@@ -59,6 +67,7 @@ tape. Nothing here is a compliance statement; mains work is a human decision (SA
 | Mains board | M2 screws on the barrier's long bosses | |
 | Pin board | four M2 × 5 thread-forming screws into the barrier's bosses; its front rests on the ridge that runs along its straight edge, inside the sensor pins and round its edge between the bosses (switch only: the printed blank board, the same way; its own ridge stands beside the barrier's, D-131) | D-129, D-131 |
 | Rocker, WAGO blocks, PSU, header, socket, spring pins | soldered; the rocker also snaps into the cup | rocker soldered last, with the mains board screwed onto the barrier's bosses (see the note at the top) |
+| Bus bars BAR1–4 | soldered on the mains board's front over the WAGO pin tails, before the board goes onto the bosses | D-153 |
 | Cut steel piece | adhesive, in the recess in the barrier's pocket floor (round end down), 0.5 mm below the seat | D-72 |
 | Carrier | on the wall before the barrier; its lip under the barrier's edge, pinned to the wall by the barrier's two screws; the barrier's four teeth in gaps in the lip stop it turning (keyed, one way only) | D-56, D-71 |
 | Sensor board | in the carrier's rim, four M2 × 6 screws into the carrier; the pin board's sensor pins press up on its pads | D-56, D-70 |
@@ -70,11 +79,16 @@ tape. Nothing here is a compliance statement; mains work is a human decision (SA
 
 1. Snap the rocker into the barrier's cup from the front. Do not solder it yet.
 2. Screw the pin board onto its bosses just under the barrier.
-3. Put the mains board (WAGO blocks, PSU, F1, RV1 and the header already soldered) onto the barrier's long bosses from
-   behind, its header into the pin board's socket and the rocker's pins or tabs through its slots, and tighten the
-   M2 screws (D-36, D-59).
+3. Bars (D-153), S1 not fitted: lay each bar on its land on the front (bare copper, HASL) over its WAGO pin tails;
+   solder it on a hot plate or with a large iron, filling the pin holes; clean the flux off. Optional (D-152): brush
+   conformal coating over the front's mains copper and joints, the bars' edges included, keep it off the rocker's
+   slots and the header; let it cure. Then put the mains board (WAGO blocks, PSU, F1, RV1 and the header already
+   soldered) onto the barrier's long bosses from behind, its header into the pin board's socket and the rocker's
+   pins or tabs through the bars' slots into its own, and tighten the M2 screws (D-36, D-59).
 4. **Now solder the rocker** from the mains board's back, with the board screwed down and the rocker seated in the
-   cup.
+   cup; its solder fills the plated slots up to the bars. Optional (D-152): clean the flux off and brush conformal coating over the back's mains copper and joints,
+   the rocker's included, round the WAGO blocks' and the PSU's pins; keep it out of the WAGO blocks' openings; let
+   it cure.
 5. In the box (breaker off): join the protective earth from the supply and to the lights in the WAGO 221-412
    lever connector (D-94); the boards carry no PE. Keep whatever PE the box has continuous; a third PE conductor
    (a looped feed) takes a 221-413. Then L and N into the two 2604-3102 blocks on the mains board's back.
